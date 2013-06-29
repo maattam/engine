@@ -4,12 +4,17 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets opengl
+QT       += core gui opengl
 
 TARGET = engine
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    sceneview.cpp
 
-HEADERS  +=
+HEADERS  += \
+    sceneview.h
+
+OTHER_FILES += \
+    Resources/main.qml

@@ -33,38 +33,58 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="QML">
+      <UniqueIdentifier>{778b2814-2ae9-41d3-8494-72c2cc3c467c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine">
+      <UniqueIdentifier>{38d3e844-767e-4d9b-978f-974267a57f27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{6fe50cba-38f7-467d-a772-36a4c8deeecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6752b692-84d2-4cf5-88be-f99c67926338}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="engine.cpp">
+    <ClCompile Include="src\sceneview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_engine.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_sceneview.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_engine.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_sceneview.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_engine.cpp">
+    <ClCompile Include="src\engine\renderer.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\qrc_main.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="engine.h">
+    <CustomBuild Include="src\sceneview.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="engine.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="engine.qrc">
+    <CustomBuild Include="main.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_engine.h">
-      <Filter>Generated Files</Filter>
+    <ClInclude Include="src\engine\renderer.h">
+      <Filter>Header Files\engine</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\triangle.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\triangle.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
