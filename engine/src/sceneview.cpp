@@ -11,8 +11,6 @@ SceneView::SceneView(QWindow* parent) : QQuickView(parent), renderer_(nullptr)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setPersistentOpenGLContext(false);
 
-    resize(500, 400);
-
     // Render scene before gui
     connect(this, SIGNAL(beforeRendering()), SLOT(render()), Qt::DirectConnection);
     connect(this, SIGNAL(sceneGraphInitialized()), SLOT(initialize()), Qt::DirectConnection);
@@ -21,12 +19,12 @@ SceneView::SceneView(QWindow* parent) : QQuickView(parent), renderer_(nullptr)
     connect(timer, SIGNAL(timeout()), this, SLOT(update()));
     timer->start(16);
 
-    // Create OpenGL 4.3 context
+    // Create OpenGL 4.2 context
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(2);
     format.setSamples(4);
-    format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setProfile(QSurfaceFormat::CompatibilityProfile);
     setFormat(format);
 }
 

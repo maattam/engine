@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 vertexPosition_modelspace;
 
-varying vec3 pos_fragment;
+out vec3 pos_fragment;
 
 void main() {
 	gl_Position.xyz = vertexPosition_modelspace;

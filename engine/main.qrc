@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>shaders/triangle.frag</file>
         <file>shaders/triangle.vert</file>
+        <file>main.qml</file>
     </qresource>
 </RCC>

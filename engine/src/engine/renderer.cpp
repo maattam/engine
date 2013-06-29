@@ -11,6 +11,7 @@ const GLfloat VERTEX_BUFFER_DATA[] = {
 
 Renderer::Renderer(QOpenGLContext* context) : context_(context)
 {
+    glewExperimental = GL_TRUE;
     GLenum err = glewInit();
 
     if(err == GLEW_OK)
