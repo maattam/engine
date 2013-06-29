@@ -3,5 +3,6 @@
         <file>shaders/triangle.frag</file>
         <file>shaders/triangle.vert</file>
         <file>main.qml</file>
+        <file>images/wooden_crate.png</file>
     </qresource>
 </RCC>

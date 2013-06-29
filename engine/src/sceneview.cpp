@@ -11,6 +11,8 @@ SceneView::SceneView(QWindow* parent) : QQuickView(parent), renderer_(nullptr)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setPersistentOpenGLContext(false);
 
+    resize(800, 600);
+
     // Render scene before gui
     connect(this, SIGNAL(beforeRendering()), SLOT(render()), Qt::DirectConnection);
     connect(this, SIGNAL(sceneGraphInitialized()), SLOT(initialize()), Qt::DirectConnection);
@@ -38,7 +40,11 @@ void SceneView::resizeEvent(QResizeEvent* event)
 {
     QQuickView::resizeEvent(event);
 
-    glViewport(0, 0, width(), height());
+    if(renderer_ != nullptr)
+    {
+        glViewport(0, 0, width(), height());
+        renderer_->resize(width(), height());
+    }
 
     event->accept();
 }
@@ -46,7 +52,10 @@ void SceneView::resizeEvent(QResizeEvent* event)
 void SceneView::initialize()
 {
     if(renderer_ == nullptr)
+    {
         renderer_ = new Engine::Renderer(openglContext());
+        renderer_->resize(width(), height());
+    }
 }
 
 void SceneView::render()

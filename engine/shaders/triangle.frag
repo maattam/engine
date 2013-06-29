@@ -1,9 +1,11 @@
 #version 330 core
 
+//uniform sampler2D tex;
+//in vec2 uv;
+
 out vec3 color;
 
-in vec3 pos_fragment;
-
 void main() {
-	color = vec3(pos_fragment.x, pos_fragment.y, 0.5);
+	//color = texture(tex, uv).rgb;
+	color = vec3(1.0f, 0.0f, 0.0f);
 }
