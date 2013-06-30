@@ -85,23 +85,8 @@ const GLfloat UV_BUFFER_DATA[] = {
     0.667979f, 1.0f-0.335851f
 };
 
-Renderer::Renderer(QOpenGLContext* context) : context_(context)
+Renderer::Renderer(QOpenGLFunctions_4_2_Core & funcs) : QOpenGLFunctions_4_2_Core(funcs)
 {
-    glewExperimental = GL_TRUE;
-    GLenum err = glewInit();
-
-    if(err == GLEW_OK)
-    {
-        qDebug() << "Initialized Renderer: OpenGL version " << context_->format().majorVersion()
-            << "." << context_->format().minorVersion();
-    }
-
-    else
-    {
-        qDebug() << "Failed to initialize OpenGL: " << glewGetErrorString(err);
-        return;
-    }
-
     glGenVertexArrays(1, &vertexArrayId_);
     glBindVertexArray(vertexArrayId_);
 
@@ -109,18 +94,15 @@ Renderer::Renderer(QOpenGLContext* context) : context_(context)
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(VERTEX_BUFFER_DATA), VERTEX_BUFFER_DATA, GL_STATIC_DRAW);
 
-    /*glGenVertexArrays(1, &uvArrayId_);
-    glBindVertexArray(uvArrayId_);
-
     glGenBuffers(1, &uvBuffer_);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffer_);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(UV_BUFFER_DATA), UV_BUFFER_DATA, GL_STATIC_DRAW);*/
+    glBufferData(GL_ARRAY_BUFFER, sizeof(UV_BUFFER_DATA), UV_BUFFER_DATA, GL_STATIC_DRAW);
 
     program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/triangle.vert");
     program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/triangle.frag");
     program_.link();
 
-    /*QImage texture;
+    QImage texture;
     if(! texture.load(":/images/wooden_crate.png"))
     {
         qDebug() << "Failed to load texture";
@@ -139,47 +121,42 @@ Renderer::Renderer(QOpenGLContext* context) : context_(context)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glGenerateMipmap(GL_TEXTURE_2D);*/
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 }
 
 Renderer::~Renderer()
 {
 }
 
-void Renderer::resize(int width, int height)
+void Renderer::rotateModel(float deg)
 {
-    QMatrix4x4 projection, view;
-
-    projection.perspective(45.0f, static_cast<float>(width) / height, 0.1f, 100.0f);
-    view.lookAt(QVector3D(5, 3, -5), QVector3D(0, 0, 0), QVector3D(0, 1, 0));
-    model_.rotate(3.0f, 1.0f, 0.0f);
-
-    // model projection
-    mvp_ = projection * view * model_;
+    model_.rotate(deg, 1.0f, 1.0f);
 }
 
-void Renderer::render()
+void Renderer::render(const Camera& view)
 {
+    QMatrix4x4 mvp;
+    mvp = view.perspective() * view.lookAt() * model_;
+
     program_.bind();
-    program_.setUniformValueArray("mvp", &mvp_, 1);
-    //program_.setUniformValue("tex", textureId_);
+    program_.setUniformValueArray("mvp", &mvp, 1);
 
     program_.enableAttributeArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-    program_.disableAttributeArray(0);
 
-    /*program_.enableAttributeArray(1);
+    program_.enableAttributeArray(1);
     glBindBuffer(GL_ARRAY_BUFFER, uvBuffer_);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    program_.disableAttributeArray(1);*/
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, textureId_);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    glDrawArrays(GL_TRIANGLES, 0, sizeof(VERTEX_BUFFER_DATA));
 
-    glDrawArrays(GL_TRIANGLES, 0, 12*3);
-
+    program_.disableAttributeArray(0);
+    program_.disableAttributeArray(1);
     program_.release();
 }

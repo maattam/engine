@@ -1,30 +1,30 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <GL/glew.h>
-#include <QOpenGLContext>
-#include <QOpenGLShaderProgram>
+#include <QOpenGLFunctions_4_2_Core>
+#include <QtGui/QOpenGLShaderProgram>
 #include <QMatrix>
+
+#include "camera.h"
 
 namespace Engine {
 
-class Renderer
+class Renderer : protected QOpenGLFunctions_4_2_Core
 {
 public:
-    Renderer(QOpenGLContext* context = nullptr);
+    explicit Renderer(QOpenGLFunctions_4_2_Core & funcs);
     ~Renderer();
 
-    void render();
-    void resize(int width, int height);
+    void render(const Camera& view);
+
+    void rotateModel(float deg);
 
 private:
-    QOpenGLContext* context_;
     QOpenGLShaderProgram program_;
 
     QMatrix4x4 model_;
-    QMatrix4x4 mvp_;
+
     GLuint vertexArrayId_;
-    GLuint uvArrayId_;
     GLuint uvBuffer_;
     GLuint vertexBuffer_;
     GLuint textureId_;

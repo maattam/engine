@@ -58,6 +58,9 @@
     <ClCompile Include="GeneratedFiles\qrc_main.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\camera.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\sceneview.h">
@@ -69,6 +72,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\engine\renderer.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\camera.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
   </ItemGroup>
