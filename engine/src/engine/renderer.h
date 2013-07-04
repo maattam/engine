@@ -2,32 +2,62 @@
 #define RENDERER_H
 
 #include <QOpenGLFunctions_4_2_Core>
-#include <QtGui/QOpenGLShaderProgram>
-#include <QMatrix>
+#include <QOpenGLShaderProgram>
 
-#include "camera.h"
+#include "effect/postfx.h"
+#include "renderable.h"
+#include "scenenode.h"
+
+#include <list>
 
 namespace Engine {
 
-class Renderer : protected QOpenGLFunctions_4_2_Core
+class AbstractScene;
+class Light;
+
+class Renderer
 {
 public:
-    explicit Renderer(QOpenGLFunctions_4_2_Core & funcs);
+    explicit Renderer(QOpenGLFunctions_4_2_Core* funcs);
     ~Renderer();
 
-    void render(const Camera& view);
+    void prepareScene(AbstractScene* scene);
+    void render(AbstractScene* scene);
 
-    void rotateModel(float deg);
+    bool initialize(int width, int height, int samples);
 
 private:
+    typedef std::list<Renderable*> RenderList;
+
+    QOpenGLFunctions_4_2_Core* gl;
     QOpenGLShaderProgram program_;
 
-    QMatrix4x4 model_;
+    SceneNode rootNode_;
 
-    GLuint vertexArrayId_;
-    GLuint uvBuffer_;
-    GLuint vertexBuffer_;
-    GLuint textureId_;
+    int width_;
+    int height_;
+
+    enum { MULTISAMPLE, RESOLVE, MAX };
+
+    GLuint framebuffer_[MAX];
+    GLuint textureResolve_;
+
+    GLuint depthRenderbuffer_;
+    GLuint colorRenderbuffer_;
+
+    GLuint quadVao_;
+    GLuint quadVertexBuffer_;
+
+    // Postprocess chain
+    std::list<Postfx*> postfxChain_;
+
+    void renderGeometry(AbstractScene* scene);
+    void destroyBuffers();
+
+    void recursiveRender(SceneNode* node, const QMatrix4x4& mvp);
+
+    Renderer(const Renderer&);
+    Renderer& operator=(const Renderer&);
 };
 
 }

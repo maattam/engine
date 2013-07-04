@@ -38,6 +38,24 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{6752b692-84d2-4cf5-88be-f99c67926338}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\effect">
+      <UniqueIdentifier>{3c29b57e-100e-4587-b133-9011757271d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\effect">
+      <UniqueIdentifier>{2268ccb9-ac5b-4dea-a87d-0bfd219a4b96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\renderable">
+      <UniqueIdentifier>{82be28ed-ccd6-4588-bb3b-a1d37e6db9f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\renderable">
+      <UniqueIdentifier>{559fbb53-345a-4fb8-90ea-d79cc2bc80aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\engine\entity">
+      <UniqueIdentifier>{df11b4c9-edb5-438e-ac22-a1256a8e64a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\entity">
+      <UniqueIdentifier>{7eb60b30-d833-47a5-ba18-8294a18fd33e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -61,6 +79,54 @@
     <ClCompile Include="src\engine\camera.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\texture.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\light.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\abstractscene.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\basicscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\effect\downsampler.cpp">
+      <Filter>Source Files\engine\effect</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\effect\postfx.cpp">
+      <Filter>Source Files\engine\effect</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\effect\hdr.cpp">
+      <Filter>Source Files\engine\effect</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\cube.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\renderable.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\toymodel.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\material.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\entity.cpp">
+      <Filter>Source Files\engine\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\submesh.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\mesh.cpp">
+      <Filter>Source Files\engine\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\node.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\scenenode.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\sceneview.h">
@@ -77,12 +143,78 @@
     <ClInclude Include="src\engine\camera.h">
       <Filter>Header Files\engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\texture.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\light.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\abstractscene.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\basicscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\effect\downsampler.h">
+      <Filter>Header Files\engine\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\effect\postfx.h">
+      <Filter>Header Files\engine\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\effect\hdr.h">
+      <Filter>Header Files\engine\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\renderable.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\toymodel.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\cube.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\material.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\entity.h">
+      <Filter>Header Files\engine\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\submesh.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\mesh.h">
+      <Filter>Header Files\engine\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\node.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\scenenode.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\triangle.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\triangle.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="main.qml">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\passthrough.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\tone.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\blur.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\highpass.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\null.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

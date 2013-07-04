@@ -1,17 +1,18 @@
 #include "sceneview.h"
 
-#include "engine/renderer.h"
-
 #include <QCoreApplication>
 #include <QSurfaceFormat>
-#include <QResizeEvent>
+#include <QWheelEvent>
 #include <QTimer>
 #include <QScreen>
 #include <QCursor>
 
+#include "engine/camera.h"
+#include "engine/renderer.h"
+
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), camera_(QVector3D(0, 0, 5), 3.14f, 0.0f, 45.0f, 0.0f),
-    frame_(0), context_(nullptr), funcs_(nullptr), renderTimer_(nullptr)
+    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr),
+    renderTimer_(nullptr), scene_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
 
@@ -19,47 +20,99 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(2);
-    format.setSamples(4);
+    format.setSamples(8);
     format.setProfile(QSurfaceFormat::CoreProfile);
     setFormat(format);
 }
 
 SceneView::~SceneView()
 {
+    if(scene_ != nullptr)
+        delete scene_;
+
     if(renderer_ != nullptr)
-    {
         delete renderer_;
-        renderer_ = nullptr;
-    }
 }
 
 void SceneView::update()
 {
+    if(renderer_ == nullptr)
+        return;
+
     // Elapsed in seconds
     float elapsed = static_cast<float>(lastTime_.restart()) / 1000;
-    const float speed = 3.0f;
-    const float mouseSpeed = 0.15f;
 
-    renderer_->rotateModel(-15.0f * elapsed);
+    handleInput(elapsed);
+    scene_->update(elapsed);
+
+    // Update title on every tenth frame
+    if(frame_ % 10)
+    {
+        setTitle(QString("Okay Engine -- FPS: ") + QString::number(1.0f / elapsed, 'g', 3));
+    }
+}
+
+void SceneView::render()
+{
+    renderer_->render(scene_);
+
+    ++frame_;
+}
+
+void SceneView::initialize()
+{
+    setWindowState(Qt::WindowMaximized);
+    glViewport(0, 0, width(), height());
+
+    // Load scene
+    scene_ = new BasicScene;
+    scene_->initialize(funcs_);
+
+    // Initialize renderer
+    renderer_ = new Engine::Renderer(funcs_);
+
+    if(!renderer_->initialize(width(), height(), format().samples()))
+    {
+        qDebug() << "Failed to initialize renderer!";
+    }
+
+    renderer_->prepareScene(scene_);
+
+    scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
+
+    renderTimer_ = new QTimer(this);
+    connect(renderTimer_, SIGNAL(timeout()), this, SLOT(renderNow()));
+
+    // Lock scene update rate to screen refresh rate
+    renderTimer_->start(static_cast<qreal>(1000) / screen()->refreshRate() / 2);
+    lastTime_.start();
+}
+
+void SceneView::handleInput(float elapsed)
+{
+    const float speed = 10.0f;
+    const float mouseSpeed = 0.20f;
+
+    Engine::Camera* camera = scene_->activeCamera();
 
     if(getKey(Qt::Key::Key_W))
     {
-        camera_.move(camera_.direction() * elapsed * speed);
+        camera->move(camera->direction() * elapsed * speed);
     }
 
     if(getKey(Qt::Key::Key_S))
     {
-        camera_.move(-1.0f * camera_.direction() * elapsed * speed);
+        camera->move(-1.0f * camera->direction() * elapsed * speed);
     }
 
     if(getKey(Qt::Key::Key_D))
     {
-        camera_.move(camera_.right() * elapsed * speed);
+        camera->move(camera->right() * elapsed * speed);
     }
 
     if(getKey(Qt::Key::Key_A))
     {
-        camera_.move(-1.0f * camera_.right() * elapsed * speed);
+        camera->move(-1.0f * camera->right() * elapsed * speed);
     }
 
     if(getKey(KEY_MOUSE_RIGHT))
@@ -67,41 +120,16 @@ void SceneView::update()
         QPoint delta = lastMouse_ - mapFromGlobal(QCursor::pos());
         QCursor::setPos(mapToGlobal(lastMouse_));
 
-        camera_.tilt(mouseSpeed * elapsed * delta.x(), mouseSpeed * elapsed * delta.y());
+        camera->tilt(mouseSpeed * elapsed * delta.x(), mouseSpeed * elapsed * delta.y());
     }
-}
-
-void SceneView::render()
-{
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    renderer_->render(camera_);
-
-    ++frame_;
-}
-
-void SceneView::initialize()
-{
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glViewport(0, 0, width(), height());
-
-    lastTime_.start();
-
-    // Initialize renderer
-    renderer_ = new Engine::Renderer(*funcs_);
-    camera_.setAspectRatio(static_cast<float>(width()) / height());
-
-    renderTimer_ = new QTimer(this);
-    connect(renderTimer_, SIGNAL(timeout()), this, SLOT(renderNow()));
-
-    // Lock scene update rate to screen resfresh rate
-    renderTimer_->start(static_cast<qreal>(1000) / screen()->refreshRate());
 }
 
 void SceneView::wheelEvent(QWheelEvent* event)
 {
-    float scale = event->delta() / 1000.0f;
-    camera_.move(camera_.direction() * scale);
+    float scale = event->delta() / 100.0f;
+    Engine::Camera* camera = scene_->activeCamera();
+
+    camera->move(QVector3D::crossProduct(camera->direction(), camera->right()) * scale);
 
     event->accept();
 }
@@ -113,7 +141,16 @@ void SceneView::resizeEvent(QResizeEvent* event)
     if(renderer_ != nullptr)
     {
         glViewport(0, 0, width(), height());
-        camera_.setAspectRatio(static_cast<float>(width()) / height());
+
+        if(!renderer_->initialize(width(), height(), format().samples()))
+        {
+            qDebug() << "Failed to initialize renderer!";
+        }
+
+        if(scene_ != nullptr)
+        {
+            scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
+        }
     }
 }
 
@@ -124,20 +161,6 @@ void SceneView::exposeEvent(QExposeEvent* event)
     if(isExposed())
     {
         renderNow();
-    }
-}
-
-bool SceneView::event(QEvent* event)
-{
-    if(event->type() == QEvent::UpdateRequest)
-    {
-        renderNow();
-        return true;
-    }
-
-    else
-    {
-        return QWindow::event(event);
     }
 }
 
@@ -174,11 +197,8 @@ void SceneView::renderNow()
     }
 
     render();
-
+    
     context_->swapBuffers(this);
-
-    // Disgusting hack to force redraw..
-    QCoreApplication::postEvent(this, new QEvent(QEvent::Resize));
 }
 
 void SceneView::keyPressEvent(QKeyEvent* event)

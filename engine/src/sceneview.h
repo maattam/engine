@@ -8,8 +8,9 @@
 #include <QPoint>
 
 #include <map>
+#include <vector>
 
-#include "engine/camera.h"
+#include "basicscene.h"
 
 namespace Engine {
     class Renderer;
@@ -25,15 +26,10 @@ public:
     explicit SceneView(QWindow* parent = nullptr);
     ~SceneView();
 
-    void update();
-    void render();
-    void initialize();
-
 public slots:
     void renderNow();
 
 protected:
-    virtual bool event(QEvent* event);
     virtual void resizeEvent(QResizeEvent* event);
     virtual void exposeEvent(QExposeEvent* event);
 
@@ -46,10 +42,15 @@ protected:
     virtual void mouseReleaseEvent(QMouseEvent* event);
 
 private:
+    void update();
+    void render();
+    void initialize();
+    void handleInput(float elapsed);
+
     bool getKey(int key) const;
 
     Engine::Renderer* renderer_;
-    Engine::Camera camera_;
+    BasicScene* scene_;
 
     int frame_;
     QPoint lastMouse_;

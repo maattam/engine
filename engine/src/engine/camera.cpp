@@ -56,7 +56,7 @@ QVector3D Camera::right() const
 QMatrix4x4 Camera::perspective() const
 {
     QMatrix4x4 mat;
-    mat.perspective(fov_, aspect_, 0.1f, 100.0f);
+    mat.perspective(fov_, aspect_, 0.1f, 300.0f);
     return mat;
 }
 
