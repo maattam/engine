@@ -13,7 +13,7 @@ public:
     Postfx();
     virtual ~Postfx();
 
-    virtual bool initialize(int width, int height) = 0;
+    virtual bool initialize(int width, int height, int samples) = 0;
     virtual void render(GLuint vao, GLsizei size) = 0;
     
     void setInputTexture(GLuint textureId);

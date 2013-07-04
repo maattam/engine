@@ -19,7 +19,7 @@ public:
     Material(QOpenGLFunctions_4_2_Core* funcs);
     ~Material();
 
-    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS };
+    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR };
 
     const Texture::Ptr& getTexture(TextureType type);
     void setTexture(TextureType type, Texture::Ptr& texture);

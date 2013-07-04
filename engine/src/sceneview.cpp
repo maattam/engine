@@ -20,7 +20,7 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(2);
-    format.setSamples(8);
+    format.setSamples(4);
     format.setProfile(QSurfaceFormat::CoreProfile);
     setFormat(format);
 }

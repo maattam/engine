@@ -94,6 +94,7 @@
     </ClCompile>
     <ClCompile Include="src\basicscene.cpp" />
     <ClCompile Include="src\engine\abstractscene.cpp" />
+    <ClCompile Include="src\engine\boxprimitive.cpp" />
     <ClCompile Include="src\engine\camera.cpp" />
     <ClCompile Include="src\engine\cube.cpp" />
     <ClCompile Include="src\engine\effect\downsampler.cpp" />
@@ -128,6 +129,7 @@
   <ItemGroup>
     <ClInclude Include="src\basicscene.h" />
     <ClInclude Include="src\engine\abstractscene.h" />
+    <ClInclude Include="src\engine\boxprimitive.h" />
     <ClInclude Include="src\engine\camera.h" />
     <ClInclude Include="src\engine\cube.h" />
     <ClInclude Include="src\engine\effect\downsampler.h" />

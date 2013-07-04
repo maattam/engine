@@ -14,10 +14,15 @@ class Entity
 public:
     typedef std::list<Renderable*> RenderList;
 
+    Entity() {}
     virtual ~Entity();
 
     // Called by renderer; entity must add its renderables to the list
     virtual void updateRenderList(RenderList& list) = 0;
+
+private:
+    Entity(const Entity&);
+    Entity& operator=(const Entity&);
 };
 
 }

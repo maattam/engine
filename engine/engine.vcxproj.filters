@@ -127,6 +127,9 @@
     <ClCompile Include="src\engine\scenenode.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\boxprimitive.cpp">
+      <Filter>Source Files\engine\entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\sceneview.h">
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="src\engine\scenenode.h">
       <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\boxprimitive.h">
+      <Filter>Header Files\engine\entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

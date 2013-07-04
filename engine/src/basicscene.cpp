@@ -5,36 +5,15 @@
 #include "engine/cube.h"
 #include "engine/mesh.h"
 
-BasicScene::BasicScene()
-    : camera_(QVector3D(0, 0, -5), 0.0f, 0.0f, 60.0f, 0.0f)
-{
-    torus_ = nullptr;
-    oildrum_ = nullptr;
-    sphere_ = nullptr;
-    suzanne_ = nullptr;
+#include <QTime>
 
-    oildrumNode_ = nullptr;
-    cubeNode_ = nullptr;
-    monkeyNode_ = nullptr;
-    torusNode_ = nullptr;
+BasicScene::BasicScene()
+    : camera_(QVector3D(0, 0, 0), 0.0f, 0.0f, 60.0f, 0.0f)
+{
 }
 
 BasicScene::~BasicScene()
 {
-    if(torus_ != nullptr) delete torus_;
-    if(oildrum_ != nullptr) delete oildrum_;
-    if(sphere_ != nullptr) delete sphere_;
-    if(suzanne_ != nullptr) delete suzanne_;
-
-    for(Engine::Texture*  texture: textures_)
-    {
-        delete texture;
-    }
-
-    for(Engine::Renderable* renderable : renderables_)
-    {
-        delete renderable;
-    }
 }
 
 Engine::Light* BasicScene::activeLight()
@@ -51,50 +30,40 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     lights_.push_back(Engine::Light(QVector3D(1, 1, 1), QVector3D(0, 3, 0), 15.0f));
 
     // Load models
-    suzanne_ = new Engine::Mesh(funcs);
+    suzanne_ = std::make_shared<Engine::Mesh>(funcs);
     if(!suzanne_->loadFromFile("./assets/suzanne.obj"))
     {
         qDebug() << "Failed to load suzanne!";
-        delete suzanne_;
-        suzanne_ = nullptr;
     }
 
-    oildrum_ = new Engine::Mesh(funcs);
+    oildrum_ = std::make_shared<Engine::Mesh>(funcs);
     if(!oildrum_->loadFromFile("./assets/oildrum.dae"))
     {
         qDebug() << "Failed to load oildrum!";
-        delete oildrum_;
-        oildrum_ = nullptr;
     }
 
-    sphere_ = new Engine::Mesh(funcs);
+    sphere_ = std::make_shared<Engine::Mesh>(funcs);
     if(!sphere_->loadFromFile("./assets/sphere.obj"))
     {
         qDebug() << "Failed to load sphere!";
-        delete sphere_;
-        sphere_ = nullptr;
     }
 
-    torus_ = new Engine::Mesh(funcs);
+    torus_ = std::make_shared<Engine::Mesh>(funcs);
     if(!torus_->loadFromFile("./assets/torus.obj"))
     {
         qDebug() << "Failed to load torus!";
-        delete torus_;
-        torus_ = nullptr;
     }
 
-    /*Engine::Cube* cube = new Engine::Cube(funcs);
-    renderables_.push_back(cube);
 
-    // Load textures
-    for(int i = 1; i <= 2; ++i)
+    // Load cubes
+    for(int i = 0; i < 2; ++i)
     {
-        QString file = ":/images/wooden_crate" + QString::number(i) + ".png";
+        std::string file = ":/images/wooden_crate" + QString::number(i+1).toStdString() + ".png";
 
-        Engine::Texture* tex = new Engine::Texture(funcs);
+        Engine::Texture::Ptr tex = std::make_shared<Engine::Texture>(funcs);
         if(!tex->loadFromFile(file))
         {
-            qDebug() << "Failed to load texture: " << file;
+            qDebug() << "Failed to load texture: " << file.c_str();
         }
 
         else
@@ -102,32 +71,17 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
             tex->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
             tex->setWrap(GL_REPEAT, GL_REPEAT);
             tex->generateMipmaps();
-            textures_.push_back(tex);
+
+            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(funcs);
+            mat->setAmbientColor(QVector3D(0, 0, 0.05f));
+            mat->setSpecularColor(QVector3D(0.2f, 0.2f, 0.2f));
+            mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
+            materials_.push_back(mat);
+
+            cube_[i] = std::make_shared<Engine::BoxPrimitive>(funcs);
+            cube_[i]->setMaterial(mat);
         }
     }
-
-    // Add a bunch of cubes
-    for(int y = -5; y < 5; ++y)
-    {
-        for(int z = 10; z < 20; ++z)
-        {
-            QMatrix4x4 mat;
-            mat.translate(0, y * 5.0f, z * 5.0f);
-
-            for(int x = -5; x < 5; ++x)
-            {
-                Engine::Texture* tex = textures_[(x + y + z) % textures_.size()];
-
-                Engine::ModelInstance instance(&program_, cube, tex);
-                instance.applyTransformation(mat);
-                instance.setAmbientColor(QVector3D(0.0f, 0.0f, 0.02f));
-                instance.setSpecularColor(QVector3D(0.2f, 0.2f, 0.2f));
-                models_.push_back(instance);
-
-                mat.translate(5.0f, 0, 0);
-            }
-        }
-    }*/
 }
 
 void BasicScene::update(float elapsed)
@@ -146,6 +100,31 @@ void BasicScene::update(float elapsed)
     mat.rotate(15.0f * elapsed, 0, 1, 0);
 
     monkeyNode_->applyTransformation(mat);
+
+    for(int i = 0; i < cubeNode_->numChildren(); ++i)
+    {
+        if(i % 2 == 0)
+        {
+            mat.setToIdentity();
+            mat.rotate(-5.0f * elapsed, 0, 1, 0);
+            cubeNode_->getChild(i)->applyTransformation(mat);
+        }
+    }
+
+    cubeNode_->applyTransformation(mat);
+
+    for(int i = 0; i < cubes_.size(); ++i)
+    {
+        mat.setToIdentity();
+        
+        if(i % 2 == 0)
+            mat.rotate(15.0f * elapsed, 1, 1, 0);
+
+        else
+            mat.rotate(15.0f * elapsed, 1, 0, 0);
+
+        cubes_[i]->applyTransformation(mat);
+    }
 }
 
 Engine::Camera* BasicScene::activeCamera()
@@ -162,6 +141,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
     oildrumNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
     monkeyNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
     torusNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
+    cubeNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
 
     // Oildrum
     {
@@ -176,7 +156,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         mat.translate(15, 5, 0);
 
         oildrumNode_->applyTransformation(mat);
-        oildrumNode_->attachEntity(oildrum_);
+        oildrumNode_->attachEntity(oildrum_.get());
     }
 
     // Torus
@@ -192,7 +172,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         mat.scale(150.0f);
 
         torusNode_->applyTransformation(mat);
-        torusNode_->attachEntity(torus_);
+        torusNode_->attachEntity(torus_.get());
     }
 
     // Sphere
@@ -210,7 +190,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
         Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(scene->createChild());
         node->applyTransformation(mat);
-        node->attachEntity(sphere_);
+        node->attachEntity(sphere_.get());
     }
 
     // Suzanne
@@ -227,6 +207,34 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         mat.scale(2.0f);
 
         monkeyNode_->applyTransformation(mat);
-        monkeyNode_->attachEntity(suzanne_);
+        monkeyNode_->attachEntity(suzanne_.get());
+    }
+
+    // Boxes
+    {
+        const int stepping = 10;
+        const int layers = 10;
+        const int amount = 20;
+        const float R = 80.0f;
+        const float PI = 3.14159;
+
+        for(int i = -layers/2; i < layers/2; ++i)
+        {
+            Engine::SceneNode* ringnode = dynamic_cast<Engine::SceneNode*>(cubeNode_->createChild());
+
+            for(int j = 0; j < amount; ++j)
+            {
+                float angle = 2 * PI * j / amount;
+
+                QMatrix4x4 mat;
+                mat.translate(R * sin(angle), i * stepping, R * cos(angle));
+
+                Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(ringnode->createChild());
+                node->applyTransformation(mat);
+                node->attachEntity(cube_[abs((i + j)) % 2].get());
+
+                cubes_.push_back(node);
+            }
+        }
     }
 }

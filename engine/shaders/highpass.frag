@@ -1,12 +1,14 @@
-#version 330 core
+#version 400 core
 
-uniform sampler2D renderedTexture;
+uniform sampler2DMS renderedTexture;
 in vec2 uv;
 
 uniform float brightThreshold;
 
 void main() {
-	vec4 color = texture2D(renderedTexture, uv);
+	ivec2 st = ivec2(textureSize(renderedTexture) * uv);
+
+	vec4 color = texelFetch(renderedTexture, ivec2(st), gl_SampleID);
 	
 	if (color.r > brightThreshold || color.g > brightThreshold || color.b > brightThreshold)
 		gl_FragColor = color;

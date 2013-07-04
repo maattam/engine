@@ -37,13 +37,9 @@ private:
     int width_;
     int height_;
 
-    enum { MULTISAMPLE, RESOLVE, MAX };
-
-    GLuint framebuffer_[MAX];
-    GLuint textureResolve_;
-
+    GLuint framebuffer_;
+    GLuint renderTexture_;
     GLuint depthRenderbuffer_;
-    GLuint colorRenderbuffer_;
 
     GLuint quadVao_;
     GLuint quadVertexBuffer_;

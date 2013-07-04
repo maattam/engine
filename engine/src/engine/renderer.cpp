@@ -23,7 +23,7 @@ const GLfloat QUAD_VERTEX_DATA[] = {
 };
 
 Renderer::Renderer(QOpenGLFunctions_4_2_Core* funcs)
-    : gl(funcs), depthRenderbuffer_(0), quadVao_(0), quadVertexBuffer_(0), colorRenderbuffer_(0),
+    : gl(funcs), quadVao_(0), quadVertexBuffer_(0), framebuffer_(0), renderTexture_(0), depthRenderbuffer_(0),
     width_(0), height_(0)
 {
     // Buffer quad
@@ -69,10 +69,9 @@ void Renderer::prepareScene(AbstractScene* scene)
 
 void Renderer::destroyBuffers()
 {
-    gl->glDeleteFramebuffers(MAX, framebuffer_);
-    gl->glDeleteTextures(1, &textureResolve_);
+    gl->glDeleteFramebuffers(1, &framebuffer_);
+    gl->glDeleteTextures(1, &renderTexture_);
     gl->glDeleteRenderbuffers(1, &depthRenderbuffer_);
-    gl->glDeleteRenderbuffers(1, &colorRenderbuffer_);
 }
 
 bool Renderer::initialize(int width, int height, int samples)
@@ -85,53 +84,36 @@ bool Renderer::initialize(int width, int height, int samples)
     height_ = height;
 
     // Initialize textures
-    gl->glGenTextures(1, &textureResolve_);
+   gl->glGenTextures(1, &renderTexture_);
 
     // Resolver texture
-    gl->glBindTexture(GL_TEXTURE_2D, textureResolve_);
-    gl->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, 0);
-	gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	gl->glBindTexture(GL_TEXTURE_2D, 0);
+    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, renderTexture_);
+    gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, width, height, GL_TRUE);
+	gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
     // Create depthbuffer
     gl->glGenRenderbuffers(1, &depthRenderbuffer_);
     gl->glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer_);
     gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
 
-    // Create colorbuffer
-    gl->glGenRenderbuffers(1, &colorRenderbuffer_);
-    gl->glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer_);
-    gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_RGBA16F, width, height);
-
     // Initialize framebuffers
-    gl->glGenFramebuffers(MAX, framebuffer_);
+    gl->glGenFramebuffers(1, &framebuffer_);
 
     // Render buffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_[MULTISAMPLE]);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
-    gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer_);
+    gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
     gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         return false;
-
-    // Resolve buffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_[RESOLVE]);
-    gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureResolve_, 0);
-
-    if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        return false;
-
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
     // Initialize postprocess chain
     Postfx* fx = postfxChain_.front();
 
-    if(!fx->initialize(width, height))
+    if(!fx->initialize(width, height, samples))
         return false;
 
-    fx->setInputTexture(0);
+    fx->setInputTexture(renderTexture_);
     fx->setOutputFbo(0);    // Output to window
 
     return true;
@@ -141,7 +123,8 @@ void Renderer::render(AbstractScene* scene)
 {
     // Pass 1
     // Render the geometry to a multisampled framebuffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_[MULTISAMPLE]);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+
     gl->glEnable(GL_MULTISAMPLE);
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
@@ -150,11 +133,6 @@ void Renderer::render(AbstractScene* scene)
 
     gl->glDisable(GL_DEPTH_TEST);
     gl->glDisable(GL_MULTISAMPLE);
-
-    // Resolved multisampling
-    gl->glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer_[MULTISAMPLE]);
-    gl->glBindFramebuffer(GL_DRAW_FRAMEBUFFER, framebuffer_[RESOLVE]);
-    gl->glBlitFramebuffer(0, 0, width_, height_, 0, 0, width_, height_, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     // Pass 2
     // Render postprocess chain

@@ -16,11 +16,13 @@ public:
     Hdr(QOpenGLFunctions_4_2_Core* funcs);
     ~Hdr();
 
-    virtual bool initialize(int width, int height);
+    virtual bool initialize(int width, int height, int samples);
     virtual void render(GLuint vao, GLsizei size);
 
 private:
     QOpenGLFunctions_4_2_Core* gl;
+
+    int samples_;
 
     DownSampler downSampler_;
     QOpenGLFramebufferObject* fbo_;
