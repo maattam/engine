@@ -7,6 +7,7 @@
 #include "effect/postfx.h"
 #include "renderable.h"
 #include "scenenode.h"
+#include "technique/basiclightning.h"
 
 #include <list>
 
@@ -30,9 +31,9 @@ private:
     typedef std::list<Renderable*> RenderList;
 
     QOpenGLFunctions_4_2_Core* gl;
-    QOpenGLShaderProgram program_;
 
     SceneNode rootNode_;
+    BasicLightning technique_;
 
     int width_;
     int height_;
@@ -50,7 +51,8 @@ private:
     void renderGeometry(AbstractScene* scene);
     void destroyBuffers();
 
-    void recursiveRender(SceneNode* node, const QMatrix4x4& mvp);
+    QMatrix4x4 VP_;
+    void recursiveRender(SceneNode* node, const QMatrix4x4& worldView);
 
     Renderer(const Renderer&);
     Renderer& operator=(const Renderer&);

@@ -25,20 +25,23 @@ public:
     void setTexture(TextureType type, Texture::Ptr& texture);
 
     void setAmbientColor(const QVector3D& color);
-    void setSpecularColor(const QVector3D& color);
+    void setSpecularIntensity(float intensity);
     void setDiffuseColor(const QVector3D& color);
+    void setShininess(float shininess);
 
     struct Attributes
     {
         QVector3D ambientColor;
-        QVector3D specularColor;
         QVector3D diffuseColor;
+        float shininess;
+        float specularIntensity;
 
         Attributes()
         {
             ambientColor = QVector3D(0, 0, 0);
-            specularColor = QVector3D(0, 0, 0);
             diffuseColor = QVector3D(1, 1, 1);
+            shininess = 5.0f;
+            specularIntensity = 1.0f;
         }
     };
 

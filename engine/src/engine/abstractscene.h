@@ -4,6 +4,7 @@
 #define ABSTRACTSCENE_H
 
 #include "scenenode.h"
+#include "light.h"
 
 namespace Engine {
 
@@ -17,7 +18,9 @@ public:
     virtual ~AbstractScene();
 
     virtual Camera* activeCamera() = 0;
-    virtual Light* activeLight() = 0;   // TODO
+    virtual const DirectionalLight& queryDirectionalLight() = 0;
+    virtual const std::vector<PointLight>& queryPointLights() = 0;
+    virtual const std::vector<SpotLight>& querySpotLights() = 0;
 
     virtual void prepareScene(SceneNode* root);
 

@@ -24,6 +24,7 @@ namespace Engine {
 
         QVector3D direction() const;
         QVector3D right() const;
+        const QVector3D& position() const;
 
     private:
         QVector3D position_;

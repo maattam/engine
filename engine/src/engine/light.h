@@ -1,3 +1,5 @@
+// Defines light data structures
+
 #ifndef LIGHT_H
 #define LIGHT_H
 
@@ -5,23 +7,61 @@
 
 namespace Engine {
 
-class Light
+struct Light
 {
-public:
-    Light(const QVector3D& color, const QVector3D& position, float intensity);
+    QVector3D color;
 
-    void setPosition(const QVector3D& position);
-    void setColor(const QVector3D& color);
-    void setIntensity(float power);
+    float ambientIntensity;
+    float diffuseIntensity;
 
-    const QVector3D& position() const;
-    const QVector3D& color() const;
-    float intensity() const;
+    Light()
+    {
+        color = QVector3D(1.0f, 1.0f, 1.0f);
+        ambientIntensity = 0.0f;
+        diffuseIntensity = 1.0f;
+    }
+};
 
-private:
-    QVector3D color_;
-    QVector3D position_;
-    float intensity_;
+struct DirectionalLight : public Light
+{
+    QVector3D direction;
+
+    DirectionalLight() : Light()
+    {
+        direction = QVector3D(0.0f, 0.0f, 0.0f);
+    }
+};
+
+struct PointLight : public Light
+{
+    QVector3D position;
+
+    struct Attenuation
+    {
+        float constant;
+        float linear;
+        float exp;
+    } attenuation;
+
+    PointLight() : Light()
+    {
+        position = QVector3D(0.0f, 0.0f, 0.0f);
+        attenuation.constant = 0.0f;
+        attenuation.linear = 0.0f;
+        attenuation.exp = 1.0f;
+    }
+};
+
+struct SpotLight : public PointLight
+{
+    float cutoff;
+    QVector3D direction;
+
+    SpotLight() : PointLight()
+    {
+        cutoff = 0.0f;
+        direction = QVector3D(0.0f, 0.0f, 0.0f);
+    }
 };
 
 }

@@ -39,14 +39,19 @@ void Material::setTexture(TextureType type, Texture::Ptr& texture)
     setTextureOptions(texture);
 }
 
+void Material::setShininess(float shininess)
+{
+    attributes_.shininess = shininess;
+}
+
 void Material::setAmbientColor(const QVector3D& color)
 {
     attributes_.ambientColor = color;
 }
 
-void Material::setSpecularColor(const QVector3D& color)
+void Material::setSpecularIntensity(float intensity)
 {
-    attributes_.specularColor = color;
+    attributes_.specularIntensity = intensity;
 }
 
 void Material::setDiffuseColor(const QVector3D& color)
@@ -80,5 +85,6 @@ void Material::setTextureOptions(const Texture::Ptr& texture) const
         texture->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
         texture->setWrap(GL_REPEAT, GL_REPEAT);
         texture->generateMipmaps();
+        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
     }
 }

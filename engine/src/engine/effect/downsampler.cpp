@@ -57,7 +57,6 @@ bool DownSampler::init(int width, int height, GLenum format)
 
 void DownSampler::downSample(GLuint textureId, GLuint size)
 {
-    gl->glEnable(GL_TEXTURE_2D);
     program_.bind();
 
     gl->glActiveTexture(0);

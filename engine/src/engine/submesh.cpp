@@ -38,6 +38,7 @@ void SubMesh::render()
 
 bool SubMesh::initMesh( const std::vector<QVector3D>& vertices,
                         const std::vector<QVector3D>& normals,
+                        std::vector<QVector3D>& tangents,
                         const std::vector<QVector2D>& uvs,
                         const std::vector<unsigned int>& indices)
 {
@@ -66,6 +67,17 @@ bool SubMesh::initMesh( const std::vector<QVector3D>& vertices,
     gl->glBufferData(GL_ARRAY_BUFFER, sizeof(normals[0]) * normals.size(), &normals[0], GL_STATIC_DRAW);
     gl->glEnableVertexAttribArray(ATTRIB_NORMALS);
     gl->glVertexAttribPointer(ATTRIB_NORMALS, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+    // Tangent buffer
+    if(tangents.size() > 0)
+    {
+        gl->glBindBuffer(GL_ARRAY_BUFFER, buffers_[BTANGENT]);
+        gl->glBufferData(GL_ARRAY_BUFFER, sizeof(tangents[0]) * tangents.size(), &tangents[0], GL_STATIC_DRAW);
+        gl->glEnableVertexAttribArray(ATTRIB_TANGENTS);
+        gl->glVertexAttribPointer(ATTRIB_TANGENTS, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+        setTangents(true);
+    }
 
     // Index buffer
     gl->glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffers_[BINDEX]);

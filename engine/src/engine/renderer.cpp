@@ -41,11 +41,6 @@ Renderer::Renderer(QOpenGLFunctions_4_2_Core* funcs)
 
     // HDR postfx
     postfxChain_.push_back(new Hdr(funcs));
-
-    // Compile shaders
-    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/triangle.vert");
-    program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/triangle.frag");
-    program_.link();
 }
 
 Renderer::~Renderer()
@@ -79,6 +74,9 @@ bool Renderer::initialize(int width, int height, int samples)
     if(width <= 0 || height <= 0 || samples < 0)
         return false;
 
+    if(!technique_.init())
+        return false;
+
     destroyBuffers();
     width_ = width;
     height_ = height;
@@ -86,7 +84,7 @@ bool Renderer::initialize(int width, int height, int samples)
     // Initialize textures
    gl->glGenTextures(1, &renderTexture_);
 
-    // Resolver texture
+    // Target texture
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, renderTexture_);
     gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, width, height, GL_TRUE);
 	gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
@@ -125,14 +123,12 @@ void Renderer::render(AbstractScene* scene)
     // Render the geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    gl->glEnable(GL_MULTISAMPLE);
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
 
     renderGeometry(scene);
 
     gl->glDisable(GL_DEPTH_TEST);
-    gl->glDisable(GL_MULTISAMPLE);
 
     // Pass 2
     // Render postprocess chain
@@ -145,33 +141,25 @@ void Renderer::render(AbstractScene* scene)
 void Renderer::renderGeometry(AbstractScene* scene)
 {
     QMatrix4x4 v = scene->activeCamera()->lookAt();
-    QMatrix4x4 mvp = scene->activeCamera()->perspective() * v;
+    VP_ = scene->activeCamera()->perspective() * v;
 
-    // We only support a single light.. TODO
-    Light* light = scene->activeLight();
+    technique_.enable();
+
+    technique_.setEyeWorldPos(scene->activeCamera()->position());
+    technique_.setTextureUnits(0, 1);
+    technique_.setDirectionalLight(scene->queryDirectionalLight());
+    technique_.setPointLights(scene->queryPointLights());
+    technique_.setSpotLights(scene->querySpotLights());
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0, 0, 0, 0);
 
-    gl->glEnable(GL_TEXTURE);
     gl->glEnable(GL_CULL_FACE);
 
-    program_.bind();
-
-    program_.setUniformValue("V", v);
-    program_.setUniformValue("LightColor", light->color());
-    program_.setUniformValue("LightPower", light->intensity());
-    program_.setUniformValue("LightPosition_worldspace", light->position());
-
-    program_.setUniformValue("texture", 0);
-    //program_.setUniformValue("textureNormal", 1);
-
-    recursiveRender(&rootNode_, mvp);
-
-    program_.release();
+    recursiveRender(&rootNode_, rootNode_.transformation());
 }
 
-void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& mvp)
+void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& worldView)
 {
     if(node == nullptr)
     {
@@ -189,23 +177,30 @@ void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& mvp)
         if(entity != nullptr)
         {
             entity->updateRenderList(renderList);
-            QMatrix4x4 modelView = mvp * node->transformation();
+            QMatrix4x4 modelView = worldView * node->transformation();
 
             // Node transformation
-            program_.setUniformValue("MVP", modelView);
-            program_.setUniformValue("M", node->transformation());
+            technique_.setMVP(VP_ * modelView);
+            technique_.setWorldView(modelView);
 
             // Render all renderables
             for(auto it = renderList.begin(); it != renderList.end(); ++it)
             {
                 const Material::Ptr& material = (*it)->material();
 
-                program_.setUniformValue("MaterialAmbientColor", material->getAttributes().ambientColor);
-                program_.setUniformValue("MaterialSpecularColor", material->getAttributes().specularColor);
-                program_.setUniformValue("DiffuseColor", material->getAttributes().diffuseColor);
-
+                technique_.setMaterialAttributes(material->getAttributes());
                 material->getTexture(Material::TEXTURE_DIFFUSE)->bind(GL_TEXTURE0);
-                //material->getTexture(Material::TEXTURE_NORMAL)->bind(GL_TEXTURE1);
+
+                if((*it)->hasTangents())
+                {
+                    material->getTexture(Material::TEXTURE_NORMALS)->bind(GL_TEXTURE1);
+                    technique_.setHasTangents(true);
+                }
+
+                else
+                {
+                    technique_.setHasTangents(false);
+                }
 
                 (*it)->render();
             }
@@ -216,6 +211,6 @@ void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& mvp)
     for(int i = 0; i < node->numChildren(); ++i)
     {
         SceneNode* inode = dynamic_cast<SceneNode*>(node->getChild(i));
-        recursiveRender(inode, mvp * node->transformation());
+        recursiveRender(inode, worldView * node->transformation());
     }
 }

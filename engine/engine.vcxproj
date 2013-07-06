@@ -43,8 +43,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>.\src\;D:\Qt\5.1.1-git\include;D:\Qt\5.1.1-git\include\QtGui;D:\Qt\5.1.1-git\include\QtCore;$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Qt\assimp--3.0.1270-sdk\include;.\src\;D:\Qt\5.1.1-git\include;D:\Qt\5.1.1-git\include\QtGui;D:\Qt\5.1.1-git\include\QtCore;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Qt\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -76,7 +76,7 @@
       <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp.lib;qtmain.lib;Qt5Core.lib;Qt5Gui.lib;Qt5OpenGL.lib;opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -109,8 +109,9 @@
     <ClCompile Include="src\engine\submesh.cpp" />
     <ClCompile Include="src\engine\renderable.cpp" />
     <ClCompile Include="src\engine\renderer.cpp" />
+    <ClCompile Include="src\engine\technique\basiclightning.cpp" />
+    <ClCompile Include="src\engine\technique\technique.cpp" />
     <ClCompile Include="src\engine\texture.cpp" />
-    <ClCompile Include="src\engine\toymodel.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sceneview.cpp" />
   </ItemGroup>
@@ -144,8 +145,9 @@
     <ClInclude Include="src\engine\submesh.h" />
     <ClInclude Include="src\engine\renderable.h" />
     <ClInclude Include="src\engine\renderer.h" />
+    <ClInclude Include="src\engine\technique\basiclightning.h" />
+    <ClInclude Include="src\engine\technique\technique.h" />
     <ClInclude Include="src\engine\texture.h" />
-    <ClInclude Include="src\engine\toymodel.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="main.qrc">
@@ -159,13 +161,13 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
     </CustomBuild>
     <None Include="main.qml" />
+    <None Include="shaders\basiclightning.frag" />
+    <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\blur.frag" />
     <None Include="shaders\highpass.frag" />
     <None Include="shaders\null.frag" />
     <None Include="shaders\tone.frag" />
     <None Include="shaders\passthrough.vert" />
-    <None Include="shaders\triangle.frag" />
-    <None Include="shaders\triangle.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

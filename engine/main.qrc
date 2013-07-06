@@ -1,15 +1,12 @@
 <RCC>
     <qresource prefix="/">
-        <file>shaders/triangle.frag</file>
-        <file>shaders/triangle.vert</file>
-        <file>images/wooden_crate.png</file>
-        <file>images/wooden_crate1.png</file>
-        <file>images/wooden_crate2.png</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/tone.frag</file>
         <file>shaders/blur.frag</file>
         <file>shaders/highpass.frag</file>
         <file>shaders/null.frag</file>
         <file>images/white.png</file>
+        <file>shaders/basiclightning.frag</file>
+        <file>shaders/basiclightning.vert</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@ public:
 
     const QMatrix4x4& transformation() const;
     void applyTransformation(const QMatrix4x4& matrix);
+    void setPosition(const QVector3D& position);
 
     ChildNodes::size_type numChildren() const;
     Node* getChild(ChildNodes::size_type index);

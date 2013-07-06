@@ -30,6 +30,12 @@ void Node::applyTransformation(const QMatrix4x4& matrix)
     transformation_ *= matrix;
 }
 
+void Node::setPosition(const QVector3D& position)
+{
+    transformation_.setToIdentity();
+    transformation_.translate(position);
+}
+
 Node::ChildNodes::size_type Node::numChildren() const
 {
     return children_.size();

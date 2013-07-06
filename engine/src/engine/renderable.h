@@ -18,17 +18,20 @@ public:
     void setMaterial(Material::Ptr& material);
     const Material::Ptr& material();
 
+    virtual bool hasTangents() const;
+
 protected:
-    enum { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS };
+    enum { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS, ATTRIB_TANGENTS };
 
     QOpenGLFunctions_4_2_Core* gl;
 
-    Material::Ptr material_;
-
     bool bindVertexArray();
+    void setTangents(bool tangents);
 
 private:
     GLuint vertexArray_;
+    Material::Ptr material_;
+    bool hasTangents_;
 
     Renderable(const Renderable&);
     Renderable& operator=(const Renderable&);

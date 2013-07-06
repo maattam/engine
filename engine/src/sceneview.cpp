@@ -129,7 +129,7 @@ void SceneView::wheelEvent(QWheelEvent* event)
     float scale = event->delta() / 100.0f;
     Engine::Camera* camera = scene_->activeCamera();
 
-    camera->move(QVector3D::crossProduct(camera->direction(), camera->right()) * scale);
+    camera->move(QVector3D(0, scale, 0));
 
     event->accept();
 }

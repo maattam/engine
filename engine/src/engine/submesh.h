@@ -29,13 +29,14 @@ public:
 
     bool initMesh(  const std::vector<QVector3D>& vertices,
                     const std::vector<QVector3D>& normals,
+                    std::vector<QVector3D>& tangents,
                     const std::vector<QVector2D>& uvs,
                     const std::vector<unsigned int>& indices);
 
 private:
     void destroy();
 
-    enum { BINDEX, BVERTEX, BNORMAL, BTEXCOORD, NUM_BUFFERS };
+    enum { BINDEX, BVERTEX, BNORMAL, BTEXCOORD, BTANGENT, NUM_BUFFERS };
     GLuint buffers_[NUM_BUFFERS];
 
     unsigned int numIndices_;

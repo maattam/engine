@@ -31,6 +31,7 @@ private:
     void initSubMesh(const aiMesh* mesh,
         std::vector<QVector3D>& vertices,
         std::vector<QVector3D>& normals,
+        std::vector<QVector3D>& tangents,
         std::vector<QVector2D>& uvs,
         std::vector<unsigned int>& indices);
 

@@ -56,6 +56,12 @@
     <Filter Include="Source Files\engine\entity">
       <UniqueIdentifier>{7eb60b30-d833-47a5-ba18-8294a18fd33e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\technique">
+      <UniqueIdentifier>{40518536-f723-4f26-b875-9fe008aa5366}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\engine\technique">
+      <UniqueIdentifier>{771cd9bd-87d1-4d6b-b25c-a4297ef1292f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -106,9 +112,6 @@
     <ClCompile Include="src\engine\renderable.cpp">
       <Filter>Source Files\engine\renderable</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\toymodel.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
-    </ClCompile>
     <ClCompile Include="src\engine\material.cpp">
       <Filter>Source Files\engine\renderable</Filter>
     </ClCompile>
@@ -129,6 +132,12 @@
     </ClCompile>
     <ClCompile Include="src\engine\boxprimitive.cpp">
       <Filter>Source Files\engine\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\technique\technique.cpp">
+      <Filter>Source Files\engine\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\technique\basiclightning.cpp">
+      <Filter>Source Files\engine\technique</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -170,9 +179,6 @@
     <ClInclude Include="src\engine\renderable.h">
       <Filter>Header Files\engine\renderable</Filter>
     </ClInclude>
-    <ClInclude Include="src\engine\toymodel.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
     <ClInclude Include="src\engine\cube.h">
       <Filter>Header Files\engine\renderable</Filter>
     </ClInclude>
@@ -197,14 +203,14 @@
     <ClInclude Include="src\engine\boxprimitive.h">
       <Filter>Header Files\engine\entity</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\technique\technique.h">
+      <Filter>Header Files\engine\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\technique\basiclightning.h">
+      <Filter>Header Files\engine\technique</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\triangle.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\triangle.vert">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="main.qml">
       <Filter>Resource Files</Filter>
     </None>
@@ -221,6 +227,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\null.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\basiclightning.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\basiclightning.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

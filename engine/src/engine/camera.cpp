@@ -74,3 +74,8 @@ QMatrix4x4 Camera::lookAt() const
     mat.lookAt(position_, position_ + dir, QVector3D::crossProduct(right(), dir));
     return mat;
 }
+
+const QVector3D& Camera::position() const
+{
+    return position_;
+}

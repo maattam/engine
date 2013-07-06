@@ -31,7 +31,7 @@ bool Mesh::loadFromFile(const std::string& fileName)
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(fileName,
-        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcessPreset_TargetRealtime_MaxQuality | aiProcess_FlipUVs);
+        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_GenUVCoords);
 
     if(scene == nullptr)
     {
@@ -49,7 +49,7 @@ void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
         if(mat != nullptr)
         {
             mat->setAmbientColor(attributes.ambientColor);
-            mat->setSpecularColor(attributes.specularColor);
+            mat->setSpecularIntensity(attributes.specularIntensity);
             mat->setDiffuseColor(attributes.diffuseColor);
         }
     }
@@ -70,19 +70,19 @@ bool Mesh::initFromScene(const aiScene* scene, const std::string& fileName)
 
     for(size_t i = 0; i < scene->mNumMeshes; ++i)
     {
-        std::vector<QVector3D> vertices, normals;
+        std::vector<QVector3D> vertices, normals, tangents;
         std::vector<QVector2D> uvs;
         std::vector<unsigned int> indices;
 
         const aiMesh* mesh = scene->mMeshes[i];
-        initSubMesh(mesh, vertices, normals, uvs, indices);
+        initSubMesh(mesh, vertices, normals, tangents, uvs, indices);
 
         unsigned int materialIndex = scene->mMeshes[i]->mMaterialIndex;
         assert(materialIndex < materials_.size());
 
         entries_[i] = std::make_shared<SubMesh>(gl);
         entries_[i]->setMaterial(materials_[materialIndex]);
-        entries_[i]->initMesh(vertices, normals, uvs, indices);
+        entries_[i]->initMesh(vertices, normals, tangents, uvs, indices);
     }
 
     return true;
@@ -91,6 +91,7 @@ bool Mesh::initFromScene(const aiScene* scene, const std::string& fileName)
 void Mesh::initSubMesh(const aiMesh* mesh,
               std::vector<QVector3D>& vertices,
               std::vector<QVector3D>& normals,
+              std::vector<QVector3D>& tangents,
               std::vector<QVector2D>& uvs,
               std::vector<unsigned int>& indices)
 {
@@ -105,6 +106,13 @@ void Mesh::initSubMesh(const aiMesh* mesh,
 
         vertices.push_back(QVector3D(pos.x, pos.y, pos.z));
         normals.push_back(QVector3D(normal.x, normal.y, normal.z));
+
+        if(mesh->HasTangentsAndBitangents())
+        {
+            const aiVector3D& tangent   = mesh->mTangents[i];
+            tangents.push_back(QVector3D(tangent.x, tangent.y, tangent.z));
+        }
+
         uvs.push_back(QVector2D(uv.x, uv.y));
     }
 
