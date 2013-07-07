@@ -26,7 +26,7 @@ void SubMesh::destroy()
     numIndices_ = 0;
 }
 
-void SubMesh::render()
+void SubMesh::render() const
 {
     if(!bindVertexArray() || numIndices_ == 0)
         return;

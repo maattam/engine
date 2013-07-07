@@ -5,6 +5,8 @@
 
 #include <QOpenGLContext>
 
+#include "../quad.h"
+
 namespace Engine {
 
 class Postfx
@@ -14,7 +16,7 @@ public:
     virtual ~Postfx();
 
     virtual bool initialize(int width, int height, int samples) = 0;
-    virtual void render(GLuint vao, GLsizei size) = 0;
+    virtual void render(const Quad& quad) = 0;
     
     void setInputTexture(GLuint textureId);
     void setOutputFbo(GLuint framebufferId);

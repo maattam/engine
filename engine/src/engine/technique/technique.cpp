@@ -10,12 +10,6 @@ Technique::~Technique()
 {
 }
 
-bool Technique::init()
-{
-    // Nothing to initialize..
-    return true;
-}
-
 void Technique::enable()
 {
     program_.bind();

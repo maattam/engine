@@ -13,40 +13,26 @@
 
 using namespace Engine;
 
-const GLfloat QUAD_VERTEX_DATA[] = {
-    -1.0f, -1.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,
-    -1.0f,  1.0f, 0.0f,
-    -1.0f,  1.0f, 0.0f,
-    1.0f, -1.0f, 0.0f,
-    1.0f,  1.0f, 0.0f,
-};
-
 Renderer::Renderer(QOpenGLFunctions_4_2_Core* funcs)
-    : gl(funcs), quadVao_(0), quadVertexBuffer_(0), framebuffer_(0), renderTexture_(0), depthRenderbuffer_(0),
-    width_(0), height_(0)
+    : gl(funcs), quad_(funcs), shadowTech_(funcs)
 {
-    // Buffer quad
-    gl->glGenVertexArrays(1, &quadVao_);
-    gl->glBindVertexArray(quadVao_);
-
-    gl->glGenBuffers(1, &quadVertexBuffer_);
-    gl->glBindBuffer(GL_ARRAY_BUFFER, quadVertexBuffer_);
-    gl->glBufferData(GL_ARRAY_BUFFER, sizeof(QUAD_VERTEX_DATA), QUAD_VERTEX_DATA, GL_STATIC_DRAW);
-
-    gl->glEnableVertexAttribArray(0);
-    gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-    gl->glBindVertexArray(0);
+    framebuffer_ = 0;
+    renderTexture_ = 0;
+    depthRenderbuffer_ = 0;
+    width_ = 0;
+    height_ = 0;
 
     // HDR postfx
     postfxChain_.push_back(new Hdr(funcs));
+
+    nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
+    nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/shadowmap.frag");
+    nullTech_.link();
 }
 
 Renderer::~Renderer()
 {
     destroyBuffers();
-    gl->glDeleteVertexArrays(1, &quadVao_);
 
     for(Postfx* fx : postfxChain_)
         delete fx;
@@ -74,7 +60,10 @@ bool Renderer::initialize(int width, int height, int samples)
     if(width <= 0 || height <= 0 || samples < 0)
         return false;
 
-    if(!technique_.init())
+    if(!lightningTech_.init())
+        return false;
+
+    if(!shadowTech_.init(width, height))
         return false;
 
     destroyBuffers();
@@ -101,10 +90,12 @@ bool Renderer::initialize(int width, int height, int samples)
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
     gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
-    gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         return false;
+
+    gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
     // Initialize postprocess chain
     Postfx* fx = postfxChain_.front();
 
@@ -119,90 +110,133 @@ bool Renderer::initialize(int width, int height, int samples)
 
 void Renderer::render(AbstractScene* scene)
 {
+    renderQueue_.clear();
+    updateRenderQueue(&rootNode_, rootNode_.transformation());
+
+    gl->glEnable(GL_CULL_FACE);
+    gl->glCullFace(GL_FRONT);
+
+    gl->glEnable(GL_DEPTH_TEST);
+    gl->glDepthFunc(GL_LEQUAL);
+
     // Pass 1
+    // Render to depth buffer
+    shadowMapPass(scene);
+
+    gl->glCullFace(GL_BACK);
+
+    // Pass 2
     // Render the geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    gl->glEnable(GL_DEPTH_TEST);
-    gl->glDepthFunc(GL_LESS);
-
-    renderGeometry(scene);
+    renderPass(scene);
 
     gl->glDisable(GL_DEPTH_TEST);
 
-    // Pass 2
+    // Pass 3
     // Render postprocess chain
     for(Postfx* fx : postfxChain_)
     {
-        fx->render(quadVao_, 6);
+        fx->render(quad_);
+    }
+
+    //drawTextureDebug();
+}
+
+void Renderer::shadowMapPass(AbstractScene* scene)
+{
+    const SpotLight& light = scene->querySpotLights().front();
+
+    QMatrix4x4 look;
+    lightVP_.setToIdentity();
+    lightVP_.perspective(45.0f, static_cast<float>(width_) / height_, 1.0f, 50.0f);
+    look.lookAt(light.position, light.position + light.direction, QVector3D(0, 1, 0));
+    lightVP_ *= look;
+
+    shadowTech_.enable();
+
+    gl->glClear(GL_DEPTH_BUFFER_BIT);
+
+    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+    {
+        RenderList& node = it->second;
+
+        for(auto rit = node.begin(); rit != node.end(); ++rit)
+        {
+            shadowTech_.setMVP(lightVP_ * it->first);
+            (*rit)->render();
+        }
     }
 }
 
-void Renderer::renderGeometry(AbstractScene* scene)
+void Renderer::renderPass(AbstractScene* scene)
 {
     QMatrix4x4 v = scene->activeCamera()->lookAt();
-    VP_ = scene->activeCamera()->perspective() * v;
+    QMatrix4x4 vp = scene->activeCamera()->perspective() * v;
 
-    technique_.enable();
+    lightningTech_.enable();
 
-    technique_.setEyeWorldPos(scene->activeCamera()->position());
-    technique_.setTextureUnits(0, 1);
-    technique_.setDirectionalLight(scene->queryDirectionalLight());
-    technique_.setPointLights(scene->queryPointLights());
-    technique_.setSpotLights(scene->querySpotLights());
+    lightningTech_.setEyeWorldPos(scene->activeCamera()->position());
+    lightningTech_.setTextureUnits(0, 1, 2);
+    lightningTech_.setShadowMapTextureUnit(3);
+    lightningTech_.setDirectionalLight(scene->queryDirectionalLight());
+    lightningTech_.setPointLights(scene->queryPointLights());
+    lightningTech_.setSpotLights(scene->querySpotLights());
+
+    shadowTech_.bindTexture(GL_TEXTURE3);
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0, 0, 0, 0);
 
-    gl->glEnable(GL_CULL_FACE);
+    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+    {
+        RenderList& node = it->second;
+        lightningTech_.setWorldView(it->first);
 
-    recursiveRender(&rootNode_, rootNode_.transformation());
+        for(auto rit = node.begin(); rit != node.end(); ++rit)
+        {
+            lightningTech_.setMVP(vp * it->first);
+            lightningTech_.setLightMVP(lightVP_ * it->first);
+
+            const Material::Ptr& material = (*rit)->material();
+
+            lightningTech_.setMaterialAttributes(material->getAttributes());
+            material->getTexture(Material::TEXTURE_DIFFUSE)->bind(GL_TEXTURE0);
+            material->getTexture(Material::TEXTURE_SPECULAR)->bind(GL_TEXTURE2);
+
+            if((*rit)->hasTangents())
+            {
+                material->getTexture(Material::TEXTURE_NORMALS)->bind(GL_TEXTURE1);
+                lightningTech_.setHasTangents(true);
+            }
+
+            else
+            {
+                lightningTech_.setHasTangents(false);
+            }
+
+            (*rit)->render();
+        }
+    }
 }
 
-void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& worldView)
+void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
 {
     if(node == nullptr)
     {
         return;
     }
 
-    RenderList renderList;
-
-    // Render all entries
-    for(int i = 0; i < node->numEntities(); ++i)
+    if(node->numEntities() > 0)
     {
-        renderList.clear();
+        renderQueue_.push_back(std::make_pair(worldView * node->transformation(), RenderList()));
 
-        Entity* entity = node->getEntity(i);
-        if(entity != nullptr)
+        for(int i = 0; i < node->numEntities(); ++i)
         {
-            entity->updateRenderList(renderList);
-            QMatrix4x4 modelView = worldView * node->transformation();
-
-            // Node transformation
-            technique_.setMVP(VP_ * modelView);
-            technique_.setWorldView(modelView);
-
-            // Render all renderables
-            for(auto it = renderList.begin(); it != renderList.end(); ++it)
+            Entity* entity = node->getEntity(i);
+            if(entity != nullptr)
             {
-                const Material::Ptr& material = (*it)->material();
-
-                technique_.setMaterialAttributes(material->getAttributes());
-                material->getTexture(Material::TEXTURE_DIFFUSE)->bind(GL_TEXTURE0);
-
-                if((*it)->hasTangents())
-                {
-                    material->getTexture(Material::TEXTURE_NORMALS)->bind(GL_TEXTURE1);
-                    technique_.setHasTangents(true);
-                }
-
-                else
-                {
-                    technique_.setHasTangents(false);
-                }
-
-                (*it)->render();
+                entity->updateRenderList(renderQueue_.back().second);
             }
         }
     }
@@ -211,6 +245,19 @@ void Renderer::recursiveRender(SceneNode* node, const QMatrix4x4& worldView)
     for(int i = 0; i < node->numChildren(); ++i)
     {
         SceneNode* inode = dynamic_cast<SceneNode*>(node->getChild(i));
-        recursiveRender(inode, worldView * node->transformation());
+        updateRenderQueue(inode, worldView * node->transformation());
     }
+}
+
+void Renderer::drawTextureDebug()
+{
+    shadowTech_.bindTexture(GL_TEXTURE0);
+    nullTech_.bind();
+    nullTech_.setUniformValue("gShadowMap", 0);
+
+    gl->glViewport(0, 0, width_ / 3, height_ / 3);
+
+    quad_.render();
+
+    gl->glViewport(0, 0, width_, height_);
 }

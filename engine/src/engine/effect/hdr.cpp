@@ -52,33 +52,29 @@ bool Hdr::initialize(int width, int height, int samples)
     return downSampler_.init(width, height, GL_RGBA16F);
 }
 
-void Hdr::render(GLuint vao, GLsizei size)
+void Hdr::render(const Quad& quad)
 {
     if(inputTexture() == 0)
         return;
 
-    gl->glBindVertexArray(vao);
+    quad.bindVaoDirect();
 
     // Pass 1
     // Highpass filter
-    renderHighpass(size);
+    renderHighpass(quad);
 
     // Pass 2
     // Downsample and blur input
-    downSampler_.downSample(fbo_->texture(), size);
+    downSampler_.downSample(fbo_->texture(), quad);
 
     // Pass 3
-    // Blend samples
-    blendSamples(size);
-
-    // Pass 4
-    // Render tonemap
-    renderTonemap(size);
+    // Render tonemap to output
+    renderTonemap(quad);
 
     gl->glBindVertexArray(0);
 }
 
-void Hdr::renderHighpass(GLsizei size)
+void Hdr::renderHighpass(const Quad& quad)
 {
     fbo_->bind();
     gl->glClear(GL_COLOR_BUFFER_BIT);
@@ -91,66 +87,43 @@ void Hdr::renderHighpass(GLsizei size)
     highpass_.setUniformValue("renderedTexture", 0);
     highpass_.setUniformValue("brightThreshold", 1.2f);
 
-    gl->glDrawArrays(GL_TRIANGLES, 0, size);
+    quad.renderDirect();
 
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
-    highpass_.release();
     fbo_->release();
 }
 
-void Hdr::blendSamples(GLsizei size)
-{
-    gl->glEnable(GL_BLEND);
-    gl->glBlendFunc(GL_ONE, GL_ONE);
-    gl->glViewport(0, 0, fbo_->width(), fbo_->height());
-
-    fbo_->bind();
-    gl->glClear(GL_COLOR_BUFFER_BIT);
-
-    null_.bind();
-    null_.setUniformValue("text", 0);
-
-    for(int i = 0; i < DownSampler::SAMPLES; ++i)
-    {
-        auto sample = downSampler_.getSample(i);
-
-        gl->glActiveTexture(GL_TEXTURE0);
-        gl->glBindTexture(GL_TEXTURE_2D, sample->texture());
-
-        gl->glDrawArrays(GL_TRIANGLES, 0, 6);
-    }
-
-    fbo_->release();
-    null_.release();
-    gl->glDisable(GL_BLEND);
-}
-
-void Hdr::renderTonemap(GLsizei size)
+void Hdr::renderTonemap(const Quad& quad)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, outputFbo());
     gl->glClear(GL_COLOR_BUFFER_BIT);
+
+    gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
     tonemap_.bind();
 
     gl->glActiveTexture(GL_TEXTURE0);
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
-
-    gl->glActiveTexture(GL_TEXTURE1);
-    gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
-
     tonemap_.setUniformValue("renderedTexture", 0);
-    tonemap_.setUniformValue("bloomTexture", 1);
-    tonemap_.setUniformValue("samples", samples_);
 
+    int bloomSampleId[DownSampler::SAMPLES] = {0};
+
+    for(int i = 0; i < DownSampler::SAMPLES; ++i)
+    {
+        gl->glActiveTexture(GL_TEXTURE1 + i);
+        gl->glBindTexture(GL_TEXTURE_2D, downSampler_.getSample(i)->texture());
+        bloomSampleId[i] = i + 1;
+    }
+
+    tonemap_.setUniformValueArray("bloomSamplers", bloomSampleId, DownSampler::SAMPLES);
+
+    tonemap_.setUniformValue("samples", samples_);
     tonemap_.setUniformValue("exposure", 1.1f);
     tonemap_.setUniformValue("bloomFactor", 0.3f);
     tonemap_.setUniformValue("brightMax", 1.2f);
 
-    // Draw quad
-    gl->glDrawArrays(GL_TRIANGLES, 0, 6);
+    quad.renderDirect();
 
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-    tonemap_.release();
 }

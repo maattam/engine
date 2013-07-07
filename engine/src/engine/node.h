@@ -1,7 +1,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-// Abstract graph node using relative transformations (todo)
+// Abstract graph node
 
 #include <QMatrix4x4>
 #include <vector>

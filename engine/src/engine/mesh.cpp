@@ -10,8 +10,9 @@
 using namespace Engine;
 
 Mesh::Mesh(QOpenGLFunctions_4_2_Core* funcs)
-    : gl(funcs)
+    : Entity(), gl(funcs)
 {
+    setShadowCaster(true);
 }
 
 Mesh::~Mesh()
@@ -31,7 +32,8 @@ bool Mesh::loadFromFile(const std::string& fileName)
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(fileName,
-        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_FlipUVs | aiProcess_GenUVCoords);
+        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace |
+        aiProcess_FlipUVs | aiProcessPreset_TargetRealtime_MaxQuality);
 
     if(scene == nullptr)
     {
@@ -65,8 +67,7 @@ bool Mesh::initFromScene(const aiScene* scene, const std::string& fileName)
     size_t numIndices = 0;
 
     // Load materials
-    if(!initMaterials(scene, fileName))
-        return false;
+    initMaterials(scene, fileName);
 
     for(size_t i = 0; i < scene->mNumMeshes; ++i)
     {
@@ -128,7 +129,7 @@ void Mesh::initSubMesh(const aiMesh* mesh,
     }
 }
 
-bool Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
+void Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
 {
     // Extract the directory part of the file name
     std::string::size_type index = fileName.find_last_of("/");
@@ -154,12 +155,10 @@ bool Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
             {
                 Texture::Ptr texture = std::make_shared<Texture>(gl);
 
-                if(!loadMaterial(texture, fullpath + path.data))
+                if(loadMaterial(texture, fullpath + path.data))
                 {
-                    return false;
+                    materials_[i]->setTexture(Material::TEXTURE_DIFFUSE, texture);
                 }
-
-                materials_[i]->setTexture(Material::TEXTURE_DIFFUSE, texture);
             }
         }
 
@@ -169,17 +168,26 @@ bool Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
             {
                 Texture::Ptr texture = std::make_shared<Texture>(gl);
 
-                if(!loadMaterial(texture, fullpath + path.data))
+                if(loadMaterial(texture, fullpath + path.data))
                 {
-                    return false;
+                    materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
                 }
+            }
+        }
 
-                materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
+        if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
+        {
+            if(material->GetTexture(aiTextureType_SPECULAR, 0, &path) == AI_SUCCESS)
+            {
+                Texture::Ptr texture = std::make_shared<Texture>(gl);
+
+                if(loadMaterial(texture, fullpath + path.data))
+                {
+                    materials_[i]->setTexture(Material::TEXTURE_SPECULAR, texture);
+                }
             }
         }
     }
-
-    return true;
 }
 
 bool Mesh::loadMaterial(Texture::Ptr& texture, const std::string& fileName)

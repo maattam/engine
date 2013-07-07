@@ -19,7 +19,6 @@ namespace Engine {
         void setAspectRatio(float ratio);
 
         QMatrix4x4 perspective() const;
-        QMatrix4x4 ortho() const;
         QMatrix4x4 lookAt() const;
 
         QVector3D direction() const;

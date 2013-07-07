@@ -26,7 +26,7 @@ void Renderable::setTangents(bool tangents)
     hasTangents_ = tangents;
 }
 
-bool Renderable::bindVertexArray()
+bool Renderable::bindVertexArray() const
 {
     if(vertexArray_ == 0)
         return false;

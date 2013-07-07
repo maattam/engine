@@ -44,37 +44,43 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
 
     // Set up point lights
     Engine::PointLight pointLight;
-    pointLight.diffuseIntensity = 15.0f;
+    pointLight.diffuseIntensity = 10.0f;
     pointLight.attenuation.exp = 0.1f;
 
     pointLights_.push_back(pointLight);
 
-    pointLight.diffuseIntensity = 150.0f;
+    pointLight.diffuseIntensity = 50.0f;
     pointLight.color = QVector3D(0.0f, 0.0f, 1.0f);
-    pointLight.attenuation.exp = 0.05f;
+    pointLight.attenuation.exp = 0.025f;
     pointLights_.push_back(pointLight);
 
     // Set up spot lights
     Engine::SpotLight spotLight;
     spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
-    spotLight.position = 2*QVector3D(-6.0f, 2.0f, 8.0f);
-    spotLight.direction = QVector3D(4.0f, 0.0f, -8.0f);
+    spotLight.position = 2*QVector3D(-6.0f, 4.0f, 6.0f);
+    spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
     spotLight.diffuseIntensity = 25.0f;
     spotLight.attenuation.exp = 0.05f;
     spotLight.cutoff = 20.0f;
     spotLights_.push_back(spotLight);
 
     // Load models
-    platform_ = std::make_shared<Engine::Mesh>(funcs);
-    if(!platform_->loadFromFile("./assets/blocks.dae"))
-    {
-        qDebug() << "Failed to load platform!";
-    }
-
     oildrum_ = std::make_shared<Engine::Mesh>(funcs);
     if(!oildrum_->loadFromFile("./assets/oildrum.dae"))
     {
         qDebug() << "Failed to load oildrum!";
+    }
+
+    hellknight_ = std::make_shared<Engine::Mesh>(funcs);
+    if(!hellknight_->loadFromFile("./assets/hellknight/hellknight.md5mesh"))
+    {
+        qDebug() << "Failed to load hellknight!";
+    }
+
+    platform_ = std::make_shared<Engine::Mesh>(funcs);
+    if(!platform_->loadFromFile("./assets/blocks.dae"))
+    {
+        qDebug() << "Failed to load platform!";
     }
 
     sphere_ = std::make_shared<Engine::Mesh>(funcs);
@@ -185,31 +191,39 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
     // Create nodes
     platformNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
-    oildrumNode_ = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
     torusNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
     cubeNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
     sphereNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
 
     // Oildrum
     {
-        Engine::Material::Attributes attrib;
-        attrib.shininess = 12.0f;
-        attrib.specularIntensity = 1.0f;
-
-        oildrum_->setMaterialAttributes(attrib);
-
         QMatrix4x4 mat;
         mat.translate(-4, -2, 1);
 
-        Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(oildrumNode_->createChild());
+        Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
 
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
 
-        node = dynamic_cast<Engine::SceneNode*>(oildrumNode_->createChild());
+        node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
+
         mat.translate(6, -1, 0);
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
+
+        node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
+
+        mat.setToIdentity();
+        mat.translate(-1, 2, 1);
+        mat.scale(0.025f);
+
+        Engine::Material::Attributes attrib;
+        attrib.specularIntensity = 2.0f;
+
+        hellknight_->setMaterialAttributes(attrib);
+
+        node->applyTransformation(mat);
+        node->attachEntity(hellknight_.get());
     }
 
     // Torus
@@ -245,7 +259,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
         // Platform light
         mat.setToIdentity();
-        mat.translate(2*QVector3D(-6.0f, 2.0f, 8.0f));
+        mat.translate(2*QVector3D(-6.0f, 4.0f, 6.0f));
         mat.scale(0.1f);
 
         auto node = dynamic_cast<Engine::SceneNode*>(scene->createChild());

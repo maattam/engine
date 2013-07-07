@@ -8,8 +8,11 @@
 #include "renderable.h"
 #include "scenenode.h"
 #include "technique/basiclightning.h"
+#include "technique/shadowmap.h"
+#include "quad.h"
 
 #include <list>
+#include <vector>
 
 namespace Engine {
 
@@ -29,11 +32,16 @@ public:
 
 private:
     typedef std::list<Renderable*> RenderList;
+    typedef std::vector<std::pair<QMatrix4x4, RenderList>> RenderQueue;
 
     QOpenGLFunctions_4_2_Core* gl;
 
     SceneNode rootNode_;
-    BasicLightning technique_;
+    RenderQueue renderQueue_;
+
+    BasicLightning lightningTech_;
+    ShadowMapTechnique shadowTech_;
+    QOpenGLShaderProgram nullTech_;
 
     int width_;
     int height_;
@@ -42,17 +50,20 @@ private:
     GLuint renderTexture_;
     GLuint depthRenderbuffer_;
 
-    GLuint quadVao_;
-    GLuint quadVertexBuffer_;
+    QMatrix4x4 lightVP_;
 
     // Postprocess chain
     std::list<Postfx*> postfxChain_;
 
-    void renderGeometry(AbstractScene* scene);
-    void destroyBuffers();
+    // Quad for postprocessing
+    Quad quad_;
 
-    QMatrix4x4 VP_;
-    void recursiveRender(SceneNode* node, const QMatrix4x4& worldView);
+    void drawTextureDebug();
+
+    void updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView);
+    void renderPass(AbstractScene* scene);
+    void shadowMapPass(AbstractScene* scene);
+    void destroyBuffers();
 
     Renderer(const Renderer&);
     Renderer& operator=(const Renderer&);

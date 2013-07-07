@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "../quad.h"
+
 namespace Engine {
 
 class DownSampler
@@ -20,7 +22,8 @@ public:
     bool init(int width, int height, GLenum format);
     QOpenGLFramebufferObject* getSample(size_t n);
 
-    void downSample(GLuint textureId, GLuint size);
+    // Expects the quad to be bound
+    void downSample(GLuint textureId, const Quad& quad);
 
 private:
     void destroy();

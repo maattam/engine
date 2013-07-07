@@ -8,5 +8,7 @@
         <file>images/white.png</file>
         <file>shaders/basiclightning.frag</file>
         <file>shaders/basiclightning.vert</file>
+        <file>shaders/shadowmap.vert</file>
+        <file>shaders/shadowmap.frag</file>
     </qresource>
 </RCC>

@@ -20,14 +20,17 @@ public:
     BasicLightning();
     ~BasicLightning();
 
-    virtual bool init();
+    bool init();
 
     void setMVP(const QMatrix4x4& mvp);
     void setWorldView(const QMatrix4x4& vp);
     void setEyeWorldPos(const QVector3D& eyePos);
     void setMaterialAttributes(const Material::Attributes& attributes);
-    void setTextureUnits(GLuint diffuse, GLuint normal);
+    void setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular);
     void setHasTangents(bool tangents);
+
+    void setLightMVP(const QMatrix4x4& mvp);
+    void setShadowMapTextureUnit(GLuint shadow);
 
     void setDirectionalLight(const DirectionalLight& light);
     void setPointLights(const std::vector<PointLight>& lights);

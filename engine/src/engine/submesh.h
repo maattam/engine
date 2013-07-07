@@ -25,7 +25,7 @@ public:
     explicit SubMesh(QOpenGLFunctions_4_2_Core* funcs);
     ~SubMesh();
 
-    void render();
+    virtual void render() const;
 
     bool initMesh(  const std::vector<QVector3D>& vertices,
                     const std::vector<QVector3D>& normals,

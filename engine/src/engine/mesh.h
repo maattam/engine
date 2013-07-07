@@ -35,7 +35,7 @@ private:
         std::vector<QVector2D>& uvs,
         std::vector<unsigned int>& indices);
 
-    bool initMaterials(const aiScene* scene, const std::string& fileName);
+    void initMaterials(const aiScene* scene, const std::string& fileName);
     bool loadMaterial(Texture::Ptr& texture, const std::string& fileName);
 
     std::vector<SubMesh::Ptr> entries_;

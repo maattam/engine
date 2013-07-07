@@ -18,11 +18,6 @@ BasicLightning::~BasicLightning()
 
 bool BasicLightning::init()
 {
-    if(!Technique::init())
-    {
-        return false;
-    }
-
     // If our program is already compiled, do nothing
     if(program_.isLinked())
     {
@@ -71,10 +66,11 @@ void BasicLightning::setMaterialAttributes(const Material::Attributes& attribute
     program_.setUniformValue("gMaterial.shininess", attributes.shininess);
 }
 
-void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal)
+void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular)
 {
     program_.setUniformValue("gDiffuseSampler", diffuse);
     program_.setUniformValue("gNormalSampler", normal);
+    program_.setUniformValue("gSpecularSampler", specular);
 }
 
 void BasicLightning::setDirectionalLight(const DirectionalLight& light)
@@ -86,6 +82,16 @@ void BasicLightning::setDirectionalLight(const DirectionalLight& light)
     QVector3D direction = light.direction;
     direction.normalize();
     program_.setUniformValue("gDirectionalLight.direction", direction);
+}
+
+void BasicLightning::setLightMVP(const QMatrix4x4& mvp)
+{
+    program_.setUniformValue("gLightMVP", mvp);
+}
+
+void BasicLightning::setShadowMapTextureUnit(GLuint shadow)
+{
+    program_.setUniformValue("gShadowMap", shadow);
 }
 
 void BasicLightning::setPointLights(const std::vector<PointLight>& lights)

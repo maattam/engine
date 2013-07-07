@@ -55,7 +55,7 @@ bool DownSampler::init(int width, int height, GLenum format)
     return true;
 }
 
-void DownSampler::downSample(GLuint textureId, GLuint size)
+void DownSampler::downSample(GLuint textureId, const Quad& quad)
 {
     program_.bind();
 
@@ -75,7 +75,7 @@ void DownSampler::downSample(GLuint textureId, GLuint size)
         gl->glBindTexture(GL_TEXTURE_2D, prevTexture);
         gl->glViewport(0, 0, fbos_[i]->width(), fbos_[i]->height());
 
-        gl->glDrawArrays(GL_TRIANGLES, 0, size);
+        quad.renderDirect();
 
         fbos_[i]->release();
         prevTexture = fbos_[i]->texture();

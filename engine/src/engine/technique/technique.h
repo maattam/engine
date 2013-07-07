@@ -11,7 +11,6 @@ public:
     Technique();
     virtual ~Technique();
 
-    virtual bool init();
     virtual void enable();
 
 protected:

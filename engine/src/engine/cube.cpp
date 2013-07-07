@@ -85,7 +85,7 @@ Cube::~Cube()
     }
 }
 
-void Cube::render()
+void Cube::render() const
 {
     if(!bindVertexArray())
         return;

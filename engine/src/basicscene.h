@@ -40,10 +40,10 @@ private:
     std::shared_ptr<Engine::Mesh> oildrum_;
     std::shared_ptr<Engine::Mesh> sphere_;
     std::shared_ptr<Engine::Mesh> platform_;
+    std::shared_ptr<Engine::Mesh> hellknight_;
 
     std::shared_ptr<Engine::BoxPrimitive> cube_[2];
 
-    Engine::SceneNode* oildrumNode_;
     Engine::SceneNode* cubeNode_;
     Engine::SceneNode* platformNode_;
     Engine::SceneNode* torusNode_;

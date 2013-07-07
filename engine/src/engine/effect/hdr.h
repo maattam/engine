@@ -8,6 +8,8 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 
+#include "../quad.h"
+
 namespace Engine {
 
 class Hdr : public Postfx
@@ -17,7 +19,7 @@ public:
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
-    virtual void render(GLuint vao, GLsizei size);
+    virtual void render(const Quad& quad);
 
 private:
     QOpenGLFunctions_4_2_Core* gl;
@@ -31,9 +33,9 @@ private:
     QOpenGLShaderProgram highpass_;
     QOpenGLShaderProgram null_;
 
-    void renderHighpass(GLsizei size);
-    void blendSamples(GLsizei size);
-    void renderTonemap(GLsizei size);
+    void renderHighpass(const Quad& quad);
+    void blendSamples(const Quad& quad);
+    void renderTonemap(const Quad& quad);
 };
 
 }

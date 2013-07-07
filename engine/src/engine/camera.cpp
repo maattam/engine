@@ -60,12 +60,6 @@ QMatrix4x4 Camera::perspective() const
     return mat;
 }
 
-QMatrix4x4 Camera::ortho() const
-{
-    QMatrix4x4 mat;
-    return mat;
-}
-
 QMatrix4x4 Camera::lookAt() const
 {
     QVector3D dir = direction();

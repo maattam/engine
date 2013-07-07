@@ -105,11 +105,13 @@
     <ClCompile Include="src\engine\material.cpp" />
     <ClCompile Include="src\engine\mesh.cpp" />
     <ClCompile Include="src\engine\node.cpp" />
+    <ClCompile Include="src\engine\quad.cpp" />
     <ClCompile Include="src\engine\scenenode.cpp" />
     <ClCompile Include="src\engine\submesh.cpp" />
     <ClCompile Include="src\engine\renderable.cpp" />
     <ClCompile Include="src\engine\renderer.cpp" />
     <ClCompile Include="src\engine\technique\basiclightning.cpp" />
+    <ClCompile Include="src\engine\technique\shadowmap.cpp" />
     <ClCompile Include="src\engine\technique\technique.cpp" />
     <ClCompile Include="src\engine\texture.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -141,11 +143,13 @@
     <ClInclude Include="src\engine\material.h" />
     <ClInclude Include="src\engine\mesh.h" />
     <ClInclude Include="src\engine\node.h" />
+    <ClInclude Include="src\engine\quad.h" />
     <ClInclude Include="src\engine\scenenode.h" />
     <ClInclude Include="src\engine\submesh.h" />
     <ClInclude Include="src\engine\renderable.h" />
     <ClInclude Include="src\engine\renderer.h" />
     <ClInclude Include="src\engine\technique\basiclightning.h" />
+    <ClInclude Include="src\engine\technique\shadowmap.h" />
     <ClInclude Include="src\engine\technique\technique.h" />
     <ClInclude Include="src\engine\texture.h" />
   </ItemGroup>
@@ -166,6 +170,8 @@
     <None Include="shaders\blur.frag" />
     <None Include="shaders\highpass.frag" />
     <None Include="shaders\null.frag" />
+    <None Include="shaders\shadowmap.frag" />
+    <None Include="shaders\shadowmap.vert" />
     <None Include="shaders\tone.frag" />
     <None Include="shaders\passthrough.vert" />
   </ItemGroup>

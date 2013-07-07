@@ -13,7 +13,7 @@ public:
     explicit Renderable(QOpenGLFunctions_4_2_Core* funcs);
     virtual ~Renderable();
 
-    virtual void render() = 0;
+    virtual void render() const = 0;
 
     void setMaterial(Material::Ptr& material);
     const Material::Ptr& material();
@@ -25,7 +25,7 @@ protected:
 
     QOpenGLFunctions_4_2_Core* gl;
 
-    bool bindVertexArray();
+    bool bindVertexArray() const;
     void setTangents(bool tangents);
 
 private:

@@ -11,7 +11,7 @@ public:
     explicit Cube(QOpenGLFunctions_4_2_Core* funcs);
     ~Cube();
 
-    virtual void render();
+    virtual void render() const;
 
 private:
     GLuint vertexBuffer_;

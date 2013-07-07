@@ -139,6 +139,12 @@
     <ClCompile Include="src\engine\technique\basiclightning.cpp">
       <Filter>Source Files\engine\technique</Filter>
     </ClCompile>
+    <ClCompile Include="src\engine\technique\shadowmap.cpp">
+      <Filter>Source Files\engine\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\engine\quad.cpp">
+      <Filter>Source Files\engine\renderable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\sceneview.h">
@@ -209,6 +215,12 @@
     <ClInclude Include="src\engine\technique\basiclightning.h">
       <Filter>Header Files\engine\technique</Filter>
     </ClInclude>
+    <ClInclude Include="src\engine\technique\shadowmap.h">
+      <Filter>Header Files\engine\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\engine\quad.h">
+      <Filter>Header Files\engine\renderable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="main.qml">
@@ -233,6 +245,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\basiclightning.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shadowmap.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\shadowmap.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
