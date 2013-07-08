@@ -80,13 +80,13 @@ float calcShadowFactor(vec4 lightSpacePos)
 	float depth = texture(gShadowMap, uvCoords).x;
 	
 	if(depth < (projCoords.z + 0.00001))
-		return 0.2;
+		return 0.5;
 	else
 		return 1.0;
 }
 
 // Encapsules common stuff between the different light types
-vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal, in float shadowFactor)
+vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 {
 	vec4 ambientColor = vec4(light.color, 1.0) * light.ambientIntensity;
 	
@@ -114,25 +114,21 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal, in 
 		}
 	}
 	
-	return ambientColor + shadowFactor * (diffuseColor + specularColor);
+	return ambientColor + diffuseColor + specularColor;
 }
 
 vec4 calcDirectionalLight(in vec3 normal)
 {
-	return calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal, 1.0);
+	return calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
 }
 
-vec4 calcPointLight(in PointLight light, in vec3 normal, in vec4 lightSpacePos, bool skip)
+vec4 calcPointLight(in PointLight light, in vec3 normal)
 {
 	vec3 lightDirection = worldPos0 - light.position;
 	float dist = length(lightDirection);
 	lightDirection = normalize(lightDirection);
-	float shadowFactor = 1.0;
 	
-	if(!skip)
-		shadowFactor = calcShadowFactor(lightSpacePos);
-	
-	vec4 color = calcLightCommon(light.base, lightDirection, normal, shadowFactor);
+	vec4 color = calcLightCommon(light.base, lightDirection, normal);
 	float attenuation = light.attenuation.constant +
 						light.attenuation.linear * dist +
 						light.attenuation.exp * dist * dist;
@@ -140,14 +136,14 @@ vec4 calcPointLight(in PointLight light, in vec3 normal, in vec4 lightSpacePos, 
 	return color / attenuation;
 }
 
-vec4 calcSpotLight(in SpotLight light, in vec3 normal, in vec4 lightSpacePos)
+vec4 calcSpotLight(in SpotLight light, in vec3 normal)
 {
 	vec3 lightToPixel = normalize(worldPos0 - light.base.position);
 	float spotFactor = dot(lightToPixel, light.direction);
 	
 	if(spotFactor > light.cutoff)
 	{
-		vec4 color = calcPointLight(light.base, normal, lightSpacePos, false);
+		vec4 color = calcPointLight(light.base, normal);
 		return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.cutoff));
 	}
 	
@@ -188,10 +184,13 @@ void main()
 	vec4 light = calcDirectionalLight(normal);
 	
 	for(int i = 0; i < gNumPointLights; ++i)
-		light += calcPointLight(gPointLights[i], normal, lightSpacePos0, true);
+		light += calcPointLight(gPointLights[i], normal);
 		
 	for(int i = 0; i < gNumSpotLights; ++i)
-		light += calcSpotLight(gSpotLights[i], normal, lightSpacePos0);
+	{
+		float shadow = calcShadowFactor(lightSpacePos0);
+		light += shadow * calcSpotLight(gSpotLights[i], normal);
+	}
 	
 	fragColor = texture2D(gDiffuseSampler, texCoord0) * light *
 				vec4(gMaterial.diffuseColor, 1.0) + vec4(gMaterial.ambientColor, 1.0);

@@ -29,203 +29,97 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="Header Files\engine">
-      <UniqueIdentifier>{38d3e844-767e-4d9b-978f-974267a57f27}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine">
-      <UniqueIdentifier>{6fe50cba-38f7-467d-a772-36a4c8deeecc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{6752b692-84d2-4cf5-88be-f99c67926338}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\engine\effect">
+    <Filter Include="Source Files\effect">
+      <UniqueIdentifier>{bf73b996-68b8-49ee-9ef0-f736d7946221}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entity">
+      <UniqueIdentifier>{0c427819-5705-4234-a3f5-61f554d0842d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\renderable">
+      <UniqueIdentifier>{8292ddc0-78d3-400e-bfd3-743501ae1c62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\technique">
+      <UniqueIdentifier>{a280c661-b2db-4a12-922c-15f945d2a360}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\effect">
       <UniqueIdentifier>{3c29b57e-100e-4587-b133-9011757271d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\engine\effect">
-      <UniqueIdentifier>{2268ccb9-ac5b-4dea-a87d-0bfd219a4b96}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\renderable">
-      <UniqueIdentifier>{82be28ed-ccd6-4588-bb3b-a1d37e6db9f5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\engine\renderable">
-      <UniqueIdentifier>{559fbb53-345a-4fb8-90ea-d79cc2bc80aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\engine\entity">
+    <Filter Include="Header Files\entity">
       <UniqueIdentifier>{df11b4c9-edb5-438e-ac22-a1256a8e64a1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\engine\entity">
-      <UniqueIdentifier>{7eb60b30-d833-47a5-ba18-8294a18fd33e}</UniqueIdentifier>
+    <Filter Include="Header Files\renderable">
+      <UniqueIdentifier>{82be28ed-ccd6-4588-bb3b-a1d37e6db9f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\engine\technique">
+    <Filter Include="Header Files\technique">
       <UniqueIdentifier>{40518536-f723-4f26-b875-9fe008aa5366}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\engine\technique">
-      <UniqueIdentifier>{771cd9bd-87d1-4d6b-b25c-a4297ef1292f}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp">
+    <ClCompile Include="src\abstractscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\sceneview.cpp">
+    <ClCompile Include="src\camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_sceneview.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_sceneview.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\renderer.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_main.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\camera.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\texture.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\light.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\engine\abstractscene.cpp">
-      <Filter>Source Files\engine</Filter>
-    </ClCompile>
-    <ClCompile Include="src\basicscene.cpp">
+    <ClCompile Include="src\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\effect\downsampler.cpp">
-      <Filter>Source Files\engine\effect</Filter>
+    <ClCompile Include="src\node.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\effect\postfx.cpp">
-      <Filter>Source Files\engine\effect</Filter>
+    <ClCompile Include="src\renderer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\effect\hdr.cpp">
-      <Filter>Source Files\engine\effect</Filter>
+    <ClCompile Include="src\scenenode.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\cube.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\renderable.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
+    <ClCompile Include="src\effect\downsampler.cpp">
+      <Filter>Source Files\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\material.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
+    <ClCompile Include="src\effect\hdr.cpp">
+      <Filter>Source Files\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\entity.cpp">
-      <Filter>Source Files\engine\entity</Filter>
+    <ClCompile Include="src\effect\postfx.cpp">
+      <Filter>Source Files\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\submesh.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
+    <ClCompile Include="src\entity\entity.cpp">
+      <Filter>Source Files\entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\mesh.cpp">
-      <Filter>Source Files\engine\entity</Filter>
+    <ClCompile Include="src\entity\mesh.cpp">
+      <Filter>Source Files\entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\node.cpp">
-      <Filter>Source Files\engine</Filter>
+    <ClCompile Include="src\entity\boxprimitive.cpp">
+      <Filter>Source Files\entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\scenenode.cpp">
-      <Filter>Source Files\engine</Filter>
+    <ClCompile Include="src\technique\basiclightning.cpp">
+      <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\boxprimitive.cpp">
-      <Filter>Source Files\engine\entity</Filter>
+    <ClCompile Include="src\technique\shadowmap.cpp">
+      <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\technique\technique.cpp">
-      <Filter>Source Files\engine\technique</Filter>
+    <ClCompile Include="src\technique\technique.cpp">
+      <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\technique\basiclightning.cpp">
-      <Filter>Source Files\engine\technique</Filter>
+    <ClCompile Include="src\renderable\cube.cpp">
+      <Filter>Source Files\renderable</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\technique\shadowmap.cpp">
-      <Filter>Source Files\engine\technique</Filter>
+    <ClCompile Include="src\renderable\quad.cpp">
+      <Filter>Source Files\renderable</Filter>
     </ClCompile>
-    <ClCompile Include="src\engine\quad.cpp">
-      <Filter>Source Files\engine\renderable</Filter>
+    <ClCompile Include="src\renderable\renderable.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\submesh.cpp">
+      <Filter>Source Files\renderable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\sceneview.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="main.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\engine\renderer.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\camera.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\texture.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\light.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\abstractscene.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\basicscene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\effect\downsampler.h">
-      <Filter>Header Files\engine\effect</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\effect\postfx.h">
-      <Filter>Header Files\engine\effect</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\effect\hdr.h">
-      <Filter>Header Files\engine\effect</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\renderable.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\cube.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\material.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\entity.h">
-      <Filter>Header Files\engine\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\submesh.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\mesh.h">
-      <Filter>Header Files\engine\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\node.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\scenenode.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\boxprimitive.h">
-      <Filter>Header Files\engine\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\technique\technique.h">
-      <Filter>Header Files\engine\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\technique\basiclightning.h">
-      <Filter>Header Files\engine\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\technique\shadowmap.h">
-      <Filter>Header Files\engine\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\engine\quad.h">
-      <Filter>Header Files\engine\renderable</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="main.qml">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="shaders\passthrough.vert">
       <Filter>Shaders</Filter>
     </None>
@@ -253,5 +147,75 @@
     <None Include="shaders\shadowmap.frag">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\abstractscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\node.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scenenode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effect\downsampler.h">
+      <Filter>Header Files\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effect\hdr.h">
+      <Filter>Header Files\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effect\postfx.h">
+      <Filter>Header Files\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\boxprimitive.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\entity.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\mesh.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\cube.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\quad.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\renderable.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\submesh.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\basiclightning.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\shadowmap.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\technique.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\white.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
