@@ -1,5 +1,6 @@
 #include "camera.h"
 
+#include <QMatrix4x4>
 #include <qmath.h>
 
 using namespace Engine;

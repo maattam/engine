@@ -9,7 +9,8 @@ in vec2 texCoord0;
 in vec3 normal0;
 in vec3 tangent0;
 in vec3 worldPos0;
-in vec4 lightSpacePos0;
+
+in vec4 lightSpacePos0[MAX_SPOT_LIGHTS];
 
 layout(location = 0) out vec4 fragColor;
 
@@ -57,6 +58,7 @@ struct Material
 
 uniform int gNumPointLights;
 uniform int gNumSpotLights;
+
 uniform DirectionalLight gDirectionalLight;
 uniform PointLight gPointLights[MAX_POINT_LIGHTS];
 uniform SpotLight gSpotLights[MAX_SPOT_LIGHTS];
@@ -64,21 +66,23 @@ uniform SpotLight gSpotLights[MAX_SPOT_LIGHTS];
 uniform sampler2D gDiffuseSampler;
 uniform sampler2D gNormalSampler;
 uniform sampler2D gSpecularSampler;
-uniform sampler2D gShadowMap;
+
+uniform sampler2D gSpotLightShadowMap[MAX_SPOT_LIGHTS];
 
 uniform Material gMaterial;
 uniform vec3 gEyeWorldPos;
 uniform bool gHasTangents;
 
-float calcShadowFactor(vec4 lightSpacePos)
+float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 {
 	// Project shadow map on target fragment
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords = 0.5 * projCoords + 0.5;
 	
 	vec2 uvCoords = vec2(projCoords.x, projCoords.y);
-	float depth = texture(gShadowMap, uvCoords).x;
+	float depth = texture(shadowMap, uvCoords).x;
 	
+    // Compare against a bias to prevent shadow acne
 	if(depth < (projCoords.z + 0.00001))
 		return 0.5;
 	else
@@ -161,12 +165,14 @@ vec3 calcBumpedNormal()
 		return normal;
 		
 	vec3 tangent = normalize(tangent0);
+
 	// Gramm-Schmidt; We have to form an orthonormal basis since the interpolated
 	// vectors are no longer orthogonal
 	tangent = normalize(tangent - dot(tangent, normal) * normal);
 	
 	vec3 bitangent = cross(tangent, normal);
 	vec3 bumpMapNormal = texture(gNormalSampler, texCoord0).xyz;
+
 	// Since color components are stored in the range [0, 1], we have to transform
 	// them back using f(x) = 2*x - 1
 	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
@@ -184,11 +190,13 @@ void main()
 	vec4 light = calcDirectionalLight(normal);
 	
 	for(int i = 0; i < gNumPointLights; ++i)
+    {
 		light += calcPointLight(gPointLights[i], normal);
+    }
 		
 	for(int i = 0; i < gNumSpotLights; ++i)
 	{
-		float shadow = calcShadowFactor(lightSpacePos0);
+		float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i]);
 		light += shadow * calcSpotLight(gSpotLights[i], normal);
 	}
 	

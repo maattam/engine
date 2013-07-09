@@ -5,7 +5,7 @@
 #include "renderable/cube.h"
 #include "entity/mesh.h"
 
-const double PI = 3.14159;
+#include <qmath.h>
 
 BasicScene::BasicScene()
     : camera_(QVector3D(-2, 6, 7), 0, 0.0f, 60.0f, 0.0f)
@@ -130,13 +130,15 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     }
 }
 
-void BasicScene::update(float elapsed)
+void BasicScene::update(unsigned int elapsedMs)
 {
     const float R = 16.0f;
     const float R2 = 75.0f;
-    time_ += elapsed * 1000;
 
+    float elapsed = static_cast<float>(elapsedMs) / 1000;
     float angle = static_cast<float>(time_) / 1000;
+
+    time_ += elapsedMs;
 
     QVector3D lightPos = QVector3D(R/2 * sinf(angle * 3), R * sinf(angle), R * cosf(angle));
 
@@ -296,7 +298,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
             for(int j = 0; j < amount; ++j)
             {
-                float angle = 2 * PI * j / amount;
+                float angle = 2 * M_PI * j / amount;
 
                 QMatrix4x4 mat;
                 mat.translate(R * sin(angle), i * stepping, R * cos(angle));

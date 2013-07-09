@@ -2,9 +2,9 @@
 #define CAMERA_H
 
 #include <QVector3D>
-#include <QMatrix4x4>
 
 namespace Engine {
+
     class Camera
     {
     public:
@@ -33,6 +33,7 @@ namespace Engine {
         float fov_;
         float aspect_;
     };
+
 }
 
 #endif // CAMERA_H

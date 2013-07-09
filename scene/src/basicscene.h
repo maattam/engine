@@ -20,7 +20,6 @@ public:
     virtual ~BasicScene();
 
     void initialize(QOpenGLFunctions_4_2_Core* funcs);
-    void update(float elapsed);
 
     virtual Engine::Camera* activeCamera();
     virtual const Engine::DirectionalLight& queryDirectionalLight();
@@ -28,6 +27,7 @@ public:
     virtual const std::vector<Engine::SpotLight>& querySpotLights();
 
     virtual void prepareScene(Engine::SceneNode* scene);
+    virtual void update(unsigned int elapsed);
 
 private:
     Engine::Camera camera_;
@@ -54,7 +54,7 @@ private:
     std::vector<Engine::Material::Ptr> materials_;
     std::vector<Engine::Light> lights_;
 
-    int time_;
+    unsigned int time_;
 
     QOpenGLFunctions_4_2_Core* gl;
 };

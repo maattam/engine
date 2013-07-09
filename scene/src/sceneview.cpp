@@ -39,11 +39,13 @@ void SceneView::update()
     if(renderer_ == nullptr)
         return;
 
+    unsigned int lastUpdate = lastTime_.restart();
+
     // Elapsed in seconds
-    float elapsed = static_cast<float>(lastTime_.restart()) / 1000;
+    float elapsed = static_cast<float>(lastUpdate) / 1000;
 
     handleInput(elapsed);
-    scene_->update(elapsed);
+    scene_->update(lastUpdate);
 
     // Update title on every tenth frame
     if(frame_ % 10)

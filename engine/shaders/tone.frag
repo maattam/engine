@@ -33,7 +33,7 @@ void main() {
 
 	for(int i = 0; i < samples; ++i)
 	{
-		color += texelFetch(renderedTexture, ivec2(st), i);
+		color += texelFetch(renderedTexture, st, i);
 
 		// Perform tone-mapping
 		float YD = exposure * (exposure/brightMax + 1.0) / (exposure + 1.0);

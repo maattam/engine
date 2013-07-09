@@ -1,10 +1,10 @@
 #include "basiclightning.h"
 
 #include <QDebug>
+#include <qmath.h>
 
 #include <sstream>
-
-const double PI = 3.14159;
+#include <cassert>
 
 using namespace Engine;
 
@@ -24,7 +24,7 @@ bool BasicLightning::init()
         return true;
     }
 
-    // Load our program
+    // Compile shaders
     program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/basiclightning.vert");
     program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/basiclightning.frag");
 
@@ -84,14 +84,16 @@ void BasicLightning::setDirectionalLight(const DirectionalLight& light)
     program_.setUniformValue("gDirectionalLight.direction", direction);
 }
 
-void BasicLightning::setLightMVP(const QMatrix4x4& mvp)
+void BasicLightning::setSpotLightMVP(size_t index, const QMatrix4x4& mvp)
 {
-    program_.setUniformValue("gLightMVP", mvp);
+    assert(index < MAX_SPOT_LIGHTS);
+    program_.setUniformValue(formatUniformTableName("gLightMVP", index).c_str(), mvp);
 }
 
-void BasicLightning::setShadowMapTextureUnit(GLuint shadow)
+void BasicLightning::setSpotLightShadowUnit(size_t index, GLuint shadow)
 {
-    program_.setUniformValue("gShadowMap", shadow);
+     assert(index < MAX_SPOT_LIGHTS);
+     program_.setUniformValue(formatUniformTableName("gSpotLightShadowMap", index).c_str(), shadow);
 }
 
 void BasicLightning::setPointLights(const std::vector<PointLight>& lights)
@@ -142,7 +144,9 @@ void BasicLightning::setSpotLights(const std::vector<SpotLight>& lights)
         direction.normalize();
 
         program_.setUniformValue(formatUniformTableName("gSpotLights", i, "direction").c_str(),     direction);
-        program_.setUniformValue(formatUniformTableName("gSpotLights", i, "cutoff").c_str(),        cosf(PI * lights[i].cutoff / 180));
+
+        // Convert cutoff to radians
+        program_.setUniformValue(formatUniformTableName("gSpotLights", i, "cutoff").c_str(),        cosf(M_PI * lights[i].cutoff / 180));
     }
 }
 
@@ -150,6 +154,10 @@ std::string BasicLightning::formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members) const
 {
     std::stringstream ss;
-    ss << table << '[' << index << ']' << '.' << members;
+    ss << table << '[' << index << ']';
+
+    if(!members.empty())
+        ss << '.' << members;
+
     return ss.str();
 }

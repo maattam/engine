@@ -50,8 +50,6 @@ private:
     GLuint renderTexture_;
     GLuint depthRenderbuffer_;
 
-    QMatrix4x4 lightVP_;
-
     // Postprocess chain
     std::list<Postfx*> postfxChain_;
 

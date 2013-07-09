@@ -29,8 +29,8 @@ public:
     void setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular);
     void setHasTangents(bool tangents);
 
-    void setLightMVP(const QMatrix4x4& mvp);
-    void setShadowMapTextureUnit(GLuint shadow);
+    void setSpotLightMVP(size_t index, const QMatrix4x4& mvp);
+    void setSpotLightShadowUnit(size_t index, GLuint shadow);
 
     void setDirectionalLight(const DirectionalLight& light);
     void setPointLights(const std::vector<PointLight>& lights);
@@ -40,7 +40,7 @@ private:
     GLuint mvpLocation_;
 
     std::string formatUniformTableName(const std::string& table,
-        unsigned int index, const std::string& members) const;
+        unsigned int index, const std::string& members = "") const;
 };
 
 }

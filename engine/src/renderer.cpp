@@ -62,7 +62,7 @@ bool Renderer::initialize(int width, int height, int samples)
     if(!lightningTech_.init())
         return false;
 
-    if(!shadowTech_.init(width, height))
+    if(!shadowTech_.initSpotLights(width, height, BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
     destroyBuffers();
@@ -125,7 +125,7 @@ void Renderer::render(AbstractScene* scene)
     gl->glCullFace(GL_BACK);
 
     // Pass 2
-    // Render the geometry to a multisampled framebuffer
+    // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
     renderPass(scene);
@@ -139,31 +139,29 @@ void Renderer::render(AbstractScene* scene)
         fx->render(quad_);
     }
 
-    //drawTextureDebug();
+    drawTextureDebug();
 }
 
 void Renderer::shadowMapPass(AbstractScene* scene)
 {
-    const SpotLight& light = scene->querySpotLights().front();
-
-    QMatrix4x4 look;
-    lightVP_.setToIdentity();
-    lightVP_.perspective(30.0f, static_cast<float>(width_) / height_, 1.0f, 50.0f);
-    look.lookAt(light.position, light.position + light.direction, QVector3D(0, 1, 0));
-    lightVP_ *= look;
-
+    const auto& spotLights = scene->querySpotLights();
     shadowTech_.enable();
 
-    gl->glClear(GL_DEPTH_BUFFER_BIT);
-
-    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+    // Render depth for each spot light
+    for(size_t i = 0; i < spotLights.size(); ++i)
     {
-        RenderList& node = it->second;
+        shadowTech_.enableSpotLight(i, spotLights.at(i));
+        gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-        for(auto rit = node.begin(); rit != node.end(); ++rit)
+        for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
         {
-            shadowTech_.setMVP(lightVP_ * it->first);
-            (*rit)->render();
+            RenderList& node = it->second;
+
+            for(auto rit = node.begin(); rit != node.end(); ++rit)
+            {
+                shadowTech_.setLightMVP(shadowTech_.spotLightVP(i) * it->first);
+                (*rit)->render();
+            }
         }
     }
 }
@@ -173,16 +171,22 @@ void Renderer::renderPass(AbstractScene* scene)
     QMatrix4x4 v = scene->activeCamera()->lookAt();
     QMatrix4x4 vp = scene->activeCamera()->perspective() * v;
 
+    const auto& spotLights = scene->querySpotLights();
+
     lightningTech_.enable();
 
     lightningTech_.setEyeWorldPos(scene->activeCamera()->position());
     lightningTech_.setTextureUnits(0, 1, 2);
-    lightningTech_.setShadowMapTextureUnit(3);
     lightningTech_.setDirectionalLight(scene->queryDirectionalLight());
     lightningTech_.setPointLights(scene->queryPointLights());
-    lightningTech_.setSpotLights(scene->querySpotLights());
+    lightningTech_.setSpotLights(spotLights);
 
-    shadowTech_.bindTexture(GL_TEXTURE3);
+    // Bind spot light shadow maps
+    for(unsigned int i = 0; i < spotLights.size(); ++i)
+    {
+        shadowTech_.bindSpotLight(i, GL_TEXTURE3 + i);
+        lightningTech_.setSpotLightShadowUnit(i, 3 + i);
+    }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0, 0, 0, 0);
@@ -195,7 +199,12 @@ void Renderer::renderPass(AbstractScene* scene)
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
             lightningTech_.setMVP(vp * it->first);
-            lightningTech_.setLightMVP(lightVP_ * it->first);
+
+            // Set translation matrix for each spot light
+            for(unsigned int i = 0; i < spotLights.size(); ++i)
+            {
+                lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
+            }
 
             const Material::Ptr& material = (*rit)->material();
 
@@ -250,7 +259,7 @@ void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
 
 void Renderer::drawTextureDebug()
 {
-    shadowTech_.bindTexture(GL_TEXTURE0);
+    shadowTech_.bindSpotLight(0, GL_TEXTURE0);
     nullTech_.bind();
     nullTech_.setUniformValue("gShadowMap", 0);
 
