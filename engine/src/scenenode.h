@@ -26,11 +26,15 @@ public:
     virtual Entities::size_type numEntities() const;
     virtual Entity* getEntity(Entities::size_type index);
 
+    virtual bool isShadowCaster() const;
+    virtual void setShadowCaster(bool shadows);
+
 protected:
     virtual Node* createChildImpl(const QMatrix4x4& transformation);
 
 private:
     Entities entities_;
+    bool castShadows_;
 };
 
 }

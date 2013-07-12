@@ -10,8 +10,7 @@
 #include "technique/shadowmap.h"
 #include "renderable/quad.h"
 
-#include <list>
-#include <vector>
+#include <deque>
 
 namespace Engine {
 
@@ -31,13 +30,16 @@ public:
     bool initialize(int width, int height, int samples);
 
 private:
-    typedef std::list<Renderable*> RenderList;
-    typedef std::vector<std::pair<QMatrix4x4, RenderList>> RenderQueue;
+    typedef std::pair<QMatrix4x4, Entity::RenderList> VisibleNode;
+    typedef std::deque<VisibleNode> RenderQueue;
 
     QOpenGLFunctions_4_2_Core* gl;
 
     SceneNode rootNode_;
-    RenderQueue renderQueue_;
+
+    // TODO: Move to a separate class to allow more sophisticated culling
+    RenderQueue visibles_;
+    std::deque<const VisibleNode*> shadowCasters_;
 
     BasicLightning lightningTech_;
     ShadowMapTechnique shadowTech_;
@@ -61,6 +63,7 @@ private:
     void updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView);
     void renderPass(AbstractScene* scene);
     void shadowMapPass(AbstractScene* scene);
+
     void destroyBuffers();
 
     Renderer(const Renderer&);

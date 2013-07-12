@@ -70,7 +70,7 @@ void ShadowMapTechnique::enableSpotLight(size_t index, const SpotLight& light)
     // Calculate world matrix
     QMatrix4x4& vp = spotLightVPs_.at(index);
     vp.setToIdentity();
-    vp.perspective(30.0f, static_cast<float>(spotWidth_) / spotHeight_, 1.0f, 50.0f);
+    vp.perspective(40.0f, static_cast<float>(spotWidth_) / spotHeight_, 1.0f, 50.0f);
 
     QMatrix4x4 look;
     look.lookAt(light.position, light.position + light.direction, QVector3D(0, 1, 0));

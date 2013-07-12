@@ -5,7 +5,7 @@
 using namespace Engine;
 
 SceneNode::SceneNode()
-    : Node()
+    : Node(), castShadows_(true)
 {
 }
 
@@ -65,4 +65,14 @@ Entity* SceneNode::getEntity(Entities::size_type index)
 Node* SceneNode::createChildImpl(const QMatrix4x4& transformation)
 {
     return new SceneNode;
+}
+
+bool SceneNode::isShadowCaster() const
+{
+    return castShadows_;
+}
+
+void SceneNode::setShadowCaster(bool shadows)
+{
+    castShadows_ = shadows;
 }

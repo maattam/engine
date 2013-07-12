@@ -4,7 +4,7 @@
 #include <QWindow>
 #include <QOpenGLFunctions_4_2_Core>
 #include <QOpenGLContext>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QPoint>
 
 #include <map>
@@ -52,15 +52,14 @@ private:
     Engine::Renderer* renderer_;
     BasicScene* scene_;
 
-    int frame_;
+    unsigned int frame_;
     QPoint lastMouse_;
     std::map<int, bool> keyMap_;
 
     QOpenGLContext* context_;
     QOpenGLFunctions_4_2_Core* funcs_;
 
-    QTimer* renderTimer_;
-    QTime lastTime_;
+    QElapsedTimer lastTime_;
 };
 
 #endif // SCENEVIEW_H

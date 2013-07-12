@@ -101,7 +101,6 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
         qDebug() << "Failed to load torus!";
     }
 
-
     // Load cubes
     for(int i = 0; i < 2; ++i)
     {
@@ -242,6 +241,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
         torusNode_->applyTransformation(mat);
         torusNode_->attachEntity(torus_.get());
+        torusNode_->setShadowCaster(false);
     }
 
     // Sphere
@@ -258,6 +258,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
         sphereNode_->applyTransformation(mat);
         sphereNode_->attachEntity(sphere_.get());
+        sphereNode_->setShadowCaster(false);
 
         // Platform light
         mat.setToIdentity();
@@ -267,6 +268,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         auto node = dynamic_cast<Engine::SceneNode*>(scene->createChild());
         node->applyTransformation(mat);
         node->attachEntity(sphere_.get());
+        node->setShadowCaster(false);
     }
 
     // platform
@@ -306,6 +308,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
                 Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(ringnode->createChild());
                 node->applyTransformation(mat);
                 node->attachEntity(cube_[abs((i + j)) % 2].get());
+                node->setShadowCaster(false);
 
                 cubes_.push_back(node);
             }

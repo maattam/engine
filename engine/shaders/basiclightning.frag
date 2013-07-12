@@ -75,14 +75,14 @@ uniform bool gHasTangents;
 
 float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 {
-	// Project shadow map on target fragment
+	// Project shadow map on current fragment
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords = 0.5 * projCoords + 0.5;
 	
 	vec2 uvCoords = vec2(projCoords.x, projCoords.y);
 	float depth = texture(shadowMap, uvCoords).x;
 	
-    // Compare against a bias to prevent shadow acne
+    // Compare against a bias to prevent shadow acne, TODO!
 	if(depth < (projCoords.z + 0.00001))
 		return 0.5;
 	else
@@ -159,6 +159,7 @@ vec4 calcSpotLight(in SpotLight light, in vec3 normal)
 
 vec3 calcBumpedNormal()
 {
+    // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
 	vec3 normal = normalize(normal0);
 	
 	if(!gHasTangents)

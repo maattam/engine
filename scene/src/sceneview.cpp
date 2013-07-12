@@ -3,16 +3,16 @@
 #include <QCoreApplication>
 #include <QSurfaceFormat>
 #include <QWheelEvent>
-#include <QTimer>
 #include <QScreen>
 #include <QCursor>
+
+#include <QTimer> // singleShot
 
 #include "camera.h"
 #include "renderer.h"
 
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr),
-    renderTimer_(nullptr), scene_(nullptr)
+    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr), scene_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
 
@@ -22,6 +22,7 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     format.setMinorVersion(2);
     format.setSamples(4);
     format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     setFormat(format);
 }
 
@@ -36,10 +37,7 @@ SceneView::~SceneView()
 
 void SceneView::update()
 {
-    if(renderer_ == nullptr)
-        return;
-
-    unsigned int lastUpdate = lastTime_.restart();
+    qint64 lastUpdate = lastTime_.restart();
 
     // Elapsed in seconds
     float elapsed = static_cast<float>(lastUpdate) / 1000;
@@ -79,21 +77,14 @@ void SceneView::initialize()
     }
 
     renderer_->prepareScene(scene_);
-
     scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
-
-    renderTimer_ = new QTimer(this);
-    connect(renderTimer_, SIGNAL(timeout()), this, SLOT(renderNow()));
-
-    // Lock scene update rate to screen refresh rate
-    renderTimer_->start(static_cast<qreal>(1000) / screen()->refreshRate() / 2);
     lastTime_.start();
 }
 
 void SceneView::handleInput(float elapsed)
 {
     const float speed = 10.0f;
-    const float mouseSpeed = 0.20f;
+    const float mouseSpeed = 0.15f;
 
     Engine::Camera* camera = scene_->activeCamera();
 
@@ -168,11 +159,6 @@ void SceneView::exposeEvent(QExposeEvent* event)
 
 void SceneView::renderNow()
 {
-    update();
-
-    if(!isExposed())
-        return;
-
     bool needsInitialize = false;
 
     if(context_ == nullptr)
@@ -198,9 +184,12 @@ void SceneView::renderNow()
         initialize();
     }
 
+    update();
     render();
-    
+
     context_->swapBuffers(this);
+
+    QTimer::singleShot(0, this, SLOT(renderNow()));
 }
 
 void SceneView::keyPressEvent(QKeyEvent* event)

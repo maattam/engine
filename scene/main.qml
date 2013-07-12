@@ -4,10 +4,10 @@ Rectangle {
     width: 800
     height: 600
 
-    color: "black"
+    color: "transparent"
 
     Text {
-        color: "white"
+        color: "black"
         text: "Hurrr"
         verticalAlignment: Text.AlignLeft
         horizontalAlignment: Text.AlignTop

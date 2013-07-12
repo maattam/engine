@@ -59,15 +59,15 @@ bool Renderer::initialize(int width, int height, int samples)
     if(width <= 0 || height <= 0 || samples < 0)
         return false;
 
-    if(!lightningTech_.init())
-        return false;
-
-    if(!shadowTech_.initSpotLights(width, height, BasicLightning::MAX_SPOT_LIGHTS))
-        return false;
-
     destroyBuffers();
     width_ = width;
     height_ = height;
+
+    if(!lightningTech_.init())
+        return false;
+
+    if(!shadowTech_.initSpotLights(width_, height_, BasicLightning::MAX_SPOT_LIGHTS))
+        return false;
 
     // Initialize textures
    gl->glGenTextures(1, &renderTexture_);
@@ -109,7 +109,10 @@ bool Renderer::initialize(int width, int height, int samples)
 
 void Renderer::render(AbstractScene* scene)
 {
-    renderQueue_.clear();
+    visibles_.clear();
+    shadowCasters_.clear();
+
+    // Cull visibles and shadow casters
     updateRenderQueue(&rootNode_, rootNode_.transformation());
 
     gl->glEnable(GL_CULL_FACE);
@@ -139,7 +142,7 @@ void Renderer::render(AbstractScene* scene)
         fx->render(quad_);
     }
 
-    drawTextureDebug();
+    //drawTextureDebug();
 }
 
 void Renderer::shadowMapPass(AbstractScene* scene)
@@ -153,13 +156,13 @@ void Renderer::shadowMapPass(AbstractScene* scene)
         shadowTech_.enableSpotLight(i, spotLights.at(i));
         gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-        for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+        for(auto it = shadowCasters_.begin(); it != shadowCasters_.end(); ++it)
         {
-            RenderList& node = it->second;
+            const Entity::RenderList& node = (*it)->second;
+            shadowTech_.setLightMVP(shadowTech_.spotLightVP(i) * (*it)->first);
 
             for(auto rit = node.begin(); rit != node.end(); ++rit)
             {
-                shadowTech_.setLightMVP(shadowTech_.spotLightVP(i) * it->first);
                 (*rit)->render();
             }
         }
@@ -191,21 +194,21 @@ void Renderer::renderPass(AbstractScene* scene)
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0, 0, 0, 0);
 
-    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+    for(auto it = visibles_.begin(); it != visibles_.end(); ++it)
     {
-        RenderList& node = it->second;
+        Entity::RenderList& node = it->second;
+
         lightningTech_.setWorldView(it->first);
+        lightningTech_.setMVP(vp * it->first);
+
+        // Set translation matrix for each spot light
+        for(unsigned int i = 0; i < spotLights.size(); ++i)
+        {
+            lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
+        }
 
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
-            lightningTech_.setMVP(vp * it->first);
-
-            // Set translation matrix for each spot light
-            for(unsigned int i = 0; i < spotLights.size(); ++i)
-            {
-                lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
-            }
-
             const Material::Ptr& material = (*rit)->material();
 
             lightningTech_.setMaterialAttributes(material->getAttributes());
@@ -235,17 +238,25 @@ void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
         return;
     }
 
+    QMatrix4x4 nodeView = worldView * node->transformation();
+
     if(node->numEntities() > 0)
     {
-        renderQueue_.push_back(std::make_pair(worldView * node->transformation(), RenderList()));
+        visibles_.push_back(std::make_pair(nodeView, Entity::RenderList()));
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {
             Entity* entity = node->getEntity(i);
             if(entity != nullptr)
             {
-                entity->updateRenderList(renderQueue_.back().second);
+                entity->updateRenderList(visibles_.back().second);
             }
+        }
+
+        if(node->isShadowCaster())
+        {
+            const VisibleNode& added = visibles_.back();
+            shadowCasters_.push_back(&added);
         }
     }
 
@@ -253,7 +264,7 @@ void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
     for(size_t i = 0; i < node->numChildren(); ++i)
     {
         SceneNode* inode = dynamic_cast<SceneNode*>(node->getChild(i));
-        updateRenderQueue(inode, worldView * node->transformation());
+        updateRenderQueue(inode, nodeView);
     }
 }
 

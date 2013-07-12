@@ -12,7 +12,6 @@ using namespace Engine;
 Mesh::Mesh(QOpenGLFunctions_4_2_Core* funcs)
     : Entity(), gl(funcs)
 {
-    setShadowCaster(true);
 }
 
 Mesh::~Mesh()
