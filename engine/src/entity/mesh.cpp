@@ -1,4 +1,6 @@
 #include "mesh.h"
+#include "common.h"
+#include "resourcedespatcher.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -10,8 +12,7 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-Mesh::Mesh(QOPENGL_FUNCTIONS* funcs)
-    : Entity(), gl(funcs)
+Mesh::Mesh() : Entity()
 {
 }
 
@@ -25,19 +26,19 @@ void Mesh::updateRenderList(RenderList& list)
         list.push_back(mesh.get());
 }
 
-bool Mesh::loadFromFile(const std::string& fileName)
+bool Mesh::load(const QString& fileName)
 {
     entries_.clear();
 
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(fileName,
+    const aiScene* scene = importer.ReadFile(fileName.toStdString(),
         aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace |
         aiProcess_FlipUVs | aiProcessPreset_TargetRealtime_MaxQuality);
 
     if(scene == nullptr)
     {
-        qDebug() << "Error loading '" << fileName.c_str() << "': " << importer.GetErrorString();
+        qDebug() << "Error loading '" << fileName << "': " << importer.GetErrorString();
         return false;
     }
 
@@ -57,7 +58,7 @@ void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
     }
 }
 
-bool Mesh::initFromScene(const aiScene* scene, const std::string& fileName)
+bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
 {
     // Resize to fit
     entries_.resize(scene->mNumMeshes);
@@ -129,33 +130,33 @@ void Mesh::initSubMesh(const aiMesh* mesh,
     }
 }
 
-void Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
+void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
 {
     // Extract the directory part of the file name
-    std::string::size_type index = fileName.find_last_of("/");
-    std::string dir = ".";
+    int index = fileName.lastIndexOf("/");
+    QString dir = ".";
 
     if(index == 0)
         dir = "/";
 
     else
-        dir = fileName.substr(0, index);
+        dir = fileName.mid(0, index);
 
     for(size_t i = 0; i < scene->mNumMaterials; ++i)
     {
         const aiMaterial* material = scene->mMaterials[i];
         aiString path;
-        std::string fullpath = dir + "/";
+        QString fullpath = dir + "/";
 
-        materials_[i] = std::make_shared<Material>(gl);
+        materials_[i] = std::make_shared<Material>(despatcher());
 
         if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
         {
             if(material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
             {
-                Texture::Ptr texture = std::make_shared<Texture>(gl);
+                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
 
-                if(loadMaterial(texture, fullpath + path.data))
+                if(texture != nullptr)
                 {
                     materials_[i]->setTexture(Material::TEXTURE_DIFFUSE, texture);
                 }
@@ -166,9 +167,9 @@ void Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
         {
             if(material->GetTexture(aiTextureType_NORMALS, 0, &path) == AI_SUCCESS)
             {
-                Texture::Ptr texture = std::make_shared<Texture>(gl);
+                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
 
-                if(loadMaterial(texture, fullpath + path.data))
+                if(texture != nullptr)
                 {
                     materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
                 }
@@ -179,31 +180,13 @@ void Mesh::initMaterials(const aiScene* scene, const std::string& fileName)
         {
             if(material->GetTexture(aiTextureType_SPECULAR, 0, &path) == AI_SUCCESS)
             {
-                Texture::Ptr texture = std::make_shared<Texture>(gl);
+                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
 
-                if(loadMaterial(texture, fullpath + path.data))
+                if(texture != nullptr)
                 {
                     materials_[i]->setTexture(Material::TEXTURE_SPECULAR, texture);
                 }
             }
         }
-    }
-}
-
-bool Mesh::loadMaterial(Texture::Ptr& texture, const std::string& fileName)
-{
-    if(!texture->loadFromFile(fileName.c_str()))
-    {
-        qDebug() << "Error loading texture '" << fileName.c_str() << "'";
-        texture.reset();
-
-        return false;
-    }
-
-    else
-    {
-        qDebug() << "Loaded texture '" << fileName.c_str() << "'";
-
-        return true;
     }
 }

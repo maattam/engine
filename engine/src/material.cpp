@@ -1,10 +1,13 @@
 #include "material.h"
+#include "common.h"
+#include "resourcedespatcher.h"
 
 #include <QDebug>
 
 using namespace Engine;
 
-Material::Material(QOPENGL_FUNCTIONS* funcs) : gl(funcs)
+Material::Material(ResourceDespatcher* despatcher)
+    : despatcher_(despatcher)
 {
 }
 
@@ -20,14 +23,9 @@ const Texture::Ptr& Material::getTexture(TextureType type)
     if(iter == textures_.end() || iter->second == nullptr)
     {
         qDebug() << "Warning: Material has no texture of type '" << type << "'";
+        textures_[type] = despatcher_->get<Texture>(":/images/white.png");
 
-        Texture::Ptr& tex = textures_[type];
-        if(!loadNullTexture(tex))
-        {
-            qDebug() << "Failed to load null texture";
-        }
-
-        return tex;
+        return textures_[type];
     }
 
     return iter->second;
@@ -62,20 +60,6 @@ void Material::setDiffuseColor(const QVector3D& color)
 const Material::Attributes& Material::getAttributes() const
 {
     return attributes_;
-}
-
-bool Material::loadNullTexture(Texture::Ptr& texture) const
-{
-    // Load 1x1 white texture
-    texture = std::make_shared<Texture>(gl);
-
-    if(!texture->loadFromFile(":/images/white.png"))
-    {
-        return false;
-    }
-
-    setTextureOptions(texture);
-    return true;
 }
 
 void Material::setTextureOptions(const Texture::Ptr& texture) const

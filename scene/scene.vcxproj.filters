@@ -40,9 +40,6 @@
     <ClCompile Include="src\sceneview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\shadowscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_sceneview.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\basicscene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\shadowscene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

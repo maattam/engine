@@ -163,6 +163,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp" />
+    <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
@@ -178,6 +179,8 @@
     <ClCompile Include="src\renderable\renderable.cpp" />
     <ClCompile Include="src\renderable\submesh.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\resource.cpp" />
+    <ClCompile Include="src\resourcedespatcher.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -215,6 +218,8 @@
     <ClInclude Include="src\renderable\renderable.h" />
     <ClInclude Include="src\renderable\submesh.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\resource.h" />
+    <ClInclude Include="src\resourcedespatcher.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\technique.h" />

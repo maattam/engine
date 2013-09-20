@@ -6,8 +6,8 @@ using namespace Engine;
 
 GLuint Texture::boundTextureId_ = 0;
 
-Texture::Texture(QOPENGL_FUNCTIONS* funcs)
-    : gl(funcs), textureId_(0), bound_(false)
+Texture::Texture()
+    : Resource(), textureId_(0), bound_(false)
 {
 }
 
@@ -38,7 +38,7 @@ void Texture::create(GLsizei width, GLsizei height, GLint internalFormat, GLint 
     gl->glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
 }
 
-bool Texture::loadFromFile(const std::string& fileName)
+bool Texture::load(const QString& fileName)
 {
     // Delete old texture
     if(textureId_ != 0)
@@ -48,7 +48,7 @@ bool Texture::loadFromFile(const std::string& fileName)
 
     QImage image;
 
-    if(!image.load(fileName.c_str()))
+    if(!image.load(fileName))
     {
         return false;
     }

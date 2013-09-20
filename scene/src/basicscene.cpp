@@ -6,6 +6,7 @@
 #include "entity/mesh.h"
 
 #include <qmath.h>
+#include <QDebug>
 
 using namespace Engine;
 
@@ -40,11 +41,8 @@ Entity::Camera* BasicScene::activeCamera()
     return &camera_;
 }
 
-void BasicScene::initialize(QOPENGL_FUNCTIONS* funcs)
+void BasicScene::initialize()
 {
-    // Load all our stuff
-    gl = funcs;
-
     // Set up directional light
     directionalLight_.diffuseIntensity = 0.2f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
@@ -73,58 +71,30 @@ void BasicScene::initialize(QOPENGL_FUNCTIONS* funcs)
     spotLights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = std::make_shared<Entity::Mesh>(funcs);
-    if(!oildrum_->loadFromFile("./assets/oildrum.dae"))
-    {
-        qDebug() << "Failed to load oildrum!";
-    }
-
-    hellknight_ = std::make_shared<Entity::Mesh>(funcs);
-    if(!hellknight_->loadFromFile("./assets/hellknight/hellknight.md5mesh"))
-    {
-        qDebug() << "Failed to load hellknight!";
-    }
-
-    platform_ = std::make_shared<Entity::Mesh>(funcs);
-    if(!platform_->loadFromFile("./assets/blocks.dae"))
-    {
-        qDebug() << "Failed to load platform!";
-    }
-
-    sphere_ = std::make_shared<Entity::Mesh>(funcs);
-    if(!sphere_->loadFromFile("./assets/sphere.obj"))
-    {
-        qDebug() << "Failed to load sphere!";
-    }
-
-    torus_ = std::make_shared<Entity::Mesh>(funcs);
-    if(!torus_->loadFromFile("./assets/torus.obj"))
-    {
-        qDebug() << "Failed to load torus!";
-    }
+    oildrum_ = despatcher_.get<Entity::Mesh>("./assets/oildrum.dae");
+    hellknight_ = despatcher_.get<Entity::Mesh>("./assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher_.get<Entity::Mesh>("./assets/blocks.dae");
+    sphere_ = despatcher_.get<Entity::Mesh>("./assets/sphere.obj");
+    torus_ = despatcher_.get<Entity::Mesh>("./assets/torus.obj");
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
     {
-        std::string file = "./assets/wooden_crate" + QString::number(i+1).toStdString() + ".png";
+        QString file = "./assets/wooden_crate" + QString::number(i+1) + ".png";
 
-        Texture::Ptr tex = std::make_shared<Texture>(funcs);
-        if(!tex->loadFromFile(file))
+        Texture::Ptr tex = despatcher_.get<Texture>(file);
+        if(tex != nullptr)
         {
-            qDebug() << "Failed to load texture: " << file.c_str();
-        }
-
-        else
-        {
-            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(funcs);
+            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(&despatcher_);
             mat->setSpecularIntensity(2.0f);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
-            materials_.push_back(mat);
 
-            cube_[i] = std::make_shared<Entity::BoxPrimitive>(funcs);
+            cube_[i] = std::make_shared<Entity::BoxPrimitive>(gl);
             cube_[i]->setMaterial(mat);
         }
     }
+
+    qDebug() << "Managed objects: " << despatcher_.numManaged();
 }
 
 void BasicScene::update(unsigned int elapsedMs)

@@ -50,11 +50,9 @@
     <ClCompile Include="src\basicscene.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\sceneview.cpp" />
-    <ClCompile Include="src\shadowscene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\basicscene.h" />
-    <ClInclude Include="src\shadowscene.h" />
     <CustomBuild Include="src\sceneview.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>

@@ -10,4 +10,6 @@
 
 #include QOPENGL_HEADER
 
+extern QOPENGL_FUNCTIONS* gl;
+
 #endif // COMMON_H

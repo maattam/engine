@@ -66,7 +66,7 @@ void SceneView::initialize()
 
     // Load scene
     scene_ = new BasicScene;
-    scene_->initialize(funcs_);
+    scene_->initialize();
 
     // Initialize renderer
     renderer_ = new Engine::Renderer(funcs_);
@@ -181,6 +181,7 @@ void SceneView::renderNow()
             exit(-1);
         }
 
+        gl = funcs_;
         initialize();
     }
 

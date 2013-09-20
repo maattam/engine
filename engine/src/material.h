@@ -1,22 +1,22 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include <memory>
 #include <map>
-
+#include <memory>
 #include <QVector3D>
-#include "common.h"
 
 #include "texture.h"
 
 namespace Engine {
+
+class ResourceDespatcher;
 
 class Material
 {
 public:
     typedef std::shared_ptr<Material> Ptr;
 
-    Material(QOPENGL_FUNCTIONS* funcs);
+    Material(ResourceDespatcher* despatcher);
     ~Material();
 
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR };
@@ -48,12 +48,10 @@ public:
     const Attributes& getAttributes() const;
 
 private:
-    QOPENGL_FUNCTIONS* gl;
-
     std::map<TextureType, Texture::Ptr> textures_;
     Attributes attributes_;
+    ResourceDespatcher* despatcher_;
 
-    bool loadNullTexture(Texture::Ptr& texture) const;
     void setTextureOptions(const Texture::Ptr& texture) const;
 
     Material(const Material&);

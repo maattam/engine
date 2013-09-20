@@ -2,24 +2,23 @@
 #define TEXTURE_H
 
 #include "common.h"
-
-#include <string>
+#include "resource.h"
 #include <memory>
 
 namespace Engine {
 
-class Texture
+class Texture : public Resource
 {
 public:
     typedef std::shared_ptr<Texture> Ptr;
 
-    explicit Texture(QOPENGL_FUNCTIONS* funcs);
+    Texture();
     ~Texture();
 
     void create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
         GLenum type, const GLvoid* pixels = nullptr);
 
-    bool loadFromFile(const std::string& fileName);
+    bool load(const QString& fileName);
 
     void setFiltering(GLenum magFilter, GLenum minFilter);
     void setWrap(GLenum wrap_s, GLenum wrap_t);
@@ -33,14 +32,10 @@ public:
     bool bound() const;
 
 private:
-    QOPENGL_FUNCTIONS* gl;
     GLuint textureId_;
     bool bound_;
 
     static GLuint boundTextureId_;
-
-    Texture(const Texture&);
-    Texture& operator=(const Texture&);
 };
 
 }
