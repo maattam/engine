@@ -8,7 +8,7 @@ namespace Engine { namespace Renderable {
 class Cube : public Renderable
 {
 public:
-    explicit Cube(QOPENGL_FUNCTIONS* funcs);
+    explicit Cube();
     ~Cube();
 
     virtual void render() const;

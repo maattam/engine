@@ -12,8 +12,8 @@ const GLfloat QUAD_VERTEX_DATA[] = {
     1.0f,  1.0f, 0.0f,
 };
 
-Quad::Quad(QOPENGL_FUNCTIONS* funcs)
-    : Renderable(funcs), vertexBuffer_(0)
+Quad::Quad()
+    : Renderable(), vertexBuffer_(0)
 {
     if(!bindVertexArray())
         return;

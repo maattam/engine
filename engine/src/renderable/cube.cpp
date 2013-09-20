@@ -54,7 +54,7 @@ const GLfloat VERTEX_DATA[] = {
      1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f
 };
 
-Cube::Cube(QOPENGL_FUNCTIONS* funcs) : Renderable(funcs), vertexBuffer_(0)
+Cube::Cube() : Renderable(), vertexBuffer_(0)
 {
     bindVertexArray();
 

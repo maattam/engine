@@ -19,7 +19,7 @@ class SubMesh : public Renderable
 public:
     typedef std::shared_ptr<SubMesh> Ptr;
 
-    explicit SubMesh(QOPENGL_FUNCTIONS* funcs);
+    explicit SubMesh();
     ~SubMesh();
 
     virtual void render() const;

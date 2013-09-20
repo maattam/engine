@@ -4,7 +4,6 @@
 #include "technique.h"
 #include "entity/light.h"
 
-#include "common.h"
 #include <QMatrix4x4>
 
 #include <vector>
@@ -14,7 +13,7 @@ namespace Engine { namespace Technique {
 class ShadowMap : public Technique
 {
 public:
-    ShadowMap(QOPENGL_FUNCTIONS* funcs);
+    ShadowMap();
     ~ShadowMap();
 
     bool initSpotLights(unsigned int width, unsigned int height, size_t count);
@@ -25,8 +24,6 @@ public:
     void setLightMVP(const QMatrix4x4& mvp);
 
 private:
-    QOPENGL_FUNCTIONS* gl;
-
     std::vector<GLuint> spotLightFbos_;
     std::vector<GLuint> spotLightTextures_;
     std::vector<QMatrix4x4> spotLightVPs_;

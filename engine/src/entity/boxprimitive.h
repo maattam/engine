@@ -10,7 +10,7 @@ namespace Engine { namespace Entity {
 class BoxPrimitive : public Entity
 {
 public:
-    BoxPrimitive(QOPENGL_FUNCTIONS* funcs);
+    BoxPrimitive();
     ~BoxPrimitive();
 
     virtual void updateRenderList(RenderList& list);

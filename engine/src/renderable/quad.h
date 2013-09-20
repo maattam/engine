@@ -8,7 +8,7 @@ namespace Engine { namespace Renderable {
 class Quad : public Renderable
 {
 public:
-    explicit Quad(QOPENGL_FUNCTIONS* funcs);
+    explicit Quad();
     ~Quad();
 
     virtual void render() const;

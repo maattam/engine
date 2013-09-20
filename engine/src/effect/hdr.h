@@ -15,15 +15,13 @@ namespace Engine { namespace Effect {
 class Hdr : public Postfx
 {
 public:
-    Hdr(QOPENGL_FUNCTIONS* funcs);
+    Hdr();
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
     virtual void render(const Renderable::Quad& quad);
 
 private:
-    QOPENGL_FUNCTIONS* gl;
-
     int samples_;
 
     DownSampler downSampler_;

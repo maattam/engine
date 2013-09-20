@@ -5,8 +5,8 @@
 using namespace Engine;
 using namespace Renderable;
 
-SubMesh::SubMesh(QOPENGL_FUNCTIONS* funcs)
-    : Renderable(funcs), numIndices_(0)
+SubMesh::SubMesh()
+    : Renderable(), numIndices_(0)
 {
     for(int i = 0; i < NUM_BUFFERS; ++i)
         buffers_[i] = 0;

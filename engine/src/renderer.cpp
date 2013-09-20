@@ -12,8 +12,7 @@
 
 using namespace Engine;
 
-Renderer::Renderer(QOPENGL_FUNCTIONS* funcs)
-    : gl(funcs), quad_(funcs), shadowTech_(funcs)
+Renderer::Renderer()
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -22,7 +21,7 @@ Renderer::Renderer(QOPENGL_FUNCTIONS* funcs)
     height_ = 0;
 
     // HDR postfx
-    postfxChain_.push_back(new Effect::Hdr(funcs));
+    postfxChain_.push_back(new Effect::Hdr());
 
     // Program for debugging shadow maps
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");

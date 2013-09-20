@@ -82,7 +82,7 @@ bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
         unsigned int materialIndex = scene->mMeshes[i]->mMaterialIndex;
         assert(materialIndex < materials_.size());
 
-        entries_[i] = std::make_shared<Renderable::SubMesh>(gl);
+        entries_[i] = std::make_shared<Renderable::SubMesh>();
         entries_[i]->setMaterial(materials_[materialIndex]);
         entries_[i]->initMesh(vertices, normals, tangents, uvs, indices);
     }

@@ -2,8 +2,8 @@
 
 using namespace Engine::Renderable;
 
-Renderable::Renderable(QOPENGL_FUNCTIONS* funcs)
-    : gl(funcs), vertexArray_(0), hasTangents_(false)
+Renderable::Renderable()
+    : vertexArray_(0), hasTangents_(false)
 {
     gl->glGenVertexArrays(1, &vertexArray_);
 }

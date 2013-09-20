@@ -2,7 +2,6 @@
 #define RENDERABLE_H
 
 #include "common.h"
-
 #include "material.h"
 
 namespace Engine { namespace Renderable {
@@ -10,7 +9,7 @@ namespace Engine { namespace Renderable {
 class Renderable
 {
 public:
-    explicit Renderable(QOPENGL_FUNCTIONS* funcs);
+    explicit Renderable();
     virtual ~Renderable();
 
     virtual void render() const = 0;
@@ -22,8 +21,6 @@ public:
 
 protected:
     enum { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS, ATTRIB_TANGENTS };
-
-    QOPENGL_FUNCTIONS* gl;
 
     bool bindVertexArray() const;
     void setTangents(bool tangents);

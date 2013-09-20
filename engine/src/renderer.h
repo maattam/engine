@@ -20,7 +20,7 @@ class AbstractScene;
 class Renderer
 {
 public:
-    explicit Renderer(QOPENGL_FUNCTIONS* funcs);
+    explicit Renderer();
     ~Renderer();
 
     void prepareScene(AbstractScene* scene);
@@ -31,8 +31,6 @@ public:
 private:
     typedef std::pair<QMatrix4x4, Entity::RenderList> VisibleNode;
     typedef std::deque<VisibleNode> RenderQueue;
-
-    QOPENGL_FUNCTIONS* gl;
 
     Graph::SceneNode rootNode_;
 

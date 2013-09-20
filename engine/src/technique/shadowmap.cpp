@@ -1,14 +1,14 @@
 #include "shadowmap.h"
+#include "common.h"
 
 #include <QDebug>
-
 #include <cassert>
 
 using namespace Engine;
 using namespace Engine::Technique;
 
-ShadowMap::ShadowMap(QOPENGL_FUNCTIONS* funcs)
-    : Technique(), gl(funcs)
+ShadowMap::ShadowMap()
+    : Technique()
 {
     // Compile and link program
     program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/shadowmap.vert");

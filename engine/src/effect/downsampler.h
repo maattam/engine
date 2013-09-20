@@ -16,7 +16,7 @@ class DownSampler
 public:
     enum { SAMPLES = 4 };
 
-    explicit DownSampler(QOPENGL_FUNCTIONS* funcs);
+    DownSampler();
     ~DownSampler();
 
     bool init(int width, int height, GLenum format);
@@ -28,7 +28,6 @@ public:
 private:
     void destroy();
 
-    QOPENGL_FUNCTIONS* gl;
     QOpenGLShaderProgram program_;
     std::vector<QOpenGLFramebufferObject*> fbos_;
 

@@ -5,7 +5,7 @@
 using namespace Engine;
 using namespace Engine::Effect;
 
-DownSampler::DownSampler(QOPENGL_FUNCTIONS* funcs) : gl(funcs)
+DownSampler::DownSampler()
 {
     fbos_.resize(SAMPLES, nullptr);
 

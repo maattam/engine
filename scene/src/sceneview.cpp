@@ -69,8 +69,7 @@ void SceneView::initialize()
     scene_->initialize();
 
     // Initialize renderer
-    renderer_ = new Engine::Renderer(funcs_);
-
+    renderer_ = new Engine::Renderer();
     if(!renderer_->initialize(width(), height(), format().samples()))
     {
         qDebug() << "Failed to initialize renderer!";

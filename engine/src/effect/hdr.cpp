@@ -5,8 +5,8 @@
 using namespace Engine;
 using namespace Engine::Effect;
 
-Hdr::Hdr(QOPENGL_FUNCTIONS* funcs)
-    : gl(funcs), fbo_(nullptr), downSampler_(funcs), samples_(1)
+Hdr::Hdr()
+    : fbo_(nullptr), samples_(1)
 {
     // Tonemap program
     tonemap_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");

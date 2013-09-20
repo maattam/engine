@@ -89,7 +89,7 @@ void BasicScene::initialize()
             mat->setSpecularIntensity(2.0f);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
-            cube_[i] = std::make_shared<Entity::BoxPrimitive>(gl);
+            cube_[i] = std::make_shared<Entity::BoxPrimitive>();
             cube_[i]->setMaterial(mat);
         }
     }

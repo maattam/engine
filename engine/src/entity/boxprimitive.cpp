@@ -3,8 +3,7 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-BoxPrimitive::BoxPrimitive(QOPENGL_FUNCTIONS* funcs)
-    : cube_(funcs)
+BoxPrimitive::BoxPrimitive()
 {
 }
 
