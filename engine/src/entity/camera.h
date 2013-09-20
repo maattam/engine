@@ -3,7 +3,7 @@
 
 #include <QVector3D>
 
-namespace Engine {
+namespace Engine { namespace Entity {
 
     class Camera
     {
@@ -34,6 +34,6 @@ namespace Engine {
         float aspect_;
     };
 
-}
+}}
 
 #endif // CAMERA_H

@@ -1,6 +1,7 @@
 #include "cube.h"
 
 using namespace Engine;
+using namespace Renderable;
 
 const GLfloat VERTEX_DATA[] = {
     //  X     Y     Z       U     V          Normal
@@ -53,7 +54,7 @@ const GLfloat VERTEX_DATA[] = {
      1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f
 };
 
-Cube::Cube(QOpenGLFunctions_4_2_Core* funcs) : Renderable(funcs), vertexBuffer_(0)
+Cube::Cube(QOPENGL_FUNCTIONS* funcs) : Renderable(funcs), vertexBuffer_(0)
 {
     bindVertexArray();
 

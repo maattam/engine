@@ -163,21 +163,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp" />
-    <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
     <ClCompile Include="src\entity\boxprimitive.cpp" />
+    <ClCompile Include="src\entity\camera.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
     <ClCompile Include="src\entity\mesh.cpp" />
+    <ClCompile Include="src\graph\node.cpp" />
+    <ClCompile Include="src\graph\scenenode.cpp" />
     <ClCompile Include="src\material.cpp" />
-    <ClCompile Include="src\node.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
     <ClCompile Include="src\renderable\quad.cpp" />
     <ClCompile Include="src\renderable\renderable.cpp" />
     <ClCompile Include="src\renderable\submesh.cpp" />
     <ClCompile Include="src\renderer.cpp" />
-    <ClCompile Include="src\scenenode.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -196,22 +196,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h" />
-    <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\asset.h" />
+    <ClInclude Include="src\common.h" />
     <ClInclude Include="src\effect\downsampler.h" />
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
+    <ClInclude Include="src\entity\aabb.h" />
     <ClInclude Include="src\entity\boxprimitive.h" />
+    <ClInclude Include="src\entity\camera.h" />
     <ClInclude Include="src\entity\entity.h" />
+    <ClInclude Include="src\entity\light.h" />
     <ClInclude Include="src\entity\mesh.h" />
-    <ClInclude Include="src\light.h" />
+    <ClInclude Include="src\graph\node.h" />
+    <ClInclude Include="src\graph\scenenode.h" />
     <ClInclude Include="src\material.h" />
-    <ClInclude Include="src\node.h" />
     <ClInclude Include="src\renderable\cube.h" />
     <ClInclude Include="src\renderable\quad.h" />
     <ClInclude Include="src\renderable\renderable.h" />
     <ClInclude Include="src\renderable\submesh.h" />
     <ClInclude Include="src\renderer.h" />
-    <ClInclude Include="src\scenenode.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\technique.h" />
@@ -230,7 +233,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" Qt5Version_x0020_Win32="5.1.1-git" />
+      <UserProperties UicDir=".\GeneratedFiles" MocDir=".\GeneratedFiles\$(ConfigurationName)" MocOptions="" RccDir=".\GeneratedFiles" lupdateOnBuild="0" lupdateOptions="" lreleaseOptions="" Qt5Version_x0020_Win32="5.1.1-git" Qt5Version_x0020_x64="msvc2012_64_opengl" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

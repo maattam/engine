@@ -1,7 +1,7 @@
 #ifndef DOWNSAMPLER_H
 #define DOWNSAMPLER_H
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLShaderProgram>
 
@@ -9,26 +9,26 @@
 
 #include "renderable/quad.h"
 
-namespace Engine {
+namespace Engine { namespace Effect {
 
 class DownSampler
 {
 public:
     enum { SAMPLES = 4 };
 
-    explicit DownSampler(QOpenGLFunctions_4_2_Core* funcs);
+    explicit DownSampler(QOPENGL_FUNCTIONS* funcs);
     ~DownSampler();
 
     bool init(int width, int height, GLenum format);
     QOpenGLFramebufferObject* getSample(size_t n);
 
     // Expects the quad to be bound
-    void downSample(GLuint textureId, const Quad& quad);
+    void downSample(GLuint textureId, const Renderable::Quad& quad);
 
 private:
     void destroy();
 
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
     QOpenGLShaderProgram program_;
     std::vector<QOpenGLFramebufferObject*> fbos_;
 
@@ -36,6 +36,6 @@ private:
     DownSampler& operator=(const DownSampler&);
 };
 
-}
+}}
 
 #endif //DOWNSAMPLER_H

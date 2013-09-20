@@ -3,7 +3,7 @@
 
 #include <QOpenGLShaderProgram>
 
-namespace Engine {
+namespace Engine { namespace Technique {
 
 class Technique
 {
@@ -21,6 +21,6 @@ private:
     Technique& operator=(const Technique&);
 };
 
-}
+}}
 
 #endif //TECHNIQUE_H

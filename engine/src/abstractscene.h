@@ -3,13 +3,19 @@
 #ifndef ABSTRACTSCENE_H
 #define ABSTRACTSCENE_H
 
-#include "scenenode.h"
-#include "light.h"
+#include "entity/light.h"
+
+#include <vector>
 
 namespace Engine {
 
-class Camera;
-struct Light;
+namespace Entity {
+    class Camera;
+}
+
+namespace Graph {
+    class SceneNode;
+}
 
 class AbstractScene
 {
@@ -17,19 +23,19 @@ public:
     AbstractScene();
     virtual ~AbstractScene();
 
-    virtual Camera* activeCamera() = 0;
-    virtual const DirectionalLight& queryDirectionalLight() = 0;
-    virtual const std::vector<PointLight>& queryPointLights() = 0;
-    virtual const std::vector<SpotLight>& querySpotLights() = 0;
+    virtual Entity::Camera* activeCamera() = 0;
+    virtual const Entity::DirectionalLight& queryDirectionalLight() = 0;
+    virtual const std::vector<Entity::PointLight>& queryPointLights() = 0;
+    virtual const std::vector<Entity::SpotLight>& querySpotLights() = 0;
 
-    virtual void prepareScene(SceneNode* root);
+    virtual void prepareScene(Graph::SceneNode* root);
     virtual void update(unsigned int elapsed);
 
 protected:
-    SceneNode* sceneGraph();
+    Graph::SceneNode* sceneGraph();
 
 private:
-    SceneNode* scene_;
+    Graph::SceneNode* scene_;
 
     AbstractScene(const AbstractScene&);
     AbstractScene& operator=(const AbstractScene&);

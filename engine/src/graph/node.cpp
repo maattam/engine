@@ -3,6 +3,7 @@
 #include <algorithm>
 
 using namespace Engine;
+using namespace Engine::Graph;
 
 Node::Node()
     : parent_(nullptr)

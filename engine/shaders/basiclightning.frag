@@ -180,9 +180,8 @@ vec3 calcBumpedNormal()
 	
 	mat3 TBN = mat3(tangent, bitangent, normal);
 	vec3 newNormal = TBN * bumpMapNormal;
-	newNormal = normalize(newNormal);
 	
-	return newNormal;
+	return normalize(newNormal);
 }
 
 void main()

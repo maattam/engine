@@ -56,24 +56,21 @@
     <Filter Include="Header Files\technique">
       <UniqueIdentifier>{40518536-f723-4f26-b875-9fe008aa5366}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graph">
+      <UniqueIdentifier>{0b10d2cf-3369-4840-a5a0-5b0199a86b5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graph">
+      <UniqueIdentifier>{9228fef6-3081-4b0a-bfb7-e97c93eea38f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\node.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\scenenode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\texture.cpp">
@@ -118,6 +115,15 @@
     <ClCompile Include="src\renderable\submesh.cpp">
       <Filter>Source Files\renderable</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\camera.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graph\node.cpp">
+      <Filter>Source Files\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graph\scenenode.cpp">
+      <Filter>Source Files\graph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\passthrough.vert">
@@ -152,22 +158,10 @@
     <ClInclude Include="src\abstractscene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\node.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scenenode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\texture.h">
@@ -210,6 +204,27 @@
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\technique.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\camera.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\light.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graph\scenenode.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\aabb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graph\node.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\asset.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>

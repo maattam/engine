@@ -1,27 +1,26 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 #include <QOpenGLShaderProgram>
 
 #include "effect/postfx.h"
-#include "scenenode.h"
+#include "graph/scenenode.h"
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
 #include "renderable/quad.h"
+#include "entity/entity.h"
 
 #include <deque>
 
 namespace Engine {
 
 class AbstractScene;
-struct Light;
-class Renderable;
 
 class Renderer
 {
 public:
-    explicit Renderer(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Renderer(QOPENGL_FUNCTIONS* funcs);
     ~Renderer();
 
     void prepareScene(AbstractScene* scene);
@@ -33,16 +32,16 @@ private:
     typedef std::pair<QMatrix4x4, Entity::RenderList> VisibleNode;
     typedef std::deque<VisibleNode> RenderQueue;
 
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
-    SceneNode rootNode_;
+    Graph::SceneNode rootNode_;
 
     // TODO: Move to a separate class to allow more sophisticated culling
     RenderQueue visibles_;
     std::deque<const VisibleNode*> shadowCasters_;
 
-    BasicLightning lightningTech_;
-    ShadowMapTechnique shadowTech_;
+    Technique::BasicLightning lightningTech_;
+    Technique::ShadowMap shadowTech_;
     QOpenGLShaderProgram nullTech_;
 
     int width_;
@@ -53,14 +52,14 @@ private:
     GLuint depthRenderbuffer_;
 
     // Postprocess chain
-    std::list<Postfx*> postfxChain_;
+    std::list<Effect::Postfx*> postfxChain_;
 
     // Quad for postprocessing
-    Quad quad_;
+    Renderable::Quad quad_;
 
     void drawTextureDebug();
 
-    void updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView);
+    void updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& worldView);
     void renderPass(AbstractScene* scene);
     void shadowMapPass(AbstractScene* scene);
 

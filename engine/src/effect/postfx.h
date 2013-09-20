@@ -7,7 +7,7 @@
 
 #include "renderable/quad.h"
 
-namespace Engine {
+namespace Engine { namespace Effect {
 
 class Postfx
 {
@@ -16,7 +16,7 @@ public:
     virtual ~Postfx();
 
     virtual bool initialize(int width, int height, int samples) = 0;
-    virtual void render(const Quad& quad) = 0;
+    virtual void render(const Renderable::Quad& quad) = 0;
     
     void setInputTexture(GLuint textureId);
     void setOutputFbo(GLuint framebufferId);
@@ -33,6 +33,6 @@ private:
     Postfx& operator=(const Postfx&);
 };
 
-}
+}}
 
 #endif //POSTFX_H

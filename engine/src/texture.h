@@ -1,7 +1,7 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 
 #include <string>
 #include <memory>
@@ -13,7 +13,7 @@ class Texture
 public:
     typedef std::shared_ptr<Texture> Ptr;
 
-    explicit Texture(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Texture(QOPENGL_FUNCTIONS* funcs);
     ~Texture();
 
     void create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
@@ -33,7 +33,7 @@ public:
     bool bound() const;
 
 private:
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
     GLuint textureId_;
     bool bound_;
 

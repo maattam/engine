@@ -3,8 +3,9 @@
 #include <vector>
 
 using namespace Engine;
+using namespace Engine::Effect;
 
-Hdr::Hdr(QOpenGLFunctions_4_2_Core* funcs)
+Hdr::Hdr(QOPENGL_FUNCTIONS* funcs)
     : gl(funcs), fbo_(nullptr), downSampler_(funcs), samples_(1)
 {
     // Tonemap program
@@ -16,10 +17,6 @@ Hdr::Hdr(QOpenGLFunctions_4_2_Core* funcs)
     highpass_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
     highpass_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/highpass.frag");
     highpass_.link();
-
-    null_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
-    null_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/null.frag");
-    null_.link();
 }
 
 Hdr::~Hdr()
@@ -52,7 +49,7 @@ bool Hdr::initialize(int width, int height, int samples)
     return downSampler_.init(width, height, GL_RGBA16F);
 }
 
-void Hdr::render(const Quad& quad)
+void Hdr::render(const Renderable::Quad& quad)
 {
     if(inputTexture() == 0)
         return;
@@ -74,7 +71,7 @@ void Hdr::render(const Quad& quad)
     gl->glBindVertexArray(0);
 }
 
-void Hdr::renderHighpass(const Quad& quad)
+void Hdr::renderHighpass(const Renderable::Quad& quad)
 {
     fbo_->bind();
     gl->glClear(GL_COLOR_BUFFER_BIT);
@@ -94,7 +91,7 @@ void Hdr::renderHighpass(const Quad& quad)
     fbo_->release();
 }
 
-void Hdr::renderTonemap(const Quad& quad)
+void Hdr::renderTonemap(const Renderable::Quad& quad)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, outputFbo());
     gl->glClear(GL_COLOR_BUFFER_BIT);

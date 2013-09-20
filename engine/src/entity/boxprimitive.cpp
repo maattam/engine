@@ -1,8 +1,9 @@
 #include "boxprimitive.h"
 
 using namespace Engine;
+using namespace Engine::Entity;
 
-BoxPrimitive::BoxPrimitive(QOpenGLFunctions_4_2_Core* funcs)
+BoxPrimitive::BoxPrimitive(QOPENGL_FUNCTIONS* funcs)
     : cube_(funcs)
 {
 }

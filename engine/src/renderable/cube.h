@@ -3,12 +3,12 @@
 
 #include "renderable.h"
 
-namespace Engine {
+namespace Engine { namespace Renderable {
 
 class Cube : public Renderable
 {
 public:
-    explicit Cube(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Cube(QOPENGL_FUNCTIONS* funcs);
     ~Cube();
 
     virtual void render() const;
@@ -17,6 +17,6 @@ private:
     GLuint vertexBuffer_;
 };
 
-}
+}}
 
 #endif //CUBE_H

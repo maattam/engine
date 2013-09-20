@@ -3,17 +3,17 @@
 
 #include "renderable.h"
 
-namespace Engine {
+namespace Engine { namespace Renderable {
 
 class Quad : public Renderable
 {
 public:
-    explicit Quad(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Quad(QOPENGL_FUNCTIONS* funcs);
     ~Quad();
 
     virtual void render() const;
 
-    // Optimizations for instances quad rendering
+    // Optimizations for instanced quad rendering
     void bindVaoDirect() const;
     void renderDirect() const;
 
@@ -21,6 +21,6 @@ private:
     GLuint vertexBuffer_;
 };
 
-}
+}}
 
 #endif //QUAD_H

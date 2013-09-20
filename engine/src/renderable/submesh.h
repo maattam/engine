@@ -12,14 +12,14 @@
 #include <QVector3D>
 #include <QVector2D>
 
-namespace Engine {
+namespace Engine { namespace Renderable {
 
 class SubMesh : public Renderable
 {
 public:
     typedef std::shared_ptr<SubMesh> Ptr;
 
-    explicit SubMesh(QOpenGLFunctions_4_2_Core* funcs);
+    explicit SubMesh(QOPENGL_FUNCTIONS* funcs);
     ~SubMesh();
 
     virtual void render() const;
@@ -39,6 +39,6 @@ private:
     unsigned int numIndices_;
 };
 
-}
+}}
 
 #endif //MESH_H

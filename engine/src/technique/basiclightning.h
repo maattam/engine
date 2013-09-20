@@ -2,15 +2,15 @@
 #define BASICLIGHTNING_H
 
 #include "technique.h"
-#include "../light.h"
-#include "../material.h"
+#include "entity/light.h"
+#include "material.h"
 
 #include <QMatrix4x4>
 
 #include <vector>
 #include <string>
 
-namespace Engine {
+namespace Engine { namespace Technique {
 
 class BasicLightning : public Technique
 {
@@ -32,9 +32,9 @@ public:
     void setSpotLightMVP(size_t index, const QMatrix4x4& mvp);
     void setSpotLightShadowUnit(size_t index, GLuint shadow);
 
-    void setDirectionalLight(const DirectionalLight& light);
-    void setPointLights(const std::vector<PointLight>& lights);
-    void setSpotLights(const std::vector<SpotLight>& lights);
+    void setDirectionalLight(const Entity::DirectionalLight& light);
+    void setPointLights(const std::vector<Entity::PointLight>& lights);
+    void setSpotLights(const std::vector<Entity::SpotLight>& lights);
 
 private:
     GLuint mvpLocation_;
@@ -43,6 +43,6 @@ private:
         unsigned int index, const std::string& members = "") const;
 };
 
-}
+}}
 
 #endif //BASICLIGHTNING_H

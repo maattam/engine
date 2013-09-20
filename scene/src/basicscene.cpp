@@ -1,11 +1,13 @@
 #include "basicscene.h"
 
-#include "scenenode.h"
+#include "graph/scenenode.h"
 #include "entity/entity.h"
 #include "renderable/cube.h"
 #include "entity/mesh.h"
 
 #include <qmath.h>
+
+using namespace Engine;
 
 BasicScene::BasicScene()
     : camera_(QVector3D(-2, 6, 7), 0, 0.0f, 60.0f, 0.0f)
@@ -17,28 +19,28 @@ BasicScene::~BasicScene()
 {
 }
 
-const Engine::DirectionalLight& BasicScene::queryDirectionalLight()
+const Entity::DirectionalLight& BasicScene::queryDirectionalLight()
 {
     return directionalLight_;
 }
 
-const std::vector<Engine::PointLight>& BasicScene::queryPointLights()
+const std::vector<Entity::PointLight>& BasicScene::queryPointLights()
 {
     return pointLights_;
 }
 
-const std::vector<Engine::SpotLight>& BasicScene::querySpotLights()
+const std::vector<Entity::SpotLight>& BasicScene::querySpotLights()
 {
     return spotLights_;
 }
 
-Engine::Camera* BasicScene::activeCamera()
+Entity::Camera* BasicScene::activeCamera()
 {
     // We only have a single camera
     return &camera_;
 }
 
-void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
+void BasicScene::initialize(QOPENGL_FUNCTIONS* funcs)
 {
     // Load all our stuff
     gl = funcs;
@@ -49,7 +51,7 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     //directionalLight_.color = QVector3D(0, 0, 0);
 
     // Set up point lights
-    Engine::PointLight pointLight;
+    Entity::PointLight pointLight;
     pointLight.diffuseIntensity = 10.0f;
     pointLight.attenuation.exp = 0.1f;
 
@@ -61,7 +63,7 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     pointLights_.push_back(pointLight);
 
     // Set up spot lights
-    Engine::SpotLight spotLight;
+    Entity::SpotLight spotLight;
     spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
     spotLight.position = 2*QVector3D(-6.0f, 4.0f, 6.0f);
     spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
@@ -71,31 +73,31 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     spotLights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = std::make_shared<Engine::Mesh>(funcs);
+    oildrum_ = std::make_shared<Entity::Mesh>(funcs);
     if(!oildrum_->loadFromFile("./assets/oildrum.dae"))
     {
         qDebug() << "Failed to load oildrum!";
     }
 
-    hellknight_ = std::make_shared<Engine::Mesh>(funcs);
+    hellknight_ = std::make_shared<Entity::Mesh>(funcs);
     if(!hellknight_->loadFromFile("./assets/hellknight/hellknight.md5mesh"))
     {
         qDebug() << "Failed to load hellknight!";
     }
 
-    platform_ = std::make_shared<Engine::Mesh>(funcs);
+    platform_ = std::make_shared<Entity::Mesh>(funcs);
     if(!platform_->loadFromFile("./assets/blocks.dae"))
     {
         qDebug() << "Failed to load platform!";
     }
 
-    sphere_ = std::make_shared<Engine::Mesh>(funcs);
+    sphere_ = std::make_shared<Entity::Mesh>(funcs);
     if(!sphere_->loadFromFile("./assets/sphere.obj"))
     {
         qDebug() << "Failed to load sphere!";
     }
 
-    torus_ = std::make_shared<Engine::Mesh>(funcs);
+    torus_ = std::make_shared<Entity::Mesh>(funcs);
     if(!torus_->loadFromFile("./assets/torus.obj"))
     {
         qDebug() << "Failed to load torus!";
@@ -106,7 +108,7 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
     {
         std::string file = "./assets/wooden_crate" + QString::number(i+1).toStdString() + ".png";
 
-        Engine::Texture::Ptr tex = std::make_shared<Engine::Texture>(funcs);
+        Texture::Ptr tex = std::make_shared<Texture>(funcs);
         if(!tex->loadFromFile(file))
         {
             qDebug() << "Failed to load texture: " << file.c_str();
@@ -114,16 +116,12 @@ void BasicScene::initialize(QOpenGLFunctions_4_2_Core* funcs)
 
         else
         {
-            tex->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-            tex->setWrap(GL_REPEAT, GL_REPEAT);
-            tex->generateMipmaps();
-
             Engine::Material::Ptr mat = std::make_shared<Engine::Material>(funcs);
             mat->setSpecularIntensity(2.0f);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
             materials_.push_back(mat);
 
-            cube_[i] = std::make_shared<Engine::BoxPrimitive>(funcs);
+            cube_[i] = std::make_shared<Entity::BoxPrimitive>(funcs);
             cube_[i]->setMaterial(mat);
         }
     }
@@ -147,6 +145,7 @@ void BasicScene::update(unsigned int elapsedMs)
     sphereNode_->setPosition(lightPos);
 
     QMatrix4x4 mat;
+    // setPosition resets scale matrix so restore it
     mat.scale(0.2f);
     sphereNode_->applyTransformation(mat);
 
@@ -186,33 +185,33 @@ void BasicScene::update(unsigned int elapsedMs)
     }
 }
 
-void BasicScene::prepareScene(Engine::SceneNode* scene)
+void BasicScene::prepareScene(Graph::SceneNode* scene)
 {
     AbstractScene::prepareScene(scene);
 
     // Create nodes
-    platformNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
-    torusNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
-    cubeNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
-    sphereNode_ = dynamic_cast<Engine::SceneNode*>(scene->createChild());
+    platformNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
+    torusNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
+    cubeNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
+    sphereNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
 
     // Oildrum
     {
         QMatrix4x4 mat;
         mat.translate(-4, -2, 1);
 
-        Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
+        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
 
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
 
-        node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
+        node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
 
         mat.translate(6, -1, 0);
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
 
-        node = dynamic_cast<Engine::SceneNode*>(platformNode_->createChild());
+        node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
 
         mat.setToIdentity();
         mat.translate(-1, 2, 1);
@@ -265,7 +264,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         mat.translate(2*QVector3D(-6.0f, 4.0f, 6.0f));
         mat.scale(0.1f);
 
-        auto node = dynamic_cast<Engine::SceneNode*>(scene->createChild());
+        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(scene->createChild());
         node->applyTransformation(mat);
         node->attachEntity(sphere_.get());
         node->setShadowCaster(false);
@@ -281,6 +280,7 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
         platform_->setMaterialAttributes(attrib);
 
         QMatrix4x4 mat;
+        // dae expects z to be upwards so we rotate the model by pi/4 along its x-axis
         mat.rotate(-90.0f, 1, 0, 0);
 
         platformNode_->applyTransformation(mat);
@@ -296,18 +296,18 @@ void BasicScene::prepareScene(Engine::SceneNode* scene)
 
         for(int i = -layers/2; i < layers/2; ++i)
         {
-            Engine::SceneNode* ringnode = dynamic_cast<Engine::SceneNode*>(cubeNode_->createChild());
+            Graph::SceneNode* ringnode = dynamic_cast<Graph::SceneNode*>(cubeNode_->createChild());
 
             for(int j = 0; j < amount; ++j)
             {
-                float angle = 2 * M_PI * j / amount;
+                float angle = 2 * M_PI * j / static_cast<float>(amount);
 
                 QMatrix4x4 mat;
                 mat.translate(R * sin(angle), i * stepping, R * cos(angle));
 
-                Engine::SceneNode* node = dynamic_cast<Engine::SceneNode*>(ringnode->createChild());
+                Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(ringnode->createChild());
                 node->applyTransformation(mat);
-                node->attachEntity(cube_[abs((i + j)) % 2].get());
+                node->attachEntity(cube_[abs(i + j) % 2].get());
                 node->setShadowCaster(false);
 
                 cubes_.push_back(node);

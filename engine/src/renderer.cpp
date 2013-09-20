@@ -6,13 +6,13 @@
 
 #include "texture.h"
 #include "abstractscene.h"
-#include "camera.h"
-#include "light.h"
+#include "entity/camera.h"
+#include "entity/light.h"
 #include "effect/hdr.h"
 
 using namespace Engine;
 
-Renderer::Renderer(QOpenGLFunctions_4_2_Core* funcs)
+Renderer::Renderer(QOPENGL_FUNCTIONS* funcs)
     : gl(funcs), quad_(funcs), shadowTech_(funcs)
 {
     framebuffer_ = 0;
@@ -22,8 +22,9 @@ Renderer::Renderer(QOpenGLFunctions_4_2_Core* funcs)
     height_ = 0;
 
     // HDR postfx
-    postfxChain_.push_back(new Hdr(funcs));
+    postfxChain_.push_back(new Effect::Hdr(funcs));
 
+    // Program for debugging shadow maps
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/shadowmap.frag");
     nullTech_.link();
@@ -33,7 +34,7 @@ Renderer::~Renderer()
 {
     destroyBuffers();
 
-    for(Postfx* fx : postfxChain_)
+    for(Effect::Postfx* fx : postfxChain_)
         delete fx;
 }
 
@@ -66,11 +67,11 @@ bool Renderer::initialize(int width, int height, int samples)
     if(!lightningTech_.init())
         return false;
 
-    if(!shadowTech_.initSpotLights(width_, height_, BasicLightning::MAX_SPOT_LIGHTS))
+    if(!shadowTech_.initSpotLights(width_, height_, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
     // Initialize textures
-   gl->glGenTextures(1, &renderTexture_);
+    gl->glGenTextures(1, &renderTexture_);
 
     // Target texture
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, renderTexture_);
@@ -85,7 +86,7 @@ bool Renderer::initialize(int width, int height, int samples)
     // Initialize framebuffers
     gl->glGenFramebuffers(1, &framebuffer_);
 
-    // Render buffer
+    // Renderbuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
     gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
     gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
@@ -96,7 +97,7 @@ bool Renderer::initialize(int width, int height, int samples)
     gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
     // Initialize postprocess chain
-    Postfx* fx = postfxChain_.front();
+    Effect::Postfx* fx = postfxChain_.front();
 
     if(!fx->initialize(width, height, samples))
         return false;
@@ -112,8 +113,8 @@ void Renderer::render(AbstractScene* scene)
     visibles_.clear();
     shadowCasters_.clear();
 
-    // Cull visibles and shadow casters
-    updateRenderQueue(&rootNode_, rootNode_.transformation());
+    // Cull visibles and shadow casters, TODO
+    updateRenderQueue(&rootNode_, QMatrix4x4());
 
     gl->glEnable(GL_CULL_FACE);
     gl->glCullFace(GL_FRONT);
@@ -137,7 +138,7 @@ void Renderer::render(AbstractScene* scene)
 
     // Pass 3
     // Render postprocess chain
-    for(Postfx* fx : postfxChain_)
+    for(Effect::Postfx* fx : postfxChain_)
     {
         fx->render(quad_);
     }
@@ -231,7 +232,7 @@ void Renderer::renderPass(AbstractScene* scene)
     }
 }
 
-void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
+void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& worldView)
 {
     if(node == nullptr)
     {
@@ -246,7 +247,7 @@ void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {
-            Entity* entity = node->getEntity(i);
+            Entity::Entity* entity = node->getEntity(i);
             if(entity != nullptr)
             {
                 entity->updateRenderList(visibles_.back().second);
@@ -260,10 +261,10 @@ void Renderer::updateRenderQueue(SceneNode* node, const QMatrix4x4& worldView)
         }
     }
 
-    // Follow child nodes
+    // Recursively walk through child nodes
     for(size_t i = 0; i < node->numChildren(); ++i)
     {
-        SceneNode* inode = dynamic_cast<SceneNode*>(node->getChild(i));
+        Graph::SceneNode* inode = dynamic_cast<Graph::SceneNode*>(node->getChild(i));
         updateRenderQueue(inode, nodeView);
     }
 }

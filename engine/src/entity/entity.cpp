@@ -1,6 +1,6 @@
 #include "entity.h"
 
-using namespace Engine;
+using namespace Engine::Entity;
 
 Entity::Entity()
 {

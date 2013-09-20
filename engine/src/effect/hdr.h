@@ -4,25 +4,25 @@
 #include "postfx.h"
 #include "downsampler.h"
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFramebufferObject>
 
 #include "renderable/quad.h"
 
-namespace Engine {
+namespace Engine { namespace Effect {
 
 class Hdr : public Postfx
 {
 public:
-    Hdr(QOpenGLFunctions_4_2_Core* funcs);
+    Hdr(QOPENGL_FUNCTIONS* funcs);
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
-    virtual void render(const Quad& quad);
+    virtual void render(const Renderable::Quad& quad);
 
 private:
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
     int samples_;
 
@@ -31,13 +31,11 @@ private:
 
     QOpenGLShaderProgram tonemap_;
     QOpenGLShaderProgram highpass_;
-    QOpenGLShaderProgram null_;
 
-    void renderHighpass(const Quad& quad);
-    void blendSamples(const Quad& quad);
-    void renderTonemap(const Quad& quad);
+    void renderHighpass(const Renderable::Quad& quad);
+    void renderTonemap(const Renderable::Quad& quad);
 };
 
-}
+}}
 
 #endif //HDR_H

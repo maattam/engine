@@ -5,7 +5,7 @@
 #include <map>
 
 #include <QVector3D>
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 
 #include "texture.h"
 
@@ -16,7 +16,7 @@ class Material
 public:
     typedef std::shared_ptr<Material> Ptr;
 
-    Material(QOpenGLFunctions_4_2_Core* funcs);
+    Material(QOPENGL_FUNCTIONS* funcs);
     ~Material();
 
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR };
@@ -48,7 +48,7 @@ public:
     const Attributes& getAttributes() const;
 
 private:
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
     std::map<TextureType, Texture::Ptr> textures_;
     Attributes attributes_;

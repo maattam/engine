@@ -2,11 +2,11 @@
 #define SHADOWSCENE_H
 
 #include "abstractscene.h"
-#include "light.h"
-#include "camera.h"
+#include "entity/light.h"
+#include "entity/camera.h"
 #include "entity/mesh.h"
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 
 #include <memory>
 
@@ -16,23 +16,23 @@ public:
     ShadowScene();
     ~ShadowScene();
 
-    void initialize(QOpenGLFunctions_4_2_Core* funcs);
+    void initialize(QOPENGL_FUNCTIONS* funcs);
 
-    virtual Engine::Camera* activeCamera();
-    virtual const Engine::DirectionalLight& queryDirectionalLight();
-    virtual const std::vector<Engine::PointLight>& queryPointLights();
-    virtual const std::vector<Engine::SpotLight>& querySpotLights();
+    virtual Engine::Entity::Camera* activeCamera();
+    virtual const Engine::Entity::DirectionalLight& queryDirectionalLight();
+    virtual const std::vector<Engine::Entity::PointLight>& queryPointLights();
+    virtual const std::vector<Engine::Entity::SpotLight>& querySpotLights();
 
-    virtual void prepareScene(Engine::SceneNode* scene);
+    virtual void prepareScene(Engine::Graph::SceneNode* scene);
 
 private:
-    Engine::Camera camera_;
+    Engine::Entity::Camera camera_;
 
-    std::shared_ptr<Engine::Mesh> sceneMesh_;
+    std::shared_ptr<Engine::Entity::Mesh> sceneMesh_;
 
-    std::vector<Engine::PointLight> pointLights_;
-    std::vector<Engine::SpotLight> spotLights_;
-    Engine::DirectionalLight directionalLight_;
+    std::vector<Engine::Entity::PointLight> pointLights_;
+    std::vector<Engine::Entity::SpotLight> spotLights_;
+    Engine::Entity::DirectionalLight directionalLight_;
 };
 
 #endif //SHADOWSCENE_H

@@ -7,6 +7,7 @@
 #include <cassert>
 
 using namespace Engine;
+using namespace Engine::Technique;
 
 BasicLightning::BasicLightning() : Technique()
 {
@@ -30,6 +31,7 @@ bool BasicLightning::init()
 
     if(!program_.link())
     {
+        qDebug() << "Failed to link BasicLightning shaders.";
         return false;
     }
 
@@ -73,7 +75,7 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
     program_.setUniformValue("gSpecularSampler", specular);
 }
 
-void BasicLightning::setDirectionalLight(const DirectionalLight& light)
+void BasicLightning::setDirectionalLight(const Entity::DirectionalLight& light)
 {
     program_.setUniformValue("gDirectionalLight.base.ambientIntensity", light.ambientIntensity);
     program_.setUniformValue("gDirectionalLight.base.color", light.color);
@@ -96,7 +98,7 @@ void BasicLightning::setSpotLightShadowUnit(size_t index, GLuint shadow)
      program_.setUniformValue(formatUniformTableName("gSpotLightShadowMap", index).c_str(), shadow);
 }
 
-void BasicLightning::setPointLights(const std::vector<PointLight>& lights)
+void BasicLightning::setPointLights(const std::vector<Entity::PointLight>& lights)
 {
     unsigned int numLights = lights.size();
     if(numLights > MAX_POINT_LIGHTS)
@@ -119,7 +121,7 @@ void BasicLightning::setPointLights(const std::vector<PointLight>& lights)
     }
 }
 
-void BasicLightning::setSpotLights(const std::vector<SpotLight>& lights)
+void BasicLightning::setSpotLights(const std::vector<Entity::SpotLight>& lights)
 {
     unsigned int numLights = lights.size();
     if(numLights > MAX_SPOT_LIGHTS)

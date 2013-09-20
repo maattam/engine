@@ -2,7 +2,7 @@
 #define SCENEVIEW_H
 
 #include <QWindow>
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 #include <QOpenGLContext>
 #include <QElapsedTimer>
 #include <QPoint>
@@ -57,7 +57,7 @@ private:
     std::map<int, bool> keyMap_;
 
     QOpenGLContext* context_;
-    QOpenGLFunctions_4_2_Core* funcs_;
+    QOPENGL_FUNCTIONS* funcs_;
 
     QElapsedTimer lastTime_;
 };

@@ -2,30 +2,30 @@
 #define SHADOWMAP_H
 
 #include "technique.h"
-#include "light.h"
+#include "entity/light.h"
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 #include <QMatrix4x4>
 
 #include <vector>
 
-namespace Engine {
+namespace Engine { namespace Technique {
 
-class ShadowMapTechnique : public Technique
+class ShadowMap : public Technique
 {
 public:
-    ShadowMapTechnique(QOpenGLFunctions_4_2_Core* funcs);
-    ~ShadowMapTechnique();
+    ShadowMap(QOPENGL_FUNCTIONS* funcs);
+    ~ShadowMap();
 
     bool initSpotLights(unsigned int width, unsigned int height, size_t count);
-    void enableSpotLight(size_t index, const SpotLight& spotLight);
+    void enableSpotLight(size_t index, const Entity::SpotLight& spotLight);
     void bindSpotLight(size_t index, GLenum textureUnit);
     const QMatrix4x4& spotLightVP(size_t index) const;
 
     void setLightMVP(const QMatrix4x4& mvp);
 
 private:
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
     std::vector<GLuint> spotLightFbos_;
     std::vector<GLuint> spotLightTextures_;
@@ -37,6 +37,6 @@ private:
     void destroySpotLights();
 };
 
-}
+}}
 
 #endif //SHADOWMAP_H

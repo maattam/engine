@@ -6,7 +6,7 @@ using namespace Engine;
 
 GLuint Texture::boundTextureId_ = 0;
 
-Texture::Texture(QOpenGLFunctions_4_2_Core* funcs)
+Texture::Texture(QOPENGL_FUNCTIONS* funcs)
     : gl(funcs), textureId_(0), bound_(false)
 {
 }

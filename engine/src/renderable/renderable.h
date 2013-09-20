@@ -1,16 +1,16 @@
 #ifndef RENDERABLE_H
 #define RENDERABLE_H
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 
 #include "material.h"
 
-namespace Engine {
+namespace Engine { namespace Renderable {
 
 class Renderable
 {
 public:
-    explicit Renderable(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Renderable(QOPENGL_FUNCTIONS* funcs);
     virtual ~Renderable();
 
     virtual void render() const = 0;
@@ -23,7 +23,7 @@ public:
 protected:
     enum { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS, ATTRIB_TANGENTS };
 
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
     bool bindVertexArray() const;
     void setTangents(bool tangents);
@@ -37,6 +37,6 @@ private:
     Renderable& operator=(const Renderable&);
 };
 
-}
+}}
 
 #endif //RENDERABLE_H

@@ -3,12 +3,12 @@
 
 #include "abstractscene.h"
 #include "material.h"
-#include "light.h"
-#include "camera.h"
+#include "entity/light.h"
+#include "entity/camera.h"
 #include "entity/mesh.h"
 #include "entity/boxprimitive.h"
 
-#include <QOpenGLFunctions_4_2_Core>
+#include "common.h"
 
 #include <vector>
 #include <memory>
@@ -19,44 +19,44 @@ public:
     BasicScene();
     virtual ~BasicScene();
 
-    void initialize(QOpenGLFunctions_4_2_Core* funcs);
+    void initialize(QOPENGL_FUNCTIONS* funcs);
 
-    virtual Engine::Camera* activeCamera();
-    virtual const Engine::DirectionalLight& queryDirectionalLight();
-    virtual const std::vector<Engine::PointLight>& queryPointLights();
-    virtual const std::vector<Engine::SpotLight>& querySpotLights();
+    virtual Engine::Entity::Camera* activeCamera();
+    virtual const Engine::Entity::DirectionalLight& queryDirectionalLight();
+    virtual const std::vector<Engine::Entity::PointLight>& queryPointLights();
+    virtual const std::vector<Engine::Entity::SpotLight>& querySpotLights();
 
-    virtual void prepareScene(Engine::SceneNode* scene);
+    virtual void prepareScene(Engine::Graph::SceneNode* scene);
     virtual void update(unsigned int elapsed);
 
 private:
-    Engine::Camera camera_;
+    Engine::Entity::Camera camera_;
 
-    std::vector<Engine::PointLight> pointLights_;
-    std::vector<Engine::SpotLight> spotLights_;
-    Engine::DirectionalLight directionalLight_;
+    std::vector<Engine::Entity::PointLight> pointLights_;
+    std::vector<Engine::Entity::SpotLight> spotLights_;
+    Engine::Entity::DirectionalLight directionalLight_;
 
-    std::shared_ptr<Engine::Mesh> torus_;
-    std::shared_ptr<Engine::Mesh> oildrum_;
-    std::shared_ptr<Engine::Mesh> sphere_;
-    std::shared_ptr<Engine::Mesh> platform_;
-    std::shared_ptr<Engine::Mesh> hellknight_;
+    std::shared_ptr<Engine::Entity::Mesh> torus_;
+    std::shared_ptr<Engine::Entity::Mesh> oildrum_;
+    std::shared_ptr<Engine::Entity::Mesh> sphere_;
+    std::shared_ptr<Engine::Entity::Mesh> platform_;
+    std::shared_ptr<Engine::Entity::Mesh> hellknight_;
 
-    std::shared_ptr<Engine::BoxPrimitive> cube_[2];
+    std::shared_ptr<Engine::Entity::BoxPrimitive> cube_[2];
 
-    Engine::SceneNode* cubeNode_;
-    Engine::SceneNode* platformNode_;
-    Engine::SceneNode* torusNode_;
-    Engine::SceneNode* sphereNode_;
+    Engine::Graph::SceneNode* cubeNode_;
+    Engine::Graph::SceneNode* platformNode_;
+    Engine::Graph::SceneNode* torusNode_;
+    Engine::Graph::SceneNode* sphereNode_;
 
-    std::vector<Engine::SceneNode*> cubes_;
+    std::vector<Engine::Graph::SceneNode*> cubes_;
 
     std::vector<Engine::Material::Ptr> materials_;
-    std::vector<Engine::Light> lights_;
+    std::vector<Engine::Entity::Light> lights_;
 
     unsigned int time_;
 
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 };
 
 #endif //BASICSCENE_H

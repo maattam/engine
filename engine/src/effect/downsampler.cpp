@@ -3,8 +3,9 @@
 #include <QOpenGLFramebufferObjectFormat>
 
 using namespace Engine;
+using namespace Engine::Effect;
 
-DownSampler::DownSampler(QOpenGLFunctions_4_2_Core* funcs) : gl(funcs)
+DownSampler::DownSampler(QOPENGL_FUNCTIONS* funcs) : gl(funcs)
 {
     fbos_.resize(SAMPLES, nullptr);
 
@@ -55,7 +56,7 @@ bool DownSampler::init(int width, int height, GLenum format)
     return true;
 }
 
-void DownSampler::downSample(GLuint textureId, const Quad& quad)
+void DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
 {
     program_.bind();
 

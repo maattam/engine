@@ -4,7 +4,7 @@
 
 using namespace Engine;
 
-Material::Material(QOpenGLFunctions_4_2_Core* funcs) : gl(funcs)
+Material::Material(QOPENGL_FUNCTIONS* funcs) : gl(funcs)
 {
 }
 

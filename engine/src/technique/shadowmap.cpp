@@ -5,8 +5,9 @@
 #include <cassert>
 
 using namespace Engine;
+using namespace Engine::Technique;
 
-ShadowMapTechnique::ShadowMapTechnique(QOpenGLFunctions_4_2_Core* funcs)
+ShadowMap::ShadowMap(QOPENGL_FUNCTIONS* funcs)
     : Technique(), gl(funcs)
 {
     // Compile and link program
@@ -14,12 +15,12 @@ ShadowMapTechnique::ShadowMapTechnique(QOpenGLFunctions_4_2_Core* funcs)
     program_.link();
 }
 
-ShadowMapTechnique::~ShadowMapTechnique()
+ShadowMap::~ShadowMap()
 {
     destroySpotLights();
 }
 
-bool ShadowMapTechnique::initSpotLights(unsigned int width, unsigned int height, size_t count)
+bool ShadowMap::initSpotLights(unsigned int width, unsigned int height, size_t count)
 {
     destroySpotLights();
 
@@ -53,7 +54,7 @@ bool ShadowMapTechnique::initSpotLights(unsigned int width, unsigned int height,
 
         if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            qDebug() << "Failed to init ShadowMapTechnique fbo!";
+            qDebug() << "Failed to init ShadowMap fbo!";
             return false;
         }
     }
@@ -61,7 +62,7 @@ bool ShadowMapTechnique::initSpotLights(unsigned int width, unsigned int height,
     return true;
 }
 
-void ShadowMapTechnique::enableSpotLight(size_t index, const SpotLight& light)
+void ShadowMap::enableSpotLight(size_t index, const Entity::SpotLight& light)
 {
     assert(index < spotLightFbos_.size());
 
@@ -77,7 +78,7 @@ void ShadowMapTechnique::enableSpotLight(size_t index, const SpotLight& light)
     vp *= look;
 }
 
-void ShadowMapTechnique::bindSpotLight(size_t index, GLenum textureUnit)
+void ShadowMap::bindSpotLight(size_t index, GLenum textureUnit)
 {
     assert(index < spotLightTextures_.size());
 
@@ -85,12 +86,12 @@ void ShadowMapTechnique::bindSpotLight(size_t index, GLenum textureUnit)
     gl->glBindTexture(GL_TEXTURE_2D, spotLightTextures_.at(index));
 }
 
-void ShadowMapTechnique::setLightMVP(const QMatrix4x4& mvp)
+void ShadowMap::setLightMVP(const QMatrix4x4& mvp)
 {
     program_.setUniformValue("gMVP", mvp);
 }
 
-void ShadowMapTechnique::destroySpotLights()
+void ShadowMap::destroySpotLights()
 {
     if(spotLightFbos_.size() > 0)
     {
@@ -107,7 +108,7 @@ void ShadowMapTechnique::destroySpotLights()
     spotLightVPs_.clear();
 }
 
-const QMatrix4x4& ShadowMapTechnique::spotLightVP(size_t index) const
+const QMatrix4x4& ShadowMap::spotLightVP(size_t index) const
 {
     assert(index < spotLightVPs_.size());
     return spotLightVPs_.at(index);

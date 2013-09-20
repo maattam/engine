@@ -9,12 +9,12 @@
 struct aiScene;
 struct aiMesh;
 
-namespace Engine {
+namespace Engine { namespace Entity {
 
 class Mesh : public Entity
 {
 public:
-    explicit Mesh(QOpenGLFunctions_4_2_Core* funcs);
+    explicit Mesh(QOPENGL_FUNCTIONS* funcs);
     ~Mesh();
 
     bool loadFromFile(const std::string& file);
@@ -24,7 +24,7 @@ public:
     void setMaterialAttributes(const Material::Attributes& attributes);
 
 private:
-    QOpenGLFunctions_4_2_Core* gl;
+    QOPENGL_FUNCTIONS* gl;
 
     bool initFromScene(const aiScene* scene, const std::string& filenName);
 
@@ -38,10 +38,10 @@ private:
     void initMaterials(const aiScene* scene, const std::string& fileName);
     bool loadMaterial(Texture::Ptr& texture, const std::string& fileName);
 
-    std::vector<SubMesh::Ptr> entries_;
+    std::vector<Renderable::SubMesh::Ptr> entries_;
     std::vector<Material::Ptr> materials_;
 };
 
-}
+}}
 
 #endif //MESH_H

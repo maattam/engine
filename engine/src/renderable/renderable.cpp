@@ -1,8 +1,8 @@
 #include "renderable.h"
 
-using namespace Engine;
+using namespace Engine::Renderable;
 
-Renderable::Renderable(QOpenGLFunctions_4_2_Core* funcs)
+Renderable::Renderable(QOPENGL_FUNCTIONS* funcs)
     : gl(funcs), vertexArray_(0), hasTangents_(false)
 {
     gl->glGenVertexArrays(1, &vertexArray_);
@@ -35,12 +35,12 @@ bool Renderable::bindVertexArray() const
     return true;
 }
 
-void Renderable::setMaterial(Material::Ptr& material)
+void Renderable::setMaterial(Engine::Material::Ptr& material)
 {
     material_ = material;
 }
 
-const Material::Ptr& Renderable::material()
+const Engine::Material::Ptr& Renderable::material()
 {
     return material_;
 }

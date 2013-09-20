@@ -8,7 +8,7 @@
 
 #include <QTimer> // singleShot
 
-#include "camera.h"
+#include "entity/camera.h"
 #include "renderer.h"
 
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
@@ -86,7 +86,7 @@ void SceneView::handleInput(float elapsed)
     const float speed = 10.0f;
     const float mouseSpeed = 0.15f;
 
-    Engine::Camera* camera = scene_->activeCamera();
+    Engine::Entity::Camera* camera = scene_->activeCamera();
 
     if(getKey(Qt::Key::Key_W))
     {
@@ -120,7 +120,7 @@ void SceneView::handleInput(float elapsed)
 void SceneView::wheelEvent(QWheelEvent* event)
 {
     float scale = event->delta() / 100.0f;
-    Engine::Camera* camera = scene_->activeCamera();
+    Engine::Entity::Camera* camera = scene_->activeCamera();
 
     camera->move(QVector3D(0, scale, 0));
 
@@ -174,10 +174,10 @@ void SceneView::renderNow()
 
     if(needsInitialize)
     {
-        funcs_ = context_->versionFunctions<QOpenGLFunctions_4_2_Core>();
+        funcs_ = context_->versionFunctions<QOPENGL_FUNCTIONS>();
         if(funcs_ == nullptr || !funcs_->initializeOpenGLFunctions())
         {
-            qWarning() << "Could not obtain OpenGL context version funtions";
+            qWarning() << "Could not obtain OpenGL context version functions";
             exit(-1);
         }
 

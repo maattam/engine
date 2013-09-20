@@ -5,7 +5,7 @@
 
 #include <QVector3D>
 
-namespace Engine {
+namespace Engine { namespace Entity {
 
 struct Light
 {
@@ -64,6 +64,6 @@ struct SpotLight : public PointLight
     }
 };
 
-}
+}}
 
 #endif //LIGHT_H

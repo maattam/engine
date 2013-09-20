@@ -1,6 +1,7 @@
 #include "quad.h"
 
 using namespace Engine;
+using namespace Renderable;
 
 const GLfloat QUAD_VERTEX_DATA[] = {
     -1.0f, -1.0f, 0.0f,
@@ -11,7 +12,7 @@ const GLfloat QUAD_VERTEX_DATA[] = {
     1.0f,  1.0f, 0.0f,
 };
 
-Quad::Quad(QOpenGLFunctions_4_2_Core* funcs)
+Quad::Quad(QOPENGL_FUNCTIONS* funcs)
     : Renderable(funcs), vertexBuffer_(0)
 {
     if(!bindVertexArray())

@@ -5,12 +5,12 @@
 #include "renderable/cube.h"
 #include "material.h"
 
-namespace Engine {
+namespace Engine { namespace Entity {
 
 class BoxPrimitive : public Entity
 {
 public:
-    BoxPrimitive(QOpenGLFunctions_4_2_Core* funcs);
+    BoxPrimitive(QOPENGL_FUNCTIONS* funcs);
     ~BoxPrimitive();
 
     virtual void updateRenderList(RenderList& list);
@@ -18,9 +18,9 @@ public:
     void setMaterial(Material::Ptr& material);
 
 private:
-    Cube cube_;
+    Engine::Renderable::Cube cube_;
 };
 
-}
+}}
 
 #endif //BOXPRIMITIVE_H

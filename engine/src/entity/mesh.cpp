@@ -8,8 +8,9 @@
 #include <QDebug>
 
 using namespace Engine;
+using namespace Engine::Entity;
 
-Mesh::Mesh(QOpenGLFunctions_4_2_Core* funcs)
+Mesh::Mesh(QOPENGL_FUNCTIONS* funcs)
     : Entity(), gl(funcs)
 {
 }
@@ -20,7 +21,7 @@ Mesh::~Mesh()
 
 void Mesh::updateRenderList(RenderList& list)
 {
-    for(SubMesh::Ptr& mesh : entries_)
+    for(Renderable::SubMesh::Ptr& mesh : entries_)
         list.push_back(mesh.get());
 }
 
@@ -80,7 +81,7 @@ bool Mesh::initFromScene(const aiScene* scene, const std::string& fileName)
         unsigned int materialIndex = scene->mMeshes[i]->mMaterialIndex;
         assert(materialIndex < materials_.size());
 
-        entries_[i] = std::make_shared<SubMesh>(gl);
+        entries_[i] = std::make_shared<Renderable::SubMesh>(gl);
         entries_[i]->setMaterial(materials_[materialIndex]);
         entries_[i]->initMesh(vertices, normals, tangents, uvs, indices);
     }

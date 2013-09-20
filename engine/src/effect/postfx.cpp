@@ -1,6 +1,7 @@
 #include "postfx.h"
 
 using namespace Engine;
+using namespace Engine::Effect;
 
 Postfx::Postfx()
     : inputTexture_(0), outputFbo_(0)

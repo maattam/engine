@@ -3,8 +3,9 @@
 #include <QDebug>
 
 using namespace Engine;
+using namespace Renderable;
 
-SubMesh::SubMesh(QOpenGLFunctions_4_2_Core* funcs)
+SubMesh::SubMesh(QOPENGL_FUNCTIONS* funcs)
     : Renderable(funcs), numIndices_(0)
 {
     for(int i = 0; i < NUM_BUFFERS; ++i)

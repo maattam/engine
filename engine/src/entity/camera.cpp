@@ -4,6 +4,7 @@
 #include <qmath.h>
 
 using namespace Engine;
+using namespace Engine::Entity;
 
 Camera::Camera(const QVector3D& position, float horizontalAngle, float verticalAngle, float fov, float aspect)
     : position_(position), horizontal_(horizontalAngle), vertical_(verticalAngle), fov_(fov), aspect_(aspect)

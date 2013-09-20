@@ -6,7 +6,7 @@
 #include <QMatrix4x4>
 #include <vector>
 
-namespace Engine {
+namespace Engine { namespace Graph {
 
 class Node
 {
@@ -44,6 +44,6 @@ private:
     QMatrix4x4 transformation_;
 };
 
-}
+}}
 
 #endif //NODE_H

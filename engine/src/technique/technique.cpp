@@ -1,6 +1,6 @@
 #include "technique.h"
 
-using namespace Engine;
+using namespace Engine::Technique;
 
 Technique::Technique()
 {
