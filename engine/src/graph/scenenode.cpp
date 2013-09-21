@@ -1,5 +1,7 @@
 #include "scenenode.h"
 
+#include "entity/entity.h"
+
 #include <algorithm>
 
 using namespace Engine;
@@ -21,8 +23,7 @@ void SceneNode::attachEntity(Entity::Entity* entity)
         entities_.push_back(entity);
 
         // update aabb
-        //boundingBox_.resize(entity->boundingBox());
-        //updateBounds(getParent());
+        updateBounds(entity->boundingBox());
     }
 }
 
@@ -35,7 +36,8 @@ Entity::Entity* SceneNode::detachEntity(Entity::Entity* entity)
 
     Entity::Entity* child = *iter;
     entities_.erase(iter);
-    //boundingBox_.reset();
+
+    updateAABB();
 
     return child;
 }
@@ -47,7 +49,7 @@ Entity::Entity* SceneNode::detachEntity(Entities::size_type index)
     if(child != nullptr)
     {
         entities_.erase(entities_.begin() + index);
-        //boundingBox_.reset();
+        updateAABB();
     }
 
     return child;
@@ -56,7 +58,7 @@ Entity::Entity* SceneNode::detachEntity(Entities::size_type index)
 void SceneNode::detachAllEntities()
 {
     entities_.clear();
-    //boundingBox_.reset();
+    updateAABB();
 }
 
 SceneNode::Entities::size_type SceneNode::numEntities() const
@@ -87,25 +89,39 @@ void SceneNode::setShadowCaster(bool shadows)
     castShadows_ = shadows;
 }
 
-/*const AABB& SceneNode::boundingBox()
+const Entity::AABB& SceneNode::boundingBox() const
 {
-    if(boundingBox_.empty() && numEntities() > 0)
-    {
-        // reconstruct
-        for(Entity* entity : entities_)
-            boundingBox_.resize(entity->boundingBox());
-    }
-
     return boundingBox_;
 }
 
-void SceneNode::updateBounds(Node* node)
+void SceneNode::updateBounds(const Entity::AABB& childAabb)
 {
-    SceneNode* scene = dynamic_cast<SceneNode*>(node);
+    SceneNode* parent = dynamic_cast<SceneNode*>(getParent());
 
-    if(scene != nullptr)
+    // Update parent's bounding box recursively if ours changes
+    if(boundingBox_.resize(childAabb * transformation()) && parent != nullptr)
     {
-        boundingBox_.resize(scene->boundingBox());
-        updateBounds(getParent());
+        parent->updateBounds(boundingBox_);
     }
-}*/
+}
+
+void SceneNode::updateAABB()
+{
+    boundingBox_.reset();
+
+    if(numEntities() == 0)
+    {
+        return;
+    }
+
+    for(auto it = entities_.begin(); it != entities_.end(); ++it)
+    {
+        boundingBox_.resize((*it)->boundingBox() * transformation());
+    }
+
+    SceneNode* parent = dynamic_cast<SceneNode*>(getParent());
+    if(parent != nullptr)
+    {
+        parent->updateBounds(boundingBox_);
+    }
+}

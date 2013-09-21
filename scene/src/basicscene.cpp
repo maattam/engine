@@ -11,7 +11,7 @@
 using namespace Engine;
 
 BasicScene::BasicScene()
-    : camera_(QVector3D(-2, 6, 7), 0, 0.0f, 60.0f, 0.0f)
+    : camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 70.0f, 0.0f)
 {
     time_ = 0;
 }
@@ -47,6 +47,7 @@ void BasicScene::initialize()
     directionalLight_.diffuseIntensity = 0.2f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
     //directionalLight_.color = QVector3D(0, 0, 0);
+    directionalLight_.ambientIntensity = 0.1f;
 
     // Set up point lights
     Entity::PointLight pointLight;

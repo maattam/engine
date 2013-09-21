@@ -7,13 +7,18 @@
 #include <QString>
 #include <QDebug>
 #include <cassert>
+#include <QThread>
+
+#include "resourceloader.h"
 
 namespace Engine {
 
 class Resource;
 
-class ResourceDespatcher
+class ResourceDespatcher : public QObject
 {
+    Q_OBJECT
+
 public:
     ResourceDespatcher();
     ~ResourceDespatcher();
@@ -26,11 +31,16 @@ public:
     template<typename T>
     std::shared_ptr<T> get(const QString& fileName);
 
+signals:
+    void loadResources();
+
 private:
     ResourceDespatcher(const ResourceDespatcher&);
     ResourceDespatcher& operator=(const ResourceDespatcher&);
 
     QHash<QString, std::weak_ptr<Resource>> resources_;
+    QThread loadThread_;
+    ResourceLoader* loader_;
 
     template<typename T>
     std::shared_ptr<T> createResource(const QString& fn);
@@ -64,7 +74,7 @@ std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
         resource = std::dynamic_pointer_cast<T>(result->lock());
         assert(resource);
         
-        qDebug() << "Using cached resource: " << fileName;
+        qDebug() << "ResourceDespatcher::get(): Using cached resource: " << fileName;
     }
 
     return resource;
@@ -73,19 +83,21 @@ std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
 template<typename T>
 std::shared_ptr<T> ResourceDespatcher::createResource(const QString& fn)
 {
-    std::shared_ptr<T> resource = std::make_shared<T>();
+    std::shared_ptr<T> resource = std::make_shared<T>(fn);
     resource->despatcher_ = this;
 
-    if(!resource->load(fn))
+    /*if(!resource->load(fn))
     {
-        qDebug() << "Failed to load resource: " << fn;
+        qDebug() << "ResourceDespatcher::createResource(): Failed to load resource: " << fn;
         resource.reset();
     }
 
     else
     {
-        qDebug() << "Loaded resource: " << fn;
-    }
+        qDebug() << "ResourceDespatcher::createResource(): Loaded resource: " << fn;
+    }*/
+
+    loader_->pushResource(resource);
 
     return resource;
 }

@@ -22,7 +22,7 @@ const Texture::Ptr& Material::getTexture(TextureType type)
     // If texture was not set, return null texture
     if(iter == textures_.end() || iter->second == nullptr)
     {
-        qDebug() << "Warning: Material has no texture of type '" << type << "'";
+        qDebug() << "Material::getTexture(): Warning: Material has no texture of type '" << type << "'";
         textures_[type] = despatcher_->get<Texture>(":/images/white.png");
 
         return textures_[type];
@@ -70,7 +70,7 @@ void Material::setTextureOptions(const Texture::Ptr& texture) const
         texture->setWrap(GL_REPEAT, GL_REPEAT);
         texture->generateMipmaps();
 
-        // Force 16x anisotropy.. TODO!
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+        // Set 16x anisotropy... TODO!
+        texture->setAnisotropy(16);
     }
 }

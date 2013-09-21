@@ -4,7 +4,7 @@
 #define AABB_H
 
 #include <QVector3D>
-#include <vector>
+#include <QMatrix4x4>
 
 namespace Engine { namespace Entity {
 
@@ -15,10 +15,11 @@ public:
     AABB(const QVector3D& min, const QVector3D& max);
 
     bool resize(const AABB& other);
-    bool resize(const std::vector<QVector3D>& vecs);
+    bool resize(const QVector3D& point);
     void reset();
 
-    bool empty() const;
+    float size() const;
+    AABB operator*(const QMatrix4x4& rhs) const;
 
 private:
     QVector3D min_;

@@ -25,11 +25,16 @@ public:
     // Called by renderer; entity must add its renderables to the list
     virtual void updateRenderList(RenderList& list) = 0;
 
-    //virtual const AABB& boundingBox() const;
+    const AABB& boundingBox() const;
+
+protected:
+    void updateAABB(const AABB& aabb);
 
 private:
     Entity(const Entity&);
     Entity& operator=(const Entity&);
+
+    AABB aabb_;
 };
 
 }}

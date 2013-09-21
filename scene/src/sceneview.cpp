@@ -48,7 +48,9 @@ void SceneView::update()
     // Update title on every tenth frame
     if(frame_ % 10)
     {
-        setTitle(QString("Okay Engine -- FPS: ") + QString::number(1.0f / elapsed, 'g', 3));
+        QVector3D pos = scene_->activeCamera()->position();
+        setTitle(QString("FPS: %1 POS: [%2 %3 %4]").arg(QString::number(1.0f / elapsed, 'g', 3))
+            .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
     }
 }
 

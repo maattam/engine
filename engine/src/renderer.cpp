@@ -10,6 +10,8 @@
 #include "entity/light.h"
 #include "effect/hdr.h"
 
+#include <cassert>
+
 using namespace Engine;
 
 Renderer::Renderer()

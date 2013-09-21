@@ -3,7 +3,9 @@
 
 #include "common.h"
 #include "resource.h"
+
 #include <memory>
+#include <vector>
 
 namespace Engine {
 
@@ -13,14 +15,15 @@ public:
     typedef std::shared_ptr<Texture> Ptr;
 
     Texture();
+    Texture(const QString& name);
     ~Texture();
 
-    void create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
+    // Fails if the resource is managed
+    bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
         GLenum type, const GLvoid* pixels = nullptr);
 
-    bool load(const QString& fileName);
-
     void setFiltering(GLenum magFilter, GLenum minFilter);
+    void setAnisotropy(GLint samples);
     void setWrap(GLenum wrap_s, GLenum wrap_t);
     void generateMipmaps();
 
@@ -31,11 +34,16 @@ public:
 
     bool bound() const;
 
+protected:
+    bool loadData(const QString& fileName);
+    bool initializeData();
+
 private:
     GLuint textureId_;
-    bool bound_;
+    bool mipmapping_;
 
-    static GLuint boundTextureId_;
+    QImage* texData_;
+    std::vector<std::pair<GLenum, GLenum>> texFlags_;
 };
 
 }

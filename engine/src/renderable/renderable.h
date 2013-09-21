@@ -9,7 +9,7 @@ namespace Engine { namespace Renderable {
 class Renderable
 {
 public:
-    explicit Renderable();
+    Renderable();
     virtual ~Renderable();
 
     virtual void render() const = 0;

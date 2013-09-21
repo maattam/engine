@@ -62,6 +62,12 @@
     <Filter Include="Source Files\graph">
       <UniqueIdentifier>{9228fef6-3081-4b0a-bfb7-e97c93eea38f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\resource">
+      <UniqueIdentifier>{ae236fb9-6e40-4d99-9d5b-71c5b788849d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resource">
+      <UniqueIdentifier>{cdf74fcb-3c0a-4987-970e-c5177c67dcea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp">
@@ -124,14 +130,32 @@
     <ClCompile Include="src\graph\scenenode.cpp">
       <Filter>Source Files\graph</Filter>
     </ClCompile>
-    <ClCompile Include="src\resource.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resourcedespatcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\common.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\aabb.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resourcedespatcher.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resourceloader.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_resourceloader.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_resourceloader.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_resourcedespatcher.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_resourcedespatcher.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -237,15 +261,20 @@
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resourcedespatcher.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="images\white.png">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\resourceloader.h">
+      <Filter>Header Files\resource</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\resourcedespatcher.h">
+      <Filter>Header Files\resource</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

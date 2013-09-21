@@ -1,6 +1,7 @@
 #include "mesh.h"
 #include "common.h"
 #include "resourcedespatcher.h"
+#include  "material.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -12,7 +13,12 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-Mesh::Mesh() : Entity()
+Mesh::Mesh() : Entity(), Resource()
+{
+}
+
+Mesh::Mesh(const QString& name)
+    : Entity(), Resource(name)
 {
 }
 
@@ -22,14 +28,15 @@ Mesh::~Mesh()
 
 void Mesh::updateRenderList(RenderList& list)
 {
+    if(!ready())
+        return;
+
     for(Renderable::SubMesh::Ptr& mesh : entries_)
         list.push_back(mesh.get());
 }
 
-bool Mesh::load(const QString& fileName)
+bool Mesh::loadData(const QString& fileName)
 {
-    entries_.clear();
-
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(fileName.toStdString(),
@@ -45,23 +52,37 @@ bool Mesh::load(const QString& fileName)
     return initFromScene(scene, fileName);
 }
 
-void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
+bool Mesh::initializeData()
 {
-    for(Material::Ptr& mat : materials_)
+    entries_.clear();
+
+    entries_.resize(meshData_.size());
+    for(size_t i = 0; i < meshData_.size(); ++i)
     {
-        if(mat != nullptr)
+        MeshData* mesh = meshData_[i].get();
+
+        entries_[i] = std::make_shared<Renderable::SubMesh>();
+        entries_[i]->setMaterial(materials_[mesh->materialIndex]);
+
+        if(!entries_[i]->initMesh(mesh->vertices, mesh->normals,
+                mesh->tangents, mesh->uvs, mesh->indices))
         {
-            mat->setAmbientColor(attributes.ambientColor);
-            mat->setSpecularIntensity(attributes.specularIntensity);
-            mat->setDiffuseColor(attributes.diffuseColor);
+            return false;
         }
     }
+
+    meshData_.clear();
+    materials_.clear();
+
+    setMaterialAttributes(materialAttrib_);
+
+    return true;
 }
 
 bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
 {
     // Resize to fit
-    entries_.resize(scene->mNumMeshes);
+    meshData_.resize(scene->mNumMeshes);
     materials_.resize(scene->mNumMaterials);
 
     size_t numVertices = 0;
@@ -72,32 +93,21 @@ bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
 
     for(size_t i = 0; i < scene->mNumMeshes; ++i)
     {
-        std::vector<QVector3D> vertices, normals, tangents;
-        std::vector<QVector2D> uvs;
-        std::vector<unsigned int> indices;
-
         const aiMesh* mesh = scene->mMeshes[i];
-        initSubMesh(mesh, vertices, normals, tangents, uvs, indices);
+        meshData_[i] = std::make_shared<MeshData>();
+        initSubMesh(mesh, meshData_[i].get());
 
-        unsigned int materialIndex = scene->mMeshes[i]->mMaterialIndex;
-        assert(materialIndex < materials_.size());
-
-        entries_[i] = std::make_shared<Renderable::SubMesh>();
-        entries_[i]->setMaterial(materials_[materialIndex]);
-        entries_[i]->initMesh(vertices, normals, tangents, uvs, indices);
+        meshData_[i]->materialIndex = scene->mMeshes[i]->mMaterialIndex;
+        assert(meshData_[i]->materialIndex < materials_.size());
     }
 
     return true;
 }
 
-void Mesh::initSubMesh(const aiMesh* mesh,
-              std::vector<QVector3D>& vertices,
-              std::vector<QVector3D>& normals,
-              std::vector<QVector3D>& tangents,
-              std::vector<QVector2D>& uvs,
-              std::vector<unsigned int>& indices)
+void Mesh::initSubMesh(const aiMesh* mesh, Mesh::MeshData* data)
 {
     const aiVector3D zero3D(0, 0, 0);
+    AABB aabb;
 
     // Fill vertex attribute vectors
     for(size_t i = 0; i < mesh->mNumVertices; ++i)
@@ -106,17 +116,22 @@ void Mesh::initSubMesh(const aiMesh* mesh,
         const aiVector3D& normal    = mesh->mNormals[i];
         const aiVector3D& uv        = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][i] : zero3D;
 
-        vertices.push_back(QVector3D(pos.x, pos.y, pos.z));
-        normals.push_back(QVector3D(normal.x, normal.y, normal.z));
+        data->vertices.push_back(QVector3D(pos.x, pos.y, pos.z));
+        data->normals.push_back(QVector3D(normal.x, normal.y, normal.z));
 
         if(mesh->HasTangentsAndBitangents())
         {
             const aiVector3D& tangent   = mesh->mTangents[i];
-            tangents.push_back(QVector3D(tangent.x, tangent.y, tangent.z));
+            data->tangents.push_back(QVector3D(tangent.x, tangent.y, tangent.z));
         }
 
-        uvs.push_back(QVector2D(uv.x, uv.y));
+        data->uvs.push_back(QVector2D(uv.x, uv.y));
+
+        // Form bounding rect
+        aabb.resize(data->vertices.back());
     }
+
+    updateAABB(aabb);
 
     // Fill the index buffer
     for(size_t i = 0; i < mesh->mNumFaces; ++i)
@@ -124,9 +139,9 @@ void Mesh::initSubMesh(const aiMesh* mesh,
         const aiFace& face = mesh->mFaces[i];
         assert(face.mNumIndices == 3);
 
-        indices.push_back(face.mIndices[0]);
-        indices.push_back(face.mIndices[1]);
-        indices.push_back(face.mIndices[2]);
+        data->indices.push_back(face.mIndices[0]);
+        data->indices.push_back(face.mIndices[1]);
+        data->indices.push_back(face.mIndices[2]);
     }
 }
 
@@ -189,4 +204,20 @@ void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
             }
         }
     }
+}
+
+void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
+{
+    for(Renderable::SubMesh::Ptr& mesh : entries_)
+    {
+        if(mesh != nullptr)
+        {
+            mesh->material()->setAmbientColor(attributes.ambientColor);
+            mesh->material()->setSpecularIntensity(attributes.specularIntensity);
+            mesh->material()->setDiffuseColor(attributes.diffuseColor);
+            mesh->material()->setShininess(attributes.shininess);
+        }
+    }
+
+    materialAttrib_ = attributes;
 }

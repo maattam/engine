@@ -19,28 +19,38 @@ public:
     typedef std::shared_ptr<Mesh> Ptr;
 
     Mesh();
+    Mesh(const QString& name);
     ~Mesh();
-
-    bool load(const QString& fileName);
 
     virtual void updateRenderList(RenderList& list);
 
     void setMaterialAttributes(const Material::Attributes& attributes);
 
+protected:
+    bool loadData(const QString& fileName);
+    bool initializeData();
+
 private:
     bool initFromScene(const aiScene* scene, const QString& filenName);
 
-    void initSubMesh(const aiMesh* mesh,
-        std::vector<QVector3D>& vertices,
-        std::vector<QVector3D>& normals,
-        std::vector<QVector3D>& tangents,
-        std::vector<QVector2D>& uvs,
-        std::vector<unsigned int>& indices);
+    struct MeshData
+    {
+        std::vector<QVector3D> vertices;
+        std::vector<QVector3D> normals;
+        std::vector<QVector3D> tangents;
+        std::vector<QVector2D> uvs;
+        std::vector<unsigned int> indices;
+        unsigned int materialIndex;
+    };
+
+    void initSubMesh(const aiMesh* mesh, MeshData* data);
 
     void initMaterials(const aiScene* scene, const QString& fileName);
 
     std::vector<Renderable::SubMesh::Ptr> entries_;
     std::vector<Material::Ptr> materials_;
+    Material::Attributes materialAttrib_;
+    std::vector<std::shared_ptr<MeshData>> meshData_;
 };
 
 }}
