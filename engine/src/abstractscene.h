@@ -17,6 +17,12 @@ namespace Graph {
     class SceneNode;
 }
 
+class CubemapTexture;
+
+namespace Renderable {
+    class Renderable;
+}
+
 class AbstractScene
 {
 public:
@@ -27,6 +33,9 @@ public:
     virtual const Entity::DirectionalLight& queryDirectionalLight() = 0;
     virtual const std::vector<Entity::PointLight>& queryPointLights() = 0;
     virtual const std::vector<Entity::SpotLight>& querySpotLights() = 0;
+
+    virtual CubemapTexture* skyboxTexture();
+    virtual Renderable::Renderable* skyboxMesh();
 
     virtual void prepareScene(Graph::SceneNode* root);
     virtual void update(unsigned int elapsed);

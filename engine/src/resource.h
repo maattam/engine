@@ -1,3 +1,5 @@
+// Resource provides encapsulation for data that is loaded asynchronously and initialised on demand.
+
 #ifndef RESOURCE_H
 #define RESOURCE_H
 
@@ -31,7 +33,7 @@ public:
 protected:
     ResourceDespatcher* despatcher();
 
-    // Called when data needs to be loaded asynchronously
+    // Called when the data needs to be loaded
     virtual bool loadData(const QString& fileName) = 0;
 
     // Called when loadData has returned successfully and the data has not yet been

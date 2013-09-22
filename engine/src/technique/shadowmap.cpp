@@ -54,7 +54,7 @@ bool ShadowMap::initSpotLights(unsigned int width, unsigned int height, size_t c
 
         if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
-            qDebug() << "Failed to init ShadowMap fbo!";
+            qWarning() << __FUNCTION__ << "Failed to init ShadowMap fbo!";
             return false;
         }
     }

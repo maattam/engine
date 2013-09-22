@@ -16,10 +16,10 @@ public:
 
     Texture();
     Texture(const QString& name);
-    ~Texture();
+    virtual ~Texture();
 
     // Fails if the resource is managed
-    bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
+    virtual bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
         GLenum type, const GLvoid* pixels = nullptr);
 
     void setFiltering(GLenum magFilter, GLenum minFilter);
@@ -35,15 +35,22 @@ public:
     bool bound() const;
 
 protected:
-    bool loadData(const QString& fileName);
-    bool initializeData();
+    virtual bool loadData(const QString& fileName);
+    virtual bool initializeData();
+
+    // Change texture target from default GL_TEXTURE_2D
+    void setTarget(GLenum target);
+    void setFlags();
+
+    GLuint textureId_;
 
 private:
-    GLuint textureId_;
     bool mipmapping_;
 
     QImage* texData_;
     std::vector<std::pair<GLenum, GLenum>> texFlags_;
+
+    GLenum target_;
 };
 
 }

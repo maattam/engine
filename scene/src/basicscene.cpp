@@ -4,6 +4,7 @@
 #include "entity/entity.h"
 #include "renderable/cube.h"
 #include "entity/mesh.h"
+#include "cubemaptexture.h"
 
 #include <qmath.h>
 #include <QDebug>
@@ -41,13 +42,23 @@ Entity::Camera* BasicScene::activeCamera()
     return &camera_;
 }
 
+CubemapTexture* BasicScene::skyboxTexture()
+{
+    return skyboxTexture_.get();
+}
+
+Renderable::Renderable* BasicScene::skyboxMesh()
+{
+    return &skyboxMesh_;
+}
+
 void BasicScene::initialize()
 {
     // Set up directional light
     directionalLight_.diffuseIntensity = 0.2f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
     //directionalLight_.color = QVector3D(0, 0, 0);
-    directionalLight_.ambientIntensity = 0.1f;
+    //directionalLight_.ambientIntensity = 0.1f;
 
     // Set up point lights
     Entity::PointLight pointLight;
@@ -77,6 +88,10 @@ void BasicScene::initialize()
     platform_ = despatcher_.get<Entity::Mesh>("./assets/blocks.dae");
     sphere_ = despatcher_.get<Entity::Mesh>("./assets/sphere.obj");
     torus_ = despatcher_.get<Entity::Mesh>("./assets/torus.obj");
+
+    // Load skybox
+    skyboxTexture_ = despatcher_.get<CubemapTexture>("./assets/skybox2/space*.png");
+    skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     // Load cubes
     for(int i = 0; i < 2; ++i)

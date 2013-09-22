@@ -12,7 +12,6 @@ ResourceDespatcher::ResourceDespatcher()
     loadThread_.start();
 
     emit loadResources();
-
 }
 
 ResourceDespatcher::~ResourceDespatcher()

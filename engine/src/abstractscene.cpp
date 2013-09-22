@@ -18,3 +18,13 @@ void AbstractScene::prepareScene(Graph::SceneNode* root)
 void AbstractScene::update(unsigned int)
 {
 }
+
+CubemapTexture* AbstractScene::skyboxTexture()
+{
+    return nullptr;
+}
+
+Renderable::Renderable* AbstractScene::skyboxMesh()
+{
+    return nullptr;
+}

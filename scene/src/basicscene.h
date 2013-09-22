@@ -8,6 +8,7 @@
 #include "entity/camera.h"
 #include "entity/mesh.h"
 #include "entity/boxprimitive.h"
+#include "renderable/cube.h"
 
 #include <vector>
 #include <memory>
@@ -24,6 +25,9 @@ public:
     virtual const Engine::Entity::DirectionalLight& queryDirectionalLight();
     virtual const std::vector<Engine::Entity::PointLight>& queryPointLights();
     virtual const std::vector<Engine::Entity::SpotLight>& querySpotLights();
+
+    virtual Engine::CubemapTexture* skyboxTexture();
+    virtual Engine::Renderable::Renderable* skyboxMesh();
 
     virtual void prepareScene(Engine::Graph::SceneNode* scene);
     virtual void update(unsigned int elapsed);
@@ -42,6 +46,9 @@ private:
     Engine::Entity::Mesh::Ptr sphere_;
     Engine::Entity::Mesh::Ptr platform_;
     Engine::Entity::Mesh::Ptr hellknight_;
+
+    std::shared_ptr<Engine::CubemapTexture> skyboxTexture_;
+    Engine::Renderable::Cube skyboxMesh_;
 
     std::shared_ptr<Engine::Entity::BoxPrimitive> cube_[2];
 

@@ -10,7 +10,7 @@ Technique::~Technique()
 {
 }
 
-void Technique::enable()
+bool Technique::enable()
 {
-    program_.bind();
+    return program_.bind();
 }

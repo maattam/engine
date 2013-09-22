@@ -24,6 +24,9 @@ public:
 
     virtual void updateRenderList(RenderList& list);
 
+    size_t numSubMeshes() const;
+    const Renderable::SubMesh::Ptr& subMesh(size_t index) const;
+
     void setMaterialAttributes(const Material::Attributes& attributes);
 
 protected:

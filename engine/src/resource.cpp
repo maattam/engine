@@ -22,9 +22,10 @@ Resource::~Resource()
 
 bool Resource::load(const QString& fileName)
 {
+    // We don't want the data to be reloaded if the object is being managed by a despatcher
     if(managed())
     {
-        qDebug() << "Resource::load(): Constraint: Invoked load on a managed resource.";
+        qWarning() << __FUNCTION__ << "Attempted to invoke load on a managed resource.";
         return false;
     }
 
@@ -39,6 +40,7 @@ bool Resource::ready()
         return true;
     }
 
+    // If the data has been read from the disk, we can initialise it
     else if(dataReady_)
     {
         initialized_ = initializeData();

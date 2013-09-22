@@ -31,7 +31,7 @@ bool BasicLightning::init()
 
     if(!program_.link())
     {
-        qDebug() << "Failed to link BasicLightning shaders.";
+        qCritical() << __FUNCTION__ << "Failed to link shaders.";
         return false;
     }
 
@@ -103,7 +103,7 @@ void BasicLightning::setPointLights(const std::vector<Entity::PointLight>& light
     unsigned int numLights = lights.size();
     if(numLights > MAX_POINT_LIGHTS)
     {
-        qDebug() << "Warning: MAX_POINT_LIGHTS exceeded";
+        qWarning() << __FUNCTION__ << "MAX_POINT_LIGHTS exceeded";
         numLights = MAX_POINT_LIGHTS;
     }
 
@@ -126,7 +126,7 @@ void BasicLightning::setSpotLights(const std::vector<Entity::SpotLight>& lights)
     unsigned int numLights = lights.size();
     if(numLights > MAX_SPOT_LIGHTS)
     {
-        qDebug() << "Warning: MAX_SPOT_LIGHTS exceeded";
+        qWarning() << __FUNCTION__ << "Warning: MAX_SPOT_LIGHTS exceeded";
         numLights = MAX_SPOT_LIGHTS;
     }
 

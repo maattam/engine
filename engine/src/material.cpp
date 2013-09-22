@@ -22,7 +22,7 @@ const Texture::Ptr& Material::getTexture(TextureType type)
     // If texture was not set, return null texture
     if(iter == textures_.end() || iter->second == nullptr)
     {
-        qDebug() << "Material::getTexture(): Warning: Material has no texture of type '" << type << "'";
+        qWarning() << __FUNCTION__ << "Material has no texture of type '" << type << "'";
         textures_[type] = despatcher_->get<Texture>(":/images/white.png");
 
         return textures_[type];

@@ -1,3 +1,5 @@
+// ResourceLoader implements a consumer object that loads data from storage asynchronously.
+
 #ifndef RESOURCEDELOADER_H
 #define RESOURCEDELOADER_H
 
@@ -22,11 +24,14 @@ public:
     ResourceLoader();
     ~ResourceLoader();
 
+    // Interrupts the consumer loop
     void stop();
 
+    // Enqueues a resource which's data will be loaded later
     void pushResource(const ResourcePtr& resource);
 
 public slots:
+    // Starts the consumer process for loading data
     void run();
 
 private:

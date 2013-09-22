@@ -5,6 +5,7 @@
 #include <QDebug>
 
 #include "texture.h"
+#include "cubemaptexture.h"
 #include "abstractscene.h"
 #include "entity/camera.h"
 #include "entity/light.h"
@@ -229,6 +230,27 @@ void Renderer::renderPass(AbstractScene* scene)
             }
 
             (*rit)->render();
+        }
+    }
+
+    // Render skybox if set
+    if(scene->skyboxTexture() != nullptr && scene->skyboxMesh() != nullptr)
+    {
+        QMatrix4x4 trans;
+        trans.translate(scene->activeCamera()->position());
+
+        skyboxTech_.enable();
+        skyboxTech_.setMVP(vp * trans);
+        skyboxTech_.setTextureUnit(0);
+
+        if(scene->skyboxTexture()->bind(GL_TEXTURE0))
+        {
+            gl->glCullFace(GL_FRONT);
+            gl->glDepthFunc(GL_LEQUAL);
+
+            scene->skyboxMesh()->render();
+
+            gl->glCullFace(GL_BACK);
         }
     }
 }

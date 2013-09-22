@@ -8,11 +8,13 @@ using namespace Engine;
 Texture::Texture()
     : Resource(), textureId_(0), mipmapping_(false), texData_(nullptr)
 {
+    target_ = GL_TEXTURE_2D;
 }
 
 Texture::Texture(const QString& name)
     : Resource(name), textureId_(0), mipmapping_(false), texData_(nullptr)
 {
+    target_ = GL_TEXTURE_2D;
 }
 
 Texture::~Texture()
@@ -33,7 +35,7 @@ bool Texture::create(GLsizei width, GLsizei height, GLint internalFormat, GLint 
 {
     if(managed())
     {
-        qDebug() << "Texture::create(): Can't modify managed resource";
+        qWarning() << __FUNCTION__ << "Can't modify managed resource";
         return false;
     }
 
@@ -59,9 +61,7 @@ bool Texture::loadData(const QString& fileName)
         return false;
     }
 
-    image = image.convertToFormat(QImage::Format_ARGB32);
-    texData_ = new QImage(image);
-
+    texData_ = new QImage(image.convertToFormat(QImage::Format_ARGB32));
     return true;
 }
 
@@ -84,17 +84,7 @@ bool Texture::initializeData()
     texData_ = nullptr;
 
     // Set cached texture flags
-    for(auto it = texFlags_.begin(); it != texFlags_.end(); ++it)
-    {
-        gl->glTexParameteri(GL_TEXTURE_2D, it->first, it->second);
-    }
-
-    texFlags_.clear();
-
-    if(mipmapping_)
-    {
-        gl->glGenerateMipmap(GL_TEXTURE_2D);
-    }
+    setFlags();
 
     return true;
 }
@@ -103,8 +93,8 @@ void Texture::setFiltering(GLenum magFilter, GLenum minFilter)
 {
     if(bind())
     {
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+        gl->glTexParameteri(target_, GL_TEXTURE_MAG_FILTER, magFilter);
+        gl->glTexParameteri(target_, GL_TEXTURE_MIN_FILTER, minFilter);
     }
 
     else
@@ -118,8 +108,8 @@ void Texture::setWrap(GLenum wrap_s, GLenum wrap_t)
 {
     if(bind())
     {
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_t);
+        gl->glTexParameteri(target_, GL_TEXTURE_WRAP_S, wrap_s);
+        gl->glTexParameteri(target_, GL_TEXTURE_WRAP_T, wrap_t);
     }
 
     else
@@ -133,7 +123,7 @@ void Texture::setAnisotropy(GLint samples)
 {
     if(bind())
     {
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, samples);
+        gl->glTexParameteri(target_, GL_TEXTURE_MAX_ANISOTROPY_EXT, samples);
     }
 
     else
@@ -146,7 +136,7 @@ void Texture::generateMipmaps()
 {
     if(bind())
     {
-        gl->glGenerateMipmap(GL_TEXTURE_2D);
+        gl->glGenerateMipmap(target_);
     }
 
     mipmapping_ = true;
@@ -157,7 +147,7 @@ bool Texture::bind()
     if(!ready() || textureId_ == 0)
         return false;
 
-    gl->glBindTexture(GL_TEXTURE_2D, textureId_);
+    gl->glBindTexture(target_, textureId_);
 
     return true;
 }
@@ -166,4 +156,25 @@ bool Texture::bind(GLenum target)
 {
     gl->glActiveTexture(target);
     return bind();
+}
+
+void Texture::setTarget(GLenum target)
+{
+    target_ = target;
+}
+
+void Texture::setFlags()
+{
+    // Set cached texture flags
+    for(auto it = texFlags_.begin(); it != texFlags_.end(); ++it)
+    {
+        gl->glTexParameteri(target_, it->first, it->second);
+    }
+
+    texFlags_.clear();
+
+    if(mipmapping_)
+    {
+        gl->glGenerateMipmap(target_);
+    }
 }

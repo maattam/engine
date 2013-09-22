@@ -157,6 +157,12 @@
     <ClCompile Include="GeneratedFiles\Release\moc_resourcedespatcher.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\cubemaptexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\technique\skyboxtechnique.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\passthrough.vert">
@@ -184,6 +190,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\shadowmap.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\skybox.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -257,11 +269,14 @@
     <ClInclude Include="src\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\asset.h">
-      <Filter>Header Files\technique</Filter>
-    </ClInclude>
     <ClInclude Include="src\resource.h">
       <Filter>Header Files\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="src\cubemaptexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\skyboxtechnique.h">
+      <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

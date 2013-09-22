@@ -179,7 +179,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>D:\Qt\5.1.1-git\include\QtCore;D:\Qt\5.1.1-git\include\QtGui;E:\Documents\Repos\engine\engine\src;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Qt\assimp--3.0.1270-sdk\lib\assimp_release-dll_win32;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\Qt\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

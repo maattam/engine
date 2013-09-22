@@ -11,7 +11,7 @@ public:
     Technique();
     virtual ~Technique();
 
-    virtual void enable();
+    virtual bool enable();
 
 protected:
     QOpenGLShaderProgram program_;

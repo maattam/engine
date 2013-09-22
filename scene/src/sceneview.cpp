@@ -49,7 +49,7 @@ void SceneView::update()
     if(frame_ % 10)
     {
         QVector3D pos = scene_->activeCamera()->position();
-        setTitle(QString("FPS: %1 POS: [%2 %3 %4]").arg(QString::number(1.0f / elapsed, 'g', 3))
+        setTitle(QString("FPS: %1, POS: [%2 %3 %4]").arg(QString::number(1.0f / elapsed, 'g', 3))
             .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
     }
 }
@@ -67,14 +67,15 @@ void SceneView::initialize()
     glViewport(0, 0, width(), height());
 
     // Load scene
-    scene_ = new BasicScene;
+    scene_ = new BasicScene();
     scene_->initialize();
 
     // Initialize renderer
     renderer_ = new Engine::Renderer();
     if(!renderer_->initialize(width(), height(), format().samples()))
     {
-        qDebug() << "Failed to initialize renderer!";
+        qCritical() << "Failed to initialize renderer!";
+        exit(-1);
     }
 
     renderer_->prepareScene(scene_);
@@ -138,7 +139,8 @@ void SceneView::resizeEvent(QResizeEvent* event)
 
         if(!renderer_->initialize(width(), height(), format().samples()))
         {
-            qDebug() << "Failed to initialize renderer!";
+            qCritical() << "Failed to initialize renderer!";
+            exit(-1);
         }
 
         if(scene_ != nullptr)
@@ -178,7 +180,7 @@ void SceneView::renderNow()
         funcs_ = context_->versionFunctions<QOPENGL_FUNCTIONS>();
         if(funcs_ == nullptr || !funcs_->initializeOpenGLFunctions())
         {
-            qWarning() << "Could not obtain OpenGL context version functions";
+            qCritical() << "Could not obtain OpenGL context version functions";
             exit(-1);
         }
 

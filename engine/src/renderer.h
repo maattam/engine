@@ -8,10 +8,12 @@
 #include "graph/scenenode.h"
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
+#include "technique/skyboxtechnique.h"
 #include "renderable/quad.h"
 #include "entity/entity.h"
 
 #include <deque>
+#include <memory>
 
 namespace Engine {
 
@@ -40,6 +42,7 @@ private:
 
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
+    Technique::Skybox skyboxTech_;
     QOpenGLShaderProgram nullTech_;
 
     int width_;

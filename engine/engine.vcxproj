@@ -180,6 +180,7 @@
     </ClCompile>
     <ClCompile Include="src\abstractscene.cpp" />
     <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\cubemaptexture.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
@@ -201,6 +202,7 @@
     <ClCompile Include="src\resourceloader.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
+    <ClCompile Include="src\technique\skyboxtechnique.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
     <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
@@ -212,13 +214,15 @@
     <None Include="shaders\null.frag" />
     <None Include="shaders\shadowmap.frag" />
     <None Include="shaders\shadowmap.vert" />
+    <None Include="shaders\skybox.frag" />
+    <None Include="shaders\skybox.vert" />
     <None Include="shaders\tone.frag" />
     <None Include="shaders\passthrough.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h" />
-    <ClInclude Include="src\asset.h" />
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\cubemaptexture.h" />
     <ClInclude Include="src\effect\downsampler.h" />
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
@@ -275,6 +279,7 @@
     </CustomBuild>
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
+    <ClInclude Include="src\technique\skyboxtechnique.h" />
     <ClInclude Include="src\technique\technique.h" />
     <ClInclude Include="src\texture.h" />
   </ItemGroup>

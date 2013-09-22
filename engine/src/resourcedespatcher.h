@@ -1,3 +1,7 @@
+// ResourceDespatcher provides loose resource management through stl shared_ptr.
+// The despatcher doesn't own the object handle, but shares the record to prevent
+// allocating multiple instances of the same data.
+
 #ifndef RESOURCEDESPATCHER_H
 #define RESOURCEDESPATCHER_H
 
@@ -23,15 +27,20 @@ public:
     ResourceDespatcher();
     ~ResourceDespatcher();
 
+    // Clears the record; doesn't delete managed objects
     void clear();
 
     // Counts managed objects; expensive
     int numManaged() const;
 
+    // Attempts to load a resource from storage asynchronously, or returns
+    // a cached reference.
+    // Note that the returned resource isn't guaranteed to be ready to use.
     template<typename T>
     std::shared_ptr<T> get(const QString& fileName);
 
 signals:
+    // Invokes the ResourceLoaders consume procedure
     void loadResources();
 
 private:
@@ -42,6 +51,7 @@ private:
     QThread loadThread_;
     ResourceLoader* loader_;
 
+    // Allocates a new resource and loads it asynchronously
     template<typename T>
     std::shared_ptr<T> createResource(const QString& fn);
 };
@@ -74,7 +84,7 @@ std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
         resource = std::dynamic_pointer_cast<T>(result->lock());
         assert(resource);
         
-        qDebug() << "ResourceDespatcher::get(): Using cached resource: " << fileName;
+        qDebug() << __FUNCTION__ << "Using cached resource: " << fileName;
     }
 
     return resource;
@@ -86,19 +96,7 @@ std::shared_ptr<T> ResourceDespatcher::createResource(const QString& fn)
     std::shared_ptr<T> resource = std::make_shared<T>(fn);
     resource->despatcher_ = this;
 
-    /*if(!resource->load(fn))
-    {
-        qDebug() << "ResourceDespatcher::createResource(): Failed to load resource: " << fn;
-        resource.reset();
-    }
-
-    else
-    {
-        qDebug() << "ResourceDespatcher::createResource(): Loaded resource: " << fn;
-    }*/
-
     loader_->pushResource(resource);
-
     return resource;
 }
 

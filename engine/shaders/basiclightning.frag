@@ -84,7 +84,7 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 	
     // Compare against a bias to prevent shadow acne, TODO!
 	if(depth < (projCoords.z + 0.00001))
-		return 0.5;
+		return 0.0;
 	else
 		return 1.0;
 }

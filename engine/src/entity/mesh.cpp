@@ -35,6 +35,17 @@ void Mesh::updateRenderList(RenderList& list)
         list.push_back(mesh.get());
 }
 
+size_t Mesh::numSubMeshes() const
+{
+    return entries_.size();
+}
+
+const Renderable::SubMesh::Ptr& Mesh::subMesh(size_t index) const
+{
+    assert(index < entries_.size());
+    return entries_[index];
+}
+
 bool Mesh::loadData(const QString& fileName)
 {
     Assimp::Importer importer;
@@ -45,7 +56,7 @@ bool Mesh::loadData(const QString& fileName)
 
     if(scene == nullptr)
     {
-        qDebug() << "Error loading '" << fileName << "': " << importer.GetErrorString();
+        qWarning() << __FUNCTION__ << "Error loading '" << fileName << "': " << importer.GetErrorString();
         return false;
     }
 
