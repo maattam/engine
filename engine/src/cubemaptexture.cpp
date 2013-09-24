@@ -22,10 +22,6 @@ CubemapTexture::CubemapTexture(const QString& name) : Texture(name)
     setTarget(GL_TEXTURE_CUBE_MAP);
 }
 
-CubemapTexture::~CubemapTexture()
-{
-}
-
 bool CubemapTexture::create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
         GLenum type, const GLvoid* pixels)
 {
@@ -74,4 +70,13 @@ bool CubemapTexture::initializeData()
     gl->glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
     return true;
+}
+
+void CubemapTexture::queryFilesDebug(QStringList& files) const
+{
+    for(int i = 0; i < NUM_TARGETS; ++i)
+    {
+        QString fn = name();
+        files.append(fn.replace(QString("*"), QString::number(i)));
+    }
 }

@@ -4,6 +4,7 @@
 #define RESOURCE_H
 
 #include <QString>
+#include <QStringList>
 
 #include <atomic>
 
@@ -30,6 +31,8 @@ public:
 
     const QString& name() const;
 
+    void release();
+
 protected:
     ResourceDespatcher* despatcher();
 
@@ -39,6 +42,12 @@ protected:
     // Called when loadData has returned successfully and the data has not yet been
     // initialized
     virtual bool initializeData() = 0;
+
+    // Called when data needs to be released and memory freed
+    virtual void releaseData() = 0;
+
+    // Reimplement to provide additional triggers for file watching
+    virtual void queryFilesDebug(QStringList& files) const;
 
 private:
     friend class ResourceDespatcher;

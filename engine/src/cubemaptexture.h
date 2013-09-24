@@ -12,17 +12,17 @@ public:
 
     CubemapTexture();
     CubemapTexture(const QString& name);
-    ~CubemapTexture();
 
-    bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
+    virtual bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
         GLenum type, const GLvoid* pixels = nullptr);
 
 protected:
     // fileName has to be in format /path/to/file*.png where file0..5
     // corresponds to cubemap faces
-    bool loadData(const QString& fileName);
+    virtual bool loadData(const QString& fileName);
 
-    bool initializeData();
+    virtual bool initializeData();
+    virtual void queryFilesDebug(QStringList& files) const;
 
 private:
     QImage* texData_[NUM_TARGETS];

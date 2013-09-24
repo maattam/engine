@@ -54,6 +54,10 @@ Renderable::Renderable* BasicScene::skyboxMesh()
 
 void BasicScene::initialize()
 {
+    // Load skybox
+    skyboxTexture_ = despatcher_.get<CubemapTexture>("assets/skybox2/space*.png");
+    skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
+
     // Set up directional light
     directionalLight_.diffuseIntensity = 0.2f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
@@ -83,20 +87,16 @@ void BasicScene::initialize()
     spotLights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = despatcher_.get<Entity::Mesh>("./assets/oildrum.dae");
-    hellknight_ = despatcher_.get<Entity::Mesh>("./assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher_.get<Entity::Mesh>("./assets/blocks.dae");
-    sphere_ = despatcher_.get<Entity::Mesh>("./assets/sphere.obj");
-    torus_ = despatcher_.get<Entity::Mesh>("./assets/torus.obj");
-
-    // Load skybox
-    skyboxTexture_ = despatcher_.get<CubemapTexture>("./assets/skybox2/space*.png");
-    skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
+    oildrum_ = despatcher_.get<Entity::Mesh>("assets/oildrum.dae");
+    hellknight_ = despatcher_.get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher_.get<Entity::Mesh>("assets/blocks.dae");
+    sphere_ = despatcher_.get<Entity::Mesh>("assets/sphere.obj");
+    torus_ = despatcher_.get<Entity::Mesh>("assets/torus.obj");
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
     {
-        QString file = "./assets/wooden_crate" + QString::number(i+1) + ".png";
+        QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
 
         Texture::Ptr tex = despatcher_.get<Texture>(file);
         if(tex != nullptr)
@@ -126,16 +126,11 @@ void BasicScene::update(unsigned int elapsedMs)
     QVector3D lightPos = QVector3D(R/2 * sinf(angle * 3), R * sinf(angle), R * cosf(angle));
 
     pointLights_[1].position = QVector3D(R2 * sinf(angle), R2/2 * sinf(angle * 3), R2 * cosf(angle));
-
     pointLights_[0].position = lightPos;
+
     sphereNode_->setPosition(lightPos);
 
     QMatrix4x4 mat;
-    // setPosition resets scale matrix so restore it
-    mat.scale(0.2f);
-    sphereNode_->applyTransformation(mat);
-
-    mat.setToIdentity();
     mat.rotate(15.0f * elapsed, 1, 1, 0);
     torusNode_->applyTransformation(mat);
 

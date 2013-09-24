@@ -33,8 +33,14 @@ void Node::applyTransformation(const QMatrix4x4& matrix)
 
 void Node::setPosition(const QVector3D& position)
 {
-    transformation_.setToIdentity();
-    transformation_.translate(position);
+    // Translation is the 3rd column vector of our transformation matrix
+    transformation_.setColumn(3, QVector4D(position, 1.0f));
+}
+
+const QVector3D& Node::position() const
+{
+    // Discard the W coordinate
+    return transformation_.column(3).toVector3D();
 }
 
 Node::ChildNodes::size_type Node::numChildren() const

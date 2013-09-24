@@ -75,18 +75,33 @@ uniform bool gHasTangents;
 
 float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 {
+    const vec2 poissonDisk[4] = {
+        vec2(-0.94201624, -0.39906216),
+        vec2(0.94558609, -0.76890725),
+        vec2(-0.094184101, -0.92938870),
+        vec2(0.34495938, 0.29387760)
+    };
+
+    float bias = 0.0002;
+
 	// Project shadow map on current fragment
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords = 0.5 * projCoords + 0.5;
 	
-	vec2 uvCoords = vec2(projCoords.x, projCoords.y);
-	float depth = texture(shadowMap, uvCoords).x;
-	
-    // Compare against a bias to prevent shadow acne, TODO!
-	if(depth < (projCoords.z + 0.00001))
-		return 0.0;
-	else
-		return 1.0;
+	float visibility = 1.0f;
+    
+    for(int i = 0; i < 4; ++i)
+    {
+        if(texture(shadowMap, projCoords.xy + poissonDisk[i]/700.0).z < projCoords.z - bias)
+        {
+            visibility -= 1.0 / 3.0;
+        }
+    }
+
+    if(visibility < 0.0)
+        visibility = 0.0;
+
+    return visibility;
 }
 
 // Encapsules common stuff between the different light types
@@ -193,7 +208,7 @@ void main()
     {
 		light += calcPointLight(gPointLights[i], normal);
     }
-		
+
 	for(int i = 0; i < gNumSpotLights; ++i)
 	{
 		float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i]);

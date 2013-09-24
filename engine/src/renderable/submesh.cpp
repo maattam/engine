@@ -39,7 +39,7 @@ void SubMesh::render() const
 
 bool SubMesh::initMesh( const std::vector<QVector3D>& vertices,
                         const std::vector<QVector3D>& normals,
-                        std::vector<QVector3D>& tangents,
+                        const std::vector<QVector3D>& tangents,
                         const std::vector<QVector2D>& uvs,
                         const std::vector<unsigned int>& indices)
 {

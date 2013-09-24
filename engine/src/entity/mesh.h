@@ -30,8 +30,9 @@ public:
     void setMaterialAttributes(const Material::Attributes& attributes);
 
 protected:
-    bool loadData(const QString& fileName);
-    bool initializeData();
+    virtual bool loadData(const QString& fileName);
+    virtual bool initializeData();
+    virtual void releaseData();
 
 private:
     bool initFromScene(const aiScene* scene, const QString& filenName);
@@ -46,14 +47,14 @@ private:
         unsigned int materialIndex;
     };
 
-    void initSubMesh(const aiMesh* mesh, MeshData* data);
+    void initSubMesh(const aiMesh* mesh, MeshData& data);
 
     void initMaterials(const aiScene* scene, const QString& fileName);
 
     std::vector<Renderable::SubMesh::Ptr> entries_;
     std::vector<Material::Ptr> materials_;
     Material::Attributes materialAttrib_;
-    std::vector<std::shared_ptr<MeshData>> meshData_;
+    std::vector<MeshData> meshData_;
 };
 
 }}

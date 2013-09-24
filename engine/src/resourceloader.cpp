@@ -7,8 +7,8 @@
 
 using namespace Engine;
 
-ResourceLoader::ResourceLoader()
-    : QObject(), running_(false)
+ResourceLoader::ResourceLoader(QObject* parent)
+    : QObject(parent), running_(false)
 {
 }
 

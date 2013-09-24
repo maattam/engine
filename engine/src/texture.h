@@ -37,6 +37,7 @@ public:
 protected:
     virtual bool loadData(const QString& fileName);
     virtual bool initializeData();
+    virtual void releaseData();
 
     // Change texture target from default GL_TEXTURE_2D
     void setTarget(GLenum target);

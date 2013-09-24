@@ -19,6 +19,14 @@ Texture::Texture(const QString& name)
 
 Texture::~Texture()
 {
+    releaseData();
+
+    if(texData_ != nullptr)
+        delete texData_;
+}
+
+void Texture::releaseData()
+{
     if(textureId_ != 0)
     {
         gl->glDeleteTextures(1, &textureId_);
@@ -39,11 +47,7 @@ bool Texture::create(GLsizei width, GLsizei height, GLint internalFormat, GLint 
         return false;
     }
 
-    // Delete old texture
-    if(textureId_ != 0)
-    {
-        gl->glDeleteTextures(1, &textureId_);
-    }
+    releaseData();
 
     gl->glGenTextures(1, &textureId_);
     bind();

@@ -1,6 +1,8 @@
 // ResourceDespatcher provides loose resource management through stl shared_ptr.
 // The despatcher doesn't own the object handle, but shares the record to prevent
 // allocating multiple instances of the same data.
+// The despatcher also watches for filesystem changes to allow dynamic resource reloading
+// during developement.
 
 #ifndef RESOURCEDESPATCHER_H
 #define RESOURCEDESPATCHER_H
@@ -15,6 +17,8 @@
 
 #include "resourceloader.h"
 
+class QFileSystemWatcher;
+
 namespace Engine {
 
 class Resource;
@@ -24,7 +28,7 @@ class ResourceDespatcher : public QObject
     Q_OBJECT
 
 public:
-    ResourceDespatcher();
+    ResourceDespatcher(QObject* parent = nullptr);
     ~ResourceDespatcher();
 
     // Clears the record; doesn't delete managed objects
@@ -43,6 +47,9 @@ signals:
     // Invokes the ResourceLoaders consume procedure
     void loadResources();
 
+public slots:
+    void fileChanged(const QString& path);
+
 private:
     ResourceDespatcher(const ResourceDespatcher&);
     ResourceDespatcher& operator=(const ResourceDespatcher&);
@@ -51,9 +58,13 @@ private:
     QThread loadThread_;
     ResourceLoader* loader_;
 
+    QFileSystemWatcher* watcher_;
+
     // Allocates a new resource and loads it asynchronously
     template<typename T>
     std::shared_ptr<T> createResource(const QString& fn);
+
+    void watchResource(const std::shared_ptr<Resource>& resource);
 };
 
 // Template implementations
@@ -68,7 +79,10 @@ std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
         resource = createResource<T>(fileName);
 
         if(resource != nullptr)
+        {
             resources_.insert(fileName, resource);
+            watchResource(resource);
+        }
     }
 
     else if(result->expired())

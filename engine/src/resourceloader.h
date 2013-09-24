@@ -21,7 +21,7 @@ class ResourceLoader : public QObject
 public:
     typedef std::shared_ptr<Resource> ResourcePtr;
 
-    ResourceLoader();
+    ResourceLoader(QObject* parent = nullptr);
     ~ResourceLoader();
 
     // Interrupts the consumer loop

@@ -88,6 +88,9 @@ void SceneView::handleInput(float elapsed)
     const float speed = 10.0f;
     const float mouseSpeed = 0.15f;
 
+    if(scene_ == nullptr)
+        return;
+
     Engine::Entity::Camera* camera = scene_->activeCamera();
 
     if(getKey(Qt::Key::Key_W))

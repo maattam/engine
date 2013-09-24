@@ -1,6 +1,8 @@
 #ifndef TECHNIQUE_H
 #define TECHNIQUE_H
 
+#include "resource.h"
+
 #include <QOpenGLShaderProgram>
 
 namespace Engine { namespace Technique {

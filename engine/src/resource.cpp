@@ -64,3 +64,22 @@ const QString& Resource::name() const
 {
     return name_;
 }
+
+void Resource::release()
+{
+    if(!name_.isEmpty())
+    {
+        qDebug() << __FUNCTION__ << "Releasing resource:" << name_;
+    }
+
+    initialized_ = false;
+    dataReady_ = false;
+
+    // Call implementation
+    releaseData();
+}
+
+void Resource::queryFilesDebug(QStringList& files) const
+{
+    files.push_back(name_);
+}

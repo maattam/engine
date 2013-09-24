@@ -43,6 +43,8 @@ private:
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
     Technique::Skybox skyboxTech_;
+
+    // For debugging depth buffer
     QOpenGLShaderProgram nullTech_;
 
     int width_;
