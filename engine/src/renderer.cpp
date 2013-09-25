@@ -197,8 +197,8 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     // Bind spot light shadow maps
     for(unsigned int i = 0; i < spotLights.size(); ++i)
     {
-        shadowTech_.bindSpotLight(i, GL_TEXTURE3 + i);
-        lightningTech_.setSpotLightShadowUnit(i, 3 + i);
+        shadowTech_.bindSpotLight(i, GL_TEXTURE0 + Material::TEXTURE_COUNT + i);
+        lightningTech_.setSpotLightShadowUnit(i, Material::TEXTURE_COUNT + i);
     }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
