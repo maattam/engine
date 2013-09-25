@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <cassert>
 
-#include "resourcedespatcher.h"
+#include "resource/resourcedespatcher.h"
 #include "resource/shader.h"
 
 using namespace Engine;

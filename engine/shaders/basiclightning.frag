@@ -75,6 +75,7 @@ uniform bool gHasTangents;
 
 float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 {
+
     const vec2 poissonDisk[4] = {
         vec2(-0.94201624, -0.39906216),
         vec2(0.94558609, -0.76890725),

@@ -6,8 +6,8 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-Camera::Camera(const QVector3D& position, float horizontalAngle, float verticalAngle, float fov, float aspect)
-    : position_(position), horizontal_(horizontalAngle), vertical_(verticalAngle), fov_(fov), aspect_(aspect)
+Camera::Camera(const QVector3D& position, float horizontalAngle, float verticalAngle, float fov, float aspect, float farPlane)
+    : position_(position), horizontal_(horizontalAngle), vertical_(verticalAngle), fov_(fov), aspect_(aspect), farPlane_(farPlane)
 {
 }
 
@@ -49,16 +49,15 @@ QVector3D Camera::direction() const
 
 QVector3D Camera::right() const
 {
-    return QVector3D(
-        sin(horizontal_ - M_PI / 2.0f),
-        0,
-        cos(horizontal_ - M_PI / 2.0f));
+    return QVector3D(sin(horizontal_ - M_PI / 2.0f),
+        0, cos(horizontal_ - M_PI / 2.0f));
 }
 
 QMatrix4x4 Camera::perspective() const
 {
     QMatrix4x4 mat;
-    mat.perspective(fov_, aspect_, 0.1f, 300.0f);
+    mat.perspective(fov_, aspect_, 0.1f, farPlane_);
+
     return mat;
 }
 
@@ -74,4 +73,14 @@ QMatrix4x4 Camera::lookAt() const
 const QVector3D& Camera::position() const
 {
     return position_;
+}
+
+float Camera::horizontalAngle() const
+{
+    return horizontal_;
+}
+
+float Camera::verticalAngle() const
+{
+    return vertical_;
 }

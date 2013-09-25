@@ -4,8 +4,8 @@
 #include "entity/entity.h"
 #include "renderable/cube.h"
 #include "entity/mesh.h"
-#include "cubemaptexture.h"
-#include "resourcedespatcher.h"
+#include "resource/cubemaptexture.h"
+#include "resource/resourcedespatcher.h"
 
 #include <qmath.h>
 #include <QDebug>
@@ -13,7 +13,7 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 70.0f, 0.0f)
+    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 75.0f, 0.0f, 400.0f)
 {
     time_ = 0;
 }

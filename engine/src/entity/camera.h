@@ -8,13 +8,17 @@ namespace Engine { namespace Entity {
     class Camera
     {
     public:
-        Camera(const QVector3D& position, float horizontalAngle, float verticalAngle, float fov, float aspect);
+        Camera(const QVector3D& position, float horizontalAngle, float verticalAngle,
+            float fov, float aspect, float farPlane);
 
         void move(const QVector3D& offset);
         void moveTo(const QVector3D& position);
 
         void tilt(float horizontal, float vertical);
         void setTilt(float horizontal, float vertical);
+
+        float horizontalAngle() const;
+        float verticalAngle() const;
 
         void setAspectRatio(float ratio);
 
@@ -32,6 +36,7 @@ namespace Engine { namespace Entity {
         float vertical_;
         float fov_;
         float aspect_;
+        float farPlane_;
     };
 
 }}

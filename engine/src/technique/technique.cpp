@@ -82,8 +82,10 @@ void Technique::addShader(const std::shared_ptr<Engine::Shader>& shader)
     {
         shaders_.push_back(shader);
 
+#ifdef _DEBUG
         connect(shader.get(), &Resource::released, this, &Technique::shaderReleased);
         connect(shader.get(), &Resource::initialized, this, &Technique::shaderCompiled);
+#endif
     }
 }
 

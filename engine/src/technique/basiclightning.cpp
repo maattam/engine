@@ -1,6 +1,6 @@
 #include "basiclightning.h"
 
-#include "resourcedespatcher.h"
+#include "resource/resourcedespatcher.h"
 #include "resource/shader.h"
 
 #include <QDebug>
@@ -15,8 +15,8 @@ using namespace Engine::Technique;
 BasicLightning::BasicLightning(ResourceDespatcher* despatcher)
     : Technique(), mvpLocation_(-1)
 {
-    addShader(despatcher->get<Shader>(":/shaders/basiclightning.vert"));
-    addShader(despatcher->get<Shader>(":/shaders/basiclightning.frag"));
+    addShader(despatcher->get<Shader>("shaders/basiclightning.vert"));
+    addShader(despatcher->get<Shader>("shaders/basiclightning.frag"));
 }
 
 BasicLightning::~BasicLightning()

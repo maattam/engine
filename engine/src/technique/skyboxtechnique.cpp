@@ -1,6 +1,6 @@
 #include "skyboxtechnique.h"
 
-#include "resourcedespatcher.h"
+#include "resource/resourcedespatcher.h"
 #include "resource/shader.h"
 
 using namespace Engine;

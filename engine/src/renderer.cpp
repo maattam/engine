@@ -4,8 +4,8 @@
 #include <QMatrix4x4>
 #include <QDebug>
 
-#include "texture.h"
-#include "cubemaptexture.h"
+#include "resource/texture.h"
+#include "resource/cubemaptexture.h"
 #include "abstractscene.h"
 #include "entity/camera.h"
 #include "entity/light.h"

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "basicscene.h"
-#include "resourcedespatcher.h"
+#include "resource/resourcedespatcher.h"
 
 namespace Engine {
     class Renderer;

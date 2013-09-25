@@ -1,7 +1,7 @@
 #ifndef TECHNIQUE_H
 #define TECHNIQUE_H
 
-#include "resource.h"
+#include "resource/resource.h"
 
 #include <vector>
 #include <memory>

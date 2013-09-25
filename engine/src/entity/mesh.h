@@ -3,7 +3,7 @@
 
 #include "entity.h"
 #include "renderable/submesh.h"
-#include "resource.h"
+#include "resource/resource.h"
 
 #include <vector>
 #include <memory>

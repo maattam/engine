@@ -5,6 +5,7 @@
 #include <QWheelEvent>
 #include <QScreen>
 #include <QCursor>
+#include <qmath.h>
 
 #include <QTimer> // singleShot
 
@@ -119,6 +120,17 @@ void SceneView::handleInput(float elapsed)
         QCursor::setPos(mapToGlobal(lastMouse_));
 
         camera->tilt(mouseSpeed * elapsed * delta.x(), mouseSpeed * elapsed * delta.y());
+
+        // Lock vertical tilt to prevent upside-down view
+        if(camera->verticalAngle() > M_PI/2.0f)
+        {
+            camera->setTilt(camera->horizontalAngle(),  M_PI/2.0f);
+        }
+
+        else if(camera->verticalAngle() < -M_PI/2.0f)
+        {
+            camera->setTilt(camera->horizontalAngle(), -M_PI/2.0f);
+        }
     }
 }
 
