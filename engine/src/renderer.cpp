@@ -15,7 +15,8 @@
 
 using namespace Engine;
 
-Renderer::Renderer()
+Renderer::Renderer(ResourceDespatcher* despatcher)
+    : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -66,9 +67,6 @@ bool Renderer::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    if(!lightningTech_.init())
-        return false;
-
     if(!shadowTech_.initSpotLights(width_, height_, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
@@ -112,6 +110,9 @@ bool Renderer::initialize(int width, int height, int samples)
 
 void Renderer::render(AbstractScene* scene)
 {
+    const Entity::Camera* camera = scene->activeCamera();
+    const QMatrix4x4 worldView = camera->perspective() * camera->lookAt();
+
     visibles_.clear();
     shadowCasters_.clear();
 
@@ -134,7 +135,10 @@ void Renderer::render(AbstractScene* scene)
     // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    renderPass(scene);
+    renderPass(scene, worldView);
+
+    // Render skybox if set
+    skyboxPass(scene, worldView);
 
     gl->glDisable(GL_DEPTH_TEST);
 
@@ -151,7 +155,10 @@ void Renderer::render(AbstractScene* scene)
 void Renderer::shadowMapPass(AbstractScene* scene)
 {
     const auto& spotLights = scene->querySpotLights();
-    shadowTech_.enable();
+    if(!shadowTech_.enable())
+    {
+        return;
+    }
 
     // Render depth for each spot light
     for(size_t i = 0; i < spotLights.size(); ++i)
@@ -172,14 +179,14 @@ void Renderer::shadowMapPass(AbstractScene* scene)
     }
 }
 
-void Renderer::renderPass(AbstractScene* scene)
+void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 {
-    QMatrix4x4 v = scene->activeCamera()->lookAt();
-    QMatrix4x4 vp = scene->activeCamera()->perspective() * v;
-
     const auto& spotLights = scene->querySpotLights();
 
-    lightningTech_.enable();
+    if(!lightningTech_.enable())
+    {
+        return;
+    }
 
     lightningTech_.setEyeWorldPos(scene->activeCamera()->position());
     lightningTech_.setTextureUnits(0, 1, 2);
@@ -202,7 +209,7 @@ void Renderer::renderPass(AbstractScene* scene)
         Entity::RenderList& node = it->second;
 
         lightningTech_.setWorldView(it->first);
-        lightningTech_.setMVP(vp * it->first);
+        lightningTech_.setMVP(worldView * it->first);
 
         // Set translation matrix for each spot light
         for(unsigned int i = 0; i < spotLights.size(); ++i)
@@ -214,44 +221,43 @@ void Renderer::renderPass(AbstractScene* scene)
         {
             const Material::Ptr& material = (*rit)->material();
 
+            if(!material->bind())
+            {
+                continue;
+            }
+
             lightningTech_.setMaterialAttributes(material->getAttributes());
-            material->getTexture(Material::TEXTURE_DIFFUSE)->bind(GL_TEXTURE0);
-            material->getTexture(Material::TEXTURE_SPECULAR)->bind(GL_TEXTURE2);
-
-            if((*rit)->hasTangents())
-            {
-                material->getTexture(Material::TEXTURE_NORMALS)->bind(GL_TEXTURE1);
-                lightningTech_.setHasTangents(true);
-            }
-
-            else
-            {
-                lightningTech_.setHasTangents(false);
-            }
+            lightningTech_.setHasTangents((*rit)->hasTangents());
 
             (*rit)->render();
         }
     }
+}
 
-    // Render skybox if set
-    if(scene->skyboxTexture() != nullptr && scene->skyboxMesh() != nullptr)
+void Renderer::skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView)
+{
+    if(scene->skyboxTexture() == nullptr || scene->skyboxMesh() == nullptr)
+        return;
+
+    if(!skyboxTech_.enable())
     {
-        QMatrix4x4 trans;
-        trans.translate(scene->activeCamera()->position());
+        return;
+    }
 
-        skyboxTech_.enable();
-        skyboxTech_.setMVP(vp * trans);
-        skyboxTech_.setTextureUnit(0);
+    QMatrix4x4 trans;
+    trans.translate(scene->activeCamera()->position());
 
-        if(scene->skyboxTexture()->bind(GL_TEXTURE0))
-        {
-            gl->glCullFace(GL_FRONT);
-            gl->glDepthFunc(GL_LEQUAL);
+    skyboxTech_.setMVP(worldView * trans);
+    skyboxTech_.setTextureUnit(0);
 
-            scene->skyboxMesh()->render();
+    if(scene->skyboxTexture()->bind(GL_TEXTURE0))
+    {
+        gl->glCullFace(GL_FRONT);
+        gl->glDepthFunc(GL_LEQUAL);
 
-            gl->glCullFace(GL_BACK);
-        }
+        scene->skyboxMesh()->render();
+
+        gl->glCullFace(GL_BACK);
     }
 }
 

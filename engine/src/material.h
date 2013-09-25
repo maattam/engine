@@ -19,10 +19,12 @@ public:
     Material(ResourceDespatcher* despatcher);
     ~Material();
 
-    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR };
+    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_COUNT };
 
     const Texture::Ptr& getTexture(TextureType type);
     void setTexture(TextureType type, Texture::Ptr& texture);
+
+    bool bind();
 
     void setAmbientColor(const QVector3D& color);
     void setSpecularIntensity(float intensity);

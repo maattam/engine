@@ -18,7 +18,7 @@ ResourceLoader::~ResourceLoader()
 
 void ResourceLoader::run()
 {
-    qDebug() << __FUNCTION__ << "Thread: " << thread()->currentThreadId();
+    qDebug() << __FUNCTION__ << "Thread:" << thread()->currentThreadId();
     running_ = true;
 
     while(running_)
@@ -44,13 +44,13 @@ void ResourceLoader::run()
 
         if(!resource->loadData(resource->name()))
         {
-            qWarning() << __FUNCTION__ << "Failed to load resource: " << resource->name();
+            qWarning() << __FUNCTION__ << "Failed to load resource:" << resource->name();
         }
 
         else
         {
             resource->dataReady_ = true;
-            qDebug() << __FUNCTION__ << "Loaded resource: " << resource->name();
+            qDebug() << __FUNCTION__ << "Loaded resource:" << resource->name();
         }
     }
 }

@@ -10,17 +10,19 @@
 #include <vector>
 #include <string>
 
-namespace Engine { namespace Technique {
+namespace Engine {
+    
+class ResourceDespatcher;
+
+namespace Technique {
 
 class BasicLightning : public Technique
 {
 public:
     enum { MAX_POINT_LIGHTS = 4, MAX_SPOT_LIGHTS = 4 };
 
-    BasicLightning();
+    BasicLightning(ResourceDespatcher* despatcher);
     ~BasicLightning();
-
-    bool init();
 
     void setMVP(const QMatrix4x4& mvp);
     void setWorldView(const QMatrix4x4& vp);
@@ -35,6 +37,9 @@ public:
     void setDirectionalLight(const Entity::DirectionalLight& light);
     void setPointLights(const std::vector<Entity::PointLight>& lights);
     void setSpotLights(const std::vector<Entity::SpotLight>& lights);
+
+protected:
+    virtual void init();
 
 private:
     GLuint mvpLocation_;

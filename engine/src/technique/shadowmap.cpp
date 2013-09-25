@@ -4,15 +4,16 @@
 #include <QDebug>
 #include <cassert>
 
+#include "resourcedespatcher.h"
+#include "resource/shader.h"
+
 using namespace Engine;
 using namespace Engine::Technique;
 
-ShadowMap::ShadowMap()
+ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
     : Technique()
 {
-    // Compile and link program
-    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/shadowmap.vert");
-    program_.link();
+    addShader(despatcher->get<Shader>(":/shaders/shadowmap.vert"));
 }
 
 ShadowMap::~ShadowMap()
@@ -23,9 +24,6 @@ ShadowMap::~ShadowMap()
 bool ShadowMap::initSpotLights(unsigned int width, unsigned int height, size_t count)
 {
     destroySpotLights();
-
-    if(!program_.isLinked())
-        return false;
 
     spotWidth_ = width;
     spotHeight_ = height;
@@ -43,7 +41,7 @@ bool ShadowMap::initSpotLights(unsigned int width, unsigned int height, size_t c
     {
         // Initialize depth texture
         gl->glBindTexture(GL_TEXTURE_2D, spotLightTextures_[i]);
-        gl->glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+        gl->glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
         gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         gl->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -88,7 +86,7 @@ void ShadowMap::bindSpotLight(size_t index, GLenum textureUnit)
 
 void ShadowMap::setLightMVP(const QMatrix4x4& mvp)
 {
-    program_.setUniformValue("gMVP", mvp);
+    program()->setUniformValue("gMVP", mvp);
 }
 
 void ShadowMap::destroySpotLights()

@@ -1,27 +1,30 @@
 #include "skyboxtechnique.h"
 
+#include "resourcedespatcher.h"
+#include "resource/shader.h"
+
+using namespace Engine;
 using namespace Engine::Technique;
 
-Skybox::Skybox() : Technique()
+Skybox::Skybox(ResourceDespatcher* despatcher)
+    : Technique(), mvpLocation_(-1), samplerLocation_(-1)
 {
-    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/skybox.vert");
-    program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/skybox.frag");
+    addShader(despatcher->get<Shader>(":/shaders/skybox.vert"));
+    addShader(despatcher->get<Shader>(":/shaders/skybox.frag"));
+}
 
-    if(!program_.link())
-    {
-        qCritical() << __FUNCTION__ << "Failed to link shaders.";
-    }
-
-    mvpLocation_ = program_.uniformLocation("gMVP");
-    samplerLocation_ = program_.uniformLocation("gCubemapTexture");
+void Skybox::init()
+{
+    mvpLocation_ = program()->uniformLocation("gMVP");
+    samplerLocation_ = program()->uniformLocation("gCubemapTexture");
 }
 
 void Skybox::setMVP(const QMatrix4x4& mvp)
 {
-    program_.setUniformValue(mvpLocation_, mvp);
+    program()->setUniformValue(mvpLocation_, mvp);
 }
 
 void Skybox::setTextureUnit(unsigned int unit)
 {
-    program_.setUniformValue(samplerLocation_, unit);
+    program()->setUniformValue(samplerLocation_, unit);
 }

@@ -15,6 +15,21 @@ Material::~Material()
 {
 }
 
+bool Material::bind()
+{
+    // Bind all textures
+    for(int i = 0; i < TEXTURE_COUNT; ++i)
+    {
+        const Texture::Ptr& tex = getTexture(static_cast<TextureType>(i));
+        if(!tex->bind(GL_TEXTURE0 + i))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 const Texture::Ptr& Material::getTexture(TextureType type)
 {
     auto iter = textures_.find(type);
@@ -22,7 +37,7 @@ const Texture::Ptr& Material::getTexture(TextureType type)
     // If texture was not set, return null texture
     if(iter == textures_.end() || iter->second == nullptr)
     {
-        qWarning() << __FUNCTION__ << "Material has no texture of type '" << type << "'";
+        qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
         textures_[type] = despatcher_->get<Texture>(":/images/white.png");
 
         return textures_[type];

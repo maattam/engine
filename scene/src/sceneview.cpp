@@ -39,6 +39,9 @@ void SceneView::update()
 {
     qint64 lastUpdate = lastTime_.restart();
 
+    if(scene_ == nullptr)
+        return;
+
     // Elapsed in seconds
     float elapsed = static_cast<float>(lastUpdate) / 1000;
 
@@ -67,11 +70,11 @@ void SceneView::initialize()
     glViewport(0, 0, width(), height());
 
     // Load scene
-    scene_ = new BasicScene();
+    scene_ = new BasicScene(&despatcher_);
     scene_->initialize();
 
     // Initialize renderer
-    renderer_ = new Engine::Renderer();
+    renderer_ = new Engine::Renderer(&despatcher_);
     if(!renderer_->initialize(width(), height(), format().samples()))
     {
         qCritical() << "Failed to initialize renderer!";
@@ -87,9 +90,6 @@ void SceneView::handleInput(float elapsed)
 {
     const float speed = 10.0f;
     const float mouseSpeed = 0.15f;
-
-    if(scene_ == nullptr)
-        return;
 
     Engine::Entity::Camera* camera = scene_->activeCamera();
 

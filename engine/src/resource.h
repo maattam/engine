@@ -13,8 +13,10 @@ namespace Engine {
 class ResourceDespatcher;
 class ResourceLoader;
 
-class Resource
+class Resource : public QObject
 {
+Q_OBJECT
+
 public:
     Resource();
     Resource(const QString& name);
@@ -32,6 +34,10 @@ public:
     const QString& name() const;
 
     void release();
+
+signals:
+    void released();
+    void initialized();
 
 protected:
     ResourceDespatcher* despatcher();

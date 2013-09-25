@@ -5,14 +5,15 @@
 #include "renderable/cube.h"
 #include "entity/mesh.h"
 #include "cubemaptexture.h"
+#include "resourcedespatcher.h"
 
 #include <qmath.h>
 #include <QDebug>
 
 using namespace Engine;
 
-BasicScene::BasicScene()
-    : camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 70.0f, 0.0f)
+BasicScene::BasicScene(ResourceDespatcher* despatcher)
+    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 70.0f, 0.0f)
 {
     time_ = 0;
 }
@@ -55,7 +56,7 @@ Renderable::Renderable* BasicScene::skyboxMesh()
 void BasicScene::initialize()
 {
     // Load skybox
-    skyboxTexture_ = despatcher_.get<CubemapTexture>("assets/skybox2/space*.png");
+    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox2/space*.png");
     skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     // Set up directional light
@@ -87,21 +88,21 @@ void BasicScene::initialize()
     spotLights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = despatcher_.get<Entity::Mesh>("assets/oildrum.dae");
-    hellknight_ = despatcher_.get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher_.get<Entity::Mesh>("assets/blocks.dae");
-    sphere_ = despatcher_.get<Entity::Mesh>("assets/sphere.obj");
-    torus_ = despatcher_.get<Entity::Mesh>("assets/torus.obj");
+    oildrum_ = despatcher_->get<Entity::Mesh>("assets/oildrum.dae");
+    hellknight_ = despatcher_->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher_->get<Entity::Mesh>("assets/blocks.dae");
+    sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
+    torus_ = despatcher_->get<Entity::Mesh>("assets/torus.obj");
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
     {
         QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
 
-        Texture::Ptr tex = despatcher_.get<Texture>(file);
+        Texture::Ptr tex = despatcher_->get<Texture>(file);
         if(tex != nullptr)
         {
-            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(&despatcher_);
+            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher_);
             mat->setSpecularIntensity(2.0f);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
@@ -110,7 +111,7 @@ void BasicScene::initialize()
         }
     }
 
-    qDebug() << "Managed objects: " << despatcher_.numManaged();
+    qDebug() << "Managed objects: " << despatcher_->numManaged();
 }
 
 void BasicScene::update(unsigned int elapsedMs)

@@ -3,7 +3,6 @@
 
 #include "abstractscene.h"
 #include "material.h"
-#include "resourcedespatcher.h"
 #include "entity/light.h"
 #include "entity/camera.h"
 #include "entity/mesh.h"
@@ -13,10 +12,14 @@
 #include <vector>
 #include <memory>
 
+namespace Engine {
+    class ResourceDespatcher;
+}
+
 class BasicScene : public Engine::AbstractScene
 {
 public:
-    BasicScene();
+    BasicScene(Engine::ResourceDespatcher* despatcher);
     virtual ~BasicScene();
 
     void initialize();
@@ -33,7 +36,7 @@ public:
     virtual void update(unsigned int elapsed);
 
 private:
-    Engine::ResourceDespatcher despatcher_;
+    Engine::ResourceDespatcher* despatcher_;
 
     Engine::Entity::Camera camera_;
 

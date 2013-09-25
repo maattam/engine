@@ -98,7 +98,7 @@ std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
         resource = std::dynamic_pointer_cast<T>(result->lock());
         assert(resource);
         
-        qDebug() << __FUNCTION__ << "Using cached resource: " << fileName;
+        qDebug() << __FUNCTION__ << "Using cached resource:" << fileName;
     }
 
     return resource;

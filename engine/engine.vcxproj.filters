@@ -79,9 +79,6 @@
     <ClCompile Include="src\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\effect\downsampler.cpp">
       <Filter>Source Files\effect</Filter>
     </ClCompile>
@@ -157,11 +154,29 @@
     <ClCompile Include="GeneratedFiles\Release\moc_resourcedespatcher.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="src\cubemaptexture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\technique\skyboxtechnique.cpp">
       <Filter>Source Files\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cubemaptexture.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource\shader.cpp">
+      <Filter>Source Files\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_technique.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_technique.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_resource.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_resource.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +224,6 @@
     <ClInclude Include="src\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\effect\downsampler.h">
       <Filter>Header Files\effect</Filter>
     </ClInclude>
@@ -248,9 +260,6 @@
     <ClInclude Include="src\technique\shadowmap.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
-    <ClInclude Include="src\technique\technique.h">
-      <Filter>Header Files\technique</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity\camera.h">
       <Filter>Header Files\entity</Filter>
     </ClInclude>
@@ -269,14 +278,14 @@
     <ClInclude Include="src\common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\resource.h">
+    <ClInclude Include="src\technique\skyboxtechnique.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture.h">
       <Filter>Header Files\resource</Filter>
     </ClInclude>
     <ClInclude Include="src\cubemaptexture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\technique\skyboxtechnique.h">
-      <Filter>Header Files\technique</Filter>
+      <Filter>Header Files\resource</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -289,6 +298,15 @@
       <Filter>Header Files\resource</Filter>
     </CustomBuild>
     <CustomBuild Include="src\resourcedespatcher.h">
+      <Filter>Header Files\resource</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\resource\shader.h">
+      <Filter>Header Files\resource</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\technique\technique.h">
+      <Filter>Header Files\technique</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\resource.h">
       <Filter>Header Files\resource</Filter>
     </CustomBuild>
   </ItemGroup>

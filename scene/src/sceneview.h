@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "basicscene.h"
+#include "resourcedespatcher.h"
 
 namespace Engine {
     class Renderer;
@@ -50,6 +51,7 @@ private:
     bool getKey(int key) const;
 
     Engine::Renderer* renderer_;
+    Engine::ResourceDespatcher despatcher_;
     BasicScene* scene_;
 
     unsigned int frame_;

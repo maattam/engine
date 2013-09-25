@@ -18,11 +18,12 @@
 namespace Engine {
 
 class AbstractScene;
+class ResourceDespatcher;
 
 class Renderer
 {
 public:
-    explicit Renderer();
+    explicit Renderer(ResourceDespatcher* despatcher);
     ~Renderer();
 
     void prepareScene(AbstractScene* scene);
@@ -63,8 +64,10 @@ private:
     void drawTextureDebug();
 
     void updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& worldView);
-    void renderPass(AbstractScene* scene);
+
     void shadowMapPass(AbstractScene* scene);
+    void renderPass(AbstractScene* scene, const QMatrix4x4& worldView);
+    void skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView);
 
     void destroyBuffers();
 

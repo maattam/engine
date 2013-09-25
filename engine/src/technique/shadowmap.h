@@ -8,12 +8,16 @@
 
 #include <vector>
 
-namespace Engine { namespace Technique {
+namespace Engine {
+    
+class ResourceDespatcher;
+
+namespace Technique {
 
 class ShadowMap : public Technique
 {
 public:
-    ShadowMap();
+    ShadowMap(ResourceDespatcher* despatcher);
     ~ShadowMap();
 
     bool initSpotLights(unsigned int width, unsigned int height, size_t count);

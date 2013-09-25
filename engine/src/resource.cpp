@@ -44,6 +44,10 @@ bool Resource::ready()
     else if(dataReady_)
     {
         initialized_ = initializeData();
+        dataReady_ = false;
+
+        if(initialized_)
+            emit initialized();
     }
 
     return initialized_;
@@ -74,6 +78,8 @@ void Resource::release()
 
     initialized_ = false;
     dataReady_ = false;
+
+    emit released();
 
     // Call implementation
     releaseData();
