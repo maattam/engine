@@ -162,7 +162,16 @@ void Mesh::initSubMesh(const aiMesh* mesh, Mesh::MeshData& data)
 
 void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
 {
+    // Create mapping between Material::TextureType and aiTextureType
+    const aiTextureType textureMapping[Material::TEXTURE_COUNT] = {
+        aiTextureType_DIFFUSE,
+        aiTextureType_NORMALS,
+        aiTextureType_SPECULAR
+    };
+
     // Extract the directory part of the file name
+    // We assume that the material files reside inside the same folder as the
+    // model or in its subfolders.
     int index = fileName.lastIndexOf("/");
     QString dir = ".";
 
@@ -180,42 +189,13 @@ void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
 
         materials_[i] = std::make_shared<Material>(despatcher());
 
-        if(material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+        for(int j = 0; j < Material::TEXTURE_COUNT; ++j)
         {
-            if(material->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
+            if(material->GetTextureCount(textureMapping[j]) > 0 &&
+                material->GetTexture(textureMapping[j], 0, &path) == AI_SUCCESS)
             {
                 Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
-
-                if(texture != nullptr)
-                {
-                    materials_[i]->setTexture(Material::TEXTURE_DIFFUSE, texture);
-                }
-            }
-        }
-
-        if(material->GetTextureCount(aiTextureType_NORMALS) > 0)
-        {
-            if(material->GetTexture(aiTextureType_NORMALS, 0, &path) == AI_SUCCESS)
-            {
-                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
-
-                if(texture != nullptr)
-                {
-                    materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
-                }
-            }
-        }
-
-        if(material->GetTextureCount(aiTextureType_SPECULAR) > 0)
-        {
-            if(material->GetTexture(aiTextureType_SPECULAR, 0, &path) == AI_SUCCESS)
-            {
-                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
-
-                if(texture != nullptr)
-                {
-                    materials_[i]->setTexture(Material::TEXTURE_SPECULAR, texture);
-                }
+                materials_[i]->setTexture(static_cast<Material::TextureType>(j), texture);
             }
         }
     }
