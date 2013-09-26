@@ -15,8 +15,8 @@ using namespace Engine::Technique;
 BasicLightning::BasicLightning(ResourceDespatcher* despatcher)
     : Technique(), mvpLocation_(-1)
 {
-    addShader(despatcher->get<Shader>("shaders/basiclightning.vert"));
-    addShader(despatcher->get<Shader>("shaders/basiclightning.frag"));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert")));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag")));
 }
 
 BasicLightning::~BasicLightning()

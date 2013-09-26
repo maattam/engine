@@ -9,8 +9,8 @@ DownSampler::DownSampler()
 {
     fbos_.resize(SAMPLES, nullptr);
 
-    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
-    program_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/blur.frag");
+    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
+    program_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/blur.frag"));
     program_.link();
 }
 

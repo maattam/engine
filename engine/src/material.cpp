@@ -38,7 +38,7 @@ const Texture::Ptr& Material::getTexture(TextureType type)
     if(iter == textures_.end() || iter->second == nullptr)
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
-        textures_[type] = despatcher_->get<Texture>(":/images/white.png");
+        textures_[type] = despatcher_->get<Texture>(RESOURCE_PATH("images/white.png"));
 
         return textures_[type];
     }

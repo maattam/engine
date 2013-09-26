@@ -9,13 +9,13 @@ Hdr::Hdr()
     : fbo_(nullptr), samples_(1)
 {
     // Tonemap program
-    tonemap_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
-    tonemap_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/tone.frag");
+    tonemap_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
+    tonemap_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/tone.frag"));
     tonemap_.link();
 
     // Highpass program
-    highpass_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
-    highpass_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/highpass.frag");
+    highpass_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
+    highpass_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/highpass.frag"));
     highpass_.link();
 }
 

@@ -8,6 +8,12 @@
 #define QOPENGL_FUNCTIONS EXPAND(QOpenGLFunctions_)EXPAND(QOPENGL_PROFILE)
 #define QOPENGL_HEADER <QOPENGL_FUNCTIONS>
 
+#ifdef _DEBUG
+    #define RESOURCE_PATH(x) EXPAND("../../engine/")x
+#else
+    #define RESOURCE_PATH(x) EXPAND(":/")x
+#endif // _DEBUG
+
 #include QOPENGL_HEADER
 
 extern QOPENGL_FUNCTIONS* gl;

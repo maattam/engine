@@ -13,7 +13,7 @@ using namespace Engine::Technique;
 ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
     : Technique()
 {
-    addShader(despatcher->get<Shader>(":/shaders/shadowmap.vert"));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert")));
 }
 
 ShadowMap::~ShadowMap()

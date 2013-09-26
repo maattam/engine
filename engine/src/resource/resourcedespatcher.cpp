@@ -56,6 +56,8 @@ int ResourceDespatcher::numManaged() const
 
 void ResourceDespatcher::fileChanged(const QString& path)
 {
+    qDebug() << __FUNCTION__ << path;
+
     auto result = resources_.find(path);
     if(result != resources_.end() && !result->expired())
     {

@@ -3,14 +3,16 @@
 #include "resource/resourcedespatcher.h"
 #include "resource/shader.h"
 
+#include "common.h"
+
 using namespace Engine;
 using namespace Engine::Technique;
 
 Skybox::Skybox(ResourceDespatcher* despatcher)
     : Technique(), mvpLocation_(-1), samplerLocation_(-1)
 {
-    addShader(despatcher->get<Shader>(":/shaders/skybox.vert"));
-    addShader(despatcher->get<Shader>(":/shaders/skybox.frag"));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.vert")));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.frag")));
 }
 
 void Skybox::init()

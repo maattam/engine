@@ -28,8 +28,8 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     postfxChain_.push_back(new Effect::Hdr());
 
     // Program for debugging shadow maps
-    nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, ":/shaders/passthrough.vert");
-    nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, ":/shaders/shadowmap.frag");
+    nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
+    nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/shadowmap.frag"));
     nullTech_.link();
 }
 
@@ -67,7 +67,7 @@ bool Renderer::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    if(!shadowTech_.initSpotLights(width_, height_, Technique::BasicLightning::MAX_SPOT_LIGHTS))
+    if(!shadowTech_.initSpotLights(width, height, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
     // Initialize textures
@@ -304,7 +304,7 @@ void Renderer::drawTextureDebug()
     nullTech_.bind();
     nullTech_.setUniformValue("gShadowMap", 0);
 
-    gl->glViewport(0, 0, width_ / 3, height_ / 3);
+    gl->glViewport(0, 0, 512, 512);
 
     quad_.render();
 
