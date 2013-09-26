@@ -1,17 +1,18 @@
 #include "downsampler.h"
 
+#include "resource/resourcedespatcher.h"
+
 #include <QOpenGLFramebufferObjectFormat>
 
 using namespace Engine;
 using namespace Engine::Effect;
 
-DownSampler::DownSampler()
+DownSampler::DownSampler(ResourceDespatcher* despatcher)
 {
     fbos_.resize(SAMPLES, nullptr);
 
-    program_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
-    program_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/blur.frag"));
-    program_.link();
+    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
+    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/blur.frag")));
 }
 
 DownSampler::~DownSampler()
@@ -56,12 +57,15 @@ bool DownSampler::init(int width, int height, GLenum format)
     return true;
 }
 
-void DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
+bool DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
 {
-    program_.bind();
+    if(!program_.ready())
+        return false;
+
+    program_->bind();
 
     gl->glActiveTexture(0);
-    program_.setUniformValue("tex", 0);
+    program_->setUniformValue("tex", 0);
 
     GLuint prevTexture = textureId;
 
@@ -70,8 +74,8 @@ void DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
         fbos_[i]->bind();
         gl->glClear(GL_COLOR_BUFFER_BIT);
 
-        program_.setUniformValue("width", fbos_[i]->width());
-        program_.setUniformValue("height", fbos_[i]->height());
+        program_->setUniformValue("width", fbos_[i]->width());
+        program_->setUniformValue("height", fbos_[i]->height());
 
         gl->glBindTexture(GL_TEXTURE_2D, prevTexture);
         gl->glViewport(0, 0, fbos_[i]->width(), fbos_[i]->height());
@@ -82,7 +86,8 @@ void DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
         prevTexture = fbos_[i]->texture();
     }
 
-    program_.release();
+    program_->release();
+    return true;
 }
 
 QOpenGLFramebufferObject* DownSampler::getSample(size_t n)

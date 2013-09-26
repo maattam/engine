@@ -4,13 +4,15 @@
 #include "resource.h"
 
 #include <QOpenGLShaderProgram>
+#include <memory>
 
-namespace Engine
-{
+namespace Engine {
 
 class Shader : public Resource
 {
 public:
+    typedef std::shared_ptr<Shader> Ptr;
+
     Shader();
     Shader(const QString& name);
     virtual ~Shader();

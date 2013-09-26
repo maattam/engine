@@ -2,11 +2,7 @@
 #define TECHNIQUE_H
 
 #include "resource/resource.h"
-
-#include <vector>
-#include <memory>
-
-#include <QOpenGLShaderProgram>
+#include "resource/shaderprogram.h"
 
 namespace Engine { 
     
@@ -14,30 +10,22 @@ class Shader;
 
 namespace Technique {
 
-class Technique : public QObject
+class Technique
 {
-    Q_OBJECT
-
 public:
     Technique();
     virtual ~Technique();
 
     virtual bool enable();
 
-public slots:
-    void shaderReleased();
-    void shaderCompiled();
-
 protected:
-    QOpenGLShaderProgram* program() const;
-    void addShader(const std::shared_ptr<Shader>& shader);
+    QOpenGLShaderProgram* program();
+
+    void addShader(const Shader::Ptr& shader);
     virtual void init();
 
 private:
-    QOpenGLShaderProgram* program_;
-    std::vector<std::shared_ptr<Shader>> shaders_;
-
-    bool linkShaders();
+    ShaderProgram program_;
 
     Technique(const Technique&);
     Technique& operator=(const Technique&);

@@ -25,7 +25,7 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     height_ = 0;
 
     // HDR postfx
-    postfxChain_.push_back(new Effect::Hdr());
+    postfxChain_.push_back(new Effect::Hdr(despatcher));
 
     // Program for debugging shadow maps
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));

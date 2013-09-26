@@ -6,7 +6,7 @@
 
 using namespace Engine::Technique;
 
-Technique::Technique() : QObject(), program_(nullptr)
+Technique::Technique()
 {
 }
 
@@ -16,82 +16,30 @@ Technique::~Technique()
 
 bool Technique::enable()
 {
-    if(program_ == nullptr || !program_->isLinked())
+    if(!program_->isLinked())
     {
-        if(!linkShaders())
+        if(program_.ready())
+        {
+            init();
+        }
+
+        else
+        {
             return false;
+        }
     }
 
     return program_->bind();
 }
 
-void Technique::shaderReleased()
+QOpenGLShaderProgram* Technique::program()
 {
-    // Release program
-    if(program_ != nullptr)
-    {
-        delete program_;
-        program_ = nullptr;
-    }
+    return &program_.get();
 }
 
-void Technique::shaderCompiled()
+void Technique::addShader(const Engine::Shader::Ptr& shader)
 {
-    linkShaders();
-}
-
-bool Technique::linkShaders()
-{
-    if(program_ == nullptr)
-    {
-        program_ = new QOpenGLShaderProgram();
-    }
-
-    // Check if all shaders have compiled
-    for(auto it = shaders_.begin(); it != shaders_.end(); ++it)
-    {
-        if((*it)->ready())
-        {
-            program_->addShader((*it)->get());
-        }
-
-        else
-        {
-            program_->removeAllShaders();
-            return false;
-        }
-    }
-
-    if(!program_->link())
-    {
-        qDebug() << __FUNCTION__ << "Failed to link program";
-        return false;
-    }
-
-    else
-    {
-        init();
-    }
-
-    return true;
-}
-
-void Technique::addShader(const std::shared_ptr<Engine::Shader>& shader)
-{
-    if(shader != nullptr)
-    {
-        shaders_.push_back(shader);
-
-#ifdef _DEBUG
-        connect(shader.get(), &Resource::released, this, &Technique::shaderReleased);
-        connect(shader.get(), &Resource::initialized, this, &Technique::shaderCompiled);
-#endif
-    }
-}
-
-QOpenGLShaderProgram* Technique::program() const
-{
-    return program_;
+    program_.addShader(shader);
 }
 
 void Technique::init()

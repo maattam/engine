@@ -1,22 +1,22 @@
 #include "hdr.h"
 
+#include "resource/resourcedespatcher.h"
+
 #include <vector>
 
 using namespace Engine;
 using namespace Engine::Effect;
 
-Hdr::Hdr()
-    : fbo_(nullptr), samples_(1)
+Hdr::Hdr(ResourceDespatcher* despatcher)
+    : fbo_(nullptr), samples_(1), downSampler_(despatcher)
 {
     // Tonemap program
-    tonemap_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
-    tonemap_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/tone.frag"));
-    tonemap_.link();
+    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
+    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/tone.frag")));
 
     // Highpass program
-    highpass_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
-    highpass_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/highpass.frag"));
-    highpass_.link();
+    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
+    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag")));
 }
 
 Hdr::~Hdr()
@@ -54,6 +54,9 @@ void Hdr::render(const Renderable::Quad& quad)
     if(inputTexture() == 0)
         return;
 
+    else if(!tonemap_.ready() || !highpass_.ready())
+        return;
+
     quad.bindVaoDirect();
 
     // Pass 1
@@ -62,7 +65,10 @@ void Hdr::render(const Renderable::Quad& quad)
 
     // Pass 2
     // Downsample and blur input
-    downSampler_.downSample(fbo_->texture(), quad);
+    if(!downSampler_.downSample(fbo_->texture(), quad))
+    {
+        return;
+    }
 
     // Pass 3
     // Render tonemap to output
@@ -76,13 +82,13 @@ void Hdr::renderHighpass(const Renderable::Quad& quad)
     fbo_->bind();
     gl->glClear(GL_COLOR_BUFFER_BIT);
 
-    highpass_.bind();
+    highpass_->bind();
 
     gl->glActiveTexture(GL_TEXTURE0);
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
 
-    highpass_.setUniformValue("renderedTexture", 0);
-    highpass_.setUniformValue("brightThreshold", 1.2f);
+    highpass_->setUniformValue("renderedTexture", 0);
+    highpass_->setUniformValue("brightThreshold", 1.2f);
 
     quad.renderDirect();
 
@@ -98,11 +104,11 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
 
     gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
-    tonemap_.bind();
+    tonemap_->bind();
 
     gl->glActiveTexture(GL_TEXTURE0);
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
-    tonemap_.setUniformValue("renderedTexture", 0);
+    tonemap_->setUniformValue("renderedTexture", 0);
 
     int bloomSampleId[DownSampler::SAMPLES] = {0};
 
@@ -113,12 +119,12 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
         bloomSampleId[i] = i + 1;
     }
 
-    tonemap_.setUniformValueArray("bloomSamplers", bloomSampleId, DownSampler::SAMPLES);
+    tonemap_->setUniformValueArray("bloomSamplers", bloomSampleId, DownSampler::SAMPLES);
 
-    tonemap_.setUniformValue("samples", samples_);
-    tonemap_.setUniformValue("exposure", 1.1f);
-    tonemap_.setUniformValue("bloomFactor", 0.3f);
-    tonemap_.setUniformValue("brightMax", 1.2f);
+    tonemap_->setUniformValue("samples", samples_);
+    tonemap_->setUniformValue("exposure", 1.1f);
+    tonemap_->setUniformValue("bloomFactor", 0.3f);
+    tonemap_->setUniformValue("brightMax", 1.2f);
 
     quad.renderDirect();
 

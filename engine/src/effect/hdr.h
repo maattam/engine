@@ -5,17 +5,21 @@
 #include "downsampler.h"
 
 #include "common.h"
-#include <QOpenGLShaderProgram>
+#include "resource/shaderprogram.h"
 #include <QOpenGLFramebufferObject>
 
 #include "renderable/quad.h"
 
-namespace Engine { namespace Effect {
+namespace Engine {
+    
+    class ResourceDespatcher;
+
+namespace Effect {
 
 class Hdr : public Postfx
 {
 public:
-    Hdr();
+    explicit Hdr(ResourceDespatcher* despatcher);
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
@@ -27,8 +31,8 @@ private:
     DownSampler downSampler_;
     QOpenGLFramebufferObject* fbo_;
 
-    QOpenGLShaderProgram tonemap_;
-    QOpenGLShaderProgram highpass_;
+    ShaderProgram tonemap_;
+    ShaderProgram highpass_;
 
     void renderHighpass(const Renderable::Quad& quad);
     void renderTonemap(const Renderable::Quad& quad);
