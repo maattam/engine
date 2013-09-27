@@ -22,7 +22,7 @@ bool Material::bind()
     {
         const Texture::Ptr& tex = getTexture(static_cast<TextureType>(i));
 
-        if(!tex->bind(GL_TEXTURE0 + i))
+        if(tex != nullptr && !tex->bind(GL_TEXTURE0 + i))
         {
             return false;
         }
@@ -40,21 +40,22 @@ const Texture::Ptr& Material::getTexture(TextureType type)
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
         Texture::Ptr& tex = textures_[type];
 
-        if(type == TEXTURE_NORMALS)
-        {
-            tex = despatcher_->get<Texture>(RESOURCE_PATH("images/blue.png"));
-        }
-
-        else
+        if(type != TEXTURE_NORMALS)
         {
             tex = despatcher_->get<Texture>(RESOURCE_PATH("images/white.png"));
+            setTextureOptions(tex);
         }
 
-        setTextureOptions(tex);
         return tex;
     }
 
     return iter->second;
+}
+
+bool Material::hasNormals() const
+{
+    auto iter = textures_.find(TEXTURE_NORMALS);
+    return iter != textures_.end() && iter->second != nullptr;
 }
 
 void Material::setTexture(TextureType type, Texture::Ptr& texture)

@@ -98,23 +98,28 @@ void ShadowScene::initialize()
     sphere_->setMaterialAttributes(attrib);
 
     directionalLight_.diffuseIntensity = 1.0f;
-    directionalLight_.color = QVector3D(0.1, 0.1, 0.1);
-    directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
+    directionalLight_.color = QVector3D(201, 226, 255) / 255.0f * 0.1f;
+    directionalLight_.direction = QVector3D(0.0f, -1.0f, 0.0f);
 
     Entity::SpotLight spotLight;
-    spotLight.color = QVector3D(1.0f, 1.0f, 1.0f);
+    spotLight.color = QVector3D(255, 214, 170) / 255.0f;
     spotLight.position = spotPath_.back().endpoint;
     spotLight.direction = spotNode_->direction;
     spotLight.diffuseIntensity = 10.0f;
-    spotLight.attenuation.exp = 0.01f;
+    spotLight.attenuation.exp = 0.005f;
+    spotLight.attenuation.constant = 1.0f;
+    spotLight.attenuation.linear = 0.1f;
     spotLight.cutoff = 30.0f;
     spotLights_.push_back(spotLight);
 
     Entity::PointLight pointLight;
-    pointLight.attenuation.exp = 0.01f;
+    pointLight.attenuation.exp = 0.005f;
+    pointLight.attenuation.constant = 1.0f;
+    pointLight.attenuation.linear = 0.2f;
     pointLight.position = QVector3D(0, 12, -2);
-    pointLight.ambientIntensity = 1.0;
-    pointLight.diffuseIntensity = 1.0f;
+    pointLight.color = QVector3D(255, 241, 224) / 255.0f;
+    pointLight.diffuseIntensity = 5.0f;
+    pointLight.ambientIntensity = 0.5f;
 
     pointLights_.push_back(pointLight);
 }

@@ -31,6 +31,8 @@ public:
     void setDiffuseColor(const QVector3D& color);
     void setShininess(float shininess);
 
+    bool hasNormals() const;
+
     struct Attributes
     {
         QVector3D ambientColor;

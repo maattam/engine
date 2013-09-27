@@ -298,9 +298,6 @@
     <Image Include="images\white.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="images\blue.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="images\pink.png">
       <Filter>Resource Files</Filter>
     </Image>

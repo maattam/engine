@@ -39,9 +39,6 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture>(RESOURCE_PATH("images/pink.png")));
 
-    errorMaterial_.setTexture(Material::TEXTURE_NORMALS,
-        despatcher->get<Texture>(RESOURCE_PATH("images/blue.png")));
-
     errorMaterial_.setTexture(Material::TEXTURE_SPECULAR,
         despatcher->get<Texture>(RESOURCE_PATH("images/white.png")));
 }
@@ -232,16 +229,18 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
-            const Material::Ptr& material = (*rit)->material();
+            Material* material = (*rit)->material().get();
 
             if(!material->bind())
             {
+                material = &errorMaterial_;
+
                 if(!errorMaterial_.bind())
                     continue;
             }
 
             lightningTech_.setMaterialAttributes(material->getAttributes());
-            lightningTech_.setHasTangents((*rit)->hasTangents());
+            lightningTech_.setHasTangents((*rit)->hasTangents() && material->hasNormals());
 
             (*rit)->render();
         }

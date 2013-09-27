@@ -75,7 +75,6 @@ uniform bool gHasTangents;
 
 float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 {
-
     const vec2 poissonDisk[4] = {
         vec2(-0.94201624, -0.39906216),
         vec2(0.94558609, -0.76890725),
@@ -109,10 +108,17 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 {
 	vec4 ambientColor = vec4(light.color, 1.0) * light.ambientIntensity;
+
+    // Check that the surface normal cosine is positive
+    float normalFactor = clamp(dot(normal0, lightDirection), 0, 1);
+    if(normalFactor > 0)
+    {
+        return ambientColor;
+    }
 	
 	// Diffuse factor depends on the (positive) cosine between surface normal and light direction
 	float diffuseFactor = clamp(dot(normal, -lightDirection), 0, 1);
-	
+
 	vec4 diffuseColor = vec4(0, 0, 0, 0);
 	vec4 specularColor = vec4(0, 0, 0, 0);
 	
@@ -173,11 +179,8 @@ vec4 calcSpotLight(in SpotLight light, in vec3 normal)
 	}
 }
 
-vec3 calcBumpedNormal()
+vec3 calcBumpedNormal(in vec3 normal)
 {
-    // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
-	vec3 normal = normalize(normal0);
-	
 	if(!gHasTangents)
 		return normal;
 		
@@ -202,7 +205,10 @@ vec3 calcBumpedNormal()
 
 void main()
 {
-	vec3 normal = calcBumpedNormal();
+    // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
+	vec3 normal = normalize(normal0);
+	normal = calcBumpedNormal(normal);
+
 	vec4 light = calcDirectionalLight(normal);
 	
 	for(int i = 0; i < gNumPointLights; ++i)
