@@ -52,9 +52,15 @@
     <ClCompile Include="GeneratedFiles\qrc_scene.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\shadowscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\basicscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowscene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

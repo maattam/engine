@@ -42,6 +42,7 @@ void ResourceLoader::run()
         ResourcePtr resource = loadQueue_.dequeue();
         mutex_.unlock();
 
+        qDebug() << __FUNCTION__ << "Loading resource:" << resource->name();
         if(!resource->loadData(resource->name()))
         {
             qWarning() << __FUNCTION__ << "Failed to load resource:" << resource->name();
@@ -50,7 +51,6 @@ void ResourceLoader::run()
         else
         {
             resource->dataReady_ = true;
-            qDebug() << __FUNCTION__ << "Loaded resource:" << resource->name();
         }
     }
 }

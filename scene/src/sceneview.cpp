@@ -71,7 +71,7 @@ void SceneView::initialize()
     glViewport(0, 0, width(), height());
 
     // Load scene
-    scene_ = new BasicScene(&despatcher_);
+    scene_ = new ShadowScene(&despatcher_);
     scene_->initialize();
 
     // Initialize renderer
@@ -89,7 +89,7 @@ void SceneView::initialize()
 
 void SceneView::handleInput(float elapsed)
 {
-    const float speed = 10.0f;
+    const float speed = 15.0f;
     const float mouseSpeed = 0.15f;
 
     Engine::Entity::Camera* camera = scene_->activeCamera();

@@ -11,6 +11,7 @@
 #include "technique/skyboxtechnique.h"
 #include "renderable/quad.h"
 #include "entity/entity.h"
+#include "material.h"
 
 #include <deque>
 #include <memory>
@@ -60,6 +61,9 @@ private:
 
     // Quad for postprocessing
     Renderable::Quad quad_;
+
+    // Error material
+    Material errorMaterial_;
 
     void drawTextureDebug();
 

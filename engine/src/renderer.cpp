@@ -11,12 +11,15 @@
 #include "entity/light.h"
 #include "effect/hdr.h"
 
+#include "resource/resourcedespatcher.h"
+
 #include <cassert>
 
 using namespace Engine;
 
 Renderer::Renderer(ResourceDespatcher* despatcher)
-    : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher)
+    : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher),
+    errorMaterial_(despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -31,6 +34,16 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/shadowmap.frag"));
     nullTech_.link();
+
+    // Cache error material
+    errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
+        despatcher->get<Texture>(RESOURCE_PATH("images/pink.png")));
+
+    errorMaterial_.setTexture(Material::TEXTURE_NORMALS,
+        despatcher->get<Texture>(RESOURCE_PATH("images/blue.png")));
+
+    errorMaterial_.setTexture(Material::TEXTURE_SPECULAR,
+        despatcher->get<Texture>(RESOURCE_PATH("images/white.png")));
 }
 
 Renderer::~Renderer()
@@ -223,7 +236,8 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
             if(!material->bind())
             {
-                continue;
+                if(!errorMaterial_.bind())
+                    continue;
             }
 
             lightningTech_.setMaterialAttributes(material->getAttributes());
@@ -304,7 +318,7 @@ void Renderer::drawTextureDebug()
     nullTech_.bind();
     nullTech_.setUniformValue("gShadowMap", 0);
 
-    gl->glViewport(0, 0, 512, 512);
+    gl->glViewport(0, 0, width_ / 3, height_ / 3);
 
     quad_.render();
 

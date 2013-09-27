@@ -198,6 +198,14 @@ void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
                 materials_[i]->setTexture(static_cast<Material::TextureType>(j), texture);
             }
         }
+
+        // Hack: Workaround for broken waveform normals
+        if(material->GetTextureCount(aiTextureType_HEIGHT) > 0 &&
+            material->GetTexture(aiTextureType_HEIGHT, 0, &path) == AI_SUCCESS)
+        {
+            Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
+            materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
+        }
     }
 }
 

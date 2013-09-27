@@ -363,6 +363,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="images\blue.png" />
+    <Image Include="images\pink.png" />
     <Image Include="images\white.png">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

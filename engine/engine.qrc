@@ -12,5 +12,7 @@
         <file>shaders/shadowmap.frag</file>
         <file>shaders/skybox.frag</file>
         <file>shaders/skybox.vert</file>
+        <file>images/blue.png</file>
+        <file>images/pink.png</file>
     </qresource>
 </RCC>

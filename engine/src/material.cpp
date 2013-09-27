@@ -21,6 +21,7 @@ bool Material::bind()
     for(int i = 0; i < TEXTURE_COUNT; ++i)
     {
         const Texture::Ptr& tex = getTexture(static_cast<TextureType>(i));
+
         if(!tex->bind(GL_TEXTURE0 + i))
         {
             return false;
@@ -34,13 +35,23 @@ const Texture::Ptr& Material::getTexture(TextureType type)
 {
     auto iter = textures_.find(type);
 
-    // If texture was not set, return null texture
-    if(iter == textures_.end() || iter->second == nullptr)
+    if(iter == textures_.end())
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
-        textures_[type] = despatcher_->get<Texture>(RESOURCE_PATH("images/white.png"));
+        Texture::Ptr& tex = textures_[type];
 
-        return textures_[type];
+        if(type == TEXTURE_NORMALS)
+        {
+            tex = despatcher_->get<Texture>(RESOURCE_PATH("images/blue.png"));
+        }
+
+        else
+        {
+            tex = despatcher_->get<Texture>(RESOURCE_PATH("images/white.png"));
+        }
+
+        setTextureOptions(tex);
+        return tex;
     }
 
     return iter->second;
@@ -86,6 +97,6 @@ void Material::setTextureOptions(const Texture::Ptr& texture) const
         texture->generateMipmaps();
 
         // Set 16x anisotropy... TODO!
-        texture->setAnisotropy(16);
+        texture->setAnisotropy(8);
     }
 }

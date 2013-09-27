@@ -10,8 +10,8 @@
 #include <map>
 #include <vector>
 
-#include "basicscene.h"
 #include "resource/resourcedespatcher.h"
+#include "shadowscene.h"
 
 namespace Engine {
     class Renderer;
@@ -52,7 +52,7 @@ private:
 
     Engine::Renderer* renderer_;
     Engine::ResourceDespatcher despatcher_;
-    BasicScene* scene_;
+    ShadowScene* scene_;
 
     unsigned int frame_;
     QPoint lastMouse_;
