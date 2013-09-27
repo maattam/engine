@@ -110,7 +110,7 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 	vec4 ambientColor = vec4(light.color, 1.0) * light.ambientIntensity;
 
     // Check that the surface normal cosine is positive
-    float normalFactor = clamp(dot(normal0, lightDirection), 0, 1);
+    float normalFactor = clamp(dot(normalize(normal0), lightDirection), 0, 1);
     if(normalFactor > 0)
     {
         return ambientColor;
@@ -179,8 +179,10 @@ vec4 calcSpotLight(in SpotLight light, in vec3 normal)
 	}
 }
 
-vec3 calcBumpedNormal(in vec3 normal)
+vec3 calcBumpedNormal()
 {
+    vec3 normal = normalize(normal0);
+
 	if(!gHasTangents)
 		return normal;
 		
@@ -206,8 +208,7 @@ vec3 calcBumpedNormal(in vec3 normal)
 void main()
 {
     // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
-	vec3 normal = normalize(normal0);
-	normal = calcBumpedNormal(normal);
+	vec3 normal = calcBumpedNormal();
 
 	vec4 light = calcDirectionalLight(normal);
 	
