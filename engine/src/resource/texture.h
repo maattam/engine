@@ -7,6 +7,10 @@
 #include <memory>
 #include <vector>
 
+namespace gli {
+    class texture2D;
+}
+
 namespace Engine {
 
 class Texture : public Resource
@@ -48,10 +52,12 @@ protected:
 private:
     bool mipmapping_;
 
-    QImage* texData_;
+    gli::texture2D* textureData_;
     std::vector<std::pair<GLenum, GLenum>> texFlags_;
 
     GLenum target_;
+
+    bool isDDS(const QString& fileName) const;
 };
 
 }

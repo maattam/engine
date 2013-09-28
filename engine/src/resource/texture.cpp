@@ -2,17 +2,20 @@
 
 #include <QImage>
 #include <QDebug>
+#include <QFile>
+
+#include <gli/gli.hpp>
 
 using namespace Engine;
 
 Texture::Texture()
-    : Resource(), textureId_(0), mipmapping_(false), texData_(nullptr)
+    : Resource(), textureId_(0), mipmapping_(false), textureData_(nullptr)
 {
     target_ = GL_TEXTURE_2D;
 }
 
 Texture::Texture(const QString& name)
-    : Resource(name), textureId_(0), mipmapping_(false), texData_(nullptr)
+    : Resource(name), textureId_(0), mipmapping_(false), textureData_(nullptr)
 {
     target_ = GL_TEXTURE_2D;
 }
@@ -21,8 +24,8 @@ Texture::~Texture()
 {
     releaseData();
 
-    if(texData_ != nullptr)
-        delete texData_;
+    if(textureData_ != nullptr)
+        delete textureData_;
 }
 
 void Texture::releaseData()
@@ -58,19 +61,48 @@ bool Texture::create(GLsizei width, GLsizei height, GLint internalFormat, GLint 
 
 bool Texture::loadData(const QString& fileName)
 {
+    if(textureData_ != nullptr)
+        delete textureData_;
+
     QImage image;
 
-    if(!image.load(fileName))
+    if(isDDS(fileName))
+    {
+        textureData_ = new gli::texture2D(gli::loadStorageDDS(fileName.toStdString()));
+        if(textureData_->empty())
+        {
+            delete textureData_;
+            textureData_ = nullptr;
+
+            return false;
+        }
+    }
+
+    // QImage is used to support regular uncompressed image formats.
+    // The data is copied to a gli::texture2D container to simplify uploading
+    else if(image.load(fileName))
+    {
+        QImage argbData = image.convertToFormat(QImage::Format_ARGB32);
+
+        textureData_ = new gli::texture2D(1, gli::RGBA8U,
+            gli::texture2D::dimensions_type(argbData.width(), argbData.height()));
+
+        uchar* linearAddress = textureData_->data<uchar>();
+        std::memcpy(linearAddress, argbData.bits(), argbData.byteCount());
+    }
+
+    else
     {
         return false;
     }
 
-    texData_ = new QImage(image.convertToFormat(QImage::Format_ARGB32));
     return true;
 }
 
 bool Texture::initializeData()
 {
+    assert(textureData_ != nullptr || !textureData_->empty());
+
     // Delete old texture
     if(textureId_ != 0)
     {
@@ -80,12 +112,45 @@ bool Texture::initializeData()
     gl->glGenTextures(1, &textureId_);
     gl->glBindTexture(GL_TEXTURE_2D, textureId_);
 
-    gl->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texData_->width(), texData_->height(), 0,
-        GL_BGRA, GL_UNSIGNED_BYTE, texData_->bits());
+    if(gli::is_compressed(textureData_->format()))
+    {
+        const gli::texture2D& texture = *textureData_;
+
+        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
+        gl->glTexStorage2D(GL_TEXTURE_2D, texture.levels(),
+            gli::internal_format(texture.format()),
+            texture.dimensions().x,
+            texture.dimensions().y);
+
+        // Upload mipmaps
+        for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
+        {
+            gl->glCompressedTexSubImage2D(GL_TEXTURE_2D,
+                level, 0, 0,
+                texture[level].dimensions().x,
+                texture[level].dimensions().y,
+                gli::internal_format(texture.format()),
+                texture[level].size(),
+                texture[level].data());
+        }
+
+        // Don't generate mipmaps again
+        if(texture.levels() > 1)
+        {
+            mipmapping_ = false;
+        }
+    }
+
+    else
+    {
+        // QImage format, hack
+        gl->glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureData_->dimensions().x,
+                textureData_->dimensions().y, 0, GL_BGRA, GL_UNSIGNED_BYTE, textureData_->data());
+    }
 
     // Clean up the data used to uploading the texture
-    delete texData_;
-    texData_ = nullptr;
+    delete textureData_;
+    textureData_ = nullptr;
 
     // Set cached texture flags
     setFlags();
@@ -181,4 +246,16 @@ void Texture::setFlags()
     {
         gl->glGenerateMipmap(target_);
     }
+}
+
+bool Texture::isDDS(const QString& fileName) const
+{
+    QFile file(fileName);
+    if(!file.open(QFile::ReadOnly))
+    {
+        return false;
+    }
+
+    // Read magic header
+    return std::strncmp(file.read(3), "DDS", 3) == 0;
 }

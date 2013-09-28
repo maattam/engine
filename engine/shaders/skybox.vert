@@ -10,5 +10,5 @@ void main()
 {
     vec4 MVP_pos = gMVP * vec4(position, 1.0);
     gl_Position = MVP_pos.xyww;
-    texCoord0 = position;
+    texCoord0 = normalize(position);
 }

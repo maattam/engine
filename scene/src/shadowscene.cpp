@@ -86,7 +86,7 @@ Entity::Camera* ShadowScene::activeCamera()
 void ShadowScene::initialize()
 {
     // Load skybox
-    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox2/space*.png");
+    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox/space*.png");
     skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
