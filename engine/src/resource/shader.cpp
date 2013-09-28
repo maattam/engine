@@ -17,6 +17,24 @@ Shader::Shader(const QString& name)
 
 Shader::~Shader()
 {
+    Shader::releaseData();
+}
+
+bool Shader::initialiseData(ShaderData& data)
+{
+    shader_ = new QOpenGLShader(data.type(), this);
+    bool ok = shader_->compileSourceCode(data.data());
+
+    if(!ok)
+    {
+       qWarning() << shader_->log();
+    }
+
+    return ok;
+}
+
+void Shader::releaseData()
+{
     if(shader_ != nullptr)
     {
         delete shader_;
@@ -24,10 +42,22 @@ Shader::~Shader()
     }
 }
 
-bool Shader::loadData(const QString& fileName)
+QOpenGLShader* Shader::get() const
 {
-    data_.clear();
+    return shader_;
+}
 
+//
+// ShaderData
+//
+
+ShaderData::ShaderData(ResourceDespatcher* despatcher)
+    : ResourceData(despatcher)
+{
+}
+
+bool ShaderData::load(const QString& fileName)
+{
     int typeIndex = fileName.lastIndexOf(".");
     if(!getShaderType(fileName.right(fileName.length() - typeIndex - 1), type_))
     {
@@ -44,37 +74,17 @@ bool Shader::loadData(const QString& fileName)
     return true;
 }
 
-bool Shader::initializeData()
+const QByteArray& ShaderData::data() const
 {
-    if(shader_ != nullptr)
-        delete shader_;
-
-    shader_ = new QOpenGLShader(type_, this);
-    bool ok = shader_->compileSourceCode(data_);
-
-    data_.clear();
-
-    if(!ok)
-    {
-       qWarning() << shader_->log();
-
-       delete shader_;
-       shader_ = nullptr;
-    }
-
-    return ok;
+    return data_;
 }
 
-void Shader::releaseData()
+QOpenGLShader::ShaderTypeBit ShaderData::type() const
 {
-    if(shader_ != nullptr)
-    {
-        delete shader_;
-        shader_ = nullptr;
-    }
+    return type_;
 }
 
-bool Shader::getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const
+bool ShaderData::getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const
 {
     if(id == "vert")
         type = QOpenGLShader::Vertex;
@@ -88,9 +98,4 @@ bool Shader::getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type
     }
 
     return true;
-}
-
-QOpenGLShader* Shader::get() const
-{
-    return shader_;
 }

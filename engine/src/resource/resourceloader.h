@@ -12,14 +12,14 @@
 
 namespace Engine {
 
-class Resource;
+class ResourceBase;
 
 class ResourceLoader : public QObject
 {
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<Resource> ResourcePtr;
+    typedef std::shared_ptr<ResourceBase> ResourcePtr;
 
     ResourceLoader(QObject* parent = nullptr);
     ~ResourceLoader();

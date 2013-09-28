@@ -43,7 +43,9 @@ void ResourceLoader::run()
         mutex_.unlock();
 
         qDebug() << __FUNCTION__ << "Loading:" << resource->name();
-        if(!resource->loadData(resource->name()))
+
+        ResourceData* data = resource->createNewData();
+        if(!data->load(resource->name()))
         {
             qWarning() << __FUNCTION__ << "Failed to load:" << resource->name();
         }

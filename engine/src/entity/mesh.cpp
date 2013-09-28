@@ -17,18 +17,12 @@ Mesh::Mesh() : Entity(), Resource()
 {
 }
 
-Mesh::Mesh(const QString& name)
-    : Entity(), Resource(name)
+Mesh::Mesh(const QString& name) : Entity(), Resource(name)
 {
 }
 
 Mesh::~Mesh()
 {
-}
-
-void Mesh::releaseData()
-{
-    entries_.clear();
 }
 
 void Mesh::updateRenderList(RenderList& list)
@@ -51,7 +45,58 @@ const Renderable::SubMesh::Ptr& Mesh::subMesh(size_t index) const
     return entries_[index];
 }
 
-bool Mesh::loadData(const QString& fileName)
+bool Mesh::initialiseData(DataType& data)
+{
+    entries_.resize(data.meshes().size());
+    for(size_t i = 0; i < data.meshes().size(); ++i)
+    {
+        MeshData::SubMeshData& mesh = data.meshes()[i];
+
+        entries_[i] = std::make_shared<Renderable::SubMesh>();
+        entries_[i]->setMaterial(data.materials()[mesh.materialIndex]);
+
+        if(!entries_[i]->initMesh(mesh.vertices, mesh.normals,
+                mesh.tangents, mesh.uvs, mesh.indices))
+        {
+            return false;
+        }
+    }
+
+    setMaterialAttributes(materialAttrib_);
+    return true;
+}
+
+void Mesh::releaseData()
+{
+    entries_.clear();
+}
+
+void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
+{
+    for(Renderable::SubMesh::Ptr& mesh : entries_)
+    {
+        if(mesh != nullptr)
+        {
+            mesh->material()->setAmbientColor(attributes.ambientColor);
+            mesh->material()->setSpecularIntensity(attributes.specularIntensity);
+            mesh->material()->setDiffuseColor(attributes.diffuseColor);
+            mesh->material()->setShininess(attributes.shininess);
+        }
+    }
+
+    materialAttrib_ = attributes;
+}
+
+//
+// MeshData definitions
+//
+
+MeshData::MeshData(ResourceDespatcher* despatcher)
+    : ResourceData(despatcher)
+{
+}
+
+bool MeshData::load(const QString& fileName)
 {
     Assimp::Importer importer;
 
@@ -68,34 +113,7 @@ bool Mesh::loadData(const QString& fileName)
     return initFromScene(scene, fileName);
 }
 
-bool Mesh::initializeData()
-{
-    entries_.clear();
-
-    entries_.resize(meshData_.size());
-    for(size_t i = 0; i < meshData_.size(); ++i)
-    {
-        const MeshData& mesh = meshData_[i];
-
-        entries_[i] = std::make_shared<Renderable::SubMesh>();
-        entries_[i]->setMaterial(materials_[mesh.materialIndex]);
-
-        if(!entries_[i]->initMesh(mesh.vertices, mesh.normals,
-                mesh.tangents, mesh.uvs, mesh.indices))
-        {
-            return false;
-        }
-    }
-
-    meshData_.clear();
-    materials_.clear();
-
-    setMaterialAttributes(materialAttrib_);
-
-    return true;
-}
-
-bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
+bool MeshData::initFromScene(const aiScene* scene, const QString& fileName)
 {
     // Resize to fit
     meshData_.resize(scene->mNumMeshes);
@@ -119,7 +137,7 @@ bool Mesh::initFromScene(const aiScene* scene, const QString& fileName)
     return true;
 }
 
-void Mesh::initSubMesh(const aiMesh* mesh, Mesh::MeshData& data)
+void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
 {
     const aiVector3D zero3D(0, 0, 0);
     AABB aabb;
@@ -146,8 +164,6 @@ void Mesh::initSubMesh(const aiMesh* mesh, Mesh::MeshData& data)
         aabb.resize(data.vertices.back());
     }
 
-    updateAABB(aabb);
-
     // Fill the index buffer
     for(size_t i = 0; i < mesh->mNumFaces; ++i)
     {
@@ -160,7 +176,7 @@ void Mesh::initSubMesh(const aiMesh* mesh, Mesh::MeshData& data)
     }
 }
 
-void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
+void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
 {
     // Create mapping between Material::TextureType and aiTextureType
     const aiTextureType textureMapping[Material::TEXTURE_COUNT] = {
@@ -194,7 +210,7 @@ void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
             if(material->GetTextureCount(textureMapping[j]) > 0 &&
                 material->GetTexture(textureMapping[j], 0, &path) == AI_SUCCESS)
             {
-                Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
+                Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
                 materials_[i]->setTexture(static_cast<Material::TextureType>(j), texture);
             }
         }
@@ -203,24 +219,18 @@ void Mesh::initMaterials(const aiScene* scene, const QString& fileName)
         if(material->GetTextureCount(aiTextureType_HEIGHT) > 0 &&
             material->GetTexture(aiTextureType_HEIGHT, 0, &path) == AI_SUCCESS)
         {
-            Texture::Ptr texture = despatcher()->get<Texture>(fullpath + path.data);
+            Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
             materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
         }
     }
 }
 
-void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
+std::vector<Material::Ptr>& MeshData::materials()
 {
-    for(Renderable::SubMesh::Ptr& mesh : entries_)
-    {
-        if(mesh != nullptr)
-        {
-            mesh->material()->setAmbientColor(attributes.ambientColor);
-            mesh->material()->setSpecularIntensity(attributes.specularIntensity);
-            mesh->material()->setDiffuseColor(attributes.diffuseColor);
-            mesh->material()->setShininess(attributes.shininess);
-        }
-    }
+    return materials_;
+}
 
-    materialAttrib_ = attributes;
+std::vector<MeshData::SubMeshData>& MeshData::meshes()
+{
+    return meshData_;
 }

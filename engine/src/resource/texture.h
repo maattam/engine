@@ -2,9 +2,7 @@
 #define TEXTURE_H
 
 #include "common.h"
-#include "resource.h"
 
-#include <memory>
 #include <vector>
 
 namespace gli {
@@ -13,53 +11,43 @@ namespace gli {
 
 namespace Engine {
 
-class Texture : public Resource
+template<GLenum Type>
+class Texture
 {
 public:
-    typedef std::shared_ptr<Texture> Ptr;
+    enum { Target = Type };
 
     Texture();
-    Texture(const QString& name);
     virtual ~Texture();
 
-    // Fails if the resource is managed
-    virtual bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
-        GLenum type, const GLvoid* pixels = nullptr);
+    void remove();
+    void texParameteri(GLenum pname, GLint target);
 
     void setFiltering(GLenum magFilter, GLenum minFilter);
-    void setAnisotropy(GLint samples);
     void setWrap(GLenum wrap_s, GLenum wrap_t);
     void generateMipmaps();
 
-    bool bind();
-    bool bind(GLenum target);
+    virtual bool bind();
+    bool bindActive(GLenum target);
 
-    GLuint textureId();
-
-    bool bound() const;
+    GLuint textureId() const;
 
 protected:
-    virtual bool loadData(const QString& fileName);
-    virtual bool initializeData();
-    virtual void releaseData();
-
-    // Change texture target from default GL_TEXTURE_2D
-    void setTarget(GLenum target);
-    void setFlags();
+    void setParameters();
 
     GLuint textureId_;
+    bool mipmaps_;
 
 private:
-    bool mipmapping_;
-
-    gli::texture2D* textureData_;
-    std::vector<std::pair<GLenum, GLenum>> texFlags_;
-
-    GLenum target_;
-
-    bool isDDS(const QString& fileName) const;
+    typedef std::pair<GLenum, GLint> Parameteri;
+    std::vector<Parameteri> parametersi_;
 };
+
+// Allocates a new texture, returns nullptr on failure
+gli::texture2D* loadTexture(const QString& fileName);
+
+#include "texture.inl"
 
 }
 
-#endif //TEXTURE_H
+#endif // TEXTURE_H

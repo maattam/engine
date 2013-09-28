@@ -5,7 +5,7 @@
 #include <memory>
 #include <QVector3D>
 
-#include "resource/texture.h"
+#include "resource/texture2D.h"
 
 namespace Engine {
 
@@ -21,8 +21,8 @@ public:
 
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_COUNT };
 
-    const Texture::Ptr& getTexture(TextureType type);
-    void setTexture(TextureType type, Texture::Ptr& texture);
+    const Texture2D::Ptr& getTexture(TextureType type);
+    void setTexture(TextureType type, Texture2D::Ptr& texture);
 
     bool bind();
 
@@ -52,11 +52,11 @@ public:
     const Attributes& getAttributes() const;
 
 private:
-    std::map<TextureType, Texture::Ptr> textures_;
+    std::map<TextureType, Texture2D::Ptr> textures_;
     Attributes attributes_;
     ResourceDespatcher* despatcher_;
 
-    void setTextureOptions(const Texture::Ptr& texture) const;
+    void setTextureOptions(const Texture2D::Ptr& texture) const;
 
     Material(const Material&);
     Material& operator=(const Material&);

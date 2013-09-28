@@ -6,21 +6,51 @@
 
 using namespace Engine;
 
-Resource::Resource()
-    : despatcher_(nullptr), dataReady_(false), initialized_(false)
+ResourceData::ResourceData(ResourceDespatcher* despatcher)
+    : despatcher_(despatcher)
 {
 }
 
-Resource::Resource(const QString& name)
-    : despatcher_(nullptr), dataReady_(false), initialized_(false), name_(name)
+ResourceDespatcher* ResourceData::despatcher()
+{
+    return despatcher_;
+}
+
+//
+// ResourceBase
+//
+
+ResourceBase::ResourceBase()
+    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false)
 {
 }
 
-Resource::~Resource()
+ResourceBase::ResourceBase(const QString& name)
+    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false), name_(name)
 {
 }
 
-bool Resource::load(const QString& fileName)
+ResourceBase::~ResourceBase()
+{
+    if(data_ != nullptr)
+    {
+        delete data_;
+        data_ = nullptr;
+    }
+}
+
+ResourceData* ResourceBase::createNewData()
+{
+    dataReady_ = false;
+
+    if(data_ != nullptr)
+        delete data_;
+
+    data_ = createData();
+    return data_;
+}
+
+bool ResourceBase::load(const QString& fileName)
 {
     // We don't want the data to be reloaded if the object is being managed by a despatcher
     if(managed())
@@ -29,11 +59,25 @@ bool Resource::load(const QString& fileName)
         return false;
     }
 
-    initialized_ = loadData(fileName) && initializeData();
+    data_ = createNewData();
+    if(!data_->load(fileName))
+    {
+        initialized_ = false;
+    }
+
+    else
+    {
+        if(!(initialized_ = initialise(data_)))
+            releaseData();
+    }
+
+    delete data_;
+    data_ = nullptr;
+
     return initialized_;
 }
 
-bool Resource::ready()
+bool ResourceBase::ready()
 {
     if(initialized_)
     {
@@ -43,33 +87,43 @@ bool Resource::ready()
     // If the data has been read from the disk, we can initialise it
     else if(dataReady_)
     {
-        initialized_ = initializeData();
+        initialized_ = initialise(data_);
         dataReady_ = false;
 
         if(initialized_)
+        {
             emit initialized();
+        }
+
+        else
+        {
+            releaseData();
+        }
+
+        delete data_;
+        data_ = nullptr;
     }
 
     return initialized_;
 }
 
-bool Resource::managed() const
+bool ResourceBase::managed() const
 {
     return despatcher_ != nullptr;
 }
 
-ResourceDespatcher* Resource::despatcher()
+ResourceDespatcher* ResourceBase::despatcher()
 {
     assert(despatcher_);
     return despatcher_;
 }
 
-const QString& Resource::name() const
+const QString& ResourceBase::name() const
 {
     return name_;
 }
 
-void Resource::release()
+void ResourceBase::release()
 {
     if(!name_.isEmpty())
     {
@@ -79,13 +133,19 @@ void Resource::release()
     initialized_ = false;
     dataReady_ = false;
 
+    if(data_ != nullptr)
+    {
+        delete data_;
+        data_ = nullptr;
+    }
+
     emit released();
 
     // Call implementation
     releaseData();
 }
 
-void Resource::queryFilesDebug(QStringList& files) const
+void ResourceBase::queryFilesDebug(QStringList& files) const
 {
     files.push_back(name_);
 }

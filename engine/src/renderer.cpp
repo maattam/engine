@@ -4,7 +4,7 @@
 #include <QMatrix4x4>
 #include <QDebug>
 
-#include "resource/texture.h"
+#include "resource/texture2D.h"
 #include "resource/cubemaptexture.h"
 #include "abstractscene.h"
 #include "entity/camera.h"
@@ -37,10 +37,10 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher->get<Texture>(RESOURCE_PATH("images/pink.png")));
+        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
 
     errorMaterial_.setTexture(Material::TEXTURE_SPECULAR,
-        despatcher->get<Texture>(RESOURCE_PATH("images/white.png")));
+        despatcher->get<Texture2D>(RESOURCE_PATH("images/white.png")));
 }
 
 Renderer::~Renderer()
@@ -263,7 +263,7 @@ void Renderer::skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView)
     skyboxTech_.setMVP(worldView * trans);
     skyboxTech_.setTextureUnit(0);
 
-    if(scene->skyboxTexture()->bind(GL_TEXTURE0))
+    if(scene->skyboxTexture()->bindActive(GL_TEXTURE0))
     {
         gl->glCullFace(GL_FRONT);
         gl->glDepthFunc(GL_LEQUAL);

@@ -7,47 +7,56 @@
 #include <QStringList>
 
 #include <atomic>
+#include <memory>
+#include <cassert>
 
 namespace Engine {
 
 class ResourceDespatcher;
 class ResourceLoader;
 
-class Resource : public QObject
+class ResourceData
+{
+public:
+    ResourceData(ResourceDespatcher* despatcher);
+    virtual ~ResourceData() {};
+
+    virtual bool load(const QString& fileName) = 0;
+    ResourceDespatcher* despatcher();
+
+private:
+    ResourceDespatcher* despatcher_;
+
+    ResourceData(const ResourceData&);
+    ResourceData& operator=(const ResourceData&);
+};
+
+class ResourceBase : public QObject
 {
 Q_OBJECT
 
 public:
-    Resource();
-    Resource(const QString& name);
-    virtual ~Resource();
+    ResourceBase();
+    ResourceBase(const QString& name);
+    virtual ~ResourceBase();
 
     // Synchronous data loading, returns false if the object is managed
     virtual bool load(const QString& fileName);
 
-    // Tells whether the resource is managed by a ResourceDespatcher
-    bool managed() const;
-
-    // Tells whether the data for the resource has been loaded and initialized
     bool ready();
-
-    const QString& name() const;
-
+    ResourceDespatcher* despatcher();
     void release();
+
+    bool managed() const;
+    const QString& name() const;
 
 signals:
     void released();
     void initialized();
 
 protected:
-    ResourceDespatcher* despatcher();
-
-    // Called when the data needs to be loaded
-    virtual bool loadData(const QString& fileName) = 0;
-
-    // Called when loadData has returned successfully and the data has not yet been
-    // initialized
-    virtual bool initializeData() = 0;
+    virtual ResourceData* createData() = 0;
+    virtual bool initialise(ResourceData* data) = 0;
 
     // Called when data needs to be released and memory freed
     virtual void releaseData() = 0;
@@ -59,14 +68,40 @@ private:
     friend class ResourceDespatcher;
     friend class ResourceLoader;
 
+    // Constructs a new ResourceData and deletes the old one
+    ResourceData* createNewData();
+
+    ResourceData* data_;
     ResourceDespatcher* despatcher_;
+
     std::atomic<bool> dataReady_;
     bool initialized_;
     QString name_;
 
-    Resource(const Resource&);
-    Resource& operator=(const Resource&);
+    ResourceBase(const ResourceBase&);
+    ResourceBase& operator=(const ResourceBase&);
 };
+
+template<typename Type, typename ResourceDataType>
+class Resource : public ResourceBase
+{
+public:
+    Resource();
+    Resource(const QString& name);
+
+    typedef ResourceDataType DataType;
+    typedef std::shared_ptr<Type> Ptr;
+
+protected:
+    virtual ResourceData* createData();
+    virtual bool initialise(ResourceData* data);
+
+    // Called when loadData has returned successfully and the data has not yet been
+    // initialized
+    virtual bool initialiseData(DataType& data) = 0;
+};
+
+#include "resource.inl"
 
 }
 

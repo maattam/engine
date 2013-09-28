@@ -20,9 +20,9 @@ bool Material::bind()
     // Bind all textures
     for(int i = 0; i < TEXTURE_COUNT; ++i)
     {
-        const Texture::Ptr& tex = getTexture(static_cast<TextureType>(i));
+        const Texture2D::Ptr& tex = getTexture(static_cast<TextureType>(i));
 
-        if(tex != nullptr && !tex->bind(GL_TEXTURE0 + i))
+        if(tex != nullptr && !tex->bindActive(GL_TEXTURE0 + i))
         {
             return false;
         }
@@ -31,18 +31,18 @@ bool Material::bind()
     return true;
 }
 
-const Texture::Ptr& Material::getTexture(TextureType type)
+const Texture2D::Ptr& Material::getTexture(TextureType type)
 {
     auto iter = textures_.find(type);
 
     if(iter == textures_.end())
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
-        Texture::Ptr& tex = textures_[type];
+        Texture2D::Ptr& tex = textures_[type];
 
         if(type != TEXTURE_NORMALS)
         {
-            tex = despatcher_->get<Texture>(RESOURCE_PATH("images/white.png"));
+            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"));
             setTextureOptions(tex);
         }
 
@@ -58,7 +58,7 @@ bool Material::hasNormals() const
     return iter != textures_.end() && iter->second != nullptr;
 }
 
-void Material::setTexture(TextureType type, Texture::Ptr& texture)
+void Material::setTexture(TextureType type, Texture2D::Ptr& texture)
 {
     textures_[type] = texture;
     setTextureOptions(texture);
@@ -89,7 +89,7 @@ const Material::Attributes& Material::getAttributes() const
     return attributes_;
 }
 
-void Material::setTextureOptions(const Texture::Ptr& texture) const
+void Material::setTextureOptions(const Texture2D::Ptr& texture) const
 {
     if(texture != nullptr)
     {
@@ -98,6 +98,6 @@ void Material::setTextureOptions(const Texture::Ptr& texture) const
         texture->generateMipmaps();
 
         // Set 16x anisotropy... TODO!
-        texture->setAnisotropy(8);
+        texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
     }
 }

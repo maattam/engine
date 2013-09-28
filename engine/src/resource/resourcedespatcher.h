@@ -21,7 +21,7 @@ class QFileSystemWatcher;
 
 namespace Engine {
 
-class Resource;
+class ResourceBase;
 
 class ResourceDespatcher : public QObject
 {
@@ -40,8 +40,8 @@ public:
     // Attempts to load a resource from storage asynchronously, or returns
     // a cached reference.
     // Note that the returned resource isn't guaranteed to be ready to use.
-    template<typename T>
-    std::shared_ptr<T> get(const QString& fileName);
+    template<typename Resource>
+    std::shared_ptr<Resource> get(const QString& fileName);
 
 signals:
     // Invokes the ResourceLoaders consume procedure
@@ -54,65 +54,20 @@ private:
     ResourceDespatcher(const ResourceDespatcher&);
     ResourceDespatcher& operator=(const ResourceDespatcher&);
 
-    QHash<QString, std::weak_ptr<Resource>> resources_;
+    QHash<QString, std::weak_ptr<ResourceBase>> resources_;
     QThread loadThread_;
     ResourceLoader* loader_;
 
     QFileSystemWatcher* watcher_;
 
     // Allocates a new resource and loads it asynchronously
-    template<typename T>
-    std::shared_ptr<T> createResource(const QString& fn);
+    template<typename Resource>
+    std::shared_ptr<Resource> createResource(const QString& fn);
 
-    void watchResource(const std::shared_ptr<Resource>& resource);
+    void watchResource(const std::shared_ptr<ResourceBase>& resource);
 };
 
-// Template implementations
-template<typename T>
-std::shared_ptr<T> ResourceDespatcher::get(const QString& fileName)
-{
-    std::shared_ptr<T> resource;
-
-    auto result = resources_.find(fileName);
-    if(result == resources_.end())
-    {
-        resource = createResource<T>(fileName);
-
-        if(resource != nullptr)
-        {
-            resources_.insert(fileName, resource);
-            watchResource(resource);
-        }
-    }
-
-    else if(result->expired())
-    {
-        resource = createResource<T>(fileName);
-
-        if(resource != nullptr)
-            *result = resource;
-    }
-
-    else
-    {
-        resource = std::dynamic_pointer_cast<T>(result->lock());
-        assert(resource);
-        
-        qDebug() << __FUNCTION__ << "Cached:" << fileName;
-    }
-
-    return resource;
-}
-
-template<typename T>
-std::shared_ptr<T> ResourceDespatcher::createResource(const QString& fn)
-{
-    std::shared_ptr<T> resource = std::make_shared<T>(fn);
-    resource->despatcher_ = this;
-
-    loader_->pushResource(resource);
-    return resource;
-}
+#include "resourcedespatcher.inl"
 
 }
 

@@ -78,7 +78,7 @@ void ResourceDespatcher::fileChanged(const QString& path)
     }
 }
 
-void ResourceDespatcher::watchResource(const std::shared_ptr<Resource>& resource)
+void ResourceDespatcher::watchResource(const std::shared_ptr<ResourceBase>& resource)
 {
     if(watcher_ != nullptr && resource != nullptr)
     {

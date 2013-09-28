@@ -6,18 +6,44 @@
 #include "resource/resource.h"
 
 #include <vector>
-#include <memory>
 
 struct aiScene;
 struct aiMesh;
 
 namespace Engine { namespace Entity {
 
-class Mesh : public Entity, public Resource
+class MeshData : public ResourceData
 {
 public:
-    typedef std::shared_ptr<Mesh> Ptr;
+    MeshData(ResourceDespatcher* despatcher);
 
+    virtual bool load(const QString& fileName);
+
+    struct SubMeshData
+    {
+        std::vector<QVector3D> vertices;
+        std::vector<QVector3D> normals;
+        std::vector<QVector3D> tangents;
+        std::vector<QVector2D> uvs;
+        std::vector<unsigned int> indices;
+        unsigned int materialIndex;
+    };
+
+    std::vector<Material::Ptr>& materials();
+    std::vector<SubMeshData>& meshes();
+
+private:
+    bool initFromScene(const aiScene* scene, const QString& fileName);
+    void initSubMesh(const aiMesh* mesh, SubMeshData& data);
+    void initMaterials(const aiScene* scene, const QString& fileName);
+
+    std::vector<Material::Ptr> materials_;
+    std::vector<SubMeshData> meshData_;
+};
+
+class Mesh : public Entity, public Resource<Mesh, MeshData>
+{
+public:
     Mesh();
     Mesh(const QString& name);
     ~Mesh();
@@ -28,33 +54,15 @@ public:
     const Renderable::SubMesh::Ptr& subMesh(size_t index) const;
 
     void setMaterialAttributes(const Material::Attributes& attributes);
-
+     
 protected:
-    virtual bool loadData(const QString& fileName);
-    virtual bool initializeData();
+    virtual bool initialiseData(DataType& data);
     virtual void releaseData();
 
 private:
-    bool initFromScene(const aiScene* scene, const QString& filenName);
-
-    struct MeshData
-    {
-        std::vector<QVector3D> vertices;
-        std::vector<QVector3D> normals;
-        std::vector<QVector3D> tangents;
-        std::vector<QVector2D> uvs;
-        std::vector<unsigned int> indices;
-        unsigned int materialIndex;
-    };
-
-    void initSubMesh(const aiMesh* mesh, MeshData& data);
-
-    void initMaterials(const aiScene* scene, const QString& fileName);
-
     std::vector<Renderable::SubMesh::Ptr> entries_;
-    std::vector<Material::Ptr> materials_;
     Material::Attributes materialAttrib_;
-    std::vector<MeshData> meshData_;
+
 };
 
 }}

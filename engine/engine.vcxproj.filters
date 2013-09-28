@@ -68,6 +68,12 @@
     <Filter Include="Source Files\resource">
       <UniqueIdentifier>{cdf74fcb-3c0a-4987-970e-c5177c67dcea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\resource\texture">
+      <UniqueIdentifier>{8f7dda52-9bbe-4f71-9889-e790a9688ecf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\resource\texture">
+      <UniqueIdentifier>{a643ccf2-02ff-46e4-97b3-5788c4596c25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp">
@@ -139,12 +145,6 @@
     <ClCompile Include="src\resource\shader.cpp">
       <Filter>Source Files\resource</Filter>
     </ClCompile>
-    <ClCompile Include="src\resource\texture.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\cubemaptexture.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
     <ClCompile Include="src\resource\resource.cpp">
       <Filter>Source Files\resource</Filter>
     </ClCompile>
@@ -181,6 +181,15 @@
     <ClCompile Include="GeneratedFiles\Release\moc_shaderprogram.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\resource\cubemaptexture.cpp">
+      <Filter>Source Files\resource\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource\texture2d.cpp">
+      <Filter>Source Files\resource\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resource\texture.cpp">
+      <Filter>Source Files\resource\texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\passthrough.vert">
@@ -215,6 +224,15 @@
     </None>
     <None Include="shaders\skybox.frag">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\resource\resourcedespatcher.inl">
+      <Filter>Source Files\resource</Filter>
+    </None>
+    <None Include="src\resource\resource.inl">
+      <Filter>Source Files\resource</Filter>
+    </None>
+    <None Include="src\resource\texture.inl">
+      <Filter>Source Files\resource\texture</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -287,11 +305,14 @@
     <ClInclude Include="src\resource\shader.h">
       <Filter>Header Files\resource</Filter>
     </ClInclude>
-    <ClInclude Include="src\resource\texture.h">
-      <Filter>Header Files\resource</Filter>
-    </ClInclude>
     <ClInclude Include="src\resource\cubemaptexture.h">
-      <Filter>Header Files\resource</Filter>
+      <Filter>Header Files\resource\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resource\texture2d.h">
+      <Filter>Header Files\resource\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resource\texture.h">
+      <Filter>Header Files\resource\texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

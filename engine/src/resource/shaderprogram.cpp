@@ -19,8 +19,8 @@ void ShaderProgram::addShader(const Shader::Ptr& shader)
     {
         shaders_.push_back(shader);
 
-        connect(shader.get(), &Resource::released, this, &ShaderProgram::shaderReleased);
-        connect(shader.get(), &Resource::initialized, this, &ShaderProgram::shaderCompiled);
+        connect(shader.get(), &ResourceBase::released, this, &ShaderProgram::shaderReleased);
+        connect(shader.get(), &ResourceBase::initialized, this, &ShaderProgram::shaderCompiled);
     }
 }
 

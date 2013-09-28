@@ -8,7 +8,24 @@
 
 namespace Engine {
 
-class Shader : public Resource
+class ShaderData : public ResourceData
+{
+public:
+    ShaderData(ResourceDespatcher* despatcher);
+
+    virtual bool load(const QString& fileName);
+
+    const QByteArray& data() const;
+    QOpenGLShader::ShaderTypeBit type() const;
+
+private:
+    QOpenGLShader::ShaderTypeBit type_;
+    QByteArray data_;
+
+    bool getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const;
+};
+
+class Shader : public Resource<Shader, ShaderData>
 {
 public:
     typedef std::shared_ptr<Shader> Ptr;
@@ -20,16 +37,11 @@ public:
     QOpenGLShader* get() const;
 
 protected:
-    virtual bool loadData(const QString& fileName);
-    virtual bool initializeData();
+    virtual bool initialiseData(ShaderData& data);
     virtual void releaseData();
 
 private:
     QOpenGLShader* shader_;
-    QOpenGLShader::ShaderTypeBit type_;
-    QByteArray data_;
-
-    bool getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const;
 
 };
     
