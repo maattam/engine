@@ -7,10 +7,6 @@
 #include <memory>
 #include <vector>
 
-namespace gli {
-    class texture2D;
-}
-
 namespace Engine {
 
 class TextureData : public ResourceData

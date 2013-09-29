@@ -71,6 +71,8 @@ bool ShaderData::load(const QString& fileName)
 
     // TODO: Implement #include directive
     data_ = file.readAll();
+    file.close();
+
     return true;
 }
 

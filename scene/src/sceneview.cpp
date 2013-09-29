@@ -12,6 +12,9 @@
 #include "entity/camera.h"
 #include "renderer.h"
 
+#include "basicscene.h"
+#include "shadowscene.h"
+
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
     renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr), scene_(nullptr)
 {
@@ -70,10 +73,6 @@ void SceneView::initialize()
     setWindowState(Qt::WindowMaximized);
     glViewport(0, 0, width(), height());
 
-    // Load scene
-    scene_ = new ShadowScene(&despatcher_);
-    scene_->initialize();
-
     // Initialize renderer
     renderer_ = new Engine::Renderer(&despatcher_);
     if(!renderer_->initialize(width(), height(), format().samples()))
@@ -82,8 +81,8 @@ void SceneView::initialize()
         exit(-1);
     }
 
-    renderer_->prepareScene(scene_);
-    scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
+    // Load scene
+    swapScene<ShadowScene>();
     lastTime_.start();
 }
 
@@ -131,6 +130,19 @@ void SceneView::handleInput(float elapsed)
         {
             camera->setTilt(camera->horizontalAngle(), -M_PI/2.0f);
         }
+    }
+
+    // Swap levels
+    if(getKey(Qt::Key::Key_1))
+    {
+        keyMap_[Qt::Key::Key_1] = false;
+        swapScene<ShadowScene>();
+    }
+
+    else if(getKey(Qt::Key::Key_2))
+    {
+        keyMap_[Qt::Key::Key_2] = false;
+        swapScene<BasicScene>();
     }
 }
 

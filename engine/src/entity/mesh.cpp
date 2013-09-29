@@ -62,7 +62,9 @@ bool Mesh::initialiseData(DataType& data)
         }
     }
 
+    updateAABB(data.aabb());
     setMaterialAttributes(materialAttrib_);
+
     return true;
 }
 
@@ -140,7 +142,6 @@ bool MeshData::initFromScene(const aiScene* scene, const QString& fileName)
 void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
 {
     const aiVector3D zero3D(0, 0, 0);
-    AABB aabb;
 
     // Fill vertex attribute vectors
     for(size_t i = 0; i < mesh->mNumVertices; ++i)
@@ -161,7 +162,7 @@ void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
         data.uvs.push_back(QVector2D(uv.x, uv.y));
 
         // Form bounding rect
-        aabb.resize(data.vertices.back());
+        aabb_.resize(data.vertices.back());
     }
 
     // Fill the index buffer
@@ -233,4 +234,9 @@ std::vector<Material::Ptr>& MeshData::materials()
 std::vector<MeshData::SubMeshData>& MeshData::meshes()
 {
     return meshData_;
+}
+
+const AABB& MeshData::aabb() const
+{
+    return aabb_;
 }

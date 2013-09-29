@@ -11,7 +11,6 @@
 
 #include <QHash>
 #include <QString>
-#include <QDebug>
 #include <cassert>
 #include <QThread>
 

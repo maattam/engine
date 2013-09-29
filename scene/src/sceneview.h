@@ -6,15 +6,16 @@
 #include <QOpenGLContext>
 #include <QElapsedTimer>
 #include <QPoint>
+#include <QDebug>
 
 #include <map>
 #include <vector>
 
 #include "resource/resourcedespatcher.h"
-#include "shadowscene.h"
 
 namespace Engine {
     class Renderer;
+    class AbstractScene;
 }
 
 class SceneView : public QWindow
@@ -50,9 +51,24 @@ private:
 
     bool getKey(int key) const;
 
+    template<typename T> void swapScene()
+    {
+        if(scene_ != nullptr)
+            delete scene_;
+
+        qDebug() << "Managed objects: " << despatcher_.numManaged();
+
+        T* scene = new T(&despatcher_);
+        scene->initialize();
+        scene_ = scene;
+
+        renderer_->prepareScene(scene_);
+        scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
+    }
+
     Engine::Renderer* renderer_;
     Engine::ResourceDespatcher despatcher_;
-    ShadowScene* scene_;
+    Engine::AbstractScene* scene_;
 
     unsigned int frame_;
     QPoint lastMouse_;

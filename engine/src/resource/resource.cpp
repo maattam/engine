@@ -87,6 +87,8 @@ bool ResourceBase::ready()
     // If the data has been read from the disk, we can initialise it
     else if(dataReady_)
     {
+        assert(data_);
+
         initialized_ = initialise(data_);
         dataReady_ = false;
 
@@ -100,6 +102,7 @@ bool ResourceBase::ready()
             releaseData();
         }
 
+        // Delete cached data
         delete data_;
         data_ = nullptr;
     }
@@ -132,12 +135,6 @@ void ResourceBase::release()
 
     initialized_ = false;
     dataReady_ = false;
-
-    if(data_ != nullptr)
-    {
-        delete data_;
-        data_ = nullptr;
-    }
 
     emit released();
 

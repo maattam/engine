@@ -43,7 +43,6 @@ const Texture2D::Ptr& Material::getTexture(TextureType type)
         if(type != TEXTURE_NORMALS)
         {
             tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"));
-            setTextureOptions(tex);
         }
 
         return tex;

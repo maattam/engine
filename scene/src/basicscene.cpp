@@ -56,7 +56,7 @@ Renderable::Renderable* BasicScene::skyboxMesh()
 void BasicScene::initialize()
 {
     // Load skybox
-    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox2/space*.png");
+    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox/space*.png");
     skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     // Set up directional light
@@ -110,8 +110,6 @@ void BasicScene::initialize()
             cube_[i]->setMaterial(mat);
         }
     }
-
-    qDebug() << "Managed objects: " << despatcher_->numManaged();
 }
 
 void BasicScene::update(unsigned int elapsedMs)

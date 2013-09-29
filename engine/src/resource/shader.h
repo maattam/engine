@@ -4,7 +4,6 @@
 #include "resource.h"
 
 #include <QOpenGLShaderProgram>
-#include <memory>
 
 namespace Engine {
 
@@ -28,8 +27,6 @@ private:
 class Shader : public Resource<Shader, ShaderData>
 {
 public:
-    typedef std::shared_ptr<Shader> Ptr;
-
     Shader();
     Shader(const QString& name);
     virtual ~Shader();

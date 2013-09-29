@@ -4,12 +4,13 @@
 #include "resource/resourcedespatcher.h"
 
 #include <QDebug>
+#include <qmath.h>
 
 using namespace Engine;
 
 ShadowScene::ShadowScene(ResourceDespatcher* despatcher)
     : camera_(QVector3D(0, 10, 0), 1.5f, 0.0f, 75.0f, 0.0f, 400.0f),
-    despatcher_(despatcher), velocity_(10.0f), spotVelocity_(7.0f)
+    despatcher_(despatcher), velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0)
 {
     const int NUM_NODES = 4;
     const float h = 30.0f;
@@ -92,9 +93,8 @@ void ShadowScene::initialize()
     sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
     Engine::Material::Attributes attrib;
     attrib.diffuseColor = QVector3D(0.0f, 0.0f, 0.0f);
-    attrib.ambientColor = QVector3D(2.0f, 2.0f, 2.0f);
+    attrib.ambientColor = 2 * QVector3D(1, 1, 1);
     attrib.specularIntensity = 0.0f;
-
     sphere_->setMaterialAttributes(attrib);
 
     directionalLight_.diffuseIntensity = 1.0f;
@@ -126,9 +126,10 @@ void ShadowScene::initialize()
 
 void ShadowScene::update(unsigned int elapsed)
 {
-    const float posMin = -60.0f;
+    const float posMin = -65.0f;
     const float posMax = 60.0f;
     const float t = static_cast<float>(elapsed) / 1000;
+    elapsed_ += t;
 
     // Bounce point light
     QVector3D pos = pointLights_[0].position;
@@ -147,7 +148,26 @@ void ShadowScene::update(unsigned int elapsed)
     pointLights_[0].position = pos;
     sphereNode_[0]->setPosition(pos);
 
-    // Traverse spot light
+    // Flicker some
+    /*QVector3D color(
+        (1 + qCos(elapsed_ / M_PI))/2.0,
+        (1 + qCos(elapsed_ / M_PI + M_PI/8.0))/2.0,
+        (1 + qSin(elapsed_ / M_PI))/2.0
+        );
+
+    float intensity = 5 + 5000.0f / (pos - spotLights_[0].position).lengthSquared();
+
+    pointLights_[0].color = color;
+    pointLights_[0].diffuseIntensity = intensity;
+
+    Engine::Material::Attributes attrib;
+    attrib.diffuseColor = QVector3D(0.0f, 0.0f, 0.0f);
+    attrib.ambientColor = intensity * color;
+    attrib.specularIntensity = 0.0f;
+
+    sphere_->setMaterialAttributes(attrib);*/
+
+    // Traverse spot light path
     pos = spotLights_[0].position;
     if(QVector3D::dotProduct((pos - spotNode_->endpoint), spotDirection_) > 0)
     {

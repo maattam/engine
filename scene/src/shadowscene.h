@@ -63,6 +63,8 @@ private:
     QVector3D spotDirection_;
     PathNode* spotNode_;
     float spotVelocity_;
+
+    double elapsed_;
 };
 
 #endif //SHADOWSCENE_H

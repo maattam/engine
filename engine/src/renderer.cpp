@@ -38,9 +38,6 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
-
-    errorMaterial_.setTexture(Material::TEXTURE_SPECULAR,
-        despatcher->get<Texture2D>(RESOURCE_PATH("images/white.png")));
 }
 
 Renderer::~Renderer()

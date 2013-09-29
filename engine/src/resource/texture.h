@@ -18,7 +18,7 @@ public:
     enum { Target = Type };
 
     Texture();
-    virtual ~Texture();
+    virtual ~Texture() = 0;
 
     void remove();
     void texParameteri(GLenum pname, GLint target);

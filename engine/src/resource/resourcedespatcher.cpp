@@ -4,6 +4,7 @@
 
 #include <QFileSystemWatcher>
 #include <QFile>
+#include <QDebug>
 
 using namespace Engine;
 

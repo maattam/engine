@@ -31,6 +31,7 @@ public:
 
     std::vector<Material::Ptr>& materials();
     std::vector<SubMeshData>& meshes();
+    const AABB& aabb() const;
 
 private:
     bool initFromScene(const aiScene* scene, const QString& fileName);
@@ -39,6 +40,7 @@ private:
 
     std::vector<Material::Ptr> materials_;
     std::vector<SubMeshData> meshData_;
+    AABB aabb_;
 };
 
 class Mesh : public Entity, public Resource<Mesh, MeshData>
