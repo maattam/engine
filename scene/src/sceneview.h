@@ -10,12 +10,15 @@
 
 #include <map>
 #include <vector>
+#include <memory>
 
 #include "resource/resourcedespatcher.h"
 
+#include "shadowscene.h"
+#include "basicscene.h"
+
 namespace Engine {
     class Renderer;
-    class AbstractScene;
 }
 
 class SceneView : public QWindow
@@ -54,16 +57,18 @@ private:
     template<typename T> void swapScene()
     {
         if(scene_ != nullptr)
+        {
             delete scene_;
+        }
 
         qDebug() << "Managed objects: " << despatcher_.numManaged();
 
         T* scene = new T(&despatcher_);
         scene->initialize();
-        scene_ = scene;
+        scene->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
 
+        scene_ = scene;
         renderer_->prepareScene(scene_);
-        scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
     }
 
     Engine::Renderer* renderer_;

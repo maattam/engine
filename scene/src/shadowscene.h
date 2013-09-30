@@ -35,6 +35,8 @@ public:
     virtual void prepareScene(Engine::Graph::SceneNode* scene);
     virtual void update(unsigned int elapsed);
 
+    void release();
+
 private:
     Engine::Entity::Camera camera_;
     Engine::ResourceDespatcher* despatcher_;

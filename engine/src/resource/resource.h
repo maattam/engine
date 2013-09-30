@@ -76,6 +76,7 @@ private:
 
     std::atomic<bool> dataReady_;
     bool initialized_;
+    bool released_;     // To prevent reloading
     QString name_;
 
     ResourceBase(const ResourceBase&);

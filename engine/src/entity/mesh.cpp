@@ -48,6 +48,7 @@ const Renderable::SubMesh::Ptr& Mesh::subMesh(size_t index) const
 bool Mesh::initialiseData(DataType& data)
 {
     entries_.resize(data.meshes().size());
+
     for(size_t i = 0; i < data.meshes().size(); ++i)
     {
         MeshData::SubMeshData& mesh = data.meshes()[i];

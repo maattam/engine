@@ -21,12 +21,14 @@ ResourceDespatcher* ResourceData::despatcher()
 //
 
 ResourceBase::ResourceBase()
-    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false)
+    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
+    released_(false)
 {
 }
 
 ResourceBase::ResourceBase(const QString& name)
-    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false), name_(name)
+    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
+    released_(false), name_(name)
 {
 }
 
@@ -88,9 +90,7 @@ bool ResourceBase::ready()
     else if(dataReady_)
     {
         assert(data_);
-
         initialized_ = initialise(data_);
-        dataReady_ = false;
 
         if(initialized_)
         {
@@ -102,9 +102,13 @@ bool ResourceBase::ready()
             releaseData();
         }
 
+        dataReady_ = false;     // Mark data as invalid
+
         // Delete cached data
         delete data_;
         data_ = nullptr;
+
+        released_ = false;
     }
 
     return initialized_;
@@ -128,13 +132,18 @@ const QString& ResourceBase::name() const
 
 void ResourceBase::release()
 {
+    if(released_)
+    {
+        return;
+    }
+
     if(!name_.isEmpty())
     {
         qDebug() << __FUNCTION__ << "Releasing resource:" << name_;
     }
 
     initialized_ = false;
-    dataReady_ = false;
+    released_ = true;
 
     emit released();
 

@@ -59,6 +59,8 @@ bool Material::hasNormals() const
 
 void Material::setTexture(TextureType type, Texture2D::Ptr& texture)
 {
+    assert(texture != nullptr);
+
     textures_[type] = texture;
     setTextureOptions(texture);
 }
@@ -90,13 +92,10 @@ const Material::Attributes& Material::getAttributes() const
 
 void Material::setTextureOptions(const Texture2D::Ptr& texture) const
 {
-    if(texture != nullptr)
-    {
-        texture->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
-        texture->setWrap(GL_REPEAT, GL_REPEAT);
-        texture->generateMipmaps();
+    texture->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    texture->setWrap(GL_REPEAT, GL_REPEAT);
+    texture->generateMipmaps();
 
-        // Set 16x anisotropy... TODO!
-        texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
-    }
+    // Set 16x anisotropy... TODO!
+    texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 }
