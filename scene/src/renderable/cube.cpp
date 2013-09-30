@@ -90,7 +90,7 @@ void Cube::render() const
 {
     if(!bindVertexArray())
         return;
-
+    
     gl->glDrawArrays(GL_TRIANGLES, 0, 6 * 2 * 3);
 
     gl->glBindVertexArray(0);

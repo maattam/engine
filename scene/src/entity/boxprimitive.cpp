@@ -5,6 +5,7 @@ using namespace Engine::Entity;
 
 BoxPrimitive::BoxPrimitive()
 {
+    updateAABB(AABB(QVector3D(-1, -1, -1), QVector3D(1, 1, 1)));
 }
 
 BoxPrimitive::~BoxPrimitive()

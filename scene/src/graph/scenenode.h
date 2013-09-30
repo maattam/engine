@@ -37,6 +37,9 @@ public:
 
     const Entity::AABB& boundingBox() const;
 
+    // Recalculates AABB
+    void updateAABB();
+
 protected:
     virtual Node* createChildImpl(const QMatrix4x4& transformation);
     virtual void updateBounds(const Entity::AABB& childAabb);
@@ -46,8 +49,6 @@ private:
     bool castShadows_;
 
     Entity::AABB boundingBox_;
-
-    void updateAABB();
 };
 
 }}

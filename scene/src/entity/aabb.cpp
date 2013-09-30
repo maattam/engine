@@ -5,21 +5,30 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-AABB::AABB()
+AABB::AABB() : first_(false)
 {
 }
 
 AABB::AABB(const QVector3D& min, const QVector3D& max)
-    : min_(min), max_(max)
+    : min_(min), max_(max), first_(true)
 {
 }
 
 bool AABB::resize(const AABB& other)
 {
-    if(resize(other.max_) || resize(other.min_))
-        return true;
+    bool updated = false;
 
-    return false;
+    if(resize(other.max_))
+    {
+        updated = true;
+    }
+
+    if(resize(other.min_))
+    {
+        updated = true;
+    }
+
+    return updated;
 }
 
 void AABB::reset()
@@ -27,9 +36,24 @@ void AABB::reset()
     min_ = max_ = QVector3D();
 }
 
-float AABB::size() const
+/*float AABB::size() const
 {
     return min_.distanceToPoint(max_);
+}*/
+
+float AABB::width() const
+{
+    return max_.x() - min_.x();
+}
+
+float AABB::height() const
+{
+    return max_.y() - min_.y();
+}
+
+float AABB::depth() const
+{
+    return max_.z() - min_.z();
 }
 
 AABB AABB::operator*(const QMatrix4x4& rhs) const
@@ -40,6 +64,13 @@ AABB AABB::operator*(const QMatrix4x4& rhs) const
 bool AABB::resize(const QVector3D& point)
 {
     bool updated = false;
+
+    if(first_)
+    {
+        min_ = max_ = point;
+        first_ = false;
+        return true;
+    }
 
     // X
     if(min_.x() > point.x())
@@ -81,4 +112,9 @@ bool AABB::resize(const QVector3D& point)
     }
 
     return updated;
+}
+
+QVector3D AABB::center() const
+{
+    return 0.5f * (max_ + min_);
 }

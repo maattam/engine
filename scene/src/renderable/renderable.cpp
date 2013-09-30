@@ -44,3 +44,14 @@ const Engine::Material::Ptr& Renderable::material()
 {
     return material_;
 }
+
+void Renderable::renderWireframe() const
+{
+    gl->glDisable(GL_CULL_FACE);
+    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    render();
+
+    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    gl->glEnable(GL_CULL_FACE);
+}

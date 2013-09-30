@@ -18,12 +18,19 @@ public:
     bool resize(const QVector3D& point);
     void reset();
 
-    float size() const;
+    float width() const;
+    float height() const;
+    float depth() const;
+
+    QVector3D center() const;
+
     AABB operator*(const QMatrix4x4& rhs) const;
 
 private:
     QVector3D min_;
     QVector3D max_;
+
+    bool first_;
 };
 
 }}

@@ -99,7 +99,7 @@ void SceneNode::updateBounds(const Entity::AABB& childAabb)
     SceneNode* parent = dynamic_cast<SceneNode*>(getParent());
 
     // Update parent's bounding box recursively if ours changes
-    if(boundingBox_.resize(childAabb * transformation()) && parent != nullptr)
+    if(boundingBox_.resize(childAabb) && parent != nullptr)
     {
         parent->updateBounds(boundingBox_);
     }
@@ -116,7 +116,7 @@ void SceneNode::updateAABB()
 
     for(auto it = entities_.begin(); it != entities_.end(); ++it)
     {
-        boundingBox_.resize((*it)->boundingBox() * transformation());
+        boundingBox_.resize((*it)->boundingBox());
     }
 
     SceneNode* parent = dynamic_cast<SceneNode*>(getParent());

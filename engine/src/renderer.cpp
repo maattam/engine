@@ -19,7 +19,7 @@ using namespace Engine;
 
 Renderer::Renderer(ResourceDespatcher* despatcher)
     : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher),
-    errorMaterial_(despatcher)
+    errorMaterial_(despatcher), flags_(0)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -38,6 +38,11 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
+
+    // AABB box
+    Material::Ptr mat = std::make_shared<Material>(despatcher);
+    mat->setAmbientColor(QVector3D(1, 0, 0));
+    aabbBox_.setMaterial(mat);
 }
 
 Renderer::~Renderer()
@@ -122,6 +127,7 @@ void Renderer::render(AbstractScene* scene)
 
     visibles_.clear();
     shadowCasters_.clear();
+    aabbDebug_.clear();
 
     // Cull visibles and shadow casters, TODO
     updateRenderQueue(&rootNode_, QMatrix4x4());
@@ -209,7 +215,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gl->glClearColor(0, 0, 0, 0);
+    gl->glClearColor(0.1f, 0.1f, 0.1f, 0);
 
     for(auto it = visibles_.begin(); it != visibles_.end(); ++it)
     {
@@ -236,23 +242,52 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
                     continue;
             }
 
-            lightningTech_.setMaterialAttributes(material->getAttributes());
             lightningTech_.setHasTangents((*rit)->hasTangents() && material->hasNormals());
 
-            (*rit)->render();
+            if(flags_ & DEBUG_WIREFRAME)
+            {
+                Material::Attributes attrib;
+                attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);
+
+                lightningTech_.setMaterialAttributes(attrib);
+                (*rit)->renderWireframe();
+            }
+
+            else
+            {
+                lightningTech_.setMaterialAttributes(material->getAttributes());
+                (*rit)->render();
+            }
+        }
+    }
+
+    // Draw bounding boxes
+    if(flags_ & DEBUG_AABB)
+    {
+        lightningTech_.setMaterialAttributes(aabbBox_.material()->getAttributes());
+        lightningTech_.setHasTangents(false);
+
+        aabbBox_.material()->bind();
+
+        for(auto it = aabbDebug_.begin(); it != aabbDebug_.end(); ++it)
+        {
+            lightningTech_.setWorldView(*it);
+            lightningTech_.setMVP(worldView * (*it));
+            aabbBox_.renderWireframe();
         }
     }
 }
 
 void Renderer::skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView)
 {
+    if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
+        return;
+
     if(scene->skyboxTexture() == nullptr || scene->skyboxMesh() == nullptr)
         return;
 
     if(!skyboxTech_.enable())
-    {
         return;
-    }
 
     QMatrix4x4 trans;
     trans.translate(scene->activeCamera()->position());
@@ -279,6 +314,20 @@ void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& world
     }
 
     QMatrix4x4 nodeView = worldView * node->transformation();
+
+    if(flags_ & DEBUG_AABB)
+    {
+        // Stretch box to fit AABB
+        node->updateAABB();
+        const Entity::AABB& aabb = node->boundingBox();
+
+        QMatrix4x4 scale;
+        scale.translate(aabb.center());
+        scale.scale(0.5f);
+        scale.scale(aabb.width(), aabb.height(), aabb.depth());   // Display over mesh surface
+
+        aabbDebug_.push_back(nodeView * scale);
+    }
 
     if(node->numEntities() > 0)
     {
@@ -319,4 +368,14 @@ void Renderer::drawTextureDebug()
     quad_.render();
 
     gl->glViewport(0, 0, width_, height_);
+}
+
+void Renderer::setFlags(unsigned int flags)
+{
+    flags_ = flags;
+}
+
+unsigned int Renderer::flags() const
+{
+    return flags_;
 }

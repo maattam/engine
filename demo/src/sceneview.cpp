@@ -144,6 +144,38 @@ void SceneView::handleInput(float elapsed)
         keyMap_[Qt::Key::Key_2] = false;
         swapScene<BasicScene>();
     }
+
+    // Renderer flags
+    if(getKey(Qt::Key::Key_F1))
+    {
+        keyMap_[Qt::Key::Key_F1] = false;
+
+        if(renderer_->flags() & Engine::Renderer::DEBUG_AABB)
+        {
+            renderer_->setFlags(renderer_->flags() & ~Engine::Renderer::DEBUG_AABB);
+        }
+
+        else
+        {
+            renderer_->setFlags(renderer_->flags() | Engine::Renderer::DEBUG_AABB);
+        }
+    }
+
+    if(getKey(Qt::Key::Key_F2))
+    {
+        keyMap_[Qt::Key::Key_F2] = false;
+
+        if(renderer_->flags() & Engine::Renderer::DEBUG_WIREFRAME)
+        {
+            renderer_->setFlags(renderer_->flags() & ~Engine::Renderer::DEBUG_WIREFRAME);
+        }
+
+        else
+        {
+            renderer_->setFlags(renderer_->flags() | Engine::Renderer::DEBUG_WIREFRAME);
+        }
+    }
+
 }
 
 void SceneView::wheelEvent(QWheelEvent* event)

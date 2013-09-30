@@ -11,6 +11,7 @@
 #include "technique/skyboxtechnique.h"
 #include "renderable/quad.h"
 #include "entity/entity.h"
+#include "renderable/cube.h"
 #include "material.h"
 
 #include <deque>
@@ -24,6 +25,8 @@ class ResourceDespatcher;
 class Renderer
 {
 public:
+    enum RenderFlags { DEBUG_AABB = 0x1, DEBUG_WIREFRAME = 0x2 };
+
     explicit Renderer(ResourceDespatcher* despatcher);
     ~Renderer();
 
@@ -32,9 +35,15 @@ public:
 
     bool initialize(int width, int height, int samples);
 
+    void setFlags(unsigned int flags);
+    unsigned int flags() const;
+
 private:
     typedef std::pair<QMatrix4x4, Entity::RenderList> VisibleNode;
     typedef std::deque<VisibleNode> RenderQueue;
+
+    std::deque<QMatrix4x4> aabbDebug_;
+    Renderable::Cube aabbBox_;
 
     Graph::SceneNode rootNode_;
 
@@ -64,6 +73,8 @@ private:
 
     // Error material
     Material errorMaterial_;
+
+    unsigned int flags_;
 
     void drawTextureDebug();
 

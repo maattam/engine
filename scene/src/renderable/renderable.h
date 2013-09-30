@@ -13,6 +13,7 @@ public:
     virtual ~Renderable();
 
     virtual void render() const = 0;
+    virtual void renderWireframe() const;
 
     void setMaterial(Material::Ptr& material);
     const Material::Ptr& material();

@@ -151,7 +151,8 @@ void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
         const aiVector3D& normal    = mesh->mNormals[i];
         const aiVector3D& uv        = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][i] : zero3D;
 
-        data.vertices.push_back(QVector3D(pos.x, pos.y, pos.z));
+        QVector3D vertice(pos.x, pos.y, pos.z);
+        data.vertices.push_back(vertice);
         data.normals.push_back(QVector3D(normal.x, normal.y, normal.z));
 
         if(mesh->HasTangentsAndBitangents())
@@ -163,7 +164,7 @@ void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
         data.uvs.push_back(QVector2D(uv.x, uv.y));
 
         // Form bounding rect
-        aabb_.resize(data.vertices.back());
+        aabb_.resize(vertice);
     }
 
     // Fill the index buffer
