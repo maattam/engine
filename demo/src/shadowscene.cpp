@@ -1,7 +1,7 @@
 #include "shadowscene.h"
 
 #include "graph/scenenode.h"
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include <QDebug>
 #include <qmath.h>

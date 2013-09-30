@@ -6,7 +6,7 @@
 #include "entity/camera.h"
 #include "entity/mesh.h"
 #include "renderable/cube.h"
-#include "resource/cubemaptexture.h"
+#include "cubemaptexture.h"
 
 #include "common.h"
 

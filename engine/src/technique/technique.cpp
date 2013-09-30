@@ -1,6 +1,6 @@
 #include "technique.h"
 
-#include "resource/shader.h"
+#include "shader.h"
 
 #include <QDebug>
 

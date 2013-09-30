@@ -1,6 +1,6 @@
 #include "material.h"
 #include "common.h"
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include <QDebug>
 

@@ -4,8 +4,8 @@
 #include <QDebug>
 #include <cassert>
 
-#include "resource/resourcedespatcher.h"
-#include "resource/shader.h"
+#include "resourcedespatcher.h"
+#include "shader.h"
 
 using namespace Engine;
 using namespace Engine::Technique;

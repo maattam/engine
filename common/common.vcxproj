@@ -19,44 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\abstractscene.cpp" />
-    <ClCompile Include="src\entity\aabb.cpp" />
-    <ClCompile Include="src\entity\boxprimitive.cpp" />
-    <ClCompile Include="src\entity\camera.cpp" />
-    <ClCompile Include="src\entity\entity.cpp" />
-    <ClCompile Include="src\entity\mesh.cpp" />
-    <ClCompile Include="src\graph\node.cpp" />
-    <ClCompile Include="src\graph\scenenode.cpp" />
-    <ClCompile Include="src\renderable\cube.cpp" />
-    <ClCompile Include="src\renderable\quad.cpp" />
-    <ClCompile Include="src\renderable\renderable.cpp" />
-    <ClCompile Include="src\renderable\submesh.cpp" />
+    <ClCompile Include="src\common.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\abstractscene.h" />
-    <ClInclude Include="src\entity\aabb.h" />
-    <ClInclude Include="src\entity\boxprimitive.h" />
-    <ClInclude Include="src\entity\camera.h" />
-    <ClInclude Include="src\entity\entity.h" />
-    <ClInclude Include="src\entity\light.h" />
-    <ClInclude Include="src\entity\mesh.h" />
-    <ClInclude Include="src\graph\node.h" />
-    <ClInclude Include="src\graph\scenenode.h" />
-    <ClInclude Include="src\renderable\cube.h" />
-    <ClInclude Include="src\renderable\quad.h" />
-    <ClInclude Include="src\renderable\renderable.h" />
-    <ClInclude Include="src\renderable\submesh.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\common\common.vcxproj">
-      <Project>{c073d863-b938-464d-8584-8c9776a93268}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\resource\resource.vcxproj">
-      <Project>{c2c1b7dc-0ac0-44b2-8a34-0b7479dbb426}</Project>
-    </ProjectReference>
+    <ClInclude Include="src\common.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2108AE2E-F931-4231-AA6C-F9064F3B6831}</ProjectGuid>
+    <ProjectGuid>{C073D863-B938-464D-8584-8C9776A93268}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -100,18 +69,18 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>D:\Qt\assimp--3.0.1270-sdk\include;.\src\;..\common\src;..\resource\src;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>D:\Qt\assimp--3.0.1270-sdk\include;.\src\;..\common\src;..\resource\src;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_OPENGL_LIB;SCENE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_OPENGL_LIB;COMMON_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -128,7 +97,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_OPENGL_LIB;SCENE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_CORE_LIB;QT_OPENGL_LIB;COMMON_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Disabled</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -145,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_OPENGL_LIB;SCENE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_OPENGL_LIB;COMMON_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -161,7 +130,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_OPENGL_LIB;SCENE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;WIN64;QT_DLL;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_OPENGL_LIB;COMMON_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\GeneratedFiles;.;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtOpenGL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat />
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>

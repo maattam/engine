@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include <QOpenGLFramebufferObject>
-#include "resource/shaderprogram.h"
+#include "shaderprogram.h"
 
 #include <vector>
 

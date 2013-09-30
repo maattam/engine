@@ -4,14 +4,14 @@
 #include <QMatrix4x4>
 #include <QDebug>
 
-#include "resource/texture2D.h"
-#include "resource/cubemaptexture.h"
+#include "texture2D.h"
+#include "cubemaptexture.h"
 #include "abstractscene.h"
 #include "entity/camera.h"
 #include "entity/light.h"
 #include "effect/hdr.h"
 
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include <cassert>
 

@@ -1,8 +1,8 @@
 #ifndef TECHNIQUE_H
 #define TECHNIQUE_H
 
-#include "resource/resource.h"
-#include "resource/shaderprogram.h"
+#include "resource.h"
+#include "shaderprogram.h"
 
 namespace Engine { 
     

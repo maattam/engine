@@ -5,7 +5,7 @@
 #include <memory>
 #include <QVector3D>
 
-#include "resource/texture2D.h"
+#include "texture2D.h"
 
 namespace Engine {
 

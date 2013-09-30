@@ -123,12 +123,12 @@ void SceneView::handleInput(float elapsed)
         // Lock vertical tilt to prevent upside-down view
         if(camera->verticalAngle() > M_PI/2.0f)
         {
-            camera->setTilt(camera->horizontalAngle(),  M_PI/2.0f);
+            camera->setTilt(camera->horizontalAngle(),  static_cast<float>(M_PI/2.0f));
         }
 
         else if(camera->verticalAngle() < -M_PI/2.0f)
         {
-            camera->setTilt(camera->horizontalAngle(), -M_PI/2.0f);
+            camera->setTilt(camera->horizontalAngle(), static_cast<float>(-M_PI/2.0f));
         }
     }
 

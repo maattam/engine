@@ -1,6 +1,6 @@
 #include "mesh.h"
 #include "common.h"
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 #include  "material.h"
 
 #include <assimp/Importer.hpp>

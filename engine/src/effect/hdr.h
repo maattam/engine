@@ -5,7 +5,7 @@
 #include "downsampler.h"
 
 #include "common.h"
-#include "resource/shaderprogram.h"
+#include "shaderprogram.h"
 #include <QOpenGLFramebufferObject>
 
 #include "renderable/quad.h"

@@ -1,6 +1,6 @@
 #include "hdr.h"
 
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include <vector>
 

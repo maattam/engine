@@ -1,6 +1,6 @@
 #include "downsampler.h"
 
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include <QOpenGLFramebufferObjectFormat>
 

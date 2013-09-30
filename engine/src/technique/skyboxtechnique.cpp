@@ -1,7 +1,7 @@
 #include "skyboxtechnique.h"
 
-#include "resource/resourcedespatcher.h"
-#include "resource/shader.h"
+#include "resourcedespatcher.h"
+#include "shader.h"
 
 #include "common.h"
 

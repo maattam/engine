@@ -4,8 +4,8 @@
 #include "entity/entity.h"
 #include "renderable/cube.h"
 #include "entity/mesh.h"
-#include "resource/cubemaptexture.h"
-#include "resource/resourcedespatcher.h"
+#include "cubemaptexture.h"
+#include "resourcedespatcher.h"
 
 #include <qmath.h>
 #include <QDebug>

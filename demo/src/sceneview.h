@@ -12,7 +12,7 @@
 #include <vector>
 #include <memory>
 
-#include "resource/resourcedespatcher.h"
+#include "resourcedespatcher.h"
 
 #include "shadowscene.h"
 #include "basicscene.h"

@@ -35,53 +35,17 @@
     <Filter Include="Source Files\effect">
       <UniqueIdentifier>{bf73b996-68b8-49ee-9ef0-f736d7946221}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\entity">
-      <UniqueIdentifier>{0c427819-5705-4234-a3f5-61f554d0842d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\renderable">
-      <UniqueIdentifier>{8292ddc0-78d3-400e-bfd3-743501ae1c62}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\technique">
       <UniqueIdentifier>{a280c661-b2db-4a12-922c-15f945d2a360}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\effect">
       <UniqueIdentifier>{3c29b57e-100e-4587-b133-9011757271d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\entity">
-      <UniqueIdentifier>{df11b4c9-edb5-438e-ac22-a1256a8e64a1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\renderable">
-      <UniqueIdentifier>{82be28ed-ccd6-4588-bb3b-a1d37e6db9f5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\technique">
       <UniqueIdentifier>{40518536-f723-4f26-b875-9fe008aa5366}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\graph">
-      <UniqueIdentifier>{0b10d2cf-3369-4840-a5a0-5b0199a86b5e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\graph">
-      <UniqueIdentifier>{9228fef6-3081-4b0a-bfb7-e97c93eea38f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\resource">
-      <UniqueIdentifier>{ae236fb9-6e40-4d99-9d5b-71c5b788849d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\resource">
-      <UniqueIdentifier>{cdf74fcb-3c0a-4987-970e-c5177c67dcea}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\resource\texture">
-      <UniqueIdentifier>{8f7dda52-9bbe-4f71-9889-e790a9688ecf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\resource\texture">
-      <UniqueIdentifier>{a643ccf2-02ff-46e4-97b3-5788c4596c25}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\abstractscene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -94,15 +58,6 @@
     <ClCompile Include="src\effect\postfx.cpp">
       <Filter>Source Files\effect</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\entity.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src\entity\mesh.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src\entity\boxprimitive.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="src\technique\basiclightning.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
@@ -112,83 +67,8 @@
     <ClCompile Include="src\technique\technique.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderable\cube.cpp">
-      <Filter>Source Files\renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderable\quad.cpp">
-      <Filter>Source Files\renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderable\renderable.cpp">
-      <Filter>Source Files\renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderable\submesh.cpp">
-      <Filter>Source Files\renderable</Filter>
-    </ClCompile>
-    <ClCompile Include="src\entity\camera.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graph\node.cpp">
-      <Filter>Source Files\graph</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graph\scenenode.cpp">
-      <Filter>Source Files\graph</Filter>
-    </ClCompile>
-    <ClCompile Include="src\common.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\entity\aabb.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="src\technique\skyboxtechnique.cpp">
       <Filter>Source Files\technique</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\shader.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\resource.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\resourcedespatcher.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\resourceloader.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_resource.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_resource.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_resourcedespatcher.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_resourcedespatcher.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_resourceloader.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_resourceloader.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\shaderprogram.cpp">
-      <Filter>Source Files\resource</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_shaderprogram.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_shaderprogram.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\cubemaptexture.cpp">
-      <Filter>Source Files\resource\texture</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\texture2d.cpp">
-      <Filter>Source Files\resource\texture</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource\texture.cpp">
-      <Filter>Source Files\resource\texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,23 +105,8 @@
     <None Include="shaders\skybox.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="src\resource\resourcedespatcher.inl">
-      <Filter>Source Files\resource</Filter>
-    </None>
-    <None Include="src\resource\resource.inl">
-      <Filter>Source Files\resource</Filter>
-    </None>
-    <None Include="src\resource\texture.inl">
-      <Filter>Source Files\resource\texture</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\abstractscene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -254,65 +119,14 @@
     <ClInclude Include="src\effect\postfx.h">
       <Filter>Header Files\effect</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\boxprimitive.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\entity.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\mesh.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderable\cube.h">
-      <Filter>Header Files\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderable\quad.h">
-      <Filter>Header Files\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderable\renderable.h">
-      <Filter>Header Files\renderable</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderable\submesh.h">
-      <Filter>Header Files\renderable</Filter>
-    </ClInclude>
     <ClInclude Include="src\technique\basiclightning.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\shadowmap.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\camera.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\light.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graph\scenenode.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\aabb.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graph\node.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
-    <ClInclude Include="src\common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\technique\skyboxtechnique.h">
       <Filter>Header Files\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resource\shader.h">
-      <Filter>Header Files\resource</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resource\cubemaptexture.h">
-      <Filter>Header Files\resource\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resource\texture2d.h">
-      <Filter>Header Files\resource\texture</Filter>
-    </ClInclude>
-    <ClInclude Include="src\resource\texture.h">
-      <Filter>Header Files\resource\texture</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -326,18 +140,6 @@
   <ItemGroup>
     <CustomBuild Include="src\technique\technique.h">
       <Filter>Header Files\technique</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\resource\resource.h">
-      <Filter>Header Files\resource</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\resource\resourcedespatcher.h">
-      <Filter>Header Files\resource</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\resource\resourceloader.h">
-      <Filter>Header Files\resource</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\resource\shaderprogram.h">
-      <Filter>Header Files\resource</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
