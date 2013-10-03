@@ -58,6 +58,9 @@ private:
     // For debugging depth buffer
     QOpenGLShaderProgram nullTech_;
 
+    // For rendering aabb's efficiently
+    QOpenGLShaderProgram aabbTech_;
+
     int width_;
     int height_;
 
@@ -85,6 +88,7 @@ private:
     void skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView);
 
     void destroyBuffers();
+    void addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb);
 
     Renderer(const Renderer&);
     Renderer& operator=(const Renderer&);

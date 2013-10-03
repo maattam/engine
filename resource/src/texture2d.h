@@ -37,7 +37,7 @@ public:
     virtual bool bind();
 
 protected:
-    virtual bool initialiseData(DataType& data);
+    virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 };
 

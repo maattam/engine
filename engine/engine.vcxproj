@@ -173,6 +173,8 @@
     <ClCompile Include="src\technique\technique.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\aabb.frag" />
+    <None Include="shaders\aabb.vert" />
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\blur.frag" />

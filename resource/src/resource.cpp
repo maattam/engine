@@ -26,9 +26,9 @@ ResourceBase::ResourceBase()
 {
 }
 
-ResourceBase::ResourceBase(const QString& name)
+ResourceBase::ResourceBase(const QString& name, InitialisePolicy policy)
     : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
-    released_(false), name_(name)
+    released_(false), name_(name), policy_(policy)
 {
 }
 
@@ -81,12 +81,13 @@ bool ResourceBase::load(const QString& fileName)
 
 bool ResourceBase::ready()
 {
-    if(initialized_)
+    // Non-managed resource state is considered ready
+    if(!managed() || initialized_)
     {
         return true;
     }
 
-    // If the data has been read from the disk, we can initialise it
+    // If the data has been read from file, we can initialise it
     else if(dataReady_)
     {
         assert(data_);
@@ -128,6 +129,11 @@ ResourceDespatcher* ResourceBase::despatcher()
 const QString& ResourceBase::name() const
 {
     return name_;
+}
+
+ResourceBase::InitialisePolicy ResourceBase::initialisePolicy() const
+{
+    return policy_;
 }
 
 void ResourceBase::release()

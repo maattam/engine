@@ -36,12 +36,19 @@ class ResourceBase : public QObject
 Q_OBJECT
 
 public:
+    enum InitialisePolicy { ON_DEMAND, QUEUED };
+
     ResourceBase();
-    ResourceBase(const QString& name);
+    ResourceBase(const QString& name, InitialisePolicy policy);
     virtual ~ResourceBase();
 
     // Synchronous data loading, returns false if the object is managed
     virtual bool load(const QString& fileName);
+
+    // Initialises the resource from data.
+    // Fails if the resource is managed.
+    template<typename ResourceDataType>
+    bool fromData(const ResourceDataType& data);
 
     bool ready();
     ResourceDespatcher* despatcher();
@@ -49,6 +56,7 @@ public:
 
     bool managed() const;
     const QString& name() const;
+    InitialisePolicy initialisePolicy() const;
 
 signals:
     void released();
@@ -78,6 +86,7 @@ private:
     bool initialized_;
     bool released_;     // To prevent reloading
     QString name_;
+    InitialisePolicy policy_;
 
     ResourceBase(const ResourceBase&);
     ResourceBase& operator=(const ResourceBase&);
@@ -88,7 +97,7 @@ class Resource : public ResourceBase
 {
 public:
     Resource();
-    Resource(const QString& name);
+    Resource(const QString& name, InitialisePolicy policy = ON_DEMAND);
 
     typedef ResourceDataType DataType;
     typedef std::shared_ptr<Type> Ptr;
@@ -99,7 +108,7 @@ protected:
 
     // Called when loadData has returned successfully and the data has not yet been
     // initialized
-    virtual bool initialiseData(DataType& data) = 0;
+    virtual bool initialiseData(const DataType& data) = 0;
 };
 
 #include "resource.inl"

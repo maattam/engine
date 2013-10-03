@@ -33,7 +33,7 @@ public:
     virtual bool bind();
 
 protected:
-    virtual bool initialiseData(CubemapData& data);
+    virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 
     virtual void queryFilesDebug(QStringList& files) const;

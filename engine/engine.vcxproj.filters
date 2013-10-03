@@ -105,6 +105,12 @@
     <None Include="shaders\skybox.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="shaders\aabb.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\aabb.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\renderer.h">

@@ -20,7 +20,7 @@ Shader::~Shader()
     Shader::releaseData();
 }
 
-bool Shader::initialiseData(ShaderData& data)
+bool Shader::initialiseData(const DataType& data)
 {
     shader_ = new QOpenGLShader(data.type(), this);
     bool ok = shader_->compileSourceCode(data.data());

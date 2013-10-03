@@ -15,9 +15,7 @@ namespace Engine { namespace Entity {
 class MeshData : public ResourceData
 {
 public:
-    MeshData(ResourceDespatcher* despatcher);
-
-    virtual bool load(const QString& fileName);
+    typedef std::vector<Material::Ptr> MaterialVec;
 
     struct SubMeshData
     {
@@ -26,21 +24,31 @@ public:
         std::vector<QVector3D> tangents;
         std::vector<QVector2D> uvs;
         std::vector<unsigned int> indices;
-        unsigned int materialIndex;
+        MaterialVec::size_type materialIndex;
+        AABB aabb;
     };
 
-    std::vector<Material::Ptr>& materials();
-    std::vector<SubMeshData>& meshes();
-    const AABB& aabb() const;
+    typedef std::vector<SubMeshData> SubMeshVec;
+
+    MeshData(ResourceDespatcher* despatcher);
+    MeshData(ResourceDespatcher* despatcher,
+        const SubMeshVec& subMeshes, const MaterialVec& materials);
+
+    virtual bool load(const QString& fileName);
+    bool initFromScene(const aiScene* scene, const QString& fileName);
+
+    SubMeshVec::size_type numSubMeshes() const;
+    const SubMeshData& subMesh(SubMeshVec::size_type index) const;
+
+    MaterialVec::size_type numMaterials() const;
+    const Material::Ptr& material(MaterialVec::size_type index) const;
 
 private:
-    bool initFromScene(const aiScene* scene, const QString& fileName);
     void initSubMesh(const aiMesh* mesh, SubMeshData& data);
     void initMaterials(const aiScene* scene, const QString& fileName);
 
-    std::vector<Material::Ptr> materials_;
-    std::vector<SubMeshData> meshData_;
-    AABB aabb_;
+    MaterialVec materials_;
+    SubMeshVec meshData_;
 };
 
 class Mesh : public Entity, public Resource<Mesh, MeshData>
@@ -55,10 +63,11 @@ public:
     size_t numSubMeshes() const;
     const Renderable::SubMesh::Ptr& subMesh(size_t index) const;
 
+    void addSubMesh(const Renderable::SubMesh::Ptr& subMesh, const AABB& aabb);
     void setMaterialAttributes(const Material::Attributes& attributes);
      
 protected:
-    virtual bool initialiseData(DataType& data);
+    virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 
 private:

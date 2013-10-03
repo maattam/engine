@@ -28,7 +28,7 @@ bool CubemapTexture::bind()
     return ready() && Texture::bind();
 }
 
-bool CubemapTexture::initialiseData(CubemapData& data)
+bool CubemapTexture::initialiseData(const DataType& data)
 {
     gl->glGenTextures(1, &textureId_);
     gl->glBindTexture(Target, textureId_);

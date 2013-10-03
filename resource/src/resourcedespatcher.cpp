@@ -15,6 +15,7 @@ ResourceDespatcher::ResourceDespatcher(QObject* parent)
     loader_->moveToThread(&loadThread_);
 
     connect(this, &ResourceDespatcher::loadResources, loader_, &ResourceLoader::run);
+    connect(loader_, &ResourceLoader::resourceLoaded, this, &ResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
     loadThread_.start();
 
     emit loadResources();
@@ -95,5 +96,15 @@ void ResourceDespatcher::watchResource(const std::shared_ptr<ResourceBase>& reso
                 resources_[*it] = resource;
             }
         }
+    }
+}
+
+void ResourceDespatcher::resourceLoaded(const QString& id)
+{
+    auto result = resources_.find(id);
+    if(result != resources_.end() && !result->expired())
+    {
+        auto handle = result->lock();
+        handle->ready();
     }
 }

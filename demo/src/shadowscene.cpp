@@ -97,7 +97,7 @@ void ShadowScene::initialize()
     attrib.specularIntensity = 0.0f;
     sphere_->setMaterialAttributes(attrib);
 
-    sceneMesh_ = despatcher_->get<Entity::Mesh>("assets/sponza.obj");
+    sceneMesh_ = despatcher_->get<ColladaNode>("assets/sponza_scene.dae");
 
     directionalLight_.diffuseIntensity = 1.0f;
     directionalLight_.color = QVector3D(201, 226, 255) / 255.0f * 0.1f;
@@ -194,8 +194,8 @@ void ShadowScene::prepareScene(Graph::SceneNode* scene)
     scale.scale(0.05f);
 
     Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(scene->createChild());
-    node->attachEntity(sceneMesh_.get());
     node->applyTransformation(scale);
+    sceneMesh_->attach(node);
 
     scale.setToIdentity();
     scale.scale(0.5f);

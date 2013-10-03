@@ -48,6 +48,7 @@ signals:
 
 public slots:
     void fileChanged(const QString& path);
+    void resourceLoaded(const QString& id);
 
 private:
     ResourceDespatcher(const ResourceDespatcher&);

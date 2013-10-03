@@ -45,28 +45,42 @@ const Renderable::SubMesh::Ptr& Mesh::subMesh(size_t index) const
     return entries_[index];
 }
 
-bool Mesh::initialiseData(DataType& data)
+bool Mesh::initialiseData(const DataType& data)
 {
-    entries_.resize(data.meshes().size());
+    entries_.resize(data.numSubMeshes());
+    AABB base;
 
-    for(size_t i = 0; i < data.meshes().size(); ++i)
+    for(size_t i = 0; i < data.numSubMeshes(); ++i)
     {
-        MeshData::SubMeshData& mesh = data.meshes()[i];
+        const MeshData::SubMeshData& mesh = data.subMesh(i);
 
         entries_[i] = std::make_shared<Renderable::SubMesh>();
-        entries_[i]->setMaterial(data.materials()[mesh.materialIndex]);
+        entries_[i]->setMaterial(data.material(mesh.materialIndex));
 
         if(!entries_[i]->initMesh(mesh.vertices, mesh.normals,
                 mesh.tangents, mesh.uvs, mesh.indices))
         {
             return false;
         }
+
+        base.resize(mesh.aabb);
     }
 
-    updateAABB(data.aabb());
+    updateAABB(base);
     setMaterialAttributes(materialAttrib_);
 
     return true;
+}
+
+void Mesh::addSubMesh(const Renderable::SubMesh::Ptr& subMesh, const AABB& aabb)
+{
+    entries_.push_back(subMesh);
+
+    AABB oldAabb = boundingBox();
+    if(oldAabb.resize(aabb))
+    {
+        updateAABB(oldAabb);
+    }
 }
 
 void Mesh::releaseData()
@@ -104,7 +118,6 @@ bool MeshData::load(const QString& fileName)
     Assimp::Importer importer;
 
     const aiScene* scene = importer.ReadFile(fileName.toStdString(),
-        aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace |
         aiProcess_FlipUVs | aiProcessPreset_TargetRealtime_MaxQuality);
 
     if(scene == nullptr)
@@ -164,7 +177,7 @@ void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
         data.uvs.push_back(QVector2D(uv.x, uv.y));
 
         // Form bounding rect
-        aabb_.resize(vertice);
+        data.aabb.resize(vertice);
     }
 
     // Fill the index buffer
@@ -189,8 +202,7 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
     };
 
     // Extract the directory part of the file name
-    // We assume that the material files reside inside the same folder as the
-    // model or in its subfolders.
+    // We assume the material files reside inside the same folder as the model or in its subfolders.
     int index = fileName.lastIndexOf("/");
     QString dir = ".";
 
@@ -228,17 +240,28 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
     }
 }
 
-std::vector<Material::Ptr>& MeshData::materials()
+MeshData::SubMeshVec::size_type MeshData::numSubMeshes() const
 {
-    return materials_;
+    return meshData_.size();
 }
 
-std::vector<MeshData::SubMeshData>& MeshData::meshes()
+const MeshData::SubMeshData& MeshData::subMesh(SubMeshVec::size_type index) const
 {
-    return meshData_;
+    return meshData_.at(index);
 }
 
-const AABB& MeshData::aabb() const
+MeshData::MaterialVec::size_type MeshData::numMaterials() const
 {
-    return aabb_;
+    return materials_.size();
+}
+
+const Material::Ptr& MeshData::material(MaterialVec::size_type index) const
+{
+    return materials_.at(index);
+}
+
+MeshData::MeshData(ResourceDespatcher* despatcher,
+                   const SubMeshVec& subMeshes, const MaterialVec& materials)
+                   : ResourceData(despatcher), meshData_(subMeshes), materials_(materials)
+{
 }

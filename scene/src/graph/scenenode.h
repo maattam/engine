@@ -35,20 +35,12 @@ public:
     bool isShadowCaster() const;
     void setShadowCaster(bool shadows);
 
-    const Entity::AABB& boundingBox() const;
-
-    // Recalculates AABB
-    void updateAABB();
-
 protected:
     virtual Node* createChildImpl(const QMatrix4x4& transformation);
-    virtual void updateBounds(const Entity::AABB& childAabb);
 
 private:
     Entities entities_;
     bool castShadows_;
-
-    Entity::AABB boundingBox_;
 };
 
 }}

@@ -34,6 +34,9 @@ public slots:
     // Starts the consumer process for loading data
     void run();
 
+signals:
+    void resourceLoaded(const QString& id);
+
 private:
     QQueue<ResourcePtr> loadQueue_;
     QMutex mutex_;

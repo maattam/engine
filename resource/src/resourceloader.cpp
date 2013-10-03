@@ -53,6 +53,12 @@ void ResourceLoader::run()
         else
         {
             resource->dataReady_ = true;
+
+            // If the resource should be initialised on next frame, signal despatcher
+            if(resource->initialisePolicy() == ResourceBase::QUEUED)
+            {
+                emit resourceLoaded(resource->name());
+            }
         }
     }
 }

@@ -37,7 +37,7 @@ bool Texture2D::create(GLsizei width, GLsizei height, GLint internalFormat, GLin
     return true;
 }
 
-bool Texture2D::initialiseData(DataType& data)
+bool Texture2D::initialiseData(const DataType& data)
 {
     gl->glGenTextures(1, &textureId_);
     gl->glBindTexture(Target, textureId_);

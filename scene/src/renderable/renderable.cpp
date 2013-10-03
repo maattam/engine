@@ -35,7 +35,7 @@ bool Renderable::bindVertexArray() const
     return true;
 }
 
-void Renderable::setMaterial(Engine::Material::Ptr& material)
+void Renderable::setMaterial(const Engine::Material::Ptr& material)
 {
     material_ = material;
 }
@@ -47,6 +47,7 @@ const Engine::Material::Ptr& Renderable::material()
 
 void Renderable::renderWireframe() const
 {
+    // Disable culling so we can see the wireframe lines through objects
     gl->glDisable(GL_CULL_FACE);
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

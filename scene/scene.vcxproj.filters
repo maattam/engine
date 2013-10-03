@@ -70,6 +70,9 @@
     <ClCompile Include="src\renderable\renderable.cpp">
       <Filter>Source Files\renderable</Filter>
     </ClCompile>
+    <ClCompile Include="src\colladanode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="src\renderable\submesh.h">
       <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\colladanode.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

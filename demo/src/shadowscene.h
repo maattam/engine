@@ -5,6 +5,7 @@
 #include "entity/light.h"
 #include "entity/camera.h"
 #include "entity/mesh.h"
+#include "colladanode.h"
 #include "renderable/cube.h"
 #include "cubemaptexture.h"
 
@@ -41,7 +42,8 @@ private:
     Engine::Entity::Camera camera_;
     Engine::ResourceDespatcher* despatcher_;
 
-    Engine::Entity::Mesh::Ptr sceneMesh_;
+    Engine::ColladaNode::Ptr sceneMesh_;
+
     Engine::Entity::Mesh::Ptr sphere_;
     Engine::Graph::SceneNode* sphereNode_[2];
 

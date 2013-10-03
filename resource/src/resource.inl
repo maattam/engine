@@ -4,7 +4,8 @@ Resource<Type, ResourceDataType>::Resource() : ResourceBase()
 }
 
 template<typename Type, typename ResourceDataType>
-Resource<Type, ResourceDataType>::Resource(const QString& name) : ResourceBase(name)
+Resource<Type, ResourceDataType>::Resource(const QString& name, InitialisePolicy policy)
+    : ResourceBase(name, policy)
 {
 }
 
@@ -21,4 +22,24 @@ bool Resource<Type, ResourceDataType>::initialise(ResourceData* data)
     assert(rdata != nullptr);
 
     return initialiseData(*rdata);
+}
+
+template<typename ResourceDataType>
+bool ResourceBase::fromData(const ResourceDataType& data)
+{
+    if(managed())
+        return false;
+
+    if(initialized_)
+    {
+        release();
+    }
+
+    initialized_ = initialise(&data);
+    if(initialized_)
+    {
+        releaseData();
+    }
+
+    return initialized_;
 }

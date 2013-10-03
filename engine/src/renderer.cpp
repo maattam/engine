@@ -35,13 +35,18 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/shadowmap.frag"));
     nullTech_.link();
 
+    // AABB debugging tech
+    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
+    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/aabb.frag"));
+    aabbTech_.link();
+
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
 
     // AABB box
     Material::Ptr mat = std::make_shared<Material>(despatcher);
-    mat->setAmbientColor(QVector3D(1, 0, 0));
+    mat->setAmbientColor(QVector3D(0, 0, 1));
     aabbBox_.setMaterial(mat);
 }
 
@@ -236,7 +241,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
             if(!material->bind())
             {
-                material = &errorMaterial_;
+                material = &errorMaterial_;     // Display error material to indicate a problem with the material
 
                 if(!errorMaterial_.bind())
                     continue;
@@ -247,10 +252,10 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
             if(flags_ & DEBUG_WIREFRAME)
             {
                 Material::Attributes attrib;
-                attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);
+                attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);  // Hilight polygons slightly
 
                 lightningTech_.setMaterialAttributes(attrib);
-                (*rit)->renderWireframe();
+                (*rit)->renderWireframe();  // TODO: Shitty performance
             }
 
             else
@@ -264,17 +269,20 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     // Draw bounding boxes
     if(flags_ & DEBUG_AABB)
     {
-        lightningTech_.setMaterialAttributes(aabbBox_.material()->getAttributes());
-        lightningTech_.setHasTangents(false);
+        aabbTech_.bind();
+        aabbTech_.setUniformValue("gColor", aabbBox_.material()->getAttributes().ambientColor);
 
-        aabbBox_.material()->bind();
+        gl->glDisable(GL_CULL_FACE);
+        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         for(auto it = aabbDebug_.begin(); it != aabbDebug_.end(); ++it)
         {
-            lightningTech_.setWorldView(*it);
-            lightningTech_.setMVP(worldView * (*it));
-            aabbBox_.renderWireframe();
+            aabbTech_.setUniformValue("gMVP", worldView * (*it));
+            aabbBox_.render();
         }
+
+        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        gl->glEnable(GL_CULL_FACE);
     }
 }
 
@@ -297,6 +305,7 @@ void Renderer::skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
     if(scene->skyboxTexture()->bindActive(GL_TEXTURE0))
     {
+        // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
         gl->glDepthFunc(GL_LEQUAL);
 
@@ -315,20 +324,6 @@ void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& world
 
     QMatrix4x4 nodeView = worldView * node->transformation();
 
-    if(flags_ & DEBUG_AABB)
-    {
-        // Stretch box to fit AABB
-        node->updateAABB();
-        const Entity::AABB& aabb = node->boundingBox();
-
-        QMatrix4x4 scale;
-        scale.translate(aabb.center());
-        scale.scale(0.5f);
-        scale.scale(aabb.width(), aabb.height(), aabb.depth());   // Display over mesh surface
-
-        aabbDebug_.push_back(nodeView * scale);
-    }
-
     if(node->numEntities() > 0)
     {
         visibles_.push_back(std::make_pair(nodeView, Entity::RenderList()));
@@ -339,6 +334,12 @@ void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& world
             if(entity != nullptr)
             {
                 entity->updateRenderList(visibles_.back().second);
+
+                if(flags_ & DEBUG_AABB)
+                {
+                    // Stretch box to fit AABB
+                    addAABBDebug(nodeView, entity->boundingBox());
+                }
             }
         }
 
@@ -378,4 +379,17 @@ void Renderer::setFlags(unsigned int flags)
 unsigned int Renderer::flags() const
 {
     return flags_;
+}
+
+void Renderer::addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb)
+{
+    if(aabb.width() <= 0)
+        return;
+
+    QMatrix4x4 scale;
+    scale.translate(aabb.center());
+    scale.scale(0.5f);  // Our bounding box model is 2 units wide
+    scale.scale(aabb.width(), aabb.height(), aabb.depth());   // Display over mesh surface
+
+    aabbDebug_.push_back(trans * scale);
 }

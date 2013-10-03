@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "material.h"
+#include "entity/aabb.h"
 
 namespace Engine { namespace Renderable {
 
@@ -15,7 +16,7 @@ public:
     virtual void render() const = 0;
     virtual void renderWireframe() const;
 
-    void setMaterial(Material::Ptr& material);
+    void setMaterial(const Material::Ptr& material);
     const Material::Ptr& material();
 
     virtual bool hasTangents() const;

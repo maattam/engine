@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\abstractscene.cpp" />
+    <ClCompile Include="src\colladanode.cpp" />
     <ClCompile Include="src\entity\aabb.cpp" />
     <ClCompile Include="src\entity\boxprimitive.cpp" />
     <ClCompile Include="src\entity\camera.cpp" />
@@ -34,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h" />
+    <ClInclude Include="src\colladanode.h" />
     <ClInclude Include="src\entity\aabb.h" />
     <ClInclude Include="src\entity\boxprimitive.h" />
     <ClInclude Include="src\entity\camera.h" />
