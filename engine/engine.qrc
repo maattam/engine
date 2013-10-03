@@ -13,5 +13,7 @@
         <file>shaders/skybox.frag</file>
         <file>shaders/skybox.vert</file>
         <file>images/pink.png</file>
+        <file>shaders/aabb.frag</file>
+        <file>shaders/aabb.vert</file>
     </qresource>
 </RCC>

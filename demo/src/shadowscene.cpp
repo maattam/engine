@@ -14,10 +14,10 @@ ShadowScene::ShadowScene(ResourceDespatcher* despatcher)
 {
     const int NUM_NODES = 4;
     const float h = 30.0f;
-    const QVector3D positions[NUM_NODES] = { QVector3D(63, h, 27),
-                                             QVector3D(-70, h, 27),
-                                             QVector3D(-70, h, -30),
-                                             QVector3D(63, h, -30)};
+    const QVector3D positions[NUM_NODES] = { QVector3D(66, h, 29),
+                                             QVector3D(-67, h, 29),
+                                             QVector3D(-67, h, -28),
+                                             QVector3D(66, h, -28)};
 
     const QVector3D directions[NUM_NODES] = {QVector3D(-1, 0, 0),
                                              QVector3D(0, 0, -1),
@@ -118,7 +118,7 @@ void ShadowScene::initialize()
     pointLight.attenuation.exp = 0.005f;
     pointLight.attenuation.constant = 1.0f;
     pointLight.attenuation.linear = 0.2f;
-    pointLight.position = QVector3D(0, 12, -2);
+    pointLight.position = QVector3D(0, 12, 0);
     pointLight.color = QVector3D(255, 241, 224) / 255.0f;
     pointLight.diffuseIntensity = 5.0f;
     pointLight.ambientIntensity = 0.5f;
@@ -129,7 +129,7 @@ void ShadowScene::initialize()
 void ShadowScene::update(unsigned int elapsed)
 {
     const float posMin = -65.0f;
-    const float posMax = 60.0f;
+    const float posMax = 65.0f;
     const float t = static_cast<float>(elapsed) / 1000;
     elapsed_ += t;
 

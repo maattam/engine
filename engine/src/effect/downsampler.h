@@ -18,22 +18,24 @@ namespace Effect {
 class DownSampler
 {
 public:
-    enum { SAMPLES = 4 };
-
     explicit DownSampler(ResourceDespatcher* despatcher);
     ~DownSampler();
 
-    bool init(int width, int height, GLenum format);
-    QOpenGLFramebufferObject* getSample(size_t n);
+    // Texture must have have maxLod mipmap levels allocated
+    bool init(int width, int height, GLuint texture, GLuint maxLod);
 
     // Expects the quad to be bound
+    // textureId must have maxLod mipmap levels as initialised
     bool downSample(GLuint textureId, const Renderable::Quad& quad);
 
 private:
     void destroy();
 
+    int width_;
+    int height_;
+
     ShaderProgram program_;
-    std::vector<QOpenGLFramebufferObject*> fbos_;
+    std::vector<GLuint> fbos_;
 };
 
 }}

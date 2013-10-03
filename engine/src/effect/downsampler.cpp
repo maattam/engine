@@ -8,9 +8,8 @@ using namespace Engine;
 using namespace Engine::Effect;
 
 DownSampler::DownSampler(ResourceDespatcher* despatcher)
+    : width_(0), height_(0)
 {
-    fbos_.resize(SAMPLES, nullptr);
-
     program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
     program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/blur.frag")));
 }
@@ -24,35 +23,41 @@ void DownSampler::destroy()
 {
     for(auto it = fbos_.begin(); it < fbos_.end(); ++it)
     {
-        if(*it != nullptr)
-        {
-            delete *it;
-            *it = nullptr;
-        }
+        gl->glDeleteFramebuffers(fbos_.size(), &fbos_[0]);
     }
+
+    fbos_.clear();
 }
 
-bool DownSampler::init(int width, int height, GLenum format)
+bool DownSampler::init(int width, int height, GLuint texture, GLuint maxLod)
 {
     destroy();
 
-    for(size_t i = 0; i < fbos_.size(); ++i)
+    if(maxLod < 1)
     {
-        width = ceil(width / 2.0f);
-        height = ceil(height / 2.0f);
-
-        fbos_[i] = new QOpenGLFramebufferObject(width, height,
-            QOpenGLFramebufferObject::NoAttachment, GL_TEXTURE_2D, format);
-
-        if(!fbos_[i]->isValid())
-            return false;
-
-        gl->glBindTexture(GL_TEXTURE_2D, fbos_[i]->texture());
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        return false;
     }
 
-    gl->glBindTexture(GL_TEXTURE_2D, 0);
+    width_ = width;
+    height_ = height;
+
+    fbos_.resize(maxLod, 0);
+
+    gl->glGenFramebuffers(maxLod, &fbos_[0]);
+    gl->glBindTexture(GL_TEXTURE_2D, texture);
+
+    for(size_t i = 0; i < fbos_.size(); ++i)
+    {
+        gl->glBindFramebuffer(GL_FRAMEBUFFER, fbos_[i]);
+
+        // Bind mipmap level to fbo
+        gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, i+1);
+
+        if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            return false;
+        }
+    }
 
     return true;
 }
@@ -64,33 +69,31 @@ bool DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
 
     program_->bind();
 
-    gl->glActiveTexture(0);
+    gl->glActiveTexture(GL_TEXTURE0);
+    gl->glBindTexture(GL_TEXTURE_2D, textureId);
     program_->setUniformValue("tex", 0);
 
-    GLuint prevTexture = textureId;
+    int width = width_;
+    int height = height_;
 
-    for(size_t i = 0; i < fbos_.size(); ++i)
+    for(int i = 0; i < fbos_.size(); ++i)
     {
-        fbos_[i]->bind();
-        gl->glClear(GL_COLOR_BUFFER_BIT);
+        width = floor(width / 2.0f);
+        height = floor(height / 2.0f);
 
-        program_->setUniformValue("width", fbos_[i]->width());
-        program_->setUniformValue("height", fbos_[i]->height());
+        gl->glBindFramebuffer(GL_FRAMEBUFFER, fbos_[i]);
 
-        gl->glBindTexture(GL_TEXTURE_2D, prevTexture);
-        gl->glViewport(0, 0, fbos_[i]->width(), fbos_[i]->height());
+        program_->setUniformValue("width", width);
+        program_->setUniformValue("height", height);
+        program_->setUniformValue("lodLevel", static_cast<float>(i));
+
+        gl->glViewport(0, 0, width, height);
 
         quad.renderDirect();
-
-        fbos_[i]->release();
-        prevTexture = fbos_[i]->texture();
     }
 
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
     program_->release();
-    return true;
-}
 
-QOpenGLFramebufferObject* DownSampler::getSample(size_t n)
-{
-    return fbos_[n];
+    return true;
 }

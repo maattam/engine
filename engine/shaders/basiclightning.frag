@@ -197,7 +197,7 @@ vec3 calcBumpedNormal()
 
 	// Since color components are stored in the range [0, 1], we have to transform
 	// them back using f(x) = 2*x - 1
-	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
+	bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
 	
 	mat3 TBN = mat3(tangent, bitangent, normal);
 	vec3 newNormal = TBN * bumpMapNormal;

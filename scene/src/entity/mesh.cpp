@@ -13,6 +13,10 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
+namespace {
+    void initMaterialAttributes(aiMaterial* aiMat, const Material::Ptr& target);
+}
+
 Mesh::Mesh() : Entity(), Resource()
 {
 }
@@ -214,16 +218,17 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
 
     for(size_t i = 0; i < scene->mNumMaterials; ++i)
     {
-        const aiMaterial* material = scene->mMaterials[i];
+        aiMaterial* material = scene->mMaterials[i];
         aiString path;
         QString fullpath = dir + "/";
 
         materials_[i] = std::make_shared<Material>(despatcher());
+        initMaterialAttributes(material, materials_[i]);
 
         for(int j = 0; j < Material::TEXTURE_COUNT; ++j)
         {
             if(material->GetTextureCount(textureMapping[j]) > 0 &&
-                material->GetTexture(textureMapping[j], 0, &path) == AI_SUCCESS)
+                material->GetTexture(textureMapping[j], 0, &path) == aiReturn_SUCCESS)
             {
                 Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
                 materials_[i]->setTexture(static_cast<Material::TextureType>(j), texture);
@@ -232,7 +237,7 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
 
         // Hack: Workaround for broken waveform normals
         if(material->GetTextureCount(aiTextureType_HEIGHT) > 0 &&
-            material->GetTexture(aiTextureType_HEIGHT, 0, &path) == AI_SUCCESS)
+            material->GetTexture(aiTextureType_HEIGHT, 0, &path) == aiReturn_SUCCESS)
         {
             Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
             materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
@@ -264,4 +269,36 @@ MeshData::MeshData(ResourceDespatcher* despatcher,
                    const SubMeshVec& subMeshes, const MaterialVec& materials)
                    : ResourceData(despatcher), meshData_(subMeshes), materials_(materials)
 {
+}
+
+namespace {
+    void initMaterialAttributes(aiMaterial* mat, const Material::Ptr& target)
+    {
+        if(mat == nullptr)
+            return;
+
+        // Colors
+        aiColor3D color;
+        if(mat->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+        {
+            target->setDiffuseColor(QVector3D(color.r, color.g, color.b));
+        }
+
+        if(mat->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS)
+        {
+            target->setAmbientColor(QVector3D(color.r, color.g, color.b));
+        }
+
+        // Set floats
+        float value = 0;
+        if(mat->Get(AI_MATKEY_SHININESS, value) == AI_SUCCESS)
+        {
+            target->setShininess(value);
+        }
+
+        if(mat->Get(AI_MATKEY_SHININESS_STRENGTH, value) == AI_SUCCESS)
+        {
+            target->setSpecularIntensity(value);
+        }
+    }
 }

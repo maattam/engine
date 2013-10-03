@@ -8,6 +8,7 @@
 #include "entity/mesh.h"
 #include "entity/boxprimitive.h"
 #include "renderable/cube.h"
+#include "colladanode.h"
 
 #include <vector>
 #include <memory>
@@ -49,7 +50,7 @@ private:
     Engine::Entity::Mesh::Ptr torus_;
     Engine::Entity::Mesh::Ptr oildrum_;
     Engine::Entity::Mesh::Ptr sphere_;
-    Engine::Entity::Mesh::Ptr platform_;
+    Engine::ColladaNode::Ptr platform_;
     Engine::Entity::Mesh::Ptr hellknight_;
 
     std::shared_ptr<Engine::CubemapTexture> skyboxTexture_;

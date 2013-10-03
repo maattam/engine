@@ -28,7 +28,7 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     height_ = 0;
 
     // HDR postfx
-    postfxChain_.push_back(new Effect::Hdr(despatcher));
+    postfxChain_.push_back(new Effect::Hdr(despatcher, 4));
 
     // Program for debugging shadow maps
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
@@ -222,6 +222,18 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0.1f, 0.1f, 0.1f, 0);
 
+    // Set polygonmode if wireframe mode is enabled
+    if(flags_ & DEBUG_WIREFRAME)
+    {
+        gl->glDisable(GL_CULL_FACE);
+        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        Material::Attributes attrib;
+        attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);  // Hilight polygons slightly
+
+        lightningTech_.setMaterialAttributes(attrib);
+    }
+
     for(auto it = visibles_.begin(); it != visibles_.end(); ++it)
     {
         Entity::RenderList& node = it->second;
@@ -249,21 +261,20 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
             lightningTech_.setHasTangents((*rit)->hasTangents() && material->hasNormals());
 
-            if(flags_ & DEBUG_WIREFRAME)
-            {
-                Material::Attributes attrib;
-                attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);  // Hilight polygons slightly
-
-                lightningTech_.setMaterialAttributes(attrib);
-                (*rit)->renderWireframe();  // TODO: Shitty performance
-            }
-
-            else
+            if(!(flags_ & DEBUG_WIREFRAME))
             {
                 lightningTech_.setMaterialAttributes(material->getAttributes());
-                (*rit)->render();
             }
+
+            (*rit)->render();
         }
+    }
+
+    // Reset polygonmode
+    if(flags_ & DEBUG_WIREFRAME)
+    {
+        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        gl->glEnable(GL_CULL_FACE);
     }
 
     // Draw bounding boxes

@@ -1,9 +1,9 @@
 #version 330 core
 
-const int BLOOM_SAMPLES = 4;
-
 uniform sampler2DMS renderedTexture;
-uniform sampler2D bloomSamplers[BLOOM_SAMPLES];
+
+uniform sampler2D bloomSampler;
+uniform int bloomLevels;
 
 uniform float exposure;
 uniform float bloomFactor;
@@ -18,9 +18,10 @@ vec4 calcBloomColor()
 {
 	vec4 color = vec4(0, 0, 0, 0);
 
-	for(int i = 0; i < BLOOM_SAMPLES; ++i)
+    // Skip first lod level to reduce aliasing
+	for(int i = 1; i <= bloomLevels; ++i)
 	{
-		color += texture(bloomSamplers[i], uv);
+		color += textureLod(bloomSampler, uv, i);
 	}
 
 	return color;
@@ -29,7 +30,7 @@ vec4 calcBloomColor()
 void main() {
 	ivec2 st = ivec2(textureSize(renderedTexture) * uv);
 	vec4 colorBloom = calcBloomColor();
-	vec4 color;
+	vec4 color = vec4(0, 0, 0, 0);
 
 	for(int i = 0; i < samples; ++i)
 	{

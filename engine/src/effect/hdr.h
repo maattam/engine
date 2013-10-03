@@ -19,7 +19,7 @@ namespace Effect {
 class Hdr : public Postfx
 {
 public:
-    explicit Hdr(ResourceDespatcher* despatcher);
+    Hdr(ResourceDespatcher* despatcher, int bloomLevels);
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
@@ -27,6 +27,9 @@ public:
 
 private:
     int samples_;
+    int width_;
+    int height_;
+    int bloomLevels_;
 
     DownSampler downSampler_;
     QOpenGLFramebufferObject* fbo_;

@@ -79,9 +79,6 @@ private:
 
     typedef std::vector<Entity::Mesh::Ptr> NodeMeshVec;
     NodeMeshVec meshes_;
-
-    ColladaNode(const ColladaNode&);
-    ColladaNode& operator=(const ColladaNode&);
 };
 
 }

@@ -80,7 +80,7 @@ void BasicScene::initialize()
     // Set up spot lights
     Entity::SpotLight spotLight;
     spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
-    spotLight.position = 2*QVector3D(-6.0f, 4.0f, 6.0f);
+    spotLight.position = 2*QVector3D(-6.0f, 7/2, 6.0f);
     spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
     spotLight.diffuseIntensity = 25.0f;
     spotLight.attenuation.exp = 0.05f;
@@ -90,7 +90,7 @@ void BasicScene::initialize()
     // Load models
     oildrum_ = despatcher_->get<Entity::Mesh>("assets/oildrum.dae");
     hellknight_ = despatcher_->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher_->get<Entity::Mesh>("assets/blocks.dae");
+    platform_ = despatcher_->get<ColladaNode>("assets/blocks.dae");
     sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
     torus_ = despatcher_->get<Entity::Mesh>("assets/torus.obj");
 
@@ -134,7 +134,7 @@ void BasicScene::update(unsigned int elapsedMs)
     torusNode_->applyTransformation(mat);
 
     mat.setToIdentity();
-    mat.rotate(3.0f * elapsed, 0, 0, 1);
+    mat.rotate(3.0f * elapsed, 0, 1, 0);
     platformNode_->applyTransformation(mat);
 
     for(size_t i = 0; i < cubeNode_->numChildren(); ++i)
@@ -177,24 +177,29 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
 
     // Oildrum
     {
+        // Create rotation relation
         QMatrix4x4 mat;
-        mat.translate(-4, -2, 1);
+        mat.rotate(-90.0f, 1, 0, 0);
+        Graph::SceneNode* root = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
+        root->applyTransformation(mat);
 
-        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
+        mat.setToIdentity();
+        mat.translate(-5, -2, 0);
+        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(root->createChild());
 
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
 
-        node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
+        node = dynamic_cast<Graph::SceneNode*>(root->createChild());
 
         mat.translate(6, -1, 0);
         node->applyTransformation(mat);
         node->attachEntity(oildrum_.get());
 
-        node = dynamic_cast<Graph::SceneNode*>(platformNode_->createChild());
+        node = dynamic_cast<Graph::SceneNode*>(root->createChild());
 
         mat.setToIdentity();
-        mat.translate(-1, 2, 1);
+        mat.translate(-2, 2, 0);
         mat.scale(0.025f);
 
         Engine::Material::Attributes attrib;
@@ -241,7 +246,7 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
 
         // Platform light
         mat.setToIdentity();
-        mat.translate(2*QVector3D(-6.0f, 4.0f, 6.0f));
+        mat.translate(2*QVector3D(-6.0f, 7/2, 6.0f));
         mat.scale(0.1f);
 
         Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(scene->createChild());
@@ -252,19 +257,13 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
 
     // platform
     {
-        Engine::Material::Attributes attrib;
+        /*Engine::Material::Attributes attrib;
         //attrib.diffuseColor = QVector3D(0.2f, 0.0f, 0.8f);
         attrib.specularIntensity = 1.0f;
         attrib.shininess = 50.0f;
 
-        platform_->setMaterialAttributes(attrib);
-
-        QMatrix4x4 mat;
-        // dae expects z to be upwards so we rotate the model by pi/4 along its x-axis
-        mat.rotate(-90.0f, 1, 0, 0);
-
-        platformNode_->applyTransformation(mat);
-        platformNode_->attachEntity(platform_.get());
+        platform_->setMaterialAttributes(attrib);*/
+        platform_->attach(platformNode_);
     }
 
     // Boxes
