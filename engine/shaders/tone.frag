@@ -32,19 +32,20 @@ void main() {
 	vec4 colorBloom = calcBloomColor();
 	vec4 color = vec4(0, 0, 0, 0);
 
+    // Get average sample
 	for(int i = 0; i < samples; ++i)
 	{
 		color += texelFetch(renderedTexture, st, i);
-
-		// Perform tone-mapping
-		float YD = exposure * (exposure/brightMax + 1.0) / (exposure + 1.0);
-		color *= YD;
 	}
 
 	color = color / samples;
-	
+
 	// Add bloom
 	color += colorBloom * bloomFactor;
+
+    // Perform tone-mapping
+    float YD = exposure * (exposure/brightMax + 1.0) / (exposure + 1.0);
+    color *= YD;
 
 	gl_FragColor = color;
 }

@@ -53,7 +53,7 @@ bool Hdr::initialize(int width, int height, int samples)
     fbo_ = new QOpenGLFramebufferObject(width, height, format);
 
     gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
-    gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
     gl->glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -103,7 +103,7 @@ void Hdr::renderHighpass(const Renderable::Quad& quad)
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("brightThreshold", 1.2f);
+    highpass_->setUniformValue("threshold", 1.1f);
 
     quad.renderDirect();
 
@@ -137,7 +137,7 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
     tonemap_->setUniformValue("samples", samples_);
     tonemap_->setUniformValue("exposure", 1.1f);
     tonemap_->setUniformValue("bloomFactor", 0.2f);
-    tonemap_->setUniformValue("brightMax", 1.2f);
+    tonemap_->setUniformValue("brightMax", 1.1f);
 
     quad.renderDirect();
 

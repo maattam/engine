@@ -6,6 +6,7 @@ uniform float lodLevel;
 
 in vec2 uv;
 
+    // http://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
     // 5x5 Gaussian kernel
     //   1  4  7  4 1
     //   4 16 26 16 4
@@ -13,21 +14,30 @@ in vec2 uv;
     //   4 16 26 16 4
     //   1  4  7  4 1
 
+vec4 sample5x5(in float dx, in float dy, int x, int y)
+{
+    return textureLod(tex, uv + vec2((x - 2) * dx, (y - 2) * dy), lodLevel);
+}
+
 void main()
 {
+    float weights[25] = float[](    1, 4,  7,  4,  1,
+                                    4, 16, 26, 16, 4,
+                                    7, 26, 41, 26, 7,
+                                    4, 16, 26, 16, 4,
+                                    1, 4,  7,  4,  1);
+
 	float dx = 1.0 / width;
 	float dy = 1.0 / height;
+
+    vec4 color = vec4(0);
+
+    for(int i = 0; i < 25; ++i)
+    {
+        color += weights[i] * sample5x5(dx, dy, i % 5, i / 5);
+    }
+
+    color /= 273;
 	
-	// Apply 3x3 gaussian filter
-	vec4 color	 = 4.0 * textureLod(tex, uv, lodLevel);
-	color		+= 2.0 * textureLod(tex, uv + vec2(+dx, 0.0), lodLevel);
-	color		+= 2.0 * textureLod(tex, uv + vec2(-dx, 0.0), lodLevel);
-	color		+= 2.0 * textureLod(tex, uv + vec2(0.0, +dy), lodLevel);
-	color		+= 2.0 * textureLod(tex, uv + vec2(0.0, -dy), lodLevel);
-	color		+= textureLod(tex, uv + vec2(+dx, +dy), lodLevel);
-	color		+= textureLod(tex, uv + vec2(-dx, +dy), lodLevel);
-	color		+= textureLod(tex, uv + vec2(-dx, -dy), lodLevel);
-	color		+= textureLod(tex, uv + vec2(+dx, -dy), lodLevel);
-	
-	gl_FragColor = color / 16.0;
+	gl_FragColor = color;
 }
