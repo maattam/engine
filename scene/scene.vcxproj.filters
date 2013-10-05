@@ -73,6 +73,9 @@
     <ClCompile Include="src\colladanode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\entity\subentity.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h">
@@ -116,6 +119,9 @@
     </ClInclude>
     <ClInclude Include="src\colladanode.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\subentity.h">
+      <Filter>Header Files\entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

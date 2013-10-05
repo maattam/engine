@@ -19,7 +19,7 @@ using namespace Engine;
 
 Renderer::Renderer(ResourceDespatcher* despatcher)
     : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher),
-    errorMaterial_(despatcher), flags_(0)
+    errorMaterial_(despatcher), aabbMaterial_(despatcher), flags_(0)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -45,9 +45,7 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
 
     // AABB box
-    Material::Ptr mat = std::make_shared<Material>(despatcher);
-    mat->setAmbientColor(QVector3D(0, 0, 1));
-    aabbBox_.setMaterial(mat);
+    aabbMaterial_.setAmbientColor(QVector3D(0, 0, 1));
 }
 
 Renderer::~Renderer()
@@ -193,7 +191,7 @@ void Renderer::shadowMapPass(AbstractScene* scene)
 
             for(auto rit = node.begin(); rit != node.end(); ++rit)
             {
-                (*rit)->render();
+                (*rit).second->render();
             }
         }
     }
@@ -236,10 +234,9 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
         lightningTech_.setMaterialAttributes(attrib);
     }
 
+    // Render visibles
     for(auto it = visibles_.begin(); it != visibles_.end(); ++it)
     {
-        Entity::RenderList& node = it->second;
-
         lightningTech_.setWorldView(it->first);
         lightningTech_.setMVP(worldView * it->first);
 
@@ -249,27 +246,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
             lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
         }
 
-        for(auto rit = node.begin(); rit != node.end(); ++rit)
-        {
-            Material* material = (*rit)->material().get();
-
-            if(!material->bind())
-            {
-                material = &errorMaterial_;     // Display error material to indicate a problem with the material
-
-                if(!errorMaterial_.bind())
-                    continue;
-            }
-
-            lightningTech_.setHasTangents((*rit)->hasTangents() && material->hasNormals());
-
-            if(!(flags_ & DEBUG_WIREFRAME))
-            {
-                lightningTech_.setMaterialAttributes(material->getAttributes());
-            }
-
-            (*rit)->render();
-        }
+        renderNode(it->second);
     }
 
     // Reset polygonmode
@@ -283,7 +260,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     if(flags_ & DEBUG_AABB)
     {
         aabbTech_.bind();
-        aabbTech_.setUniformValue("gColor", aabbBox_.material()->getAttributes().ambientColor);
+        aabbTech_.setUniformValue("gColor", aabbMaterial_.attributes().ambientColor);
 
         gl->glDisable(GL_CULL_FACE);
         gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -296,6 +273,33 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 
         gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         gl->glEnable(GL_CULL_FACE);
+    }
+}
+
+void Renderer::renderNode(const Entity::RenderList& node)
+{
+    for(auto it = node.begin(); it != node.end(); ++it)
+    {
+        Material* material = (*it).first;
+        Renderable::Renderable* renderable = (*it).second;
+
+        if(!material->bind())
+        {
+            material = &errorMaterial_;     // Draw error material to indicate a problem with the object
+
+            if(!errorMaterial_.bind())
+                continue;
+        }
+
+        lightningTech_.setHasTangents(renderable->hasTangents() && material->hasNormals());
+
+        // Ignore material attributes in wireframe mode
+        if(!(flags_ & DEBUG_WIREFRAME))
+        {
+            lightningTech_.setMaterialAttributes(material->attributes());
+        }
+
+        renderable->render();
     }
 }
 

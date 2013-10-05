@@ -35,16 +35,6 @@ bool Renderable::bindVertexArray() const
     return true;
 }
 
-void Renderable::setMaterial(const Engine::Material::Ptr& material)
-{
-    material_ = material;
-}
-
-const Engine::Material::Ptr& Renderable::material()
-{
-    return material_;
-}
-
 void Renderable::renderWireframe() const
 {
     // Disable culling so we can see the wireframe lines through objects

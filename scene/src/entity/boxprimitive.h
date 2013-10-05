@@ -15,10 +15,11 @@ public:
 
     virtual void updateRenderList(RenderList& list);
 
-    void setMaterial(Material::Ptr& material);
+    void setMaterial(const Material::Ptr& material);
 
 private:
     Engine::Renderable::Cube cube_;
+    Material::Ptr material_;
 };
 
 }}

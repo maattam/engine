@@ -7,14 +7,16 @@
 #include "aabb.h"
 
 namespace Engine {
+
+class Material;
     
-    namespace Renderable {
-        class Renderable;
-    }
+namespace Renderable {
+    class Renderable;
+}
 
 namespace Entity {
 
-typedef std::deque<Renderable::Renderable*> RenderList;
+typedef std::deque<std::pair<Material*, Renderable::Renderable*>> RenderList;
 
 class Entity
 {

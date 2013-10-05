@@ -13,7 +13,7 @@ uniform int samples;
 
 in vec2 uv;
 
-// Magick
+// Magic
 float A = 0.30;
 float B = 0.50;
 float C = 0.10;

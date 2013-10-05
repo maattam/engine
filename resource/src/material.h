@@ -49,7 +49,8 @@ public:
         }
     };
 
-    const Attributes& getAttributes() const;
+    const Attributes& attributes() const;
+    void setAttributes(const Attributes& attrib);
 
 private:
     std::map<TextureType, Texture2D::Ptr> textures_;

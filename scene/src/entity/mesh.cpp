@@ -34,19 +34,8 @@ void Mesh::updateRenderList(RenderList& list)
     if(!ready())
         return;
 
-    for(Renderable::SubMesh::Ptr& mesh : entries_)
-        list.push_back(mesh.get());
-}
-
-size_t Mesh::numSubMeshes() const
-{
-    return entries_.size();
-}
-
-const Renderable::SubMesh::Ptr& Mesh::subMesh(size_t index) const
-{
-    assert(index < entries_.size());
-    return entries_[index];
+    for(SubEntity::Ptr& mesh : entries_)
+        mesh->updateRenderList(list);
 }
 
 bool Mesh::initialiseData(const DataType& data)
@@ -57,34 +46,22 @@ bool Mesh::initialiseData(const DataType& data)
     for(size_t i = 0; i < data.numSubMeshes(); ++i)
     {
         const MeshData::SubMeshData& mesh = data.subMesh(i);
+        Renderable::SubMesh::Ptr subMesh = std::make_shared<Renderable::SubMesh>();
 
-        entries_[i] = std::make_shared<Renderable::SubMesh>();
-        entries_[i]->setMaterial(data.material(mesh.materialIndex));
-
-        if(!entries_[i]->initMesh(mesh.vertices, mesh.normals,
+        if(!subMesh->initMesh(mesh.vertices, mesh.normals,
                 mesh.tangents, mesh.uvs, mesh.indices))
         {
             return false;
         }
 
+        entries_[i] = std::make_shared<SubEntity>(subMesh,
+            data.material(mesh.materialIndex), mesh.aabb);
+
         base.resize(mesh.aabb);
     }
 
     updateAABB(base);
-    setMaterialAttributes(materialAttrib_);
-
     return true;
-}
-
-void Mesh::addSubMesh(const Renderable::SubMesh::Ptr& subMesh, const AABB& aabb)
-{
-    entries_.push_back(subMesh);
-
-    AABB oldAabb = boundingBox();
-    if(oldAabb.resize(aabb))
-    {
-        updateAABB(oldAabb);
-    }
 }
 
 void Mesh::releaseData()
@@ -92,20 +69,25 @@ void Mesh::releaseData()
     entries_.clear();
 }
 
-void Mesh::setMaterialAttributes(const Material::Attributes& attributes)
+void Mesh::addSubEntity(const SubEntity::Ptr& subEntity)
 {
-    for(Renderable::SubMesh::Ptr& mesh : entries_)
-    {
-        if(mesh != nullptr)
-        {
-            mesh->material()->setAmbientColor(attributes.ambientColor);
-            mesh->material()->setSpecularIntensity(attributes.specularIntensity);
-            mesh->material()->setDiffuseColor(attributes.diffuseColor);
-            mesh->material()->setShininess(attributes.shininess);
-        }
-    }
+    entries_.push_back(subEntity);
 
-    materialAttrib_ = attributes;
+    AABB aabb = boundingBox();
+    if(aabb.resize(subEntity->boundingBox()))
+    {
+        updateAABB(aabb);
+    }
+}
+
+Mesh::SubEntityVec::size_type Mesh::numSubEntities() const
+{
+    return entries_.size();
+}
+
+const SubEntity::Ptr& Mesh::subEntity(SubEntityVec::size_type index)
+{
+    return entries_.at(index);
 }
 
 //
@@ -223,8 +205,8 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
         QString fullpath = dir + "/";
 
         materials_[i] = std::make_shared<Material>(despatcher());
-        initMaterialAttributes(material, materials_[i]);
 
+        // Query supported materials
         for(int j = 0; j < Material::TEXTURE_COUNT; ++j)
         {
             if(material->GetTextureCount(textureMapping[j]) > 0 &&
@@ -242,6 +224,8 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
             Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
             materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
         }
+
+        initMaterialAttributes(material, materials_[i]);
     }
 }
 
@@ -277,14 +261,17 @@ namespace {
         if(mat == nullptr)
             return;
 
-        // Colors
         aiColor3D color;
-        if(mat->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
+
+        // If color map texture was not set, check if attribute exists instead
+        if(mat->GetTextureCount(aiTextureType_DIFFUSE) == 0 &&
+            mat->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS)
         {
             target->setDiffuseColor(QVector3D(color.r, color.g, color.b));
         }
 
-        if(mat->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS)
+        if(mat->GetTextureCount(aiTextureType_AMBIENT) == 0 &&
+            mat->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS)
         {
             target->setAmbientColor(QVector3D(color.r, color.g, color.b));
         }
@@ -299,6 +286,13 @@ namespace {
         if(mat->Get(AI_MATKEY_SHININESS_STRENGTH, value) == AI_SUCCESS)
         {
             target->setSpecularIntensity(value);
+        }
+
+        else if(mat->GetTextureCount(aiTextureType_SPECULAR) == 0 &&
+            mat->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS)
+        {
+            // TODO: We support only grayscale specular color as intensity
+            target->setSpecularIntensity(color.r);
         }
     }
 }

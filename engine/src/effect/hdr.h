@@ -53,7 +53,7 @@ private:
     void sampleLuminance();
     float calculateExposure(float r, float g, float b);
 
-    enum { NUM_EXPOSURES = 15 };
+    enum { NUM_EXPOSURES = 30 };
 
     std::list<float> exposures_;
 };

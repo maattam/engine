@@ -97,7 +97,7 @@ class Resource : public ResourceBase
 {
 public:
     Resource();
-    Resource(const QString& name, InitialisePolicy policy = ON_DEMAND);
+    Resource(const QString& name, InitialisePolicy policy = QUEUED);
 
     typedef ResourceDataType DataType;
     typedef std::shared_ptr<Type> Ptr;

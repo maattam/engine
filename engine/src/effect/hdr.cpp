@@ -140,7 +140,7 @@ void Hdr::renderHighpass(const Renderable::Quad& quad)
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", 0.8f);
+    highpass_->setUniformValue("threshold", 1.0f);
 
     quad.renderDirect();
 
@@ -232,5 +232,5 @@ float Hdr::calculateExposure(float r, float g, float b)
     }
 
     average /= static_cast<float>(NUM_EXPOSURES);
-    return std::exp(-(2.0 * average));
+    return std::exp(-(3.0 * average));
 }

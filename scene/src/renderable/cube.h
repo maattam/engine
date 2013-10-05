@@ -1,3 +1,5 @@
+// Cube is a simple primitive which is used for debugging bounding volumes.
+
 #ifndef CUBE_H
 #define CUBE_H
 

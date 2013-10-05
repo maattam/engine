@@ -96,9 +96,14 @@ void Material::setDiffuseColor(const QVector3D& color)
     attributes_.diffuseColor = color;
 }
 
-const Material::Attributes& Material::getAttributes() const
+const Material::Attributes& Material::attributes() const
 {
     return attributes_;
+}
+
+void Material::setAttributes(const Attributes& attrib)
+{
+    attributes_ = attrib;
 }
 
 void Material::setTextureOptions(const Texture2D::Ptr& texture) const

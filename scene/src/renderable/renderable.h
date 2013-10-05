@@ -1,8 +1,9 @@
+// Renderable holds required OpenGL buffers in a VAO to describe a renderable.
+
 #ifndef RENDERABLE_H
 #define RENDERABLE_H
 
 #include "common.h"
-#include "material.h"
 #include "entity/aabb.h"
 
 namespace Engine { namespace Renderable {
@@ -16,9 +17,6 @@ public:
     virtual void render() const = 0;
     virtual void renderWireframe() const;
 
-    void setMaterial(const Material::Ptr& material);
-    const Material::Ptr& material();
-
     virtual bool hasTangents() const;
 
 protected:
@@ -29,7 +27,6 @@ protected:
 
 private:
     GLuint vertexArray_;
-    Material::Ptr material_;
     bool hasTangents_;
 
     Renderable(const Renderable&);

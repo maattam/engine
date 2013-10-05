@@ -26,6 +26,7 @@
     <ClCompile Include="src\entity\camera.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
     <ClCompile Include="src\entity\mesh.cpp" />
+    <ClCompile Include="src\entity\subentity.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="src\entity\entity.h" />
     <ClInclude Include="src\entity\light.h" />
     <ClInclude Include="src\entity\mesh.h" />
+    <ClInclude Include="src\entity\subentity.h" />
     <ClInclude Include="src\graph\node.h" />
     <ClInclude Include="src\graph\scenenode.h" />
     <ClInclude Include="src\renderable\cube.h" />

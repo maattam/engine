@@ -1,8 +1,11 @@
+// Mesh is a collection of SubEntities, and represents an object that as been split into
+// several submeshes.
+
 #ifndef MESH_H
 #define MESH_H
 
 #include "entity.h"
-#include "renderable/submesh.h"
+#include "subentity.h"
 #include "resource.h"
 
 #include <vector>
@@ -53,6 +56,8 @@ private:
 
 class Mesh : public Entity, public Resource<Mesh, MeshData>
 {
+    typedef std::vector<SubEntity::Ptr> SubEntityVec;
+
 public:
     Mesh();
     Mesh(const QString& name);
@@ -60,19 +65,17 @@ public:
 
     virtual void updateRenderList(RenderList& list);
 
-    size_t numSubMeshes() const;
-    const Renderable::SubMesh::Ptr& subMesh(size_t index) const;
+    void addSubEntity(const SubEntity::Ptr& subEntity);
 
-    void addSubMesh(const Renderable::SubMesh::Ptr& subMesh, const AABB& aabb);
-    void setMaterialAttributes(const Material::Attributes& attributes);
+    SubEntityVec::size_type numSubEntities() const;
+    const SubEntity::Ptr& subEntity(SubEntityVec::size_type index);
      
 protected:
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 
 private:
-    std::vector<Renderable::SubMesh::Ptr> entries_;
-    Material::Attributes materialAttrib_;
+    SubEntityVec entries_;
 
 };
 

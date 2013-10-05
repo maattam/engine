@@ -1,6 +1,7 @@
 #include "colladanode.h"
 
 #include "graph/scenenode.h"
+#include "entity/subentity.h"
 
 #include <assimp/vector3.h>
 #include <assimp/matrix4x4.h>
@@ -70,21 +71,23 @@ bool ColladaNode::initialiseData(const DataType& data)
     rootNode_ = data.rootNode();
 
     // Upload submeshes
-    std::vector<Renderable::SubMesh::Ptr> subMeshes;
+    std::vector<Entity::SubEntity::Ptr> subMeshes;
     subMeshes.resize(data.numSubMeshes());
 
     for(int i = 0; i < data.numSubMeshes(); ++i)
     {
         const Entity::MeshData::SubMeshData& mesh = data.subMesh(i);
 
-        subMeshes[i] = std::make_shared<Renderable::SubMesh>();
-        subMeshes[i]->setMaterial(data.material(mesh.materialIndex));
+        Renderable::SubMesh::Ptr subMesh = std::make_shared<Renderable::SubMesh>();
 
-        if(!subMeshes[i]->initMesh(mesh.vertices, mesh.normals,
+        if(!subMesh->initMesh(mesh.vertices, mesh.normals,
                 mesh.tangents, mesh.uvs, mesh.indices))
         {
             return false;
         }
+
+        subMeshes[i] = std::make_shared<Entity::SubEntity>(subMesh,
+            data.material(mesh.materialIndex), mesh.aabb);
     }
 
     // Group submesh data to meshes
@@ -99,7 +102,7 @@ bool ColladaNode::initialiseData(const DataType& data)
         for(auto it = indexVec.begin(); it != indexVec.end(); ++it)
         {
             assert(*it < data.numSubMeshes());
-            mesh->addSubMesh(subMeshes.at(*it), data.subMesh(*it).aabb);
+            mesh->addSubEntity(subMeshes.at(*it));
         }
 
         meshes_.push_back(mesh);

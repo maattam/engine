@@ -200,24 +200,12 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
         mat.translate(-2, 2, 0);
         mat.scale(0.025f);
 
-        Engine::Material::Attributes attrib;
-        attrib.specularIntensity = 2.0f;
-
-        hellknight_->setMaterialAttributes(attrib);
-
         node->applyTransformation(mat);
         node->attachEntity(hellknight_.get());
     }
 
     // Torus
     {
-        Engine::Material::Attributes attrib;
-        attrib.diffuseColor = QVector3D(0.2f, 0.3f, 0.8f);
-        attrib.ambientColor = QVector3D(0.0f, 0.0f, 0.05f);
-        attrib.specularIntensity = 10.0f;
-
-        torus_->setMaterialAttributes(attrib);
-
         QMatrix4x4 mat;
         mat.scale(180.0f);
 
@@ -228,13 +216,6 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
 
     // Sphere
     {
-        Engine::Material::Attributes attrib;
-        attrib.diffuseColor = QVector3D(0.0f, 0.0f, 0.0f);
-        attrib.ambientColor = QVector3D(1.5f, 1.5f, 1.5f);
-        attrib.specularIntensity = 0.0f;
-
-        sphere_->setMaterialAttributes(attrib);
-
         QMatrix4x4 mat;
         mat.scale(0.2f);
 
@@ -255,12 +236,6 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
 
     // platform
     {
-        /*Engine::Material::Attributes attrib;
-        //attrib.diffuseColor = QVector3D(0.2f, 0.0f, 0.8f);
-        attrib.specularIntensity = 1.0f;
-        attrib.shininess = 50.0f;
-
-        platform_->setMaterialAttributes(attrib);*/
         platform_->attach(platformNode_);
     }
 

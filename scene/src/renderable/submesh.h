@@ -1,4 +1,4 @@
-// Rudimentary Assimp loader library
+// SubMesh is a vertex array object which holds indexed vertices, normals, tanges and uvs.
 
 #ifndef SUBMESH_H
 #define SUBMESH_H

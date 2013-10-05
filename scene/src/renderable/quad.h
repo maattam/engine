@@ -1,3 +1,5 @@
+// Quad is a simple renderable which is used by render-to-texture effects.
+
 #ifndef QUAD_H
 #define QUAD_H
 

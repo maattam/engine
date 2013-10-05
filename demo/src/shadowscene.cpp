@@ -113,14 +113,9 @@ void ShadowScene::initialize()
     pointLight.position = QVector3D(0, 12, 0);
     pointLight.color = QVector3D(255, 241, 224) / 255.0f;
     pointLight.diffuseIntensity = 7.0f;
-    pointLight.ambientIntensity = 0.5f;
+    //pointLight.ambientIntensity = 0.5f;
 
     sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
-    Engine::Material::Attributes attrib;
-    attrib.diffuseColor = QVector3D(0.0f, 0.0f, 0.0f);
-    attrib.ambientColor = 1.5f * pointLight.color;
-    attrib.specularIntensity = 0.0f;
-    sphere_->setMaterialAttributes(attrib);
 
     pointLights_.push_back(pointLight);
 }

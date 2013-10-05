@@ -74,8 +74,9 @@ private:
     // Quad for postprocessing
     Renderable::Quad quad_;
 
-    // Error material
+    // Error and aabb material
     Material errorMaterial_;
+    Material aabbMaterial_;
 
     unsigned int flags_;
 
@@ -86,6 +87,8 @@ private:
     void shadowMapPass(AbstractScene* scene);
     void renderPass(AbstractScene* scene, const QMatrix4x4& worldView);
     void skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView);
+
+    void renderNode(const Entity::RenderList& node);
 
     void destroyBuffers();
     void addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb);
