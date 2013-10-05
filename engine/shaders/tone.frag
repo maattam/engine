@@ -7,19 +7,19 @@ uniform int bloomLevels;
 
 uniform float exposure;
 uniform float bloomFactor;
+uniform float bright;
 
 uniform int samples;
 
 in vec2 uv;
 
 // Magick
-float A = 0.15;
+float A = 0.30;
 float B = 0.50;
 float C = 0.10;
 float D = 0.20;
 float E = 0.02;
 float F = 0.30;
-float W = 11.2;
 
 vec3 tonemap(in vec3 x)
 {
@@ -58,12 +58,12 @@ void main() {
 	// Add bloom
 	color += colorBloom * bloomFactor;
 
-    color *= 16.0;
+    color *= exposure;
 
-    float expBias = 1.5f * exposure;
+    float expBias = 2.0f;
     vec3 current = tonemap(expBias * color.rgb);
 
-    vec3 whiteScale = 1.0 / tonemap(vec3(W));
+    vec3 whiteScale = 1.0 / tonemap(vec3(bright));
     vec3 tone = current * whiteScale;
 
     // Map from linear color space to srgb with gamma 2.2

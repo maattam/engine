@@ -222,7 +222,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gl->glClearColor(0.1f, 0.1f, 0.1f, 0);
+    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
 
     // Set polygonmode if wireframe mode is enabled
     if(flags_ & DEBUG_WIREFRAME)

@@ -62,12 +62,11 @@ void BasicScene::initialize()
     // Set up directional light
     directionalLight_.diffuseIntensity = 0.05f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
-    directionalLight_.color = QVector3D(0.2f, 0.2f, 0.2f);
     //directionalLight_.ambientIntensity = 0.1f;
 
     // Set up point lights
     Entity::PointLight pointLight;
-    pointLight.diffuseIntensity = 5.0f;
+    pointLight.diffuseIntensity = 10.0f;
     pointLight.attenuation.exp = 0.1f;
 
     pointLights_.push_back(pointLight);
@@ -82,7 +81,7 @@ void BasicScene::initialize()
     spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
     spotLight.position = 2*QVector3D(-6.0f, 7/2, 6.0f);
     spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
-    spotLight.diffuseIntensity = 10.0f;
+    spotLight.diffuseIntensity = 20.0f;
     spotLight.attenuation.exp = 0.05f;
     spotLight.cutoff = 20.0f;
     spotLights_.push_back(spotLight);

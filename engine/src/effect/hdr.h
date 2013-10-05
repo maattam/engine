@@ -10,6 +10,8 @@
 
 #include "renderable/quad.h"
 
+#include <list>
+
 namespace Engine {
     
     class ResourceDespatcher;
@@ -50,6 +52,10 @@ private:
     // Samples the last frame's luminance and calculates new exposure
     void sampleLuminance();
     float calculateExposure(float r, float g, float b);
+
+    enum { NUM_EXPOSURES = 15 };
+
+    std::list<float> exposures_;
 };
 
 }}

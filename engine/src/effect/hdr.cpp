@@ -11,6 +11,8 @@ Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     : fbo_(nullptr), samples_(1), downSampler_(despatcher),
     width_(0), height_(0), bloomLevels_(bloomLevels), exposure_(1.0f), sampleLevel_(0)
 {
+    exposures_.resize(NUM_EXPOSURES, 0.0f);
+
     samplePbo_[0] = samplePbo_[1] = 0;
     writeIndex_ = 1;
     readIndex_ = 0;
@@ -167,7 +169,8 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
 
     tonemap_->setUniformValue("samples", samples_);
     tonemap_->setUniformValue("exposure", exposure_);
-    tonemap_->setUniformValue("bloomFactor", 0.5f);
+    tonemap_->setUniformValue("bloomFactor", 0.2f);
+    tonemap_->setUniformValue("bright", 1.0f);
 
     quad.renderDirect();
 
@@ -212,8 +215,22 @@ float Hdr::calculateExposure(float r, float g, float b)
     float Y = 0.299 * r + 0.114 * g + 0.587 * b;
     Y = std::powf(Y, 1/2.2);
 
-    if(Y > 1)
+    if(Y > 1.0)
         Y = 1.0f;
 
-    return std::exp(-Y);
+    if(exposures_.size() >= NUM_EXPOSURES)
+    {
+        exposures_.pop_front();
+    }
+
+    exposures_.push_back(Y);
+
+    float average = 0.0f;
+    for(float exposure : exposures_)
+    {
+        average += exposure;
+    }
+
+    average /= static_cast<float>(NUM_EXPOSURES);
+    return std::exp(-(2.0 * average));
 }
