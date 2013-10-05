@@ -60,19 +60,19 @@ void BasicScene::initialize()
     skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     // Set up directional light
-    directionalLight_.diffuseIntensity = 0.2f;
+    directionalLight_.diffuseIntensity = 0.05f;
     directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
-    //directionalLight_.color = QVector3D(0, 0, 0);
+    directionalLight_.color = QVector3D(0.2f, 0.2f, 0.2f);
     //directionalLight_.ambientIntensity = 0.1f;
 
     // Set up point lights
     Entity::PointLight pointLight;
-    pointLight.diffuseIntensity = 10.0f;
+    pointLight.diffuseIntensity = 5.0f;
     pointLight.attenuation.exp = 0.1f;
 
     pointLights_.push_back(pointLight);
 
-    pointLight.diffuseIntensity = 50.0f;
+    //pointLight.diffuseIntensity = 50.0f;
     pointLight.color = QVector3D(0.0f, 0.0f, 1.0f);
     pointLight.attenuation.exp = 0.025f;
     pointLights_.push_back(pointLight);
@@ -82,7 +82,7 @@ void BasicScene::initialize()
     spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
     spotLight.position = 2*QVector3D(-6.0f, 7/2, 6.0f);
     spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
-    spotLight.diffuseIntensity = 25.0f;
+    spotLight.diffuseIntensity = 10.0f;
     spotLight.attenuation.exp = 0.05f;
     spotLight.cutoff = 20.0f;
     spotLights_.push_back(spotLight);
@@ -103,7 +103,6 @@ void BasicScene::initialize()
         if(tex != nullptr)
         {
             Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher_);
-            mat->setSpecularIntensity(2.0f);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
             cube_[i] = std::make_shared<Entity::BoxPrimitive>();
@@ -232,7 +231,7 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
     {
         Engine::Material::Attributes attrib;
         attrib.diffuseColor = QVector3D(0.0f, 0.0f, 0.0f);
-        attrib.ambientColor = QVector3D(2.0f, 2.0f, 2.0f);
+        attrib.ambientColor = QVector3D(1.5f, 1.5f, 1.5f);
         attrib.specularIntensity = 0.0f;
 
         sphere_->setMaterialAttributes(attrib);

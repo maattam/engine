@@ -16,7 +16,8 @@ gli::texture2D* Engine::loadTexture(const QString& fileName)
 
     if(isDDS(fileName))
     {
-        texture= new gli::texture2D(gli::loadStorageDDS(fileName.toStdString()));
+        texture = new gli::texture2D(gli::loadStorageDDS(fileName.toStdString()));
+
         if(texture->empty())
         {
             return false;
@@ -29,7 +30,7 @@ gli::texture2D* Engine::loadTexture(const QString& fileName)
     {
         QImage argbData = image.convertToFormat(QImage::Format_ARGB32);
 
-        texture = new gli::texture2D(1, gli::RGBA8U,
+        texture = new gli::texture2D(1, gli::SRGB8_ALPHA8,
             gli::texture2D::dimensions_type(argbData.width(), argbData.height()));
 
         uchar* linearAddress = texture->data<uchar>();

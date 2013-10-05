@@ -12,6 +12,11 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
+namespace {
+    // Maps colors from srgb space with gamma of 2.2 to linear space
+    QVector3D linear(const QVector3D& color);
+}
+
 BasicLightning::BasicLightning(ResourceDespatcher* despatcher)
     : Technique(), mvpLocation_(-1)
 {
@@ -50,8 +55,8 @@ void BasicLightning::setHasTangents(bool tangents)
 
 void BasicLightning::setMaterialAttributes(const Material::Attributes& attributes)
 {
-    program()->setUniformValue("gMaterial.ambientColor", attributes.ambientColor);
-    program()->setUniformValue("gMaterial.diffuseColor", attributes.diffuseColor);
+    program()->setUniformValue("gMaterial.ambientColor", linear(attributes.ambientColor));
+    program()->setUniformValue("gMaterial.diffuseColor", linear(attributes.diffuseColor));
     program()->setUniformValue("gMaterial.specularIntensity", attributes.specularIntensity);
     program()->setUniformValue("gMaterial.shininess", attributes.shininess);
 }
@@ -66,7 +71,7 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
 void BasicLightning::setDirectionalLight(const Entity::DirectionalLight& light)
 {
     program()->setUniformValue("gDirectionalLight.base.ambientIntensity", light.ambientIntensity);
-    program()->setUniformValue("gDirectionalLight.base.color", light.color);
+    program()->setUniformValue("gDirectionalLight.base.color", linear(light.color));
     program()->setUniformValue("gDirectionalLight.base.diffuseIntensity", light.diffuseIntensity);
 
     QVector3D direction = light.direction;
@@ -100,7 +105,7 @@ void BasicLightning::setPointLights(const std::vector<Entity::PointLight>& light
     for(size_t i = 0; i < numLights; ++i)
     {
         program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.ambientIntensity").c_str(),  lights[i].ambientIntensity);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.color").c_str(),             lights[i].color);
+        program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.color").c_str(),             linear(lights[i].color));
         program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.diffuseIntensity").c_str(),  lights[i].diffuseIntensity);
         program()->setUniformValue(formatUniformTableName("gPointLights", i, "position").c_str(),               lights[i].position);
         program()->setUniformValue(formatUniformTableName("gPointLights", i, "attenuation.constant").c_str(),   lights[i].attenuation.constant);
@@ -123,7 +128,7 @@ void BasicLightning::setSpotLights(const std::vector<Entity::SpotLight>& lights)
     for(size_t i = 0; i < numLights; ++i)
     {
         program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.ambientIntensity").c_str(),  lights[i].ambientIntensity);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.color").c_str(),             lights[i].color);
+        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.color").c_str(),             linear(lights[i].color));
         program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.diffuseIntensity").c_str(),  lights[i].diffuseIntensity);
         program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.position").c_str(),               lights[i].position);
         program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.attenuation.constant").c_str(),   lights[i].attenuation.constant);
@@ -150,4 +155,15 @@ std::string BasicLightning::formatUniformTableName(const std::string& table,
         ss << '.' << members;
 
     return ss.str();
+}
+
+namespace {
+
+    QVector3D linear(const QVector3D& color)
+    {
+        const float gamma = 2.2f;
+
+        return QVector3D(qPow(color.x(), gamma), qPow(color.y(), gamma), qPow(color.z(), gamma));
+    }
+
 }

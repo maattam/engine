@@ -49,7 +49,7 @@ bool CubemapTexture::initialiseData(const DataType& data)
 
         else
         {
-            gl->glTexImage2D(FACES[i], 0, GL_RGBA,
+            gl->glTexImage2D(FACES[i], 0, gli::internal_format(data.at(i)->format()),
                 data.at(i)->dimensions().x,
                 data.at(i)->dimensions().y,
                 0, GL_BGRA, GL_UNSIGNED_BYTE,

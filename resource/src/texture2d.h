@@ -36,9 +36,15 @@ public:
 
     virtual bool bind();
 
+    // Loads uncompressed textures as SRGB. Used for diffuse textures
+    void setSRGB(bool srgb);
+
 protected:
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
+
+private:
+    bool srgb_;
 };
 
 }

@@ -8,12 +8,8 @@ uniform float threshold;
 void main() {
 	ivec2 st = ivec2(textureSize(renderedTexture) * uv);
 
-	vec3 color = texelFetch(renderedTexture, st, gl_SampleID).rgb;
-	
-	/*if (color.r > threshold || color.g > threshold || color.b > threshold)
-		gl_FragColor = color;
-	else
-		gl_FragColor = vec4(0, 0, 0, 0);*/
+    // Bloom is calculated in srgb space to reduce floating point precision error
+	vec3 color = pow(texelFetch(renderedTexture, st, gl_SampleID).rgb, vec3(1/2.2));
 
     vec3 bright = max(color - vec3(threshold), vec3(0));
     float c = dot(bright, vec3(1));

@@ -31,14 +31,25 @@ private:
     int height_;
     int bloomLevels_;
 
+    float exposure_;
+
     DownSampler downSampler_;
     QOpenGLFramebufferObject* fbo_;
 
     ShaderProgram tonemap_;
     ShaderProgram highpass_;
 
+    GLuint samplePbo_[2];
+    GLuint sampleLevel_;
+    int writeIndex_;
+    int readIndex_;
+
     void renderHighpass(const Renderable::Quad& quad);
     void renderTonemap(const Renderable::Quad& quad);
+
+    // Samples the last frame's luminance and calculates new exposure
+    void sampleLuminance();
+    float calculateExposure(float r, float g, float b);
 };
 
 }}

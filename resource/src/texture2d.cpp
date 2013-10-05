@@ -6,11 +6,11 @@
 
 using namespace Engine;
 
-Texture2D::Texture2D() : Texture(), Resource()
+Texture2D::Texture2D() : Texture(), Resource(), srgb_(false)
 {
 }
 
-Texture2D::Texture2D(const QString& name) : Texture(), Resource(name)
+Texture2D::Texture2D(const QString& name) : Texture(), Resource(name), srgb_(false)
 {
 }
 
@@ -48,10 +48,11 @@ bool Texture2D::initialiseData(const DataType& data)
 
         gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
         gl->glTexStorage2D(Target, texture.levels(),
-            gli::internal_format(texture.format()),
+            //gli::internal_format(texture.format()),
+            GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
             texture.dimensions().x,
             texture.dimensions().y);
-
+        
         // Upload mipmaps
         for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
         {
@@ -59,7 +60,8 @@ bool Texture2D::initialiseData(const DataType& data)
                 level, 0, 0,
                 texture[level].dimensions().x,
                 texture[level].dimensions().y,
-                gli::internal_format(texture.format()),
+                //gli::internal_format(texture.format()),
+                GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
                 texture[level].size(),
                 texture[level].data());
         }
@@ -73,8 +75,15 @@ bool Texture2D::initialiseData(const DataType& data)
 
     else
     {
+        GLint internalFormat = GL_RGBA;
+
+        if(srgb_)
+        {
+            internalFormat = gli::internal_format(data->format());
+        }
+
         // QImage format, hack
-        gl->glTexImage2D(Target, 0, GL_RGBA, data->dimensions().x,
+        gl->glTexImage2D(Target, 0, internalFormat, data->dimensions().x,
                 data->dimensions().y, 0, GL_BGRA, GL_UNSIGNED_BYTE, data->data());
     }
 
@@ -86,6 +95,11 @@ bool Texture2D::initialiseData(const DataType& data)
 void Texture2D::releaseData()
 {
     remove();
+}
+
+void Texture2D::setSRGB(bool srgb)
+{
+    srgb_ = srgb;
 }
 
 //

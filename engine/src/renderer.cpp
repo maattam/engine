@@ -105,6 +105,8 @@ bool Renderer::initialize(int width, int height, int samples)
 
     // Renderbuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+    //gl->glEnable(GL_FRAMEBUFFER_SRGB);
+
     gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
     gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
 
