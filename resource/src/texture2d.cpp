@@ -6,11 +6,13 @@
 
 using namespace Engine;
 
-Texture2D::Texture2D() : Texture(), Resource(), srgb_(false)
+Texture2D::Texture2D()
+    : Texture(), Resource(), srgb_(false), width_(0), height_(0)
 {
 }
 
-Texture2D::Texture2D(const QString& name) : Texture(), Resource(name), srgb_(false)
+Texture2D::Texture2D(const QString& name)
+    : Texture(), Resource(name), srgb_(false), width_(0), height_(0)
 {
 }
 
@@ -28,11 +30,26 @@ bool Texture2D::create(GLsizei width, GLsizei height, GLint internalFormat, GLin
         return false;
     }
 
-    releaseData();
+    else if(width < 1 || height < 1)
+    {
+        return false;
+    }
 
+    releaseData();
     gl->glGenTextures(1, &textureId_);
-    bind();
+
+    if(!bind())
+    {
+        return false;
+    }
+
     gl->glTexImage2D(Target, 0, internalFormat, width, height, 0, format, type, pixels);
+
+    width_ = width;
+    height_ = height;
+
+    // Set cached texture flags
+    setParameters();
 
     return true;
 }
@@ -87,6 +104,9 @@ bool Texture2D::initialiseData(const DataType& data)
                 data->dimensions().y, 0, GL_BGRA, GL_UNSIGNED_BYTE, data->data());
     }
 
+    width_ = data->dimensions().x;
+    height_ = data->dimensions().y;
+
     // Set cached texture flags
     setParameters();
     return true;
@@ -95,11 +115,22 @@ bool Texture2D::initialiseData(const DataType& data)
 void Texture2D::releaseData()
 {
     remove();
+    width_ = height_ = 0;
 }
 
 void Texture2D::setSRGB(bool srgb)
 {
     srgb_ = srgb;
+}
+
+GLsizei Texture2D::width() const
+{
+    return width_;
+}
+
+GLsizei Texture2D::height() const
+{
+    return height_;
 }
 
 //

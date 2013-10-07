@@ -11,6 +11,7 @@ in vec3 tangent0;
 in vec3 worldPos0;
 
 in vec4 lightSpacePos0[MAX_SPOT_LIGHTS];
+in vec4 directionalLightSpacePos0;
 
 layout(location = 0) out vec4 fragColor;
 
@@ -68,6 +69,7 @@ uniform sampler2D gNormalSampler;
 uniform sampler2D gSpecularSampler;
 
 uniform sampler2D gSpotLightShadowMap[MAX_SPOT_LIGHTS];
+uniform sampler2D gDirectionalLightShadowMap;
 
 uniform Material gMaterial;
 uniform vec3 gEyeWorldPos;
@@ -107,13 +109,11 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
 // Encapsules common stuff between the different light types
 vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 {
-	vec4 ambientColor = vec4(light.color, 1.0) * light.ambientIntensity;
-
     // Check that the surface normal cosine is positive
     float normalFactor = clamp(dot(normalize(normal0), lightDirection), 0, 1);
     if(normalFactor > 0)
     {
-        return ambientColor;
+        return vec4(0);
     }
 	
 	// Diffuse factor depends on the (positive) cosine between surface normal and light direction
@@ -140,12 +140,17 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 		}
 	}
 	
-	return ambientColor + diffuseColor + specularColor;
+	return diffuseColor + specularColor;
 }
 
 vec4 calcDirectionalLight(in vec3 normal)
 {
-	return calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
+    float shadow = calcShadowFactor(directionalLightSpacePos0, gDirectionalLightShadowMap);
+
+    vec4 ambient = vec4(gDirectionalLight.base.color, 1.0) * gDirectionalLight.base.ambientIntensity;
+    vec4 color = calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
+
+	return ambient + shadow * color;
 }
 
 vec4 calcPointLight(in PointLight light, in vec3 normal)

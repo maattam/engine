@@ -13,8 +13,11 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f, 0.0f, 75.0f, 0.0f, 400.0f)
+    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f)
 {
+    camera_.setFov(75.0f);
+    camera_.setFarPlane(400.0f);
+
     time_ = 0;
 }
 
@@ -56,7 +59,7 @@ Renderable::Renderable* BasicScene::skyboxMesh()
 void BasicScene::initialize()
 {
     // Load skybox
-    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox/space*.png");
+    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox/space/space*.png");
     skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     // Set up directional light

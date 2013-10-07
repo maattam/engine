@@ -52,6 +52,8 @@ public:
 
     bool ready();
     ResourceDespatcher* despatcher();
+
+    // Deletes the loaded data
     void release();
 
     bool managed() const;

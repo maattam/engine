@@ -39,12 +39,18 @@ public:
     // Loads uncompressed textures as SRGB. Used for diffuse textures
     void setSRGB(bool srgb);
 
+    GLsizei width() const;
+    GLsizei height() const;
+
 protected:
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 
 private:
     bool srgb_;
+
+    GLsizei width_;
+    GLsizei height_;
 };
 
 }

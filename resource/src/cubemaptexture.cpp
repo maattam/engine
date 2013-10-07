@@ -39,7 +39,8 @@ bool CubemapTexture::initialiseData(const DataType& data)
         {
             // TODO: Mipmaps?
             gl->glCompressedTexImage2D(FACES[i], 0,
-                gli::internal_format(data.at(i)->format()),
+                //gli::internal_format(data.at(i)->format()),
+                GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
                 data.at(i)->dimensions().x,
                 data.at(i)->dimensions().y,
                 0,

@@ -3,6 +3,7 @@
 
 #include "technique.h"
 #include "entity/light.h"
+#include "texture2d.h"
 
 #include <QMatrix4x4>
 
@@ -20,7 +21,12 @@ public:
     ShadowMap(ResourceDespatcher* despatcher);
     ~ShadowMap();
 
-    bool initSpotLights(unsigned int width, unsigned int height, size_t count);
+    bool initDirectionalLight(GLsizei width, GLsizei height);
+    void enableDirectinalLight(const Entity::DirectionalLight& light);
+    void bindDirectionalLight(GLenum textureUnit);
+    const QMatrix4x4& directionalLightVP() const;
+
+    bool initSpotLights(GLsizei width, GLsizei height, size_t count);
     void enableSpotLight(size_t index, const Entity::SpotLight& spotLight);
     void bindSpotLight(size_t index, GLenum textureUnit);
     const QMatrix4x4& spotLightVP(size_t index) const;
@@ -29,13 +35,17 @@ public:
 
 private:
     std::vector<GLuint> spotLightFbos_;
-    std::vector<GLuint> spotLightTextures_;
+    std::vector<Texture2D::Ptr> spotLightTextures_;
     std::vector<QMatrix4x4> spotLightVPs_;
 
-    unsigned int spotWidth_;
-    unsigned int spotHeight_;
+    GLuint directionalLightFbo_;
+    Texture2D directionalLightTexture_;
+    QMatrix4x4 directionalLightVP_;
 
     void destroySpotLights();
+    void destroyDirectionalLight();
+
+    bool initDepthFBO(GLuint fbo, Texture2D& texture, GLsizei width, GLsizei height);
 };
 
 }}

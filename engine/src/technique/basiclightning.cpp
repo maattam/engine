@@ -91,6 +91,16 @@ void BasicLightning::setSpotLightShadowUnit(size_t index, GLuint shadow)
      program()->setUniformValue(formatUniformTableName("gSpotLightShadowMap", index).c_str(), shadow);
 }
 
+void BasicLightning::setDirectionalLightMVP(const QMatrix4x4& mvp)
+{
+    program()->setUniformValue("gDirectionalLightMVP", mvp);
+}
+
+void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
+{
+    program()->setUniformValue("gDirectionalLightShadowMap", shadow);
+}
+
 void BasicLightning::setPointLights(const std::vector<Entity::PointLight>& lights)
 {
     unsigned int numLights = lights.size();

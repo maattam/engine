@@ -15,6 +15,7 @@ uniform bool gHasTangents;
 
 uniform int gNumSpotLights;
 uniform mat4 gLightMVP[MAX_SPOT_LIGHTS];
+uniform mat4 gDirectionalLightMVP;
 
 out vec2 texCoord0;
 out vec3 normal0;
@@ -22,6 +23,7 @@ out vec3 tangent0;
 out vec3 worldPos0;
 
 out vec4 lightSpacePos0[MAX_SPOT_LIGHTS];
+out vec4 directionalLightSpacePos0;
 
 void main()
 {
@@ -40,4 +42,6 @@ void main()
     {
         lightSpacePos0[i] = gLightMVP[i] * vec4(position, 1.0);
     }
+
+    directionalLightSpacePos0 = gDirectionalLightMVP * vec4(position, 1.0);
 }

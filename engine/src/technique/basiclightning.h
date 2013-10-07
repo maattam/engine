@@ -34,6 +34,9 @@ public:
     void setSpotLightMVP(size_t index, const QMatrix4x4& mvp);
     void setSpotLightShadowUnit(size_t index, GLuint shadow);
 
+    void setDirectionalLightMVP(const QMatrix4x4& mvp);
+    void setDirectionalLightShadowUnit(GLuint shadow);
+
     void setDirectionalLight(const Entity::DirectionalLight& light);
     void setPointLights(const std::vector<Entity::PointLight>& lights);
     void setSpotLights(const std::vector<Entity::SpotLight>& lights);

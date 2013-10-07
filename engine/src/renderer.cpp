@@ -82,7 +82,10 @@ bool Renderer::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    if(!shadowTech_.initSpotLights(width, height, Technique::BasicLightning::MAX_SPOT_LIGHTS))
+    if(!shadowTech_.initSpotLights(2048, 2048, Technique::BasicLightning::MAX_SPOT_LIGHTS))
+        return false;
+
+    if(!shadowTech_.initDirectionalLight(4096, 4096))
         return false;
 
     // Initialize textures
@@ -127,7 +130,7 @@ bool Renderer::initialize(int width, int height, int samples)
 
 void Renderer::render(AbstractScene* scene)
 {
-    const Entity::Camera* camera = scene->activeCamera();
+    Entity::Camera* camera = scene->activeCamera();
     const QMatrix4x4 worldView = camera->perspective() * camera->lookAt();
 
     visibles_.clear();
@@ -137,17 +140,12 @@ void Renderer::render(AbstractScene* scene)
     // Cull visibles and shadow casters, TODO
     updateRenderQueue(&rootNode_, QMatrix4x4());
 
-    gl->glEnable(GL_CULL_FACE);
-    gl->glCullFace(GL_FRONT);
-
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
 
     // Pass 1
     // Render to depth buffer
     shadowMapPass(scene);
-
-    gl->glCullFace(GL_BACK);
 
     // Pass 2
     // Render geometry to a multisampled framebuffer
@@ -195,6 +193,26 @@ void Renderer::shadowMapPass(AbstractScene* scene)
             }
         }
     }
+
+    gl->glEnable(GL_CULL_FACE);
+    gl->glCullFace(GL_FRONT);
+
+    // Render depth for directional light
+    shadowTech_.enableDirectinalLight(scene->queryDirectionalLight());
+    gl->glClear(GL_DEPTH_BUFFER_BIT);
+
+    for(auto it = shadowCasters_.begin(); it != shadowCasters_.end(); ++it)
+    {
+        const Entity::RenderList& node = (*it)->second;
+        shadowTech_.setLightMVP(shadowTech_.directionalLightVP() * (*it)->first);
+
+        for(auto rit = node.begin(); rit != node.end(); ++rit)
+        {
+            (*rit).second->render();
+        }
+    }
+
+    gl->glCullFace(GL_BACK);
 }
 
 void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
@@ -212,15 +230,21 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     lightningTech_.setPointLights(scene->queryPointLights());
     lightningTech_.setSpotLights(spotLights);
 
-    // Bind spot light shadow maps
+    // Bind directional light shadow map
+    shadowTech_.bindDirectionalLight(GL_TEXTURE0 + Material::TEXTURE_COUNT);
+    lightningTech_.setDirectionalLightShadowUnit(Material::TEXTURE_COUNT);
+
+    // Bind spot light shadow maps after material samplers
     for(unsigned int i = 0; i < spotLights.size(); ++i)
     {
-        shadowTech_.bindSpotLight(i, GL_TEXTURE0 + Material::TEXTURE_COUNT + i);
-        lightningTech_.setSpotLightShadowUnit(i, Material::TEXTURE_COUNT + i);
+        shadowTech_.bindSpotLight(i, GL_TEXTURE0 + Material::TEXTURE_COUNT + i + 1);
+        lightningTech_.setSpotLightShadowUnit(i, Material::TEXTURE_COUNT + i + 1);
     }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
+
+    gl->glViewport(0, 0, width_, height_);
 
     // Set polygonmode if wireframe mode is enabled
     if(flags_ & DEBUG_WIREFRAME)
@@ -245,6 +269,9 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
         {
             lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
         }
+
+        // Set directional light mvp
+        lightningTech_.setDirectionalLightMVP(shadowTech_.directionalLightVP() * it->first);
 
         renderNode(it->second);
     }
@@ -287,7 +314,7 @@ void Renderer::renderNode(const Entity::RenderList& node)
         {
             material = &errorMaterial_;     // Draw error material to indicate a problem with the object
 
-            if(!errorMaterial_.bind())
+            if(!errorMaterial_.bind())      // We can't fail further
                 continue;
         }
 
@@ -341,6 +368,7 @@ void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& world
 
     QMatrix4x4 nodeView = worldView * node->transformation();
 
+    // Push entities from the node into the render queue
     if(node->numEntities() > 0)
     {
         visibles_.push_back(std::make_pair(nodeView, Entity::RenderList()));
@@ -377,11 +405,11 @@ void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& world
 
 void Renderer::drawTextureDebug()
 {
-    shadowTech_.bindSpotLight(0, GL_TEXTURE0);
+    shadowTech_.bindDirectionalLight(GL_TEXTURE0);
     nullTech_.bind();
     nullTech_.setUniformValue("gShadowMap", 0);
 
-    gl->glViewport(0, 0, width_ / 3, height_ / 3);
+    gl->glViewport(0, 0, 512, 512);
 
     quad_.render();
 

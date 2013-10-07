@@ -140,7 +140,7 @@ void Hdr::renderHighpass(const Renderable::Quad& quad)
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", 1.0f);
+    highpass_->setUniformValue("threshold", 1.2f);
 
     quad.renderDirect();
 
@@ -170,7 +170,7 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
     tonemap_->setUniformValue("samples", samples_);
     tonemap_->setUniformValue("exposure", exposure_);
     tonemap_->setUniformValue("bloomFactor", 0.2f);
-    tonemap_->setUniformValue("bright", 1.0f);
+    tonemap_->setUniformValue("bright", 2.0f);
 
     quad.renderDirect();
 
@@ -215,8 +215,8 @@ float Hdr::calculateExposure(float r, float g, float b)
     float Y = 0.299 * r + 0.114 * g + 0.587 * b;
     Y = std::powf(Y, 1/2.2);
 
-    if(Y > 1.0)
-        Y = 1.0f;
+    //if(Y > 1.0)
+    //    Y = 1.0f;
 
     if(exposures_.size() >= NUM_EXPOSURES)
     {
@@ -232,5 +232,5 @@ float Hdr::calculateExposure(float r, float g, float b)
     }
 
     average /= static_cast<float>(NUM_EXPOSURES);
-    return std::exp(-(3.0 * average));
+    return std::exp(-(1.5 * average));
 }

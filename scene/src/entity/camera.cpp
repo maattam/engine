@@ -6,9 +6,13 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-Camera::Camera(const QVector3D& position, float horizontalAngle, float verticalAngle, float fov, float aspect, float farPlane)
-    : position_(position), horizontal_(horizontalAngle), vertical_(verticalAngle), fov_(fov), aspect_(aspect), farPlane_(farPlane)
+Camera::Camera(const QVector3D& position, float horizontalAngle, float verticalAngle)
+    : position_(position), horizontal_(horizontalAngle), vertical_(verticalAngle)
 {
+    far_ = 100.0f;
+    near_ = 0.1f;
+    fov_ = 45.0f;
+    aspect_ = 1.0f;
 }
 
 void Camera::move(const QVector3D& offset)
@@ -56,7 +60,20 @@ QVector3D Camera::right() const
 QMatrix4x4 Camera::perspective() const
 {
     QMatrix4x4 mat;
-    mat.perspective(fov_, aspect_, 0.1f, farPlane_);
+    mat.perspective(fov_, aspect_, near_, far_);
+
+    return mat;
+}
+
+QMatrix4x4 Camera::ortho(float width, float height) const
+{
+    QMatrix4x4 mat;
+
+    // Form a box around camera coordinates
+    mat.ortho(
+        width / -2.0f, width / 2.0f,
+        height / -2.0f, height / 2.0f,
+        near_, far_);
 
     return mat;
 }
@@ -67,6 +84,13 @@ QMatrix4x4 Camera::lookAt() const
 
     QMatrix4x4 mat;
     mat.lookAt(position_, position_ + dir, QVector3D::crossProduct(right(), dir));
+    return mat;
+}
+
+QMatrix4x4 Camera::lookAt(const QVector3D& direction) const
+{
+    QMatrix4x4 mat;
+    mat.lookAt(position_, position_ + direction, QVector3D::crossProduct(right(), direction));
     return mat;
 }
 
@@ -83,4 +107,34 @@ float Camera::horizontalAngle() const
 float Camera::verticalAngle() const
 {
     return vertical_;
+}
+
+float Camera::fov() const
+{
+    return fov_;
+}
+
+void Camera::setFov(float fov)
+{
+    fov_ = fov;
+}
+
+float Camera::farPlane() const
+{
+    return far_;
+}
+
+float Camera::nearPlane() const
+{
+    return near_;
+}
+
+void Camera::setFarPlane(float far)
+{
+    far_ = far;
+}
+
+void Camera::setNearPlane(float near)
+{
+    near_ = near;
 }
