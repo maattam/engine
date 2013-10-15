@@ -15,20 +15,18 @@ public:
     virtual bool load(const QString& fileName);
 
     const QByteArray& data() const;
-    QOpenGLShader::ShaderTypeBit type() const;
 
 private:
-    QOpenGLShader::ShaderTypeBit type_;
     QByteArray data_;
-
-    bool getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const;
 };
 
 class Shader : public Resource<Shader, ShaderData>
 {
 public:
-    Shader();
-    Shader(const QString& name);
+    typedef QOpenGLShader::ShaderTypeBit Type;
+
+    Shader(Type type);
+    Shader(const QString& name, Type type);
     virtual ~Shader();
 
     QOpenGLShader* get() const;
@@ -39,6 +37,7 @@ protected:
 
 private:
     QOpenGLShader* shader_;
+    Type type_;
 
 };
     

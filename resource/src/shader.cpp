@@ -5,13 +5,13 @@
 
 using namespace Engine;
 
-Shader::Shader()
-    : Resource(), shader_(nullptr)
+Shader::Shader(QOpenGLShader::ShaderTypeBit type)
+    : Resource(), shader_(nullptr), type_(type)
 {
 }
 
-Shader::Shader(const QString& name)
-    : Resource(name), shader_(nullptr)
+Shader::Shader(const QString& name, QOpenGLShader::ShaderTypeBit type)
+    : Resource(name), shader_(nullptr), type_(type)
 {
 }
 
@@ -22,7 +22,7 @@ Shader::~Shader()
 
 bool Shader::initialiseData(const DataType& data)
 {
-    shader_ = new QOpenGLShader(data.type(), this);
+    shader_ = new QOpenGLShader(type_, this);
     bool ok = shader_->compileSourceCode(data.data());
 
     if(!ok)
@@ -58,13 +58,6 @@ ShaderData::ShaderData(ResourceDespatcher* despatcher)
 
 bool ShaderData::load(const QString& fileName)
 {
-    int typeIndex = fileName.lastIndexOf(".");
-    if(!getShaderType(fileName.right(fileName.length() - typeIndex - 1), type_))
-    {
-        qWarning() << __FUNCTION__ << "Unrecognised shader type" << fileName;
-        return false;
-    }
-
     QFile file(fileName);
     if(!file.open(QIODevice::ReadOnly))
         return false;
@@ -79,25 +72,4 @@ bool ShaderData::load(const QString& fileName)
 const QByteArray& ShaderData::data() const
 {
     return data_;
-}
-
-QOpenGLShader::ShaderTypeBit ShaderData::type() const
-{
-    return type_;
-}
-
-bool ShaderData::getShaderType(const QString& id, QOpenGLShader::ShaderTypeBit& type) const
-{
-    if(id == "vert")
-        type = QOpenGLShader::Vertex;
-
-    else if(id == "frag")
-        type = QOpenGLShader::Fragment;
-
-    else
-    {
-        return false;
-    }
-
-    return true;
 }

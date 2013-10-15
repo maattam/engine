@@ -14,7 +14,7 @@ using namespace Engine::Technique;
 ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
     : Technique()
 {
-    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert")));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
 }
 
 ShadowMap::~ShadowMap()
@@ -142,7 +142,7 @@ void ShadowMap::destroyDirectionalLight()
 bool ShadowMap::initDepthFBO(GLuint fbo, Texture2D& texture, GLsizei width, GLsizei height)
 {
     // Initialize depth texture
-    if(!texture.create(width, height, GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT, GL_FLOAT))
+    if(!texture.create(width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT))
     {
         return false;
     }

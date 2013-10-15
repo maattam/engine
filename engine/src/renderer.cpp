@@ -82,10 +82,10 @@ bool Renderer::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    if(!shadowTech_.initSpotLights(2048, 2048, Technique::BasicLightning::MAX_SPOT_LIGHTS))
+    if(!shadowTech_.initSpotLights(1024, 1024, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
-    if(!shadowTech_.initDirectionalLight(4096, 4096))
+    if(!shadowTech_.initDirectionalLight(2048, 2048))
         return false;
 
     // Initialize textures
@@ -171,6 +171,10 @@ void Renderer::render(AbstractScene* scene)
 void Renderer::shadowMapPass(AbstractScene* scene)
 {
     const auto& spotLights = scene->querySpotLights();
+
+    gl->glEnable(GL_CULL_FACE);
+    gl->glCullFace(GL_FRONT);
+
     if(!shadowTech_.enable())
     {
         return;
@@ -194,9 +198,6 @@ void Renderer::shadowMapPass(AbstractScene* scene)
         }
     }
 
-    gl->glEnable(GL_CULL_FACE);
-    gl->glCullFace(GL_FRONT);
-
     // Render depth for directional light
     shadowTech_.enableDirectinalLight(scene->queryDirectionalLight());
     gl->glClear(GL_DEPTH_BUFFER_BIT);
@@ -211,13 +212,18 @@ void Renderer::shadowMapPass(AbstractScene* scene)
             (*rit).second->render();
         }
     }
-
-    gl->glCullFace(GL_BACK);
 }
 
 void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
 {
     const auto& spotLights = scene->querySpotLights();
+
+    // Prepare OpenGL state for render pass
+    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
+
+    gl->glCullFace(GL_BACK);
+    gl->glViewport(0, 0, width_, height_);
 
     if(!lightningTech_.enable())
     {
@@ -240,11 +246,6 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
         shadowTech_.bindSpotLight(i, GL_TEXTURE0 + Material::TEXTURE_COUNT + i + 1);
         lightningTech_.setSpotLightShadowUnit(i, Material::TEXTURE_COUNT + i + 1);
     }
-
-    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
-
-    gl->glViewport(0, 0, width_, height_);
 
     // Set polygonmode if wireframe mode is enabled
     if(flags_ & DEBUG_WIREFRAME)

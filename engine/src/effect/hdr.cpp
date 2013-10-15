@@ -18,12 +18,12 @@ Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     readIndex_ = 0;
 
     // Tonemap program
-    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
-    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/tone.frag")));
+    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/tone.frag"), Shader::Type::Fragment));
 
     // Highpass program
-    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
-    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag")));
+    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag"), Shader::Type::Fragment));
 }
 
 Hdr::~Hdr()
@@ -55,8 +55,8 @@ bool Hdr::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    //width = ceil(width / 2.0f);
-    //height = ceil(height / 2.0f);
+    width = ceil(width / 2.0f);
+    height = ceil(height / 2.0f);
 
     samples_ = samples;
 
@@ -232,5 +232,5 @@ float Hdr::calculateExposure(float r, float g, float b)
     }
 
     average /= static_cast<float>(NUM_EXPOSURES);
-    return std::exp(-(1.5 * average));
+    return std::exp(-(2.0 * average));
 }

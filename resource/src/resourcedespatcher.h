@@ -14,13 +14,12 @@
 #include <cassert>
 #include <QThread>
 
-#include "resourceloader.h"
-
 class QFileSystemWatcher;
 
 namespace Engine {
 
 class ResourceBase;
+class ResourceLoader;
 
 class ResourceDespatcher : public QObject
 {
@@ -39,8 +38,8 @@ public:
     // Attempts to load a resource from storage asynchronously, or returns
     // a cached reference.
     // Note that the returned resource isn't guaranteed to be ready to use.
-    template<typename Resource>
-    std::shared_ptr<Resource> get(const QString& fileName);
+    template<typename Resource, typename... Args>
+    std::shared_ptr<Resource> get(const QString& fileName, Args&&... args);
 
 signals:
     // Invokes the ResourceLoaders consume procedure
@@ -61,14 +60,14 @@ private:
     QFileSystemWatcher* watcher_;
 
     // Allocates a new resource and loads it asynchronously
-    template<typename Resource>
-    std::shared_ptr<Resource> createResource(const QString& fn);
+    template<typename Resource, typename... Args>
+    std::shared_ptr<Resource> createResource(const QString& fn, Args&&... args);
 
     void watchResource(const std::shared_ptr<ResourceBase>& resource);
 };
 
-#include "resourcedespatcher.inl"
-
 }
+
+#include "resourcedespatcher.inl"
 
 #endif // RESOURCEDESPATCHER_H

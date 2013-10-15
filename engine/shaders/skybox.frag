@@ -8,5 +8,6 @@ uniform samplerCube gCubemapTexture;
 
 void main()
 {
-    fragColor = texture(gCubemapTexture, texCoord0);
+    // Simulate HDR Skybox.. todo proper implementation using masks?
+    fragColor = 3.0 * texture(gCubemapTexture, texCoord0);
 }

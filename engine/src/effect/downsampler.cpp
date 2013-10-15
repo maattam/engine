@@ -10,8 +10,8 @@ using namespace Engine::Effect;
 DownSampler::DownSampler(ResourceDespatcher* despatcher)
     : width_(0), height_(0)
 {
-    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert")));
-    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/blur.frag")));
+    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/blur.frag"), Shader::Type::Fragment));
 }
 
 DownSampler::~DownSampler()

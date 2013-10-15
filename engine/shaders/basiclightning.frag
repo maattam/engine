@@ -2,8 +2,12 @@
 
 #version 330 core
 
-const int MAX_POINT_LIGHTS = 4;
-const int MAX_SPOT_LIGHTS = 4;
+#define MAX_POINT_LIGHTS 4
+#define MAX_SPOT_LIGHTS 4
+
+#define SHADOW_BIAS 0.0002
+#define SHADOWMAP_DIR_SIZE 2048
+#define SHADOWMAP_SIZE 1024
 
 in vec2 texCoord0;
 in vec3 normal0;
@@ -75,35 +79,33 @@ uniform Material gMaterial;
 uniform vec3 gEyeWorldPos;
 uniform bool gHasTangents;
 
-float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap)
+float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned int size)
 {
-    const vec2 poissonDisk[4] = {
-        vec2(-0.94201624, -0.39906216),
-        vec2(0.94558609, -0.76890725),
-        vec2(-0.094184101, -0.92938870),
-        vec2(0.34495938, 0.29387760)
-    };
-
-    float bias = 0.0002;
-
 	// Project shadow map on current fragment
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords = 0.5 * projCoords + 0.5;
-	
-	float visibility = 1.0f;
-    
-    for(int i = 0; i < 4; ++i)
+
+    float offset = 1.0 / size;
+    float shadow = 0.0;
+
+    // 3x3 PCF kernel
+    for(float y = -1; y <= 1; ++y)
     {
-        if(texture(shadowMap, projCoords.xy + poissonDisk[i]/700.0).z < projCoords.z - bias)
+        for(float x = -1; x <= 1; ++x)
         {
-            visibility -= 1.0 / 3.0;
+            vec2 offsets = vec2(x * offset, y * offset);
+
+            float depth = texture(shadowMap, projCoords.xy + offsets).z;
+            if(depth >= projCoords.z - SHADOW_BIAS)
+            {
+                shadow += 1.0;
+            }
         }
     }
 
-    if(visibility < 0.0)
-        visibility = 0.0;
+    shadow /= 9;
 
-    return visibility;
+    return shadow;
 }
 
 // Encapsules common stuff between the different light types
@@ -145,7 +147,7 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 
 vec4 calcDirectionalLight(in vec3 normal)
 {
-    float shadow = calcShadowFactor(directionalLightSpacePos0, gDirectionalLightShadowMap);
+    float shadow = calcShadowFactor(directionalLightSpacePos0, gDirectionalLightShadowMap, SHADOWMAP_DIR_SIZE);
 
     vec4 ambient = vec4(gDirectionalLight.base.color, 1.0) * gDirectionalLight.base.ambientIntensity;
     vec4 color = calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
@@ -224,7 +226,7 @@ void main()
 
 	for(int i = 0; i < gNumSpotLights; ++i)
 	{
-		float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i]);
+		float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i], SHADOWMAP_SIZE);
 		light += shadow * calcSpotLight(gSpotLights[i], normal);
 	}
 	
