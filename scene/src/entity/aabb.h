@@ -23,8 +23,9 @@ public:
     float depth() const;
 
     QVector3D center() const;
+    QVector3D extent() const;
 
-    AABB operator*(const QMatrix4x4& rhs) const;
+    AABB operator*(const QMatrix4x4& transform) const;
 
 private:
     QVector3D min_;

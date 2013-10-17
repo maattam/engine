@@ -55,8 +55,8 @@ bool Hdr::initialize(int width, int height, int samples)
     width_ = width;
     height_ = height;
 
-    width = ceil(width / 2.0f);
-    height = ceil(height / 2.0f);
+    width = std::floor(width / 2.0f);
+    height = std::floor(height / 2.0f);
 
     samples_ = samples;
 

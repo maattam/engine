@@ -25,6 +25,8 @@
     <ClCompile Include="src\entity\boxprimitive.cpp" />
     <ClCompile Include="src\entity\camera.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
+    <ClCompile Include="src\entity\frustrum.cpp" />
+    <ClCompile Include="src\entity\light.cpp" />
     <ClCompile Include="src\entity\mesh.cpp" />
     <ClCompile Include="src\entity\subentity.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
@@ -33,6 +35,7 @@
     <ClCompile Include="src\renderable\quad.cpp" />
     <ClCompile Include="src\renderable\renderable.cpp" />
     <ClCompile Include="src\renderable\submesh.cpp" />
+    <ClCompile Include="src\scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\abstractscene.h" />
@@ -41,6 +44,7 @@
     <ClInclude Include="src\entity\boxprimitive.h" />
     <ClInclude Include="src\entity\camera.h" />
     <ClInclude Include="src\entity\entity.h" />
+    <ClInclude Include="src\entity\frustrum.h" />
     <ClInclude Include="src\entity\light.h" />
     <ClInclude Include="src\entity\mesh.h" />
     <ClInclude Include="src\entity\subentity.h" />
@@ -50,6 +54,7 @@
     <ClInclude Include="src\renderable\quad.h" />
     <ClInclude Include="src\renderable\renderable.h" />
     <ClInclude Include="src\renderable\submesh.h" />
+    <ClInclude Include="src\scene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.vcxproj">

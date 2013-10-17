@@ -23,17 +23,9 @@ public:
     BasicScene(Engine::ResourceDespatcher* despatcher);
     virtual ~BasicScene();
 
-    void initialize();
-
     virtual Engine::Entity::Camera* activeCamera();
-    virtual const Engine::Entity::DirectionalLight& queryDirectionalLight();
-    virtual const std::vector<Engine::Entity::PointLight>& queryPointLights();
-    virtual const std::vector<Engine::Entity::SpotLight>& querySpotLights();
 
-    virtual Engine::CubemapTexture* skyboxTexture();
-    virtual Engine::Renderable::Renderable* skyboxMesh();
-
-    virtual void prepareScene(Engine::Graph::SceneNode* scene);
+    virtual void prepareScene();
     virtual void update(unsigned int elapsed);
 
     void release();
@@ -43,18 +35,11 @@ private:
 
     Engine::Entity::Camera camera_;
 
-    std::vector<Engine::Entity::PointLight> pointLights_;
-    std::vector<Engine::Entity::SpotLight> spotLights_;
-    Engine::Entity::DirectionalLight directionalLight_;
-
     Engine::Entity::Mesh::Ptr torus_;
     Engine::Entity::Mesh::Ptr oildrum_;
     Engine::Entity::Mesh::Ptr sphere_;
     Engine::ColladaNode::Ptr platform_;
     Engine::Entity::Mesh::Ptr hellknight_;
-
-    std::shared_ptr<Engine::CubemapTexture> skyboxTexture_;
-    Engine::Renderable::Cube skyboxMesh_;
 
     std::shared_ptr<Engine::Entity::BoxPrimitive> cube_[2];
 
@@ -64,7 +49,9 @@ private:
     Engine::Graph::SceneNode* sphereNode_;
 
     std::vector<Engine::Graph::SceneNode*> cubes_;
-    std::vector<Engine::Entity::Light> lights_;
+    std::vector<Engine::Entity::Light::Ptr> lights_;
+
+    Engine::Entity::Light directionalLight_;
 
     unsigned int time_;
 };

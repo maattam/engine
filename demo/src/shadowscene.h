@@ -23,17 +23,9 @@ public:
     ShadowScene(Engine::ResourceDespatcher* despatcher);
     ~ShadowScene();
 
-    void initialize();
-
     virtual Engine::Entity::Camera* activeCamera();
-    virtual const Engine::Entity::DirectionalLight& queryDirectionalLight();
-    virtual const std::vector<Engine::Entity::PointLight>& queryPointLights();
-    virtual const std::vector<Engine::Entity::SpotLight>& querySpotLights();
 
-    virtual Engine::CubemapTexture* skyboxTexture();
-    virtual Engine::Renderable::Renderable* skyboxMesh();
-
-    virtual void prepareScene(Engine::Graph::SceneNode* scene);
+    virtual void prepareScene();
     virtual void update(unsigned int elapsed);
 
     void release();
@@ -47,12 +39,7 @@ private:
     Engine::Entity::Mesh::Ptr sphere_;
     Engine::Graph::SceneNode* sphereNode_[2];
 
-    Engine::Renderable::Cube skyboxMesh_;
-    std::shared_ptr<Engine::CubemapTexture> skyboxTexture_;
-
-    std::vector<Engine::Entity::PointLight> pointLights_;
-    std::vector<Engine::Entity::SpotLight> spotLights_;
-    Engine::Entity::DirectionalLight directionalLight_;
+    Engine::Entity::Light directionalLight_;
 
     float velocity_;
 
@@ -66,6 +53,7 @@ private:
     std::vector<PathNode> spotPath_;
     QVector3D spotDirection_;
     PathNode* spotNode_;
+    Engine::Entity::Light spotLight_;
     float spotVelocity_;
 
     double elapsed_;

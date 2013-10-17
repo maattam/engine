@@ -68,13 +68,13 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
     program()->setUniformValue("gSpecularSampler", specular);
 }
 
-void BasicLightning::setDirectionalLight(const Entity::DirectionalLight& light)
+void BasicLightning::setDirectionalLight(Entity::Light* light)
 {
-    program()->setUniformValue("gDirectionalLight.base.ambientIntensity", light.ambientIntensity);
-    program()->setUniformValue("gDirectionalLight.base.color", linear(light.color));
-    program()->setUniformValue("gDirectionalLight.base.diffuseIntensity", light.diffuseIntensity);
+    program()->setUniformValue("gDirectionalLight.base.ambientIntensity", light->ambientIntensity);
+    program()->setUniformValue("gDirectionalLight.base.color", linear(light->color));
+    program()->setUniformValue("gDirectionalLight.base.diffuseIntensity", light->diffuseIntensity);
 
-    QVector3D direction = light.direction;
+    QVector3D direction = light->direction;
     direction.normalize();
     program()->setUniformValue("gDirectionalLight.direction", direction);
 }
@@ -101,58 +101,72 @@ void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
     program()->setUniformValue("gDirectionalLightShadowMap", shadow);
 }
 
-void BasicLightning::setPointLights(const std::vector<Entity::PointLight>& lights)
+void BasicLightning::setPointAndSpotLights(const std::deque<Entity::VisibleLight>& lights)
 {
-    unsigned int numLights = lights.size();
-    if(numLights > MAX_POINT_LIGHTS)
+    int numSpotLights = 0;
+    int numPointLights = 0;
+
+    for(auto& pair : lights)
     {
-        qWarning() << __FUNCTION__ << "MAX_POINT_LIGHTS exceeded";
-        numLights = MAX_POINT_LIGHTS;
+        if(pair.second->type() == Entity::Light::LIGHT_POINT)
+        {
+            if(numPointLights >= MAX_POINT_LIGHTS)
+            {
+                qWarning() << __FUNCTION__ << "MAX_POINT_LIGHTS exceeded";
+            }
+
+            else
+            {
+                setPointLight(pair.second, pair.first, numPointLights++);
+            }
+        }
+
+        else if(pair.second->type() == Entity::Light::LIGHT_SPOT)
+        {
+            if(numSpotLights >= MAX_SPOT_LIGHTS)
+            {
+                qWarning() << __FUNCTION__ << "MAX_SPOT_LIGHTS exceeded";
+            }
+
+            else
+            {
+                setSpotLight(pair.second, pair.first, numSpotLights++);
+            }
+        }
     }
 
-    program()->setUniformValue("gNumPointLights", numLights);
-
-    for(size_t i = 0; i < numLights; ++i)
-    {
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.ambientIntensity").c_str(),  lights[i].ambientIntensity);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.color").c_str(),             linear(lights[i].color));
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "base.diffuseIntensity").c_str(),  lights[i].diffuseIntensity);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "position").c_str(),               lights[i].position);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "attenuation.constant").c_str(),   lights[i].attenuation.constant);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "attenuation.exp").c_str(),        lights[i].attenuation.exp);
-        program()->setUniformValue(formatUniformTableName("gPointLights", i, "attenuation.linear").c_str(),     lights[i].attenuation.linear);
-    }
+    program()->setUniformValue("gNumPointLights", numPointLights);
+    program()->setUniformValue("gNumSpotLights", numSpotLights);
 }
 
-void BasicLightning::setSpotLights(const std::vector<Entity::SpotLight>& lights)
+void BasicLightning::setSpotLight(Entity::Light* light, const QVector3D& position, int index)
 {
-    unsigned int numLights = lights.size();
-    if(numLights > MAX_SPOT_LIGHTS)
-    {
-        qWarning() << __FUNCTION__ << "Warning: MAX_SPOT_LIGHTS exceeded";
-        numLights = MAX_SPOT_LIGHTS;
-    }
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.ambientIntensity").c_str(),  light->ambientIntensity);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linear(light->color));
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.diffuseIntensity").c_str(),  light->diffuseIntensity);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               position);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.constant").c_str(),   light->attenuation.constant);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation.exp);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.linear").c_str(),     light->attenuation.linear);
 
-    program()->setUniformValue("gNumSpotLights", numLights);
+    QVector3D direction = light->direction;
+    direction.normalize();
 
-    for(size_t i = 0; i < numLights; ++i)
-    {
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.ambientIntensity").c_str(),  lights[i].ambientIntensity);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.color").c_str(),             linear(lights[i].color));
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.base.diffuseIntensity").c_str(),  lights[i].diffuseIntensity);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.position").c_str(),               lights[i].position);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.attenuation.constant").c_str(),   lights[i].attenuation.constant);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.attenuation.exp").c_str(),        lights[i].attenuation.exp);
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "base.attenuation.linear").c_str(),     lights[i].attenuation.linear);
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "direction").c_str(),     direction);
 
-        QVector3D direction = lights[i].direction;
-        direction.normalize();
+    // Convert cutoff to radians
+    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),        cosf(M_PI * light->cutoff / 180));
+}
 
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "direction").c_str(),     direction);
-
-        // Convert cutoff to radians
-        program()->setUniformValue(formatUniformTableName("gSpotLights", i, "cutoff").c_str(),        cosf(M_PI * lights[i].cutoff / 180));
-    }
+void BasicLightning::setPointLight(Entity::Light* light, const QVector3D& position, int index)
+{
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "base.ambientIntensity").c_str(),  light->ambientIntensity);
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linear(light->color));
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "base.diffuseIntensity").c_str(),  light->diffuseIntensity);
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               position);
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.constant").c_str(),   light->attenuation.constant);
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation.exp);
+    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.linear").c_str(),     light->attenuation.linear);
 }
 
 std::string BasicLightning::formatUniformTableName(const std::string& table,

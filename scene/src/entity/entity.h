@@ -14,9 +14,9 @@ namespace Renderable {
     class Renderable;
 }
 
-namespace Entity {
-
 typedef std::deque<std::pair<Material*, Renderable::Renderable*>> RenderList;
+
+namespace Entity {
 
 class Entity
 {

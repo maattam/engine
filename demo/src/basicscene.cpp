@@ -13,7 +13,7 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f)
+    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f), directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
 {
     camera_.setFov(75.0f);
     camera_.setFarPlane(400.0f);
@@ -25,92 +25,10 @@ BasicScene::~BasicScene()
 {
 }
 
-const Entity::DirectionalLight& BasicScene::queryDirectionalLight()
-{
-    return directionalLight_;
-}
-
-const std::vector<Entity::PointLight>& BasicScene::queryPointLights()
-{
-    return pointLights_;
-}
-
-const std::vector<Entity::SpotLight>& BasicScene::querySpotLights()
-{
-    return spotLights_;
-}
-
 Entity::Camera* BasicScene::activeCamera()
 {
     // We only have a single camera
     return &camera_;
-}
-
-CubemapTexture* BasicScene::skyboxTexture()
-{
-    return skyboxTexture_.get();
-}
-
-Renderable::Renderable* BasicScene::skyboxMesh()
-{
-    return &skyboxMesh_;
-}
-
-void BasicScene::initialize()
-{
-    // Load skybox
-    skyboxTexture_ = despatcher_->get<CubemapTexture>("assets/skybox/space/space*.png");
-    skyboxTexture_->setFiltering(GL_LINEAR, GL_LINEAR);
-
-    // Set up directional light
-    directionalLight_.diffuseIntensity = 0.05f;
-    directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
-    //directionalLight_.ambientIntensity = 0.1f;
-
-    // Set up point lights
-    Entity::PointLight pointLight;
-    pointLight.diffuseIntensity = 10.0f;
-    pointLight.attenuation.exp = 0.1f;
-
-    pointLights_.push_back(pointLight);
-
-    //pointLight.diffuseIntensity = 50.0f;
-    pointLight.color = QVector3D(0.0f, 0.0f, 1.0f);
-    pointLight.attenuation.exp = 0.025f;
-    pointLights_.push_back(pointLight);
-
-    // Set up spot lights
-    Entity::SpotLight spotLight;
-    spotLight.color = QVector3D(1.0f, 0.0f, 1.0f);
-    spotLight.position = 2*QVector3D(-6.0f, 7/2, 6.0f);
-    spotLight.direction = QVector3D(4.0f, -4.0f, -6.0f);
-    spotLight.diffuseIntensity = 20.0f;
-    spotLight.attenuation.exp = 0.05f;
-    spotLight.cutoff = 20.0f;
-    spotLights_.push_back(spotLight);
-
-    // Load models
-    oildrum_ = despatcher_->get<Entity::Mesh>("assets/oildrum.dae");
-    hellknight_ = despatcher_->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher_->get<ColladaNode>("assets/blocks.dae");
-    sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
-    torus_ = despatcher_->get<Entity::Mesh>("assets/torus.obj");
-
-    // Load cubes
-    for(int i = 0; i < 2; ++i)
-    {
-        QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
-
-        Texture2D::Ptr tex = despatcher_->get<Texture2D>(file);
-        if(tex != nullptr)
-        {
-            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher_);
-            mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
-
-            cube_[i] = std::make_shared<Entity::BoxPrimitive>();
-            cube_[i]->setMaterial(mat);
-        }
-    }
 }
 
 void BasicScene::update(unsigned int elapsedMs)
@@ -125,8 +43,8 @@ void BasicScene::update(unsigned int elapsedMs)
 
     QVector3D lightPos = QVector3D(R/2 * sinf(angle * 3), R * sinf(angle), R * cosf(angle));
 
-    pointLights_[1].position = QVector3D(R2 * sinf(angle), R2/2 * sinf(angle * 3), R2 * cosf(angle));
-    pointLights_[0].position = lightPos;
+    //pointLights_[1].position = QVector3D(R2 * sinf(angle), R2/2 * sinf(angle * 3), R2 * cosf(angle));
+    //pointLights_[0].position = lightPos;
 
     sphereNode_->setPosition(lightPos);
 
@@ -166,15 +84,72 @@ void BasicScene::update(unsigned int elapsedMs)
     }
 }
 
-void BasicScene::prepareScene(Graph::SceneNode* scene)
+void BasicScene::prepareScene()
 {
-    AbstractScene::prepareScene(scene);
+    // Load skybox
+    CubemapTexture::Ptr skybox = despatcher_->get<CubemapTexture>("assets/skybox/space/space*.png");
+    skybox->setFiltering(GL_LINEAR, GL_LINEAR);
+    scene()->setSkybox(skybox);
+
+    // Set up directional light
+    directionalLight_.diffuseIntensity = 0.05f;
+    directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
+    //directionalLight->ambientIntensity = 0.1f;
+    scene()->setDirectionalLight(&directionalLight_);
+
+    // Set up point lights
+    Entity::Light::Ptr pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
+    pointLight->diffuseIntensity = 10.0f;
+    pointLight->attenuation.exp = 0.1f;
+
+    lights_.push_back(pointLight);
+
+    pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
+    //pointLight.diffuseIntensity = 50.0f;
+    pointLight->color = QVector3D(0.0f, 0.0f, 1.0f);
+    pointLight->attenuation.exp = 0.025f;
+    lights_.push_back(pointLight);
+
+    // Set up spot lights
+    Entity::Light::Ptr spotLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_SPOT);
+    spotLight->color = QVector3D(1.0f, 0.0f, 1.0f);
+    //spotLight->position = 2*QVector3D(-6.0f, 7/2, 6.0f);
+    spotLight->direction = QVector3D(4.0f, -4.0f, -6.0f);
+    spotLight->diffuseIntensity = 20.0f;
+    spotLight->attenuation.exp = 0.05f;
+    spotLight->cutoff = 20.0f;
+    lights_.push_back(spotLight);
+
+    // Load models
+    oildrum_ = despatcher_->get<Entity::Mesh>("assets/oildrum.dae");
+    hellknight_ = despatcher_->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher_->get<ColladaNode>("assets/blocks.dae");
+    sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
+    torus_ = despatcher_->get<Entity::Mesh>("assets/torus.obj");
+
+    // Load cubes
+    for(int i = 0; i < 2; ++i)
+    {
+        QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
+
+        Texture2D::Ptr tex = despatcher_->get<Texture2D>(file);
+        if(tex != nullptr)
+        {
+            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher_);
+            mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
+
+            cube_[i] = std::make_shared<Entity::BoxPrimitive>();
+            cube_[i]->setMaterial(mat);
+        }
+    }
+
+    Graph::SceneNode* root = scene()->rootNode();
 
     // Create nodes
-    platformNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
-    torusNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
-    cubeNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
-    sphereNode_ = dynamic_cast<Graph::SceneNode*>(scene->createChild());
+    platformNode_ = dynamic_cast<Graph::SceneNode*>(root->createChild());
+    torusNode_ = dynamic_cast<Graph::SceneNode*>(root->createChild());
+    cubeNode_ = dynamic_cast<Graph::SceneNode*>(root->createChild());
+    sphereNode_ = dynamic_cast<Graph::SceneNode*>(root->createChild());
 
     // Oildrum
     {
@@ -231,7 +206,7 @@ void BasicScene::prepareScene(Graph::SceneNode* scene)
         mat.translate(2*QVector3D(-6.0f, 7/2, 6.0f));
         mat.scale(0.1f);
 
-        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(scene->createChild());
+        Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(root->createChild());
         node->applyTransformation(mat);
         node->attachEntity(sphere_.get());
         node->setShadowCaster(false);

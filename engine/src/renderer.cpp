@@ -56,16 +56,6 @@ Renderer::~Renderer()
         delete fx;
 }
 
-void Renderer::prepareScene(AbstractScene* scene)
-{
-    rootNode_.removeAllChildren();
-
-    if(scene != nullptr)
-    {
-        scene->prepareScene(&rootNode_);
-    }
-}
-
 void Renderer::destroyBuffers()
 {
     gl->glDeleteFramebuffers(1, &framebuffer_);
@@ -99,14 +89,13 @@ bool Renderer::initialize(int width, int height, int samples)
     // Create depthbuffer
     gl->glGenRenderbuffers(1, &depthRenderbuffer_);
     gl->glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer_);
-    gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, width, height);
+    gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, width, height);
 
     // Initialize framebuffers
     gl->glGenFramebuffers(1, &framebuffer_);
 
     // Renderbuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-    //gl->glEnable(GL_FRAMEBUFFER_SRGB);
 
     gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
     gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
@@ -128,17 +117,16 @@ bool Renderer::initialize(int width, int height, int samples)
     return true;
 }
 
-void Renderer::render(AbstractScene* scene)
+void Renderer::render(Scene* scene, Entity::Camera* camera)
 {
-    Entity::Camera* camera = scene->activeCamera();
     const QMatrix4x4 worldView = camera->perspective() * camera->lookAt();
 
-    visibles_.clear();
-    shadowCasters_.clear();
     aabbDebug_.clear();
 
-    // Cull visibles and shadow casters, TODO
-    updateRenderQueue(&rootNode_, QMatrix4x4());
+    // Cull visibles
+    Entity::Frustrum frustrum(worldView);
+    Scene::RenderQueue renderQueue;
+    scene->cullVisibles(frustrum, renderQueue);
 
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
@@ -151,10 +139,10 @@ void Renderer::render(AbstractScene* scene)
     // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    renderPass(scene, worldView);
+    renderPass(scene, camera, renderQueue, worldView);
 
     // Render skybox if set
-    skyboxPass(scene, worldView);
+    skyboxPass(scene, camera, worldView);
 
     gl->glDisable(GL_DEPTH_TEST);
 
@@ -168,9 +156,9 @@ void Renderer::render(AbstractScene* scene)
     //drawTextureDebug();
 }
 
-void Renderer::shadowMapPass(AbstractScene* scene)
+void Renderer::shadowMapPass(Scene* scene)
 {
-    const auto& spotLights = scene->querySpotLights();
+    const auto& lights = scene->queryLights();
 
     gl->glEnable(GL_CULL_FACE);
     gl->glCullFace(GL_FRONT);
@@ -180,43 +168,71 @@ void Renderer::shadowMapPass(AbstractScene* scene)
         return;
     }
 
+    Scene::RenderQueue shadowCasters;
+    int spotLightIndex = 0;
+
     // Render depth for each spot light
-    for(size_t i = 0; i < spotLights.size(); ++i)
+    for(const Entity::VisibleLight& light : lights)
     {
-        shadowTech_.enableSpotLight(i, spotLights.at(i));
+        // Ignore other lights for now
+        if(light.second->type() != Entity::Light::LIGHT_SPOT)
+        {
+            continue;
+        }
+
+        shadowTech_.enableSpotLight(spotLightIndex, light);
         gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-        for(auto it = shadowCasters_.begin(); it != shadowCasters_.end(); ++it)
+        // Resolve visibles for each light frustrum
+        const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
+        Entity::Frustrum frustrum(spotVP);
+        scene->cullVisibles(frustrum, shadowCasters, true);
+
+        for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
         {
-            const Entity::RenderList& node = (*it)->second;
-            shadowTech_.setLightMVP(shadowTech_.spotLightVP(i) * (*it)->first);
+            const RenderList& node = it->second;
+            shadowTech_.setLightMVP(spotVP * it->first);
 
             for(auto rit = node.begin(); rit != node.end(); ++rit)
             {
-                (*rit).second->render();
+                rit->second->render();
             }
         }
+
+        spotLightIndex++;
     }
 
     // Render depth for directional light
-    shadowTech_.enableDirectinalLight(scene->queryDirectionalLight());
+    auto directionalLight = scene->directionalLight();
+    if(directionalLight == nullptr)
+    {
+        return;
+    }
+
+    shadowTech_.enableDirectinalLight(directionalLight);
     gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-    for(auto it = shadowCasters_.begin(); it != shadowCasters_.end(); ++it)
+    // Resolve occluders for directional light
+    const QMatrix4x4& dirVP = shadowTech_.directionalLightVP();
+    Entity::Frustrum frustrum(dirVP);
+    scene->cullVisibles(frustrum, shadowCasters, true);
+
+    for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
     {
-        const Entity::RenderList& node = (*it)->second;
-        shadowTech_.setLightMVP(shadowTech_.directionalLightVP() * (*it)->first);
+        const RenderList& node = it->second;
+        shadowTech_.setLightMVP(dirVP * it->first);
 
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
-            (*rit).second->render();
+            rit->second->render();
         }
     }
 }
 
-void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
+void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& visibles,
+                          const QMatrix4x4& worldView)
 {
-    const auto& spotLights = scene->querySpotLights();
+    const auto& lights = scene->queryLights();
 
     // Prepare OpenGL state for render pass
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -230,21 +246,28 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
         return;
     }
 
-    lightningTech_.setEyeWorldPos(scene->activeCamera()->position());
+    lightningTech_.setEyeWorldPos(camera->position());
     lightningTech_.setTextureUnits(0, 1, 2);
-    lightningTech_.setDirectionalLight(scene->queryDirectionalLight());
-    lightningTech_.setPointLights(scene->queryPointLights());
-    lightningTech_.setSpotLights(spotLights);
+    lightningTech_.setDirectionalLight(scene->directionalLight());
+    lightningTech_.setPointAndSpotLights(scene->queryLights());
 
     // Bind directional light shadow map
     shadowTech_.bindDirectionalLight(GL_TEXTURE0 + Material::TEXTURE_COUNT);
     lightningTech_.setDirectionalLightShadowUnit(Material::TEXTURE_COUNT);
 
     // Bind spot light shadow maps after material samplers
-    for(unsigned int i = 0; i < spotLights.size(); ++i)
+    int spotLightIndex = 0;
+    for(const Entity::VisibleLight& light : lights)
     {
-        shadowTech_.bindSpotLight(i, GL_TEXTURE0 + Material::TEXTURE_COUNT + i + 1);
-        lightningTech_.setSpotLightShadowUnit(i, Material::TEXTURE_COUNT + i + 1);
+        if(light.second->type() == Entity::Light::LIGHT_SPOT)
+        {
+            int index = Material::TEXTURE_COUNT + spotLightIndex + 1;
+
+            shadowTech_.bindSpotLight(spotLightIndex, GL_TEXTURE0 + index);
+            lightningTech_.setSpotLightShadowUnit(spotLightIndex, index);
+
+            spotLightIndex++;
+        }
     }
 
     // Set polygonmode if wireframe mode is enabled
@@ -260,15 +283,21 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     }
 
     // Render visibles
-    for(auto it = visibles_.begin(); it != visibles_.end(); ++it)
+    for(auto it = visibles.begin(); it != visibles.end(); ++it)
     {
         lightningTech_.setWorldView(it->first);
         lightningTech_.setMVP(worldView * it->first);
 
         // Set translation matrix for each spot light
-        for(unsigned int i = 0; i < spotLights.size(); ++i)
+        spotLightIndex = 0;
+        for(const Entity::VisibleLight& light : lights)
         {
-            lightningTech_.setSpotLightMVP(i, shadowTech_.spotLightVP(i) * it->first);
+            if(light.second->type() == Entity::Light::LIGHT_SPOT)
+            {
+                const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
+                lightningTech_.setSpotLightMVP(spotLightIndex, spotVP * it->first);
+                spotLightIndex++;
+            }
         }
 
         // Set directional light mvp
@@ -304,7 +333,7 @@ void Renderer::renderPass(AbstractScene* scene, const QMatrix4x4& worldView)
     }
 }
 
-void Renderer::renderNode(const Entity::RenderList& node)
+void Renderer::renderNode(const RenderList& node)
 {
     for(auto it = node.begin(); it != node.end(); ++it)
     {
@@ -331,76 +360,32 @@ void Renderer::renderNode(const Entity::RenderList& node)
     }
 }
 
-void Renderer::skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView)
+void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera, const QMatrix4x4& worldView)
 {
     if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
         return;
 
-    if(scene->skyboxTexture() == nullptr || scene->skyboxMesh() == nullptr)
+    if(scene->skybox() == nullptr)
         return;
 
     if(!skyboxTech_.enable())
         return;
 
     QMatrix4x4 trans;
-    trans.translate(scene->activeCamera()->position());
+    trans.translate(camera->position());
 
     skyboxTech_.setMVP(worldView * trans);
     skyboxTech_.setTextureUnit(0);
 
-    if(scene->skyboxTexture()->bindActive(GL_TEXTURE0))
+    if(scene->skybox()->bindActive(GL_TEXTURE0))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
         gl->glDepthFunc(GL_LEQUAL);
 
-        scene->skyboxMesh()->render();
+        aabbBox_.render();
 
         gl->glCullFace(GL_BACK);
-    }
-}
-
-void Renderer::updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& worldView)
-{
-    if(node == nullptr)
-    {
-        return;
-    }
-
-    QMatrix4x4 nodeView = worldView * node->transformation();
-
-    // Push entities from the node into the render queue
-    if(node->numEntities() > 0)
-    {
-        visibles_.push_back(std::make_pair(nodeView, Entity::RenderList()));
-
-        for(size_t i = 0; i < node->numEntities(); ++i)
-        {
-            Entity::Entity* entity = node->getEntity(i);
-            if(entity != nullptr)
-            {
-                entity->updateRenderList(visibles_.back().second);
-
-                if(flags_ & DEBUG_AABB)
-                {
-                    // Stretch box to fit AABB
-                    addAABBDebug(nodeView, entity->boundingBox());
-                }
-            }
-        }
-
-        if(node->isShadowCaster())
-        {
-            const VisibleNode& added = visibles_.back();
-            shadowCasters_.push_back(&added);
-        }
-    }
-
-    // Recursively walk through child nodes
-    for(size_t i = 0; i < node->numChildren(); ++i)
-    {
-        Graph::SceneNode* inode = dynamic_cast<Graph::SceneNode*>(node->getChild(i));
-        updateRenderQueue(inode, nodeView);
     }
 }
 

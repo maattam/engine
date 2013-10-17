@@ -4,27 +4,17 @@
 
 using namespace Engine;
 
-AbstractScene::AbstractScene() : scene_(nullptr)
+AbstractScene::AbstractScene()
 {
 }
 
 AbstractScene::~AbstractScene() {}
 
-void AbstractScene::prepareScene(Graph::SceneNode* root)
+Scene* AbstractScene::scene()
 {
-    scene_ = root;
+    return &scene_;
 }
 
-void AbstractScene::update(unsigned int)
+void AbstractScene::update(unsigned int elapsed)
 {
-}
-
-CubemapTexture* AbstractScene::skyboxTexture()
-{
-    return nullptr;
-}
-
-Renderable::Renderable* AbstractScene::skyboxMesh()
-{
-    return nullptr;
-}
+};

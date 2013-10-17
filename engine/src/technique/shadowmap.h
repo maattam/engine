@@ -22,12 +22,12 @@ public:
     ~ShadowMap();
 
     bool initDirectionalLight(GLsizei width, GLsizei height);
-    void enableDirectinalLight(const Entity::DirectionalLight& light);
+    void enableDirectinalLight(Entity::Light* light);
     void bindDirectionalLight(GLenum textureUnit);
     const QMatrix4x4& directionalLightVP() const;
 
     bool initSpotLights(GLsizei width, GLsizei height, size_t count);
-    void enableSpotLight(size_t index, const Entity::SpotLight& spotLight);
+    void enableSpotLight(size_t index, const Entity::VisibleLight& light);
     void bindSpotLight(size_t index, GLenum textureUnit);
     const QMatrix4x4& spotLightVP(size_t index) const;
 

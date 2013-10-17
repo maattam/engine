@@ -64,11 +64,10 @@ private:
         qDebug() << "Managed objects: " << despatcher_.numManaged();
 
         T* scene = new T(&despatcher_);
-        scene->initialize();
+        scene->prepareScene();
         scene->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
 
         scene_ = scene;
-        renderer_->prepareScene(scene_);
     }
 
     Engine::Renderer* renderer_;

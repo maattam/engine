@@ -3,7 +3,7 @@
 #ifndef ABSTRACTSCENE_H
 #define ABSTRACTSCENE_H
 
-#include "entity/light.h"
+#include "scene.h"
 
 #include <vector>
 
@@ -13,16 +13,6 @@ namespace Entity {
     class Camera;
 }
 
-namespace Graph {
-    class SceneNode;
-}
-
-class CubemapTexture;
-
-namespace Renderable {
-    class Renderable;
-}
-
 class AbstractScene
 {
 public:
@@ -30,21 +20,14 @@ public:
     virtual ~AbstractScene();
 
     virtual Entity::Camera* activeCamera() = 0;
-    virtual const Entity::DirectionalLight& queryDirectionalLight() = 0;
-    virtual const std::vector<Entity::PointLight>& queryPointLights() = 0;
-    virtual const std::vector<Entity::SpotLight>& querySpotLights() = 0;
 
-    virtual CubemapTexture* skyboxTexture();
-    virtual Renderable::Renderable* skyboxMesh();
-
-    virtual void prepareScene(Graph::SceneNode* root);
+    virtual void prepareScene() = 0;
     virtual void update(unsigned int elapsed);
 
-protected:
-    Graph::SceneNode* sceneGraph();
+    Scene* scene();
 
 private:
-    Graph::SceneNode* scene_;
+    Scene scene_;
 
     AbstractScene(const AbstractScene&);
     AbstractScene& operator=(const AbstractScene&);

@@ -63,8 +63,7 @@ void SceneView::update()
 
 void SceneView::render()
 {
-    renderer_->render(scene_);
-
+    renderer_->render(scene_->scene(), scene_->activeCamera());
     ++frame_;
 }
 

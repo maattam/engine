@@ -14,13 +14,18 @@
 #include "renderable/cube.h"
 #include "material.h"
 
+#include "scene.h"
+
 #include <deque>
 #include <memory>
 
 namespace Engine {
 
-class AbstractScene;
 class ResourceDespatcher;
+
+namespace Entity {
+    class Camera;
+}
 
 class Renderer
 {
@@ -30,8 +35,7 @@ public:
     explicit Renderer(ResourceDespatcher* despatcher);
     ~Renderer();
 
-    void prepareScene(AbstractScene* scene);
-    void render(AbstractScene* scene);
+    void render(Scene* scene, Entity::Camera* camera);
 
     bool initialize(int width, int height, int samples);
 
@@ -39,17 +43,8 @@ public:
     unsigned int flags() const;
 
 private:
-    typedef std::pair<QMatrix4x4, Entity::RenderList> VisibleNode;
-    typedef std::deque<VisibleNode> RenderQueue;
-
     std::deque<QMatrix4x4> aabbDebug_;
     Renderable::Cube aabbBox_;
-
-    Graph::SceneNode rootNode_;
-
-    // TODO: Move to a separate class to allow more sophisticated culling
-    RenderQueue visibles_;
-    std::deque<const VisibleNode*> shadowCasters_;
 
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
@@ -82,13 +77,11 @@ private:
 
     void drawTextureDebug();
 
-    void updateRenderQueue(Graph::SceneNode* node, const QMatrix4x4& worldView);
+    void shadowMapPass(Scene* scene);
+    void renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& queue, const QMatrix4x4& worldView);
+    void skyboxPass(Scene* scene, Entity::Camera* camera, const QMatrix4x4& worldView);
 
-    void shadowMapPass(AbstractScene* scene);
-    void renderPass(AbstractScene* scene, const QMatrix4x4& worldView);
-    void skyboxPass(AbstractScene* scene, const QMatrix4x4& worldView);
-
-    void renderNode(const Entity::RenderList& node);
+    void renderNode(const RenderList& node);
 
     void destroyBuffers();
     void addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb);

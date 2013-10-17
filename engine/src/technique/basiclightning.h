@@ -7,7 +7,7 @@
 
 #include <QMatrix4x4>
 
-#include <vector>
+#include <deque>
 #include <string>
 
 namespace Engine {
@@ -37,9 +37,8 @@ public:
     void setDirectionalLightMVP(const QMatrix4x4& mvp);
     void setDirectionalLightShadowUnit(GLuint shadow);
 
-    void setDirectionalLight(const Entity::DirectionalLight& light);
-    void setPointLights(const std::vector<Entity::PointLight>& lights);
-    void setSpotLights(const std::vector<Entity::SpotLight>& lights);
+    void setDirectionalLight(Entity::Light* light);
+    void setPointAndSpotLights(const std::deque<Entity::VisibleLight>& lights);
 
 protected:
     virtual void init();
@@ -49,6 +48,9 @@ private:
 
     std::string formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members = "") const;
+
+    void setSpotLight(Entity::Light* light, const QVector3D& position, int index);
+    void setPointLight(Entity::Light* light, const QVector3D& position, int index);
 };
 
 }}

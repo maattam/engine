@@ -45,7 +45,7 @@ bool ShadowMap::initSpotLights(GLsizei width, GLsizei height, size_t count)
     return true;
 }
 
-void ShadowMap::enableSpotLight(size_t index, const Entity::SpotLight& light)
+void ShadowMap::enableSpotLight(size_t index, const Entity::VisibleLight& light)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, spotLightFbos_.at(index));
 
@@ -53,11 +53,12 @@ void ShadowMap::enableSpotLight(size_t index, const Entity::SpotLight& light)
 
     // Calculate world matrix
     QMatrix4x4& vp = spotLightVPs_.at(index);
+
     vp.setToIdentity();
     vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
 
     QMatrix4x4 look;
-    look.lookAt(light.position, light.position + light.direction, QVector3D(0, 1, 0));
+    look.lookAt(light.first, light.first + light.second->direction, QVector3D(0, 1, 0));
     vp *= look;
 
     gl->glViewport(0, 0, texture->width(), texture->height());
@@ -103,11 +104,11 @@ bool ShadowMap::initDirectionalLight(GLsizei width, GLsizei height)
     return initDepthFBO(directionalLightFbo_, directionalLightTexture_, width, height);
 }
 
-void ShadowMap::enableDirectinalLight(const Entity::DirectionalLight& light)
+void ShadowMap::enableDirectinalLight(Entity::Light* light)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, directionalLightFbo_);
 
-    QVector3D direction = light.direction;
+    QVector3D direction = light->direction;
     direction.normalize();
 
     Entity::Camera view(QVector3D(0, 0, 0));
