@@ -33,6 +33,7 @@ public:
 
 public slots:
     void renderNow();
+    void updateTitle();
 
 protected:
     virtual void resizeEvent(QResizeEvent* event);
@@ -82,6 +83,7 @@ private:
     QOPENGL_FUNCTIONS* funcs_;
 
     QElapsedTimer lastTime_;
+    QElapsedTimer frameTime_;
 };
 
 #endif // SCENEVIEW_H

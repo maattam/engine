@@ -111,10 +111,12 @@ void ShadowMap::enableDirectinalLight(Entity::Light* light)
     QVector3D direction = light->direction;
     direction.normalize();
 
-    Entity::Camera view(QVector3D(0, 0, 0));
+    Entity::Camera view(QRectF(-95, -65, 190, 130), direction);
     view.setNearPlane(-80.0f);
     view.setFarPlane(400.0f);
-    directionalLightVP_ = view.ortho(190, 130) * view.lookAt(direction);
+    view.update();
+
+    directionalLightVP_ = view.worldView();
 
     gl->glViewport(0, 0, directionalLightTexture_.width(), directionalLightTexture_.height());
 }

@@ -28,6 +28,10 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     setFormat(format);
+
+    QTimer* frameTimer = new QTimer(this);
+    connect(frameTimer, &QTimer::timeout, this, &SceneView::updateTitle);
+    frameTimer->start(50);
 }
 
 SceneView::~SceneView()
@@ -51,14 +55,20 @@ void SceneView::update()
 
     handleInput(elapsed);
     scene_->update(lastUpdate);
+}
 
-    // Update title on every tenth frame
-    if(frame_ % 10)
-    {
-        QVector3D pos = scene_->activeCamera()->position();
-        setTitle(QString("FPS: %1, POS: [%2 %3 %4]").arg(QString::number(1.0f / elapsed, 'g', 3))
-            .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
-    }
+void SceneView::updateTitle()
+{
+    if(scene_ == nullptr)
+        return;
+
+    float frameTime = static_cast<double>(frameTime_.restart()) / 1000;
+
+    QVector3D pos = scene_->activeCamera()->position();
+    setTitle(QString("FPS: %1, Eye position: (%2, %3, %4)").arg(QString::number(static_cast<int>(frame_ / frameTime)))
+        .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
+
+    frame_ = 0;
 }
 
 void SceneView::render()
@@ -88,28 +98,30 @@ void SceneView::initialize()
 void SceneView::handleInput(float elapsed)
 {
     const float speed = 15.0f;
-    const float mouseSpeed = 0.15f;
+    const float mouseSpeed = 5.0f;
+
+    float distance = elapsed * speed;
 
     Engine::Entity::Camera* camera = scene_->activeCamera();
 
     if(getKey(Qt::Key::Key_W))
     {
-        camera->move(camera->direction() * elapsed * speed);
+        camera->move(camera->direction() * distance);
     }
 
     if(getKey(Qt::Key::Key_S))
     {
-        camera->move(-1.0f * camera->direction() * elapsed * speed);
+        camera->move(-camera->direction() * distance);
     }
 
     if(getKey(Qt::Key::Key_D))
     {
-        camera->move(camera->right() * elapsed * speed);
+        camera->move(camera->right() * distance);
     }
 
     if(getKey(Qt::Key::Key_A))
     {
-        camera->move(-1.0f * camera->right() * elapsed * speed);
+        camera->move(-camera->right() * distance);
     }
 
     if(getKey(KEY_MOUSE_RIGHT))
@@ -117,19 +129,14 @@ void SceneView::handleInput(float elapsed)
         QPoint delta = lastMouse_ - mapFromGlobal(QCursor::pos());
         QCursor::setPos(mapToGlobal(lastMouse_));
 
-        camera->tilt(mouseSpeed * elapsed * delta.x(), mouseSpeed * elapsed * delta.y());
+        // Tilt left and right
+        camera->yaw(mouseSpeed * elapsed * delta.x());
 
-        // Lock vertical tilt to prevent upside-down view
-        if(camera->verticalAngle() > M_PI/2.0f)
-        {
-            camera->setTilt(camera->horizontalAngle(),  static_cast<float>(M_PI/2.0f));
-        }
-
-        else if(camera->verticalAngle() < -M_PI/2.0f)
-        {
-            camera->setTilt(camera->horizontalAngle(), static_cast<float>(-M_PI/2.0f));
-        }
+        // Tilt up and down
+        camera->pitch(mouseSpeed * elapsed * delta.y());
     }
+
+    camera->update();
 
     // Swap levels
     if(getKey(Qt::Key::Key_1))
@@ -179,6 +186,9 @@ void SceneView::handleInput(float elapsed)
 
 void SceneView::wheelEvent(QWheelEvent* event)
 {
+    if(scene_ == nullptr)
+        return;
+
     float scale = event->delta() / 100.0f;
     Engine::Entity::Camera* camera = scene_->activeCamera();
 

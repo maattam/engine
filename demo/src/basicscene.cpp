@@ -13,10 +13,11 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), camera_(QVector3D(-15, 4, 7), 15.0f), directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
+    : despatcher_(despatcher), camera_(Entity::Camera::PERSPECTIVE), directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
 {
     camera_.setFov(75.0f);
     camera_.setFarPlane(400.0f);
+    camera_.setPosition(QVector3D(-15, 4, 7));
 
     time_ = 0;
 }

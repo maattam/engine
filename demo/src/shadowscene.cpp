@@ -9,12 +9,13 @@
 using namespace Engine;
 
 ShadowScene::ShadowScene(ResourceDespatcher* despatcher)
-    : camera_(QVector3D(0, 10, 0), 1.5f), spotLight_(Entity::Light::LIGHT_SPOT),
+    : camera_(Entity::Camera::PERSPECTIVE, QVector3D(-1, 0, 0)), spotLight_(Entity::Light::LIGHT_SPOT),
     despatcher_(despatcher), velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0),
     directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
 {
     camera_.setFov(75.0f);
     camera_.setFarPlane(400.0f);
+    camera_.setPosition(QVector3D(0, 10, 0));
 
     const int NUM_NODES = 4;
     const float h = 30.0f;

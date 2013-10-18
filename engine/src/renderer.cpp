@@ -119,12 +119,10 @@ bool Renderer::initialize(int width, int height, int samples)
 
 void Renderer::render(Scene* scene, Entity::Camera* camera)
 {
-    const QMatrix4x4 worldView = camera->perspective() * camera->lookAt();
-
     aabbDebug_.clear();
 
     // Cull visibles
-    Entity::Frustrum frustrum(worldView);
+    Entity::Frustrum frustrum(camera->worldView());
     Scene::RenderQueue renderQueue;
     scene->cullVisibles(frustrum, renderQueue);
 
@@ -139,10 +137,10 @@ void Renderer::render(Scene* scene, Entity::Camera* camera)
     // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    renderPass(scene, camera, renderQueue, worldView);
+    renderPass(scene, camera, renderQueue);
 
     // Render skybox if set
-    skyboxPass(scene, camera, worldView);
+    skyboxPass(scene, camera);
 
     gl->glDisable(GL_DEPTH_TEST);
 
@@ -229,8 +227,7 @@ void Renderer::shadowMapPass(Scene* scene)
     }
 }
 
-void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& visibles,
-                          const QMatrix4x4& worldView)
+void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& visibles)
 {
     const auto& lights = scene->queryLights();
 
@@ -286,7 +283,7 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
     for(auto it = visibles.begin(); it != visibles.end(); ++it)
     {
         lightningTech_.setWorldView(it->first);
-        lightningTech_.setMVP(worldView * it->first);
+        lightningTech_.setMVP(camera->worldView() * it->first);
 
         // Set translation matrix for each spot light
         spotLightIndex = 0;
@@ -324,7 +321,7 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
 
         for(auto it = aabbDebug_.begin(); it != aabbDebug_.end(); ++it)
         {
-            aabbTech_.setUniformValue("gMVP", worldView * (*it));
+            aabbTech_.setUniformValue("gMVP", camera->worldView() * (*it));
             aabbBox_.render();
         }
 
@@ -360,7 +357,7 @@ void Renderer::renderNode(const RenderList& node)
     }
 }
 
-void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera, const QMatrix4x4& worldView)
+void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera)
 {
     if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
         return;
@@ -374,7 +371,8 @@ void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera, const QMatrix4x4
     QMatrix4x4 trans;
     trans.translate(camera->position());
 
-    skyboxTech_.setMVP(worldView * trans);
+    // Move cube so it covers our entire view
+    skyboxTech_.setMVP(camera->worldView() * trans);
     skyboxTech_.setTextureUnit(0);
 
     if(scene->skybox()->bindActive(GL_TEXTURE0))

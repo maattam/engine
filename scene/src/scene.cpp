@@ -72,7 +72,6 @@ void Scene::findVisibles(const Entity::Frustrum& frustrum, Graph::SceneNode* nod
     if(node->numEntities() > 0)
     {
         VisibleNode visibleNode = std::make_pair(nodeView, RenderList());
-        bool culled = false;
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {
@@ -102,12 +101,12 @@ void Scene::findVisibles(const Entity::Frustrum& frustrum, Graph::SceneNode* nod
                 else
                 {
                     entity->updateRenderList(visibleNode.second);
-                    culled = true;
                 }
             }
         }
 
-        if(culled)
+        // If some renderables were culled, push them down the queue
+        if(visibleNode.second.size() > 0)
         {
             queue.push_back(visibleNode);
         }

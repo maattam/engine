@@ -78,8 +78,8 @@ private:
     void drawTextureDebug();
 
     void shadowMapPass(Scene* scene);
-    void renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& queue, const QMatrix4x4& worldView);
-    void skyboxPass(Scene* scene, Entity::Camera* camera, const QMatrix4x4& worldView);
+    void renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& queue);
+    void skyboxPass(Scene* scene, Entity::Camera* camera);
 
     void renderNode(const RenderList& node);
 
