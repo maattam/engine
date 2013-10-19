@@ -9,9 +9,9 @@
 
 namespace Engine {
     
-    namespace Entity {
-        class Entity;
-    }
+namespace Entity {
+    class Entity;
+}
     
 namespace Graph {
 

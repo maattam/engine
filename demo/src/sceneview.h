@@ -5,16 +5,12 @@
 #include "common.h"
 #include <QOpenGLContext>
 #include <QElapsedTimer>
-#include <QPoint>
 #include <QDebug>
 
-#include <map>
-#include <vector>
-#include <memory>
-
 #include "resourcedespatcher.h"
+#include "scene/scene.h"
 
-#include "shadowscene.h"
+#include "sponzascene.h"
 #include "basicscene.h"
 
 namespace Engine {
@@ -26,8 +22,6 @@ class SceneView : public QWindow
     Q_OBJECT
 
 public:
-    enum { KEY_MOUSE_RIGHT = -100 };
-
     explicit SceneView(QWindow* parent = nullptr);
     ~SceneView();
 
@@ -51,39 +45,24 @@ private:
     void update();
     void render();
     void initialize();
-    void handleInput(float elapsed);
-
-    bool getKey(int key) const;
-
-    template<typename T> void swapScene()
-    {
-        if(scene_ != nullptr)
-        {
-            delete scene_;
-        }
-
-        qDebug() << "Managed objects: " << despatcher_.numManaged();
-
-        T* scene = new T(&despatcher_);
-        scene->prepareScene();
-        scene->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
-
-        scene_ = scene;
-    }
-
-    Engine::Renderer* renderer_;
-    Engine::ResourceDespatcher despatcher_;
-    Engine::AbstractScene* scene_;
-
-    unsigned int frame_;
-    QPoint lastMouse_;
-    std::map<int, bool> keyMap_;
+    void handleInput();
+    void swapScene(FreeLookScene* scene);
 
     QOpenGLContext* context_;
     QOPENGL_FUNCTIONS* funcs_;
 
+    Engine::Renderer* renderer_;
+    Engine::ResourceDespatcher despatcher_;
+
+    Engine::Scene model_;
+    FreeLookScene* controller_;
+
+    unsigned int frame_;
+
     QElapsedTimer lastTime_;
     QElapsedTimer frameTime_;
+
+    Input* input_;
 };
 
 #endif // SCENEVIEW_H

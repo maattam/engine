@@ -1,20 +1,13 @@
-#include "frustrum.h"
+#include "frustum.h"
 
-using namespace Engine::Entity;
+using namespace Engine;
 
-Frustrum::Frustrum(const QMatrix4x4& mat)
+bool Engine::isInsideFrustum(const Entity::AABB& aabb, const QMatrix4x4& mvp)
 {
-    viewProj_ = mat;
-}
-
-bool Frustrum::contains(const AABB& aabb, const QMatrix4x4& modelView) const
-{
-    const QMatrix4x4 frustrumMatrix = viewProj_ * modelView;
-
-    const QVector4D rowX = frustrumMatrix.row(0);
-    const QVector4D rowY = frustrumMatrix.row(1);
-    const QVector4D rowZ = frustrumMatrix.row(2);
-    const QVector4D rowW = frustrumMatrix.row(3);
+    const QVector4D rowX = mvp.row(0);
+    const QVector4D rowY = mvp.row(1);
+    const QVector4D rowZ = mvp.row(2);
+    const QVector4D rowW = mvp.row(3);
 
     const QVector3D center = aabb.center();
     const QVector3D extent = aabb.extent();
@@ -43,8 +36,7 @@ bool Frustrum::contains(const AABB& aabb, const QMatrix4x4& modelView) const
     return true;    // TODO: Check if frustrum is outside the AABB
 }
 
-// http://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
-bool Frustrum::extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane)
+bool Engine::extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane)
 {
     QVector3D normal = plane.toVector3D();
     QVector3D absNormal(qAbs(plane.x()), qAbs(plane.y()), qAbs(plane.z()));

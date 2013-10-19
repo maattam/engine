@@ -40,8 +40,6 @@ private:
     LightType type_;
 };
 
-typedef std::pair<QVector3D, Light*> VisibleLight;
-
 }}
 
 #endif //LIGHT_H

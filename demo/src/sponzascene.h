@@ -1,15 +1,10 @@
 #ifndef SHADOWSCENE_H
 #define SHADOWSCENE_H
 
-#include "abstractscene.h"
-#include "entity/light.h"
-#include "entity/camera.h"
-#include "entity/mesh.h"
-#include "colladanode.h"
-#include "renderable/cube.h"
-#include "cubemaptexture.h"
+#include "freelookscene.h"
 
-#include "common.h"
+#include "entity/mesh.h"
+#include "scene/colladanode.h"
 
 #include <memory>
 
@@ -17,29 +12,24 @@ namespace Engine {
     class ResourceDespatcher;
 }
 
-class ShadowScene : public Engine::AbstractScene
+class SponzaScene : public FreeLookScene
 {
 public:
-    ShadowScene(Engine::ResourceDespatcher* despatcher);
-    ~ShadowScene();
+    explicit SponzaScene(Engine::ResourceDespatcher* despatcher);
+    ~SponzaScene();
 
-    virtual Engine::Entity::Camera* activeCamera();
-
-    virtual void prepareScene();
+    // Reimplemented methods from FreeLookScene
     virtual void update(unsigned int elapsed);
 
-    void release();
+protected:
+    // Implemented methods from FreeLookScene
+    virtual void initialise();
 
 private:
-    Engine::Entity::Camera camera_;
-    Engine::ResourceDespatcher* despatcher_;
-
     Engine::ColladaNode::Ptr sceneMesh_;
 
     Engine::Entity::Mesh::Ptr sphere_;
     Engine::Graph::SceneNode* sphereNode_[2];
-
-    Engine::Entity::Light directionalLight_;
 
     float velocity_;
 

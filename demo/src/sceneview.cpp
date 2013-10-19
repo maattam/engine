@@ -9,14 +9,16 @@
 
 #include <QTimer> // singleShot
 
+#include "input.h"
+
 #include "entity/camera.h"
-#include "renderer.h"
+#include "forwardrenderer.h"
 
 #include "basicscene.h"
-#include "shadowscene.h"
+#include "sponzascene.h"
 
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr), scene_(nullptr)
+    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr), controller_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
 
@@ -32,12 +34,14 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     QTimer* frameTimer = new QTimer(this);
     connect(frameTimer, &QTimer::timeout, this, &SceneView::updateTitle);
     frameTimer->start(50);
+
+    input_ = new Input(this);
 }
 
 SceneView::~SceneView()
 {
-    if(scene_ != nullptr)
-        delete scene_;
+    if(controller_ != nullptr)
+        delete controller_;
 
     if(renderer_ != nullptr)
         delete renderer_;
@@ -47,24 +51,27 @@ void SceneView::update()
 {
     qint64 lastUpdate = lastTime_.restart();
 
-    if(scene_ == nullptr)
-        return;
-
     // Elapsed in seconds
     float elapsed = static_cast<float>(lastUpdate) / 1000;
 
-    handleInput(elapsed);
-    scene_->update(lastUpdate);
+    handleInput();
+
+    if(controller_ != nullptr)
+    {
+        controller_->update(lastUpdate);
+    }
+
+    input_->endFrame();
 }
 
 void SceneView::updateTitle()
 {
-    if(scene_ == nullptr)
+    if(controller_ == nullptr)
         return;
 
     float frameTime = static_cast<double>(frameTime_.restart()) / 1000;
 
-    QVector3D pos = scene_->activeCamera()->position();
+    QVector3D pos = controller_->playerPosition();
     setTitle(QString("FPS: %1, Eye position: (%2, %3, %4)").arg(QString::number(static_cast<int>(frame_ / frameTime)))
         .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
 
@@ -73,8 +80,11 @@ void SceneView::updateTitle()
 
 void SceneView::render()
 {
-    renderer_->render(scene_->scene(), scene_->activeCamera());
-    ++frame_;
+    if(controller_ != nullptr)
+    {
+        controller_->renderScene();
+        ++frame_;
+    }
 }
 
 void SceneView::initialize()
@@ -83,78 +93,39 @@ void SceneView::initialize()
     glViewport(0, 0, width(), height());
 
     // Initialize renderer
-    renderer_ = new Engine::Renderer(&despatcher_);
-    if(!renderer_->initialize(width(), height(), format().samples()))
+    renderer_ = new Engine::ForwardRenderer(&despatcher_);
+    if(!renderer_->setViewport(width(), height(), format().samples()))
     {
         qCritical() << "Failed to initialize renderer!";
         exit(-1);
     }
 
+    model_.setView(renderer_);
+
     // Load scene
-    swapScene<ShadowScene>();
+    swapScene(new SponzaScene(&despatcher_));
     lastTime_.start();
 }
 
-void SceneView::handleInput(float elapsed)
+void SceneView::handleInput()
 {
-    const float speed = 15.0f;
-    const float mouseSpeed = 5.0f;
-
-    float distance = elapsed * speed;
-
-    Engine::Entity::Camera* camera = scene_->activeCamera();
-
-    if(getKey(Qt::Key::Key_W))
-    {
-        camera->move(camera->direction() * distance);
-    }
-
-    if(getKey(Qt::Key::Key_S))
-    {
-        camera->move(-camera->direction() * distance);
-    }
-
-    if(getKey(Qt::Key::Key_D))
-    {
-        camera->move(camera->right() * distance);
-    }
-
-    if(getKey(Qt::Key::Key_A))
-    {
-        camera->move(-camera->right() * distance);
-    }
-
-    if(getKey(KEY_MOUSE_RIGHT))
-    {
-        QPoint delta = lastMouse_ - mapFromGlobal(QCursor::pos());
-        QCursor::setPos(mapToGlobal(lastMouse_));
-
-        // Tilt left and right
-        camera->yaw(mouseSpeed * elapsed * delta.x());
-
-        // Tilt up and down
-        camera->pitch(mouseSpeed * elapsed * delta.y());
-    }
-
-    camera->update();
-
     // Swap levels
-    if(getKey(Qt::Key::Key_1))
+    if(input_->keyDown(Qt::Key::Key_1))
     {
-        keyMap_[Qt::Key::Key_1] = false;
-        swapScene<ShadowScene>();
+        input_->keyEvent(Qt::Key::Key_1, false);
+        swapScene(new SponzaScene(&despatcher_));
     }
 
-    else if(getKey(Qt::Key::Key_2))
+    else if(input_->keyDown(Qt::Key::Key_2))
     {
-        keyMap_[Qt::Key::Key_2] = false;
-        swapScene<BasicScene>();
+        input_->keyEvent(Qt::Key::Key_2, false);
+        swapScene(new BasicScene(&despatcher_));
     }
 
     // Renderer flags
-    if(getKey(Qt::Key::Key_F1))
+    if(input_->keyDown(Qt::Key::Key_F1))
     {
-        keyMap_[Qt::Key::Key_F1] = false;
+        input_->keyEvent(Qt::Key::Key_F1, false);
 
         if(renderer_->flags() & Engine::Renderer::DEBUG_AABB)
         {
@@ -167,9 +138,9 @@ void SceneView::handleInput(float elapsed)
         }
     }
 
-    if(getKey(Qt::Key::Key_F2))
+    if(input_->keyDown(Qt::Key::Key_F2))
     {
-        keyMap_[Qt::Key::Key_F2] = false;
+        input_->keyEvent(Qt::Key::Key_F2, false);
 
         if(renderer_->flags() & Engine::Renderer::DEBUG_WIREFRAME)
         {
@@ -184,19 +155,6 @@ void SceneView::handleInput(float elapsed)
 
 }
 
-void SceneView::wheelEvent(QWheelEvent* event)
-{
-    if(scene_ == nullptr)
-        return;
-
-    float scale = event->delta() / 100.0f;
-    Engine::Entity::Camera* camera = scene_->activeCamera();
-
-    camera->move(QVector3D(0, scale, 0));
-
-    event->accept();
-}
-
 void SceneView::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event);
@@ -205,15 +163,15 @@ void SceneView::resizeEvent(QResizeEvent* event)
     {
         glViewport(0, 0, width(), height());
 
-        if(!renderer_->initialize(width(), height(), format().samples()))
+        if(!renderer_->setViewport(width(), height(), format().samples()))
         {
             qCritical() << "Failed to initialize renderer!";
             exit(-1);
         }
 
-        if(scene_ != nullptr)
+        if(controller_ != nullptr)
         {
-            scene_->activeCamera()->setAspectRatio(static_cast<float>(width()) / height());
+            controller_->setAspectRatio(static_cast<float>(width()) / height());
         }
     }
 }
@@ -264,33 +222,40 @@ void SceneView::renderNow()
     QTimer::singleShot(0, this, SLOT(renderNow()));
 }
 
+void SceneView::swapScene(FreeLookScene* scene)
+{
+    if(controller_ != nullptr)
+    {
+        delete controller_;
+    }
+
+    model_.rootNode()->removeAllChildren();
+
+    qDebug() << "Managed objects: " << despatcher_.numManaged();
+
+    scene->setModel(&model_);
+    scene->setInput(input_);
+    scene->setAspectRatio(static_cast<float>(width()) / height());
+    scene->setFov(75.0f);
+
+    controller_ = scene;
+}
+
 void SceneView::keyPressEvent(QKeyEvent* event)
 {
-    keyMap_[event->key()] = true;
+    input_->keyEvent(event->key(), true);
 }
 
 void SceneView::keyReleaseEvent(QKeyEvent* event)
 {
-    keyMap_[event->key()] = false;
-}
-
-bool SceneView::getKey(int key) const
-{
-    auto iter = keyMap_.find(key);
-    if(iter != keyMap_.end() && iter->second)
-    {
-        return true;
-    }
-
-    return false;
+    input_->keyEvent(event->key(), false);
 }
 
 void SceneView::mousePressEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::MouseButton::RightButton)
     {
-        keyMap_[KEY_MOUSE_RIGHT] = true;
-        lastMouse_ = mapFromGlobal(QCursor::pos());
+        input_->mouseEvent(Input::KEY_MOUSE_RIGHT, true);
         setCursor(Qt::BlankCursor);
     }
 }
@@ -299,7 +264,12 @@ void SceneView::mouseReleaseEvent(QMouseEvent* event)
 {
     if(event->button() == Qt::MouseButton::RightButton)
     {
-        keyMap_[KEY_MOUSE_RIGHT] = false;
+        input_->mouseEvent(Input::KEY_MOUSE_RIGHT, false);
         setCursor(Qt::ArrowCursor);
     }
+}
+
+void SceneView::wheelEvent(QWheelEvent* event)
+{
+    input_->wheelEvent(event->delta());
 }

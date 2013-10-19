@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B12702AD-ABFB-343A-A199-8E24837244A3}</ProjectGuid>
     <Keyword>Qt4VSv1.0</Keyword>
-    <ProjectName>renderer</ProjectName>
+    <ProjectName>engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -66,7 +66,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>..\scene\src;..\resource\src;..\common\src;D:\Qt\glm-0.9.4.4;D:\Qt\gli-0.4.1.0;D:\Qt\assimp--3.0.1270-sdk\include;.\src\;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;$(IncludePath)</IncludePath>
+    <IncludePath>..\resource\src;..\common\src;D:\Qt\glm-0.9.4.4;D:\Qt\gli-0.4.1.0;D:\Qt\assimp--3.0.1270-sdk\include;.\src\;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -76,7 +76,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>..\scene\src;..\resource\src;..\common\src;D:\Qt\glm-0.9.4.4;D:\Qt\gli-0.4.1.0;D:\Qt\assimp--3.0.1270-sdk\include;.\src\;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;$(IncludePath)</IncludePath>
+    <IncludePath>..\resource\src;..\common\src;D:\Qt\glm-0.9.4.4;D:\Qt\gli-0.4.1.0;D:\Qt\assimp--3.0.1270-sdk\include;.\src\;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -166,7 +166,23 @@
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
-    <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\entity\aabb.cpp" />
+    <ClCompile Include="src\entity\boxprimitive.cpp" />
+    <ClCompile Include="src\entity\camera.cpp" />
+    <ClCompile Include="src\entity\entity.cpp" />
+    <ClCompile Include="src\entity\frustum.cpp" />
+    <ClCompile Include="src\entity\light.cpp" />
+    <ClCompile Include="src\entity\mesh.cpp" />
+    <ClCompile Include="src\entity\subentity.cpp" />
+    <ClCompile Include="src\forwardrenderer.cpp" />
+    <ClCompile Include="src\graph\node.cpp" />
+    <ClCompile Include="src\graph\scenenode.cpp" />
+    <ClCompile Include="src\renderable\cube.cpp" />
+    <ClCompile Include="src\renderable\quad.cpp" />
+    <ClCompile Include="src\renderable\renderable.cpp" />
+    <ClCompile Include="src\renderable\submesh.cpp" />
+    <ClCompile Include="src\scene\colladanode.cpp" />
+    <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skyboxtechnique.cpp" />
@@ -191,7 +207,27 @@
     <ClInclude Include="src\effect\downsampler.h" />
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
+    <ClInclude Include="src\entity\aabb.h" />
+    <ClInclude Include="src\entity\boxprimitive.h" />
+    <ClInclude Include="src\entity\camera.h" />
+    <ClInclude Include="src\entity\entity.h" />
+    <ClInclude Include="src\entity\frustum.h" />
+    <ClInclude Include="src\entity\light.h" />
+    <ClInclude Include="src\entity\mesh.h" />
+    <ClInclude Include="src\entity\subentity.h" />
+    <ClInclude Include="src\forwardrenderer.h" />
+    <ClInclude Include="src\graph\node.h" />
+    <ClInclude Include="src\graph\scenenode.h" />
+    <ClInclude Include="src\renderable\cube.h" />
+    <ClInclude Include="src\renderable\quad.h" />
+    <ClInclude Include="src\renderable\renderable.h" />
+    <ClInclude Include="src\renderable\submesh.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\scene\colladanode.h" />
+    <ClInclude Include="src\scene\scene.h" />
+    <ClInclude Include="src\scene\scenecontroller.h" />
+    <ClInclude Include="src\scene\scenemodel.h" />
+    <ClInclude Include="src\scene\visiblescene.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skyboxtechnique.h" />
@@ -237,9 +273,6 @@
     </ProjectReference>
     <ProjectReference Include="..\resource\resource.vcxproj">
       <Project>{c2c1b7dc-0ac0-44b2-8a34-0b7479dbb426}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\scene\scene.vcxproj">
-      <Project>{2108ae2e-f931-4231-aa6c-f9064f3b6831}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

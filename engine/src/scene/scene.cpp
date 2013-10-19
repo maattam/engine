@@ -2,9 +2,15 @@
 
 #include <cassert>
 
+#include "entity/light.h"
+#include "entity/camera.h"
+#include "entity/frustum.h"
+
+#include "renderer.h"
+
 using namespace Engine;
 
-Scene::Scene()
+Scene::Scene() : renderer_(nullptr), directionalLight_(nullptr)
 {
 }
 
@@ -12,7 +18,20 @@ Scene::~Scene()
 {
 }
 
-void Scene::cullVisibles(const Entity::Frustrum& frustrum, RenderQueue& renderQueue, bool shadowCasters)
+void Scene::setView(Renderer* view)
+{
+    renderer_ = view;
+}
+
+void Scene::renderScene(Entity::Camera* camera)
+{
+    if(renderer_ != nullptr)
+    {
+        renderer_->render(camera, this);
+    }
+}
+
+void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters)
 {
     if(!shadowCasters)
     {
@@ -20,7 +39,8 @@ void Scene::cullVisibles(const Entity::Frustrum& frustrum, RenderQueue& renderQu
     }
 
     renderQueue.clear();
-    findVisibles(frustrum, &rootNode_, QMatrix4x4(), renderQueue, shadowCasters);
+
+    findVisibles(viewProj, &rootNode_, QMatrix4x4(), renderQueue, shadowCasters);
 }
 
 Entity::Light* Scene::directionalLight() const
@@ -38,9 +58,9 @@ void Scene::setDirectionalLight(Entity::Light* light)
     directionalLight_ = light;
 }
 
-const CubemapTexture::Ptr& Scene::skybox() const
+CubemapTexture* Scene::skybox() const
 {
-    return skybox_;
+    return skybox_.get();
 }
 
 void Scene::setSkybox(const CubemapTexture::Ptr& texture)
@@ -58,8 +78,8 @@ const Scene::Lights& Scene::queryLights() const
     return lights_;
 }
 
-void Scene::findVisibles(const Entity::Frustrum& frustrum, Graph::SceneNode* node, const QMatrix4x4& worldView,
-                  Scene::RenderQueue& queue, bool shadowCasters)
+void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
+                         const QMatrix4x4& worldView, Scene::RenderQueue& queue, bool shadowCasters)
 {
     if(node == nullptr)
     {
@@ -88,7 +108,7 @@ void Scene::findVisibles(const Entity::Frustrum& frustrum, Graph::SceneNode* nod
             }
 
             // Check whether the entity's bounding volume is inside our view frustrum
-            if(frustrum.contains(entity->boundingBox(), nodeView))
+            if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
                 // Cache visible lights
                 Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
@@ -116,6 +136,6 @@ void Scene::findVisibles(const Entity::Frustrum& frustrum, Graph::SceneNode* nod
     for(size_t i = 0; i < node->numChildren(); ++i)
     {
         Graph::SceneNode* inode = dynamic_cast<Graph::SceneNode*>(node->getChild(i));
-        findVisibles(frustrum, inode, nodeView, queue, shadowCasters);
+        findVisibles(viewProj, inode, nodeView, queue, shadowCasters);
     }
 }

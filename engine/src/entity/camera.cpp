@@ -31,7 +31,7 @@ Camera::Camera(float aspectRatio, float fov, const QVector3D& dir)
 }
 
 Camera::Camera(const QRectF& window, const QVector3D& dir)
-    : type_(ORTHOGONAL), bounds_(window)
+    : type_(ORTHOGRAPHIC), bounds_(window)
 {
     far_ = 500.0f;
     near_ = 0.1f;

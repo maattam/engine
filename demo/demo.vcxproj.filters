@@ -40,13 +40,13 @@
     <CustomBuild Include="..\engine\engine.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\input.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_scene.cpp">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shadowscene.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\basicscene.cpp">
       <Filter>Source Files</Filter>
@@ -66,12 +66,30 @@
     <ClCompile Include="GeneratedFiles\qrc_engine.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\freelookscene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sponzascene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_input.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_input.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\shadowscene.h">
+    <ClInclude Include="src\basicscene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\basicscene.h">
+    <ClInclude Include="src\freelookscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sponzascene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

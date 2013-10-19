@@ -1,14 +1,12 @@
 #ifndef BASICSCENE_H
 #define BASICSCENE_H
 
-#include "abstractscene.h"
+#include "freelookscene.h"
+
 #include "material.h"
-#include "entity/light.h"
-#include "entity/camera.h"
 #include "entity/mesh.h"
 #include "entity/boxprimitive.h"
-#include "renderable/cube.h"
-#include "colladanode.h"
+#include "scene/colladanode.h"
 
 #include <vector>
 #include <memory>
@@ -17,24 +15,20 @@ namespace Engine {
     class ResourceDespatcher;
 }
 
-class BasicScene : public Engine::AbstractScene
+class BasicScene : public FreeLookScene
 {
 public:
-    BasicScene(Engine::ResourceDespatcher* despatcher);
-    virtual ~BasicScene();
+    explicit BasicScene(Engine::ResourceDespatcher* despatcher);
+    ~BasicScene();
 
-    virtual Engine::Entity::Camera* activeCamera();
-
-    virtual void prepareScene();
+    // Reimplemented methods from FreeLookScene
     virtual void update(unsigned int elapsed);
 
-    void release();
+protected:
+    // Implemented methods from FreeLookScene
+    virtual void initialise();
 
 private:
-    Engine::ResourceDespatcher* despatcher_;
-
-    Engine::Entity::Camera camera_;
-
     Engine::Entity::Mesh::Ptr torus_;
     Engine::Entity::Mesh::Ptr oildrum_;
     Engine::Entity::Mesh::Ptr sphere_;
@@ -50,8 +44,6 @@ private:
 
     std::vector<Engine::Graph::SceneNode*> cubes_;
     std::vector<Engine::Entity::Light::Ptr> lights_;
-
-    Engine::Entity::Light directionalLight_;
 
     unsigned int time_;
 };

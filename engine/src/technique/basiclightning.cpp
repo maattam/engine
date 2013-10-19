@@ -101,7 +101,7 @@ void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
     program()->setUniformValue("gDirectionalLightShadowMap", shadow);
 }
 
-void BasicLightning::setPointAndSpotLights(const std::deque<Entity::VisibleLight>& lights)
+void BasicLightning::setPointAndSpotLights(const VisibleScene::Lights& lights)
 {
     int numSpotLights = 0;
     int numPointLights = 0;

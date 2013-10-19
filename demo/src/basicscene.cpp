@@ -1,10 +1,6 @@
 #include "basicscene.h"
 
 #include "graph/scenenode.h"
-#include "entity/entity.h"
-#include "renderable/cube.h"
-#include "entity/mesh.h"
-#include "cubemaptexture.h"
 #include "resourcedespatcher.h"
 
 #include <qmath.h>
@@ -13,27 +9,18 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), camera_(Entity::Camera::PERSPECTIVE), directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
+    : FreeLookScene(despatcher), time_(0)
 {
-    camera_.setFov(75.0f);
-    camera_.setFarPlane(400.0f);
-    camera_.setPosition(QVector3D(-15, 4, 7));
-
-    time_ = 0;
 }
 
 BasicScene::~BasicScene()
 {
 }
 
-Entity::Camera* BasicScene::activeCamera()
-{
-    // We only have a single camera
-    return &camera_;
-}
-
 void BasicScene::update(unsigned int elapsedMs)
 {
+    FreeLookScene::update(elapsedMs);
+
     const float R = 16.0f;
     const float R2 = 75.0f;
 
@@ -85,18 +72,13 @@ void BasicScene::update(unsigned int elapsedMs)
     }
 }
 
-void BasicScene::prepareScene()
+void BasicScene::initialise()
 {
     // Load skybox
-    CubemapTexture::Ptr skybox = despatcher_->get<CubemapTexture>("assets/skybox/space/space*.png");
-    skybox->setFiltering(GL_LINEAR, GL_LINEAR);
-    scene()->setSkybox(skybox);
+    setSkyboxTexture("assets/skybox/space/space*.png");
 
     // Set up directional light
-    directionalLight_.diffuseIntensity = 0.05f;
-    directionalLight_.direction = QVector3D(1.0f, -1.0f, -1.0f);
-    //directionalLight->ambientIntensity = 0.1f;
-    scene()->setDirectionalLight(&directionalLight_);
+    setDirectionalLight(QVector3D(1, 1, 1), QVector3D(1.0f, -1.0f, -1.0f), 0.0f, 0.05f);
 
     // Set up point lights
     Entity::Light::Ptr pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
@@ -122,21 +104,21 @@ void BasicScene::prepareScene()
     lights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = despatcher_->get<Entity::Mesh>("assets/oildrum.dae");
-    hellknight_ = despatcher_->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher_->get<ColladaNode>("assets/blocks.dae");
-    sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
-    torus_ = despatcher_->get<Entity::Mesh>("assets/torus.obj");
+    oildrum_ = despatcher()->get<Entity::Mesh>("assets/oildrum.dae");
+    hellknight_ = despatcher()->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher()->get<ColladaNode>("assets/blocks.dae");
+    sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
+    torus_ = despatcher()->get<Entity::Mesh>("assets/torus.obj");
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
     {
         QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
 
-        Texture2D::Ptr tex = despatcher_->get<Texture2D>(file);
+        Texture2D::Ptr tex = despatcher()->get<Texture2D>(file);
         if(tex != nullptr)
         {
-            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher_);
+            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher());
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
             cube_[i] = std::make_shared<Entity::BoxPrimitive>();
@@ -144,7 +126,7 @@ void BasicScene::prepareScene()
         }
     }
 
-    Graph::SceneNode* root = scene()->rootNode();
+    Graph::SceneNode* root = rootNode();
 
     // Create nodes
     platformNode_ = dynamic_cast<Graph::SceneNode*>(root->createChild());

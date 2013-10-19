@@ -11,7 +11,7 @@ namespace Engine { namespace Entity {
 class Camera
 {
 public:
-    enum CameraType { PERSPECTIVE, ORTHOGONAL };
+    enum CameraType { PERSPECTIVE, ORTHOGRAPHIC };
 
     // The camera points towards positive z by default. The up is (0, 1, 0).
     Camera(CameraType type, const QVector3D& direction = QVector3D(0, 0, 1));
@@ -63,7 +63,7 @@ public:
     void lookAt(const QVector3D& target);
 
     // Sets the camera's bounds for orthographic projection.
-    // Has no effect is the camera's type is PERSPECTIVE.
+    // Has no effect if the camera's type is PERSPECTIVE.
     void setWindow(const QRectF& window);
 
     // Calculates the camera's view matrix using orientation * translation

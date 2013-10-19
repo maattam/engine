@@ -1,4 +1,4 @@
-#include "shadowscene.h"
+#include "sponzascene.h"
 
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
@@ -8,15 +8,9 @@
 
 using namespace Engine;
 
-ShadowScene::ShadowScene(ResourceDespatcher* despatcher)
-    : camera_(Entity::Camera::PERSPECTIVE, QVector3D(-1, 0, 0)), spotLight_(Entity::Light::LIGHT_SPOT),
-    despatcher_(despatcher), velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0),
-    directionalLight_(Entity::Light::LIGHT_DIRECTIONAL)
+SponzaScene::SponzaScene(ResourceDespatcher* despatcher) : FreeLookScene(despatcher),
+    spotLight_(Entity::Light::LIGHT_SPOT), velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0)
 {
-    camera_.setFov(75.0f);
-    camera_.setFarPlane(400.0f);
-    camera_.setPosition(QVector3D(0, 10, 0));
-
     const int NUM_NODES = 4;
     const float h = 30.0f;
     const QVector3D positions[NUM_NODES] = { QVector3D(66, h, 29),
@@ -54,18 +48,14 @@ ShadowScene::ShadowScene(ResourceDespatcher* despatcher)
     spotDirection_ = spotNode_->next->endpoint - spotNode_->endpoint;
 }
 
-ShadowScene::~ShadowScene()
+SponzaScene::~SponzaScene()
 {
 }
 
-Entity::Camera* ShadowScene::activeCamera()
+void SponzaScene::update(unsigned int elapsed)
 {
-    // We only have a single camera
-    return &camera_;
-}
+    FreeLookScene::update(elapsed);
 
-void ShadowScene::update(unsigned int elapsed)
-{
     const float posMin = -65.0f;
     const float posMax = 65.0f;
     const float t = static_cast<float>(elapsed) / 1000;
@@ -87,19 +77,17 @@ void ShadowScene::update(unsigned int elapsed)
     sphereNode_[1]->setPosition(pos);
 }
 
-void ShadowScene::prepareScene()
+void SponzaScene::initialise()
 {
     // Load skybox
-    CubemapTexture::Ptr skybox = despatcher_->get<CubemapTexture>("assets/skybox/miramar/miramar*.dds");
-    skybox->setFiltering(GL_LINEAR, GL_LINEAR);
-    scene()->setSkybox(skybox);
+    setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
-    sceneMesh_ = despatcher_->get<ColladaNode>("assets/sponza_scene.dae");
+    // Load meshes
+    sceneMesh_ = despatcher()->get<ColladaNode>("assets/sponza_scene.dae");
+    sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
 
-    directionalLight_.color = QVector3D(1, 1, 1) * 2.0f;
-    directionalLight_.direction = QVector3D(0.0f, -1.0f, -0.09f);
-    directionalLight_.ambientIntensity = 0.01f;
-    scene()->setDirectionalLight(&directionalLight_);
+    // Set up lights
+    setDirectionalLight(QVector3D(1, 1, 1) * 2.0f, QVector3D(0.0f, -1.0f, -0.09f), 0.01f, 1.0f);
 
     spotLight_.color = QVector3D(255, 214, 170) / 255.0f * 1.5;
     spotLight_.direction = spotNode_->direction;
@@ -119,12 +107,11 @@ void ShadowScene::prepareScene()
     pointLight.ambientIntensity = 0.5f;
     pointLights_.push_back(pointLight);*/
 
-    sphere_ = despatcher_->get<Entity::Mesh>("assets/sphere.obj");
-
+    // Position entities
     QMatrix4x4 scale;
     scale.scale(0.05f);
 
-    Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(scene()->rootNode()->createChild());
+    Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
     node->applyTransformation(scale);
     sceneMesh_->attach(node);
 
@@ -133,7 +120,7 @@ void ShadowScene::prepareScene()
 
     for(int i = 1; i < 2; ++i)
     {
-        sphereNode_[i] = dynamic_cast<Graph::SceneNode*>(scene()->rootNode()->createChild());
+        sphereNode_[i] = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
         sphereNode_[i]->attachEntity(sphere_.get());
         sphereNode_[i]->setShadowCaster(false);
         sphereNode_[i]->applyTransformation(scale);

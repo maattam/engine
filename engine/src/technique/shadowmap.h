@@ -4,6 +4,7 @@
 #include "technique.h"
 #include "entity/light.h"
 #include "texture2d.h"
+#include "scene/visiblescene.h"
 
 #include <QMatrix4x4>
 
@@ -27,7 +28,7 @@ public:
     const QMatrix4x4& directionalLightVP() const;
 
     bool initSpotLights(GLsizei width, GLsizei height, size_t count);
-    void enableSpotLight(size_t index, const Entity::VisibleLight& light);
+    void enableSpotLight(size_t index, const VisibleScene::VisibleLight& light);
     void bindSpotLight(size_t index, GLenum textureUnit);
     const QMatrix4x4& spotLightVP(size_t index) const;
 

@@ -1,4 +1,4 @@
-#include "renderer.h"
+#include "forwardrenderer.h"
 
 #include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
@@ -6,7 +6,7 @@
 
 #include "texture2D.h"
 #include "cubemaptexture.h"
-#include "abstractscene.h"
+#include "effect/postfx.h"
 #include "entity/camera.h"
 #include "entity/light.h"
 #include "effect/hdr.h"
@@ -17,15 +17,13 @@
 
 using namespace Engine;
 
-Renderer::Renderer(ResourceDespatcher* despatcher)
+ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
     : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher),
-    errorMaterial_(despatcher), aabbMaterial_(despatcher), flags_(0)
+    errorMaterial_(despatcher), flags_(0)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
     depthRenderbuffer_ = 0;
-    width_ = 0;
-    height_ = 0;
 
     // HDR postfx
     postfxChain_.push_back(new Effect::Hdr(despatcher, 4));
@@ -36,19 +34,16 @@ Renderer::Renderer(ResourceDespatcher* despatcher)
     nullTech_.link();
 
     // AABB debugging tech
-    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
+    /*aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
     aabbTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/aabb.frag"));
-    aabbTech_.link();
+    aabbTech_.link();*/
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
-
-    // AABB box
-    aabbMaterial_.setAmbientColor(QVector3D(0, 0, 1));
 }
 
-Renderer::~Renderer()
+ForwardRenderer::~ForwardRenderer()
 {
     destroyBuffers();
 
@@ -56,21 +51,24 @@ Renderer::~Renderer()
         delete fx;
 }
 
-void Renderer::destroyBuffers()
+bool ForwardRenderer::setViewport(unsigned int width, unsigned int height, unsigned int samples,
+        unsigned int left = 0, unsigned int top = 0)
+{
+    viewport_ = QRect(left, top, width, height);
+    return initialiseBuffers(width, height, samples);
+}
+
+void ForwardRenderer::destroyBuffers()
 {
     gl->glDeleteFramebuffers(1, &framebuffer_);
     gl->glDeleteTextures(1, &renderTexture_);
     gl->glDeleteRenderbuffers(1, &depthRenderbuffer_);
 }
 
-bool Renderer::initialize(int width, int height, int samples)
+bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples)
 {
     if(width <= 0 || height <= 0 || samples < 0)
         return false;
-
-    destroyBuffers();
-    width_ = width;
-    height_ = height;
 
     if(!shadowTech_.initSpotLights(1024, 1024, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
@@ -117,30 +115,32 @@ bool Renderer::initialize(int width, int height, int samples)
     return true;
 }
 
-void Renderer::render(Scene* scene, Entity::Camera* camera)
+void ForwardRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
 {
-    aabbDebug_.clear();
+    if(camera == nullptr || visibles == nullptr)
+    {
+        return;
+    }
 
     // Cull visibles
-    Entity::Frustrum frustrum(camera->worldView());
-    Scene::RenderQueue renderQueue;
-    scene->cullVisibles(frustrum, renderQueue);
+    VisibleScene::RenderQueue renderQueue;
+    visibles->queryVisibles(camera->worldView(), renderQueue);
 
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
 
     // Pass 1
     // Render to depth buffer
-    shadowMapPass(scene);
+    shadowMapPass(visibles);
 
     // Pass 2
     // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    renderPass(scene, camera, renderQueue);
+    renderPass(visibles, camera, renderQueue);
 
     // Render skybox if set
-    skyboxPass(scene, camera);
+    skyboxPass(visibles, camera);
 
     gl->glDisable(GL_DEPTH_TEST);
 
@@ -154,9 +154,9 @@ void Renderer::render(Scene* scene, Entity::Camera* camera)
     //drawTextureDebug();
 }
 
-void Renderer::shadowMapPass(Scene* scene)
+void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
 {
-    const auto& lights = scene->queryLights();
+    const auto& lights = visibles->queryLights();
 
     gl->glEnable(GL_CULL_FACE);
     gl->glCullFace(GL_FRONT);
@@ -166,11 +166,11 @@ void Renderer::shadowMapPass(Scene* scene)
         return;
     }
 
-    Scene::RenderQueue shadowCasters;
+    VisibleScene::RenderQueue shadowCasters;
     int spotLightIndex = 0;
 
     // Render depth for each spot light
-    for(const Entity::VisibleLight& light : lights)
+    for(const VisibleScene::VisibleLight& light : lights)
     {
         // Ignore other lights for now
         if(light.second->type() != Entity::Light::LIGHT_SPOT)
@@ -183,8 +183,7 @@ void Renderer::shadowMapPass(Scene* scene)
 
         // Resolve visibles for each light frustrum
         const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
-        Entity::Frustrum frustrum(spotVP);
-        scene->cullVisibles(frustrum, shadowCasters, true);
+        visibles->queryVisibles(spotVP, shadowCasters, true);
 
         for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
         {
@@ -201,7 +200,7 @@ void Renderer::shadowMapPass(Scene* scene)
     }
 
     // Render depth for directional light
-    auto directionalLight = scene->directionalLight();
+    auto directionalLight = visibles->directionalLight();
     if(directionalLight == nullptr)
     {
         return;
@@ -212,8 +211,7 @@ void Renderer::shadowMapPass(Scene* scene)
 
     // Resolve occluders for directional light
     const QMatrix4x4& dirVP = shadowTech_.directionalLightVP();
-    Entity::Frustrum frustrum(dirVP);
-    scene->cullVisibles(frustrum, shadowCasters, true);
+    visibles->queryVisibles(dirVP, shadowCasters, true);
 
     for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
     {
@@ -225,18 +223,19 @@ void Renderer::shadowMapPass(Scene* scene)
             rit->second->render();
         }
     }
+
+    gl->glCullFace(GL_BACK);
 }
 
-void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::RenderQueue& visibles)
+void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera, const VisibleScene::RenderQueue& queue)
 {
-    const auto& lights = scene->queryLights();
+    const auto& lights = visibles->queryLights();
 
     // Prepare OpenGL state for render pass
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
 
-    gl->glCullFace(GL_BACK);
-    gl->glViewport(0, 0, width_, height_);
+    gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
     if(!lightningTech_.enable())
     {
@@ -245,8 +244,8 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
 
     lightningTech_.setEyeWorldPos(camera->position());
     lightningTech_.setTextureUnits(0, 1, 2);
-    lightningTech_.setDirectionalLight(scene->directionalLight());
-    lightningTech_.setPointAndSpotLights(scene->queryLights());
+    lightningTech_.setDirectionalLight(visibles->directionalLight());
+    lightningTech_.setPointAndSpotLights(visibles->queryLights());
 
     // Bind directional light shadow map
     shadowTech_.bindDirectionalLight(GL_TEXTURE0 + Material::TEXTURE_COUNT);
@@ -254,7 +253,7 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
 
     // Bind spot light shadow maps after material samplers
     int spotLightIndex = 0;
-    for(const Entity::VisibleLight& light : lights)
+    for(const VisibleScene::VisibleLight& light : lights)
     {
         if(light.second->type() == Entity::Light::LIGHT_SPOT)
         {
@@ -280,14 +279,14 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
     }
 
     // Render visibles
-    for(auto it = visibles.begin(); it != visibles.end(); ++it)
+    for(auto it = queue.begin(); it != queue.end(); ++it)
     {
         lightningTech_.setWorldView(it->first);
         lightningTech_.setMVP(camera->worldView() * it->first);
 
-        // Set translation matrix for each spot light
+        // Set transformation matrix for each spot light
         spotLightIndex = 0;
-        for(const Entity::VisibleLight& light : lights)
+        for(const VisibleScene::VisibleLight& light : lights)
         {
             if(light.second->type() == Entity::Light::LIGHT_SPOT)
             {
@@ -311,7 +310,7 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
     }
 
     // Draw bounding boxes
-    if(flags_ & DEBUG_AABB)
+    /*if(flags_ & DEBUG_AABB)
     {
         aabbTech_.bind();
         aabbTech_.setUniformValue("gColor", aabbMaterial_.attributes().ambientColor);
@@ -327,10 +326,10 @@ void Renderer::renderPass(Scene* scene, Entity::Camera* camera, const Scene::Ren
 
         gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         gl->glEnable(GL_CULL_FACE);
-    }
+    }*/
 }
 
-void Renderer::renderNode(const RenderList& node)
+void ForwardRenderer::renderNode(const RenderList& node)
 {
     for(auto it = node.begin(); it != node.end(); ++it)
     {
@@ -357,12 +356,12 @@ void Renderer::renderNode(const RenderList& node)
     }
 }
 
-void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera)
+void ForwardRenderer::skyboxPass(VisibleScene* visibles, Entity::Camera* camera)
 {
     if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
         return;
 
-    if(scene->skybox() == nullptr)
+    if(visibles->skybox() == nullptr)
         return;
 
     if(!skyboxTech_.enable())
@@ -375,42 +374,42 @@ void Renderer::skyboxPass(Scene* scene, Entity::Camera* camera)
     skyboxTech_.setMVP(camera->worldView() * trans);
     skyboxTech_.setTextureUnit(0);
 
-    if(scene->skybox()->bindActive(GL_TEXTURE0))
+    if(visibles->skybox()->bindActive(GL_TEXTURE0))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
         gl->glDepthFunc(GL_LEQUAL);
 
-        aabbBox_.render();
+        box_.render();
 
         gl->glCullFace(GL_BACK);
     }
 }
 
-void Renderer::drawTextureDebug()
+void ForwardRenderer::drawTextureDebug()
 {
     shadowTech_.bindDirectionalLight(GL_TEXTURE0);
     nullTech_.bind();
     nullTech_.setUniformValue("gShadowMap", 0);
 
-    gl->glViewport(0, 0, 512, 512);
+    gl->glViewport(viewport_.x(), viewport_.y(), 512, 512);
 
     quad_.render();
 
-    gl->glViewport(0, 0, width_, height_);
+    gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 }
 
-void Renderer::setFlags(unsigned int flags)
+void ForwardRenderer::setFlags(unsigned int flags)
 {
     flags_ = flags;
 }
 
-unsigned int Renderer::flags() const
+unsigned int ForwardRenderer::flags() const
 {
     return flags_;
 }
 
-void Renderer::addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb)
+/*void ForwardRenderer::addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb)
 {
     if(aabb.width() <= 0)
         return;
@@ -421,4 +420,4 @@ void Renderer::addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb)
     scale.scale(aabb.width(), aabb.height(), aabb.depth());   // Display over mesh surface
 
     aabbDebug_.push_back(trans * scale);
-}
+}*/

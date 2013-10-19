@@ -45,7 +45,7 @@ bool ShadowMap::initSpotLights(GLsizei width, GLsizei height, size_t count)
     return true;
 }
 
-void ShadowMap::enableSpotLight(size_t index, const Entity::VisibleLight& light)
+void ShadowMap::enableSpotLight(size_t index, const VisibleScene::VisibleLight& light)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, spotLightFbos_.at(index));
 

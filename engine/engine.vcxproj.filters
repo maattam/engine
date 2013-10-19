@@ -44,11 +44,32 @@
     <Filter Include="Header Files\technique">
       <UniqueIdentifier>{40518536-f723-4f26-b875-9fe008aa5366}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\entity">
+      <UniqueIdentifier>{c089e030-4a08-416e-b9cc-2b0b9888d4be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graph">
+      <UniqueIdentifier>{9dbcde47-0acf-4822-8b61-804c12c8b3d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\renderable">
+      <UniqueIdentifier>{f428b6c3-e3d9-4d3b-b776-78adc75904b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\scene">
+      <UniqueIdentifier>{aa6376de-15cd-4e5c-a81a-b1bcdcb2bab4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entity">
+      <UniqueIdentifier>{898cafc3-144f-4a54-852e-d9f3b2a97983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graph">
+      <UniqueIdentifier>{f852ef96-2ccc-44e6-9f1c-2aea6fe835f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\scene">
+      <UniqueIdentifier>{f159aabb-5ed0-4e79-a687-913644d216eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\renderable">
+      <UniqueIdentifier>{965f7a32-612f-4bfb-819d-ac4a590bd7d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\effect\downsampler.cpp">
       <Filter>Source Files\effect</Filter>
     </ClCompile>
@@ -69,6 +90,57 @@
     </ClCompile>
     <ClCompile Include="src\technique\skyboxtechnique.cpp">
       <Filter>Source Files\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\scene.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\colladanode.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\submesh.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\cube.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\quad.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\renderable.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graph\scenenode.cpp">
+      <Filter>Source Files\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graph\node.cpp">
+      <Filter>Source Files\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\mesh.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\subentity.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\aabb.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\boxprimitive.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\camera.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\entity.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\light.cpp">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forwardrenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\entity\frustum.cpp">
+      <Filter>Source Files\entity</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,9 +185,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\effect\downsampler.h">
       <Filter>Header Files\effect</Filter>
     </ClInclude>
@@ -133,6 +202,69 @@
     </ClInclude>
     <ClInclude Include="src\technique\skyboxtechnique.h">
       <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\colladanode.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scene.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\submesh.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\cube.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\quad.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\renderable.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graph\node.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graph\scenenode.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\aabb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\boxprimitive.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\camera.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\entity.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\light.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\mesh.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\subentity.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forwardrenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\visiblescene.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scenemodel.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\entity\frustum.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scenecontroller.h">
+      <Filter>Header Files\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

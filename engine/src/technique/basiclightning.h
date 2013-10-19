@@ -1,6 +1,8 @@
 #ifndef BASICLIGHTNING_H
 #define BASICLIGHTNING_H
 
+#include "scene/visiblescene.h"
+
 #include "technique.h"
 #include "entity/light.h"
 #include "material.h"
@@ -38,7 +40,7 @@ public:
     void setDirectionalLightShadowUnit(GLuint shadow);
 
     void setDirectionalLight(Entity::Light* light);
-    void setPointAndSpotLights(const std::deque<Entity::VisibleLight>& lights);
+    void setPointAndSpotLights(const VisibleScene::Lights& lights);
 
 protected:
     virtual void init();

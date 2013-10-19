@@ -5,6 +5,7 @@
 
 #include <deque>
 #include "aabb.h"
+#include "scene/visiblescene.h"
 
 namespace Engine {
 
@@ -13,8 +14,6 @@ class Material;
 namespace Renderable {
     class Renderable;
 }
-
-typedef std::deque<std::pair<Material*, Renderable::Renderable*>> RenderList;
 
 namespace Entity {
 
