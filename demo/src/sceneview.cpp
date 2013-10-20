@@ -72,8 +72,12 @@ void SceneView::updateTitle()
     float frameTime = static_cast<double>(frameTime_.restart()) / 1000;
 
     QVector3D pos = controller_->playerPosition();
-    setTitle(QString("FPS: %1, Eye position: (%2, %3, %4)").arg(QString::number(static_cast<int>(frame_ / frameTime)))
-        .arg(QString::number(pos.x())).arg(QString::number(pos.y())).arg(QString::number(pos.z())));
+    setTitle(QString("FPS: %1, Eye position: (%2, %3, %4)")
+        .arg(QString::number(static_cast<int>(frame_ / frameTime)))
+        .arg(QString::number(pos.x()))
+        .arg(QString::number(pos.y()))
+        .arg(QString::number(pos.z()))
+        );
 
     frame_ = 0;
 }

@@ -70,7 +70,7 @@ void SponzaScene::update(unsigned int elapsed)
         spotDirection_.normalize();
 
         spotNode_ = spotNode_->next;
-        spotLight_.direction = spotNode_->direction;
+        spotLight_.setDirection(spotNode_->direction);
     }
 
     pos += spotDirection_ * t * spotVelocity_;
@@ -87,15 +87,15 @@ void SponzaScene::initialise()
     sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
 
     // Set up lights
-    setDirectionalLight(QVector3D(1, 1, 1) * 2.0f, QVector3D(0.0f, -1.0f, -0.09f), 0.01f, 1.0f);
+    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.01f, 4.5f);
 
-    spotLight_.color = QVector3D(255, 214, 170) / 255.0f * 1.5;
-    spotLight_.direction = spotNode_->direction;
-    spotLight_.diffuseIntensity = 10.0f;
-    spotLight_.attenuation.exp = 0.005f;
-    spotLight_.attenuation.constant = 1.0f;
-    spotLight_.attenuation.linear = 0.1f;
-    spotLight_.cutoff = 30.0f;
+    spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
+    spotLight_.setDirection(spotNode_->direction);
+    spotLight_.setDiffuseIntensity(18.0f);
+    spotLight_.setAttenuationExp(0.005f);
+    spotLight_.setAttenuationConstant(1.0f);
+    spotLight_.setAttenuationLinear(0.1f);
+    spotLight_.setCutoff(30.0f);
 
     /*Entity::PointLight pointLight;
     pointLight.attenuation.exp = 0.005f;

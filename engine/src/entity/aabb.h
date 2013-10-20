@@ -16,7 +16,7 @@ public:
 
     bool resize(const AABB& other);
     bool resize(const QVector3D& point);
-    void reset();
+    void reset(const QVector3D& min = QVector3D(), const QVector3D& max = QVector3D());
 
     float width() const;
     float height() const;
@@ -24,8 +24,6 @@ public:
 
     QVector3D center() const;
     QVector3D extent() const;
-
-    AABB operator*(const QMatrix4x4& transform) const;
 
 private:
     QVector3D min_;

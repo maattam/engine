@@ -232,5 +232,6 @@ float Hdr::calculateExposure(float r, float g, float b)
     }
 
     average /= static_cast<float>(NUM_EXPOSURES);
+
     return std::exp(-(2.0 * average));
 }

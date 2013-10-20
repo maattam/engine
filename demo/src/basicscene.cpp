@@ -63,18 +63,18 @@ void BasicScene::initialise()
     setSkyboxTexture("assets/skybox/space/space*.png");
 
     // Set up directional light
-    setDirectionalLight(QVector3D(1, 1, 1), QVector3D(1.0f, -1.0f, -1.0f), 0.0f, 0.05f);
+    setDirectionalLight(QVector3D(1, 1, 1), QVector3D(1.0f, -1.0f, -1.0f), 0.0f, 0.1f);
 
     // Set up point lights
     Entity::Light::Ptr pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
-    pointLight->diffuseIntensity = 10.0f;
-    pointLight->attenuation.exp = 0.1f;
+    pointLight->setDiffuseIntensity(10.0f);
+    pointLight->setAttenuationExp(0.1f);
     lights_.push_back(pointLight);
 
     pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
-    //pointLight.diffuseIntensity = 50.0f;
-    pointLight->color = QVector3D(0.0f, 0.0f, 1.0f);
-    pointLight->attenuation.exp = 0.025f;
+    pointLight->setColor(QVector3D(0.0f, 0.0f, 1.0f));
+    pointLight->setAttenuationExp(0.5f);
+    pointLight->setDiffuseIntensity(100.0f);
     lights_.push_back(pointLight);
 
     blueLightNode_ = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
@@ -82,12 +82,11 @@ void BasicScene::initialise()
 
     // Set up spot lights
     Entity::Light::Ptr spotLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_SPOT);
-    spotLight->color = QVector3D(1.0f, 0.0f, 1.0f);
-    //spotLight->position = 2*QVector3D(-6.0f, 7/2, 6.0f);
-    spotLight->direction = QVector3D(4.0f, -4.0f, -6.0f);
-    spotLight->diffuseIntensity = 20.0f;
-    spotLight->attenuation.exp = 0.05f;
-    spotLight->cutoff = 20.0f;
+    spotLight->setColor(QVector3D(1.0f, 0.0f, 1.0f));
+    spotLight->setDirection(QVector3D(4.0f, -4.0f, -6.0f));
+    spotLight->setDiffuseIntensity(20.0f);
+    spotLight->setAttenuationExp(0.05f);
+    spotLight->setCutoff(20.0f);
     lights_.push_back(spotLight);
 
     // Load models

@@ -22,14 +22,13 @@ layout(location = 0) out vec4 fragColor;
 struct Light
 {
 	vec3 color;
-	float ambientIntensity;
-	float diffuseIntensity;
 };
 
 struct DirectionalLight
 {
 	Light base;
 	vec3 direction;
+    float ambientIntensity;
 };
 
 struct Attenuation
@@ -126,7 +125,7 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 	
 	if(diffuseFactor > 0)
 	{
-		diffuseColor = vec4(light.color, 1.0) * light.diffuseIntensity * diffuseFactor;
+		diffuseColor = vec4(light.color, 1.0) * diffuseFactor;
 	
 		vec3 vertexToEye = normalize(gEyeWorldPos - worldPos0);
 		vec3 lightReflect = normalize(reflect(lightDirection, normal));
@@ -149,7 +148,7 @@ vec4 calcDirectionalLight(in vec3 normal)
 {
     float shadow = calcShadowFactor(directionalLightSpacePos0, gDirectionalLightShadowMap, SHADOWMAP_DIR_SIZE);
 
-    vec4 ambient = vec4(gDirectionalLight.base.color, 1.0) * gDirectionalLight.base.ambientIntensity;
+    vec4 ambient = vec4(gDirectionalLight.base.color, 1.0) * gDirectionalLight.ambientIntensity;
     vec4 color = calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
 
 	return ambient + shadow * color;

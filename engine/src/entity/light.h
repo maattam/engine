@@ -23,21 +23,47 @@ public:
         float constant;
         float linear;
         float exp;
-    } attenuation;
-
-    QVector3D color;
-    QVector3D direction;
-
-    float ambientIntensity;
-    float diffuseIntensity;
-    float cutoff;
+    };
 
     LightType type() const;
 
     virtual void updateRenderList(RenderList& list);
 
+    void setColor(const QVector3D& color);
+    const QVector3D& color() const;
+
+    void setDirection(const QVector3D& direction);
+    const QVector3D& direction() const;
+
+    void setAmbientIntensity(float intensity);
+    float ambientIntensity() const;
+
+    void setDiffuseIntensity(float intensity);
+    float diffuseIntensity() const;
+
+    void setCutoff(float cutoff);
+    float cutoff() const;
+
+    void setAttenuationConstant(float attn);
+    void setAttenuationLinear(float attn);
+    void setAttenuationExp(float attn);
+
+    const Attenuation& Light::attenuation() const;
+
 private:
+    void calculateAABB();
+    float maxSpotDistance() const;
+
     LightType type_;
+
+    QVector3D color_;
+    QVector3D direction_;
+
+    float ambientIntensity_;
+    float diffuseIntensity_;
+    float cutoff_;
+
+    Attenuation attenuation_;
 };
 
 }}

@@ -58,7 +58,7 @@ void ShadowMap::enableSpotLight(size_t index, const VisibleScene::VisibleLight& 
     vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
 
     QMatrix4x4 look;
-    look.lookAt(light.first, light.first + light.second->direction, QVector3D(0, 1, 0));
+    look.lookAt(light.first, light.first + light.second->direction(), QVector3D(0, 1, 0));
     vp *= look;
 
     gl->glViewport(0, 0, texture->width(), texture->height());
@@ -108,10 +108,7 @@ void ShadowMap::enableDirectinalLight(Entity::Light* light)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, directionalLightFbo_);
 
-    QVector3D direction = light->direction;
-    direction.normalize();
-
-    Entity::Camera view(QRectF(-95, -65, 190, 130), direction);
+    Entity::Camera view(QRectF(-95, -65, 190, 130), light->direction());
     view.setNearPlane(-80.0f);
     view.setFarPlane(400.0f);
     view.update();

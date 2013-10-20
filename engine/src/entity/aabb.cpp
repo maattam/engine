@@ -31,9 +31,10 @@ bool AABB::resize(const AABB& other)
     return updated;
 }
 
-void AABB::reset()
+void AABB::reset(const QVector3D& min, const QVector3D& max)
 {
-    min_ = max_ = QVector3D();
+    min_ = min;
+    max_ = max;
 }
 
 float AABB::width() const
@@ -49,64 +50,6 @@ float AABB::height() const
 float AABB::depth() const
 {
     return max_.z() - min_.z();
-}
-
-AABB AABB::operator*(const QMatrix4x4& mat) const
-{
-    float av, bv;
-
-    AABB newAabb;
-    newAabb.min_ = newAabb.max_ = mat.column(3).toVector3D();
-
-    for(int i = 0; i < 3; ++i)
-    {
-        av = mat(i, 0) * min_.x();
-        bv = mat(i, 0) * max_.x();
-
-        if(av < bv)
-        {
-            newAabb.min_.setX(newAabb.min_.x() + av);
-            newAabb.max_.setX(newAabb.max_.x() + bv);
-        }
-
-        else
-        {
-            newAabb.min_.setX(newAabb.min_.x() + bv);
-            newAabb.max_.setX(newAabb.max_.x() + av);
-        }
-
-        av = mat(i, 1) * min_.y();
-        bv = mat(i, 1) * max_.y();
-
-        if(av < bv)
-        {
-            newAabb.min_.setY(newAabb.min_.y() + av);
-            newAabb.max_.setY(newAabb.max_.y() + bv);
-        }
-
-        else
-        {
-            newAabb.min_.setY(newAabb.min_.y() + bv);
-            newAabb.max_.setY(newAabb.max_.y() + av);
-        }
-
-        av = mat(i, 2) * min_.z();
-        bv = mat(i, 2) * max_.z();
-
-        if(av < bv)
-        {
-            newAabb.min_.setZ(newAabb.min_.z() + av);
-            newAabb.max_.setZ(newAabb.max_.z() + bv);
-        }
-
-        else
-        {
-            newAabb.min_.setZ(newAabb.min_.z() + bv);
-            newAabb.max_.setZ(newAabb.max_.z() + av);
-        }
-    }
-
-    return newAabb;
 }
 
 bool AABB::resize(const QVector3D& point)

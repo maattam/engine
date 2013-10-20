@@ -109,10 +109,10 @@ void FreeLookScene::setSkyboxTexture(const QString& fileName)
 void FreeLookScene::setDirectionalLight(const QVector3D& color, const QVector3D& direction,
                                         float ambientIntensity, float diffuseIntensity)
 {
-    dirLight_.color = color;
-    dirLight_.direction = direction;
-    dirLight_.ambientIntensity = ambientIntensity;
-    dirLight_.diffuseIntensity = diffuseIntensity;
+    dirLight_.setColor(color);
+    dirLight_.setDirection(direction);
+    dirLight_.setAmbientIntensity(ambientIntensity);
+    dirLight_.setDiffuseIntensity(diffuseIntensity);
 }
 
 Graph::SceneNode* FreeLookScene::rootNode()
