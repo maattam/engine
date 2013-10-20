@@ -25,7 +25,7 @@ typedef std::deque<std::pair<Material*, Renderable::Renderable*>> RenderList;
 class VisibleScene
 {
 public:
-    typedef std::pair<QMatrix4x4, RenderList> VisibleNode;
+    typedef std::pair<const QMatrix4x4* const, RenderList> VisibleNode;
     typedef std::pair<QVector3D, Entity::Light*> VisibleLight;
 
     typedef std::deque<VisibleNode> RenderQueue;
@@ -33,7 +33,7 @@ public:
 
     virtual ~VisibleScene() {};
 
-    // Queries list potentially visible objects within the view frustrum and populates the renderQueue.
+    // Queries list of potentially visible objects within the view frustrum and populates the renderQueue.
     // If shadowCasters is true, adds only shadow casting entities to the queue.
     // queryVisibles also caches all the lights within the camera's frustrum if shadowCasters is false.
     virtual void queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters = false) = 0;

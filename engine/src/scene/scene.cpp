@@ -93,7 +93,7 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
     if(node->numEntities() > 0)
     {
         const QMatrix4x4& nodeView = node->transformation();
-        VisibleNode visibleNode = std::make_pair(nodeView, RenderList());
+        VisibleNode visibleNode = std::make_pair(&nodeView, RenderList());
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {

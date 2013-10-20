@@ -188,7 +188,7 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
         for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
         {
             const RenderList& node = it->second;
-            shadowTech_.setLightMVP(spotVP * it->first);
+            shadowTech_.setLightMVP(spotVP * *it->first);
 
             for(auto rit = node.begin(); rit != node.end(); ++rit)
             {
@@ -216,7 +216,7 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
     for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
     {
         const RenderList& node = it->second;
-        shadowTech_.setLightMVP(dirVP * it->first);
+        shadowTech_.setLightMVP(dirVP * *it->first);
 
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
@@ -281,8 +281,8 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
     // Render visibles
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
-        lightningTech_.setWorldView(it->first);
-        lightningTech_.setMVP(camera->worldView() * it->first);
+        lightningTech_.setWorldView(*it->first);
+        lightningTech_.setMVP(camera->worldView() * *it->first);
 
         // Set transformation matrix for each spot light
         spotLightIndex = 0;
@@ -291,13 +291,13 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
             if(light.second->type() == Entity::Light::LIGHT_SPOT)
             {
                 const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
-                lightningTech_.setSpotLightMVP(spotLightIndex, spotVP * it->first);
+                lightningTech_.setSpotLightMVP(spotLightIndex, spotVP * *it->first);
                 spotLightIndex++;
             }
         }
 
         // Set directional light mvp
-        lightningTech_.setDirectionalLightMVP(shadowTech_.directionalLightVP() * it->first);
+        lightningTech_.setDirectionalLightMVP(shadowTech_.directionalLightVP() * *it->first);
 
         renderNode(it->second);
     }
