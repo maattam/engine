@@ -181,7 +181,8 @@ void ColladaData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, aiMatri
         QMatrix4x4 nodeTransf = aiMatrixToQMatrix(transform);
 
         // Create new node
-        newParent = dynamic_cast<Graph::SceneNode*>(parent->createChild(nodeTransf));
+        newParent = parent->createSceneNodeChild();
+        newParent->applyTransformation(nodeTransf);
         newParent->attachEntity(meshIndex.first.get());
 
         // Don't carry transformation over to child nodes

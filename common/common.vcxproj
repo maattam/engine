@@ -20,9 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\mathelp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common.h" />
+    <ClInclude Include="src\mathelp.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C073D863-B938-464D-8584-8C9776A93268}</ProjectGuid>

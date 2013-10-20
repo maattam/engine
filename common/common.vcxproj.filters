@@ -19,9 +19,15 @@
     <ClCompile Include="src\common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\mathelp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mathelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

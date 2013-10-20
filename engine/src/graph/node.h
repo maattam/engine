@@ -1,9 +1,11 @@
+// Abstract graph node which represents hierarchial rotation, scale and translation
+// relative to child nodes.
+
 #ifndef NODE_H
 #define NODE_H
 
-// Abstract graph node
-
 #include <QMatrix4x4>
+#include <QQuaternion>
 #include <vector>
 
 namespace Engine { namespace Graph {
@@ -18,10 +20,45 @@ public:
 
     Node* getParent() const;
 
+    // Caches the node's world transformation if the orientation, scale or
+    // translation has changed.
+    // If the node has children, the children's transformations are cached recursively.
+    void update();
+
+    // Returns the cached world transformation of this node.
     const QMatrix4x4& transformation() const;
+
+    // Applies given transformation matrix to this node.
     void applyTransformation(const QMatrix4x4& matrix);
+
+    // Set node position in world space
     void setPosition(const QVector3D& position);
     const QVector3D& position() const;
+
+    // Adds offset to the node's position
+    void move(const QVector3D& offset);
+
+    // Rotates the node's orientation by quaternion
+    void rotate(const QQuaternion& quaternion);
+
+    // Rotates the node's orientation by angle degrees along given axis
+    void rotate(float angle, const QVector3D& axis);
+
+    void setOrientation(const QQuaternion& quaternion);
+    const QQuaternion& orientation() const;
+
+    // Makes the node face the given direction.
+    void setDirection(const QVector3D& direction);
+
+    // Returns the direction the node is facing
+    QVector3D direction() const;
+
+    // Helper function that sets the node to face at given target.
+    void lookAt(const QVector3D& target);
+
+    void setScale(const QVector3D& scale);
+    void setScale(float scale);
+    const QVector3D& scale() const;
 
     ChildNodes::size_type numChildren() const;
     Node* getChild(ChildNodes::size_type index);
@@ -31,18 +68,27 @@ public:
     virtual Node* removeChild(Node* child);
     virtual void removeAllChildren();
 
-    virtual Node* createChild(const QMatrix4x4& transformation = QMatrix4x4());
+    virtual Node* createChild();
     virtual void addChild(Node* child);
 
 protected:
     void setParent(Node* parent);
 
-    virtual Node* createChildImpl(const QMatrix4x4& transformation) = 0;
+    virtual Node* createChildImpl() = 0;
 
 private:
     Node* parent_;
     ChildNodes children_;
-    QMatrix4x4 transformation_;
+
+    QVector3D position_;
+    QVector3D scale_;
+    QQuaternion orientation_;
+
+    bool updateNeeded_;
+    QMatrix4x4 cachedTransformation_;
+    QMatrix4x4 cachedLocalTrans_;
+
+    void updateTransformation(const QMatrix4x4& parentTransformation, bool dirtyParent);
 };
 
 }}

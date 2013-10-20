@@ -6,6 +6,8 @@
 #include <QMatrix4x4>
 #include <QRect>
 
+#include "mathelp.h"
+
 namespace Engine { namespace Entity {
 
 class Camera
@@ -14,13 +16,13 @@ public:
     enum CameraType { PERSPECTIVE, ORTHOGRAPHIC };
 
     // The camera points towards positive z by default. The up is (0, 1, 0).
-    Camera(CameraType type, const QVector3D& direction = QVector3D(0, 0, 1));
+    Camera(CameraType type, const QVector3D& direction = UNIT_Z);
 
     // Constructs a camera with perspective projection.
-    Camera(float aspectRatio, float fov, const QVector3D& direction = QVector3D(0, 0, 1));
+    Camera(float aspectRatio, float fov, const QVector3D& direction = UNIT_Z);
 
     // Constructs a camera with orthogonal projection.
-    Camera(const QRectF& window, const QVector3D& direction = QVector3D(0, 0, 1));
+    Camera(const QRectF& window, const QVector3D& direction = UNIT_Z);
 
     CameraType type() const;
 
@@ -80,7 +82,7 @@ public:
     void setNearPlane(float nearPlane);
     void setFov(float value);
 
-    void setFixedYaw(bool value, const QVector3D& yaw = QVector3D(0, 1, 0));
+    void setFixedYaw(bool value, const QVector3D& yaw = UNIT_Y);
 
     // Calculates and caches the camera's world view matrix
     void update();

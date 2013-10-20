@@ -27,6 +27,9 @@ void Scene::renderScene(Entity::Camera* camera)
 {
     if(renderer_ != nullptr)
     {
+        // Update scene transformations
+        rootNode_.update();
+
         renderer_->render(camera, this);
     }
 }
@@ -40,7 +43,7 @@ void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, 
 
     renderQueue.clear();
 
-    findVisibles(viewProj, &rootNode_, QMatrix4x4(), renderQueue, shadowCasters);
+    findVisibles(viewProj, &rootNode_, renderQueue, shadowCasters);
 }
 
 Entity::Light* Scene::directionalLight() const
@@ -79,18 +82,17 @@ const Scene::Lights& Scene::queryLights() const
 }
 
 void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
-                         const QMatrix4x4& worldView, Scene::RenderQueue& queue, bool shadowCasters)
+                         Scene::RenderQueue& queue, bool shadowCasters)
 {
     if(node == nullptr)
     {
         return;
     }
 
-    QMatrix4x4 nodeView = worldView * node->transformation();
-
     // Push entities from the node into the render queue
     if(node->numEntities() > 0)
     {
+        const QMatrix4x4& nodeView = node->transformation();
         VisibleNode visibleNode = std::make_pair(nodeView, RenderList());
 
         for(size_t i = 0; i < node->numEntities(); ++i)
@@ -136,6 +138,6 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
     for(size_t i = 0; i < node->numChildren(); ++i)
     {
         Graph::SceneNode* inode = dynamic_cast<Graph::SceneNode*>(node->getChild(i));
-        findVisibles(viewProj, inode, nodeView, queue, shadowCasters);
+        findVisibles(viewProj, inode, queue, shadowCasters);
     }
 }

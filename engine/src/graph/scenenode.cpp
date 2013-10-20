@@ -67,7 +67,7 @@ Entity::Entity* SceneNode::getEntity(Entities::size_type index)
     return entities_[index];
 }
 
-Node* SceneNode::createChildImpl(const QMatrix4x4& transformation)
+Node* SceneNode::createChildImpl()
 {
     return new SceneNode;
 }
@@ -80,4 +80,9 @@ bool SceneNode::isShadowCaster() const
 void SceneNode::setShadowCaster(bool shadows)
 {
     castShadows_ = shadows;
+}
+
+SceneNode* SceneNode::createSceneNodeChild()
+{
+    return dynamic_cast<SceneNode*>(createChild());
 }

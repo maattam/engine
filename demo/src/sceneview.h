@@ -51,6 +51,8 @@ private:
     QOpenGLContext* context_;
     QOPENGL_FUNCTIONS* funcs_;
 
+    Input* input_;
+
     Engine::Renderer* renderer_;
     Engine::ResourceDespatcher despatcher_;
 
@@ -61,8 +63,6 @@ private:
 
     QElapsedTimer lastTime_;
     QElapsedTimer frameTime_;
-
-    Input* input_;
 };
 
 #endif // SCENEVIEW_H

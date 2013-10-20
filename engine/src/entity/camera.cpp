@@ -85,22 +85,18 @@ void Camera::setOrientation(const QQuaternion& quaternion)
 void Camera::setDirection(const QVector3D& direction)
 {
     // Default look in OpenGL is towards -Z
-    const QVector3D start(0, 0, -1.0f);
+    const QVector3D start = -UNIT_Z;
     const QVector3D dest = direction.normalized();
 
-    float theta = QVector3D::dotProduct(start, dest);
-
     // 180 degree turn; infite possibilites, choose one that works.
-    if(theta < -1.0f + 0.001f)
+    if(QVector3D::dotProduct(start, dest) < -1.0f + 0.001f)
     {
         orientation_ = QQuaternion(0.0f, 0.0f, 1.0f, 0.0f);
     }
 
     else
     {
-        QVector3D axis = QVector3D::crossProduct(start, dest);
-        float halfangle = qAcos(theta) / 2;
-        orientation_ = QQuaternion(qCos(halfangle), axis * qSin(halfangle));
+        orientation_ = rotationBetweenVectors(start, dest);
     }
 
     orientation_.normalize();
@@ -114,9 +110,7 @@ void Camera::lookAt(const QVector3D& target)
 QVector3D Camera::direction() const
 {
     // Default direction points towards -Z
-    const QVector3D start(0, 0, -1.0f);
-
-    return orientation_.rotatedVector(start);
+    return orientation_.rotatedVector(-UNIT_Z);
 }
 
 const QMatrix4x4& Camera::worldView() const
@@ -191,13 +185,13 @@ void Camera::setNearPlane(float near)
 QVector3D Camera::up() const
 {
     // Default up is +Y, so we are rotate +Y to find the current up.
-    return orientation_.rotatedVector(QVector3D(0, 1, 0));
+    return orientation_.rotatedVector(UNIT_Y);
 }
 
 QVector3D Camera::right() const
 {
     // Default right is +X
-    return orientation_.rotatedVector(QVector3D(1, 0, 0));
+    return orientation_.rotatedVector(UNIT_X);
 }
 
 void Camera::setFixedYaw(bool value, const QVector3D& yaw)

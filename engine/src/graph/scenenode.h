@@ -35,8 +35,11 @@ public:
     bool isShadowCaster() const;
     void setShadowCaster(bool shadows);
 
+    // Utility method for creating SceneNode children
+    SceneNode* createSceneNodeChild();
+
 protected:
-    virtual Node* createChildImpl(const QMatrix4x4& transformation);
+    virtual Node* createChildImpl();
 
 private:
     Entities entities_;

@@ -39,8 +39,10 @@ private:
 
     Engine::Graph::SceneNode* cubeNode_;
     Engine::Graph::SceneNode* platformNode_;
+    Engine::Graph::SceneNode* hkNode_;
     Engine::Graph::SceneNode* torusNode_;
     Engine::Graph::SceneNode* sphereNode_;
+    Engine::Graph::SceneNode* blueLightNode_;
 
     std::vector<Engine::Graph::SceneNode*> cubes_;
     std::vector<Engine::Entity::Light::Ptr> lights_;

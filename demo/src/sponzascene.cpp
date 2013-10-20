@@ -108,22 +108,16 @@ void SponzaScene::initialise()
     pointLights_.push_back(pointLight);*/
 
     // Position entities
-    QMatrix4x4 scale;
-    scale.scale(0.05f);
-
-    Graph::SceneNode* node = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
-    node->applyTransformation(scale);
+    Graph::SceneNode* node = rootNode()->createSceneNodeChild();
+    node->setScale(0.05f);
     sceneMesh_->attach(node);
-
-    scale.setToIdentity();
-    scale.scale(0.5f);
 
     for(int i = 1; i < 2; ++i)
     {
-        sphereNode_[i] = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
+        sphereNode_[i] = rootNode()->createSceneNodeChild();
         sphereNode_[i]->attachEntity(sphere_.get());
         sphereNode_[i]->setShadowCaster(false);
-        sphereNode_[i]->applyTransformation(scale);
+        sphereNode_[i]->setScale(0.5f);
     }
 
     sphereNode_[1]->attachEntity(&spotLight_);
