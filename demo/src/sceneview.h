@@ -15,6 +15,7 @@
 
 namespace Engine {
     class Renderer;
+    class DebugRenderer;
 }
 
 class SceneView : public QWindow
@@ -54,6 +55,7 @@ private:
     Input* input_;
 
     Engine::Renderer* renderer_;
+    Engine::DebugRenderer* debugRenderer_;
     Engine::ResourceDespatcher despatcher_;
 
     Engine::Scene model_;
@@ -63,6 +65,8 @@ private:
 
     QElapsedTimer lastTime_;
     QElapsedTimer frameTime_;
+
+    void toggleRenderFlag(Engine::Renderer* renderer, unsigned int flag);
 };
 
 #endif // SCENEVIEW_H

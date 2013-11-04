@@ -142,6 +142,9 @@
     <ClCompile Include="src\entity\frustum.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
+    <ClCompile Include="src\debugrenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\passthrough.vert">
@@ -181,6 +184,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\aabb.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\wireframe.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\wireframe.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -265,6 +274,12 @@
     </ClInclude>
     <ClInclude Include="src\scene\scenecontroller.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\sceneobserver.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debugrenderer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

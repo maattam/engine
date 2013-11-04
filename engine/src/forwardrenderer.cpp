@@ -33,14 +33,11 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
     nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/shadowmap.frag"));
     nullTech_.link();
 
-    // AABB debugging tech
-    /*aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
-    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/aabb.frag"));
-    aabbTech_.link();*/
-
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
+
+    flags_ |= RENDER_SHADOWS;
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -158,7 +155,7 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
 {
     const auto& lights = visibles->queryLights();
 
-    if(!shadowTech_.enable())
+    if(!shadowTech_.enable() || !(flags_ & RENDER_SHADOWS))
     {
         return;
     }
@@ -210,36 +207,19 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
     lightningTech_.setTextureUnits(0, 1, 2);
     lightningTech_.setDirectionalLight(visibles->directionalLight());
     lightningTech_.setPointAndSpotLights(visibles->queryLights());
+    lightningTech_.setShadowEnabled(flags_ & RENDER_SHADOWS);
 
     // Bind directional light shadow map
     shadowTech_.bindDirectionalLight(GL_TEXTURE0 + Material::TEXTURE_COUNT);
     lightningTech_.setDirectionalLightShadowUnit(Material::TEXTURE_COUNT);
 
     // Bind spot light shadow maps after material samplers
-    int spotLightIndex = 0;
-    for(const VisibleScene::VisibleLight& light : lights)
+    for(size_t i = 0; i < shadowTech_.numSpotLights(); ++i)
     {
-        if(light.second->type() == Entity::Light::LIGHT_SPOT)
-        {
-            int index = Material::TEXTURE_COUNT + spotLightIndex + 1;
+        int index = Material::TEXTURE_COUNT + i + 1;
 
-            shadowTech_.bindSpotLight(spotLightIndex, GL_TEXTURE0 + index);
-            lightningTech_.setSpotLightShadowUnit(spotLightIndex, index);
-
-            spotLightIndex++;
-        }
-    }
-
-    // Set polygonmode if wireframe mode is enabled
-    if(flags_ & DEBUG_WIREFRAME)
-    {
-        gl->glDisable(GL_CULL_FACE);
-        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        Material::Attributes attrib;
-        attrib.ambientColor = QVector3D(0.3f, 0.3f, 0.3f);  // Hilight polygons slightly
-
-        lightningTech_.setMaterialAttributes(attrib);
+        shadowTech_.bindSpotLight(i, GL_TEXTURE0 + index);
+        lightningTech_.setSpotLightShadowUnit(i, index);
     }
 
     // Render visibles
@@ -249,15 +229,10 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
         lightningTech_.setMVP(camera->worldView() * *it->first);
 
         // Set transformation matrix for each spot light
-        spotLightIndex = 0;
-        for(const VisibleScene::VisibleLight& light : lights)
+        for(size_t i = 0; i < shadowTech_.numSpotLights(); ++i)
         {
-            if(light.second->type() == Entity::Light::LIGHT_SPOT)
-            {
-                const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
-                lightningTech_.setSpotLightMVP(spotLightIndex, spotVP * *it->first);
-                spotLightIndex++;
-            }
+            const QMatrix4x4& spotVP = shadowTech_.spotLightVP(i);
+            lightningTech_.setSpotLightMVP(i, spotVP * *it->first);
         }
 
         // Set directional light mvp
@@ -265,32 +240,6 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
 
         renderNode(it->second);
     }
-
-    // Reset polygonmode
-    if(flags_ & DEBUG_WIREFRAME)
-    {
-        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        gl->glEnable(GL_CULL_FACE);
-    }
-
-    // Draw bounding boxes
-    /*if(flags_ & DEBUG_AABB)
-    {
-        aabbTech_.bind();
-        aabbTech_.setUniformValue("gColor", aabbMaterial_.attributes().ambientColor);
-
-        gl->glDisable(GL_CULL_FACE);
-        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        for(auto it = aabbDebug_.begin(); it != aabbDebug_.end(); ++it)
-        {
-            aabbTech_.setUniformValue("gMVP", camera->worldView() * (*it));
-            aabbBox_.render();
-        }
-
-        gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        gl->glEnable(GL_CULL_FACE);
-    }*/
 }
 
 void ForwardRenderer::renderNode(const RenderList& node)
@@ -309,12 +258,7 @@ void ForwardRenderer::renderNode(const RenderList& node)
         }
 
         lightningTech_.setHasTangents(renderable->hasTangents() && material->hasNormals());
-
-        // Ignore material attributes in wireframe mode
-        if(!(flags_ & DEBUG_WIREFRAME))
-        {
-            lightningTech_.setMaterialAttributes(material->attributes());
-        }
+        lightningTech_.setMaterialAttributes(material->attributes());
 
         renderable->render();
     }
@@ -322,9 +266,6 @@ void ForwardRenderer::renderNode(const RenderList& node)
 
 void ForwardRenderer::skyboxPass(VisibleScene* visibles, Entity::Camera* camera)
 {
-    if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
-        return;
-
     if(!skyboxTech_.enable())
         return;
 
@@ -353,16 +294,3 @@ unsigned int ForwardRenderer::flags() const
 {
     return flags_;
 }
-
-/*void ForwardRenderer::addAABBDebug(const QMatrix4x4& trans, const Entity::AABB& aabb)
-{
-    if(aabb.width() <= 0)
-        return;
-
-    QMatrix4x4 scale;
-    scale.translate(aabb.center());
-    scale.scale(0.5f);  // Our bounding box model is 2 units wide
-    scale.scale(aabb.width(), aabb.height(), aabb.depth());   // Display over mesh surface
-
-    aabbDebug_.push_back(trans * scale);
-}*/

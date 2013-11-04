@@ -42,6 +42,8 @@ public:
     void setDirectionalLight(Entity::Light* light);
     void setPointAndSpotLights(const VisibleScene::Lights& lights);
 
+    void setShadowEnabled(bool value);
+
 protected:
     virtual void init();
 

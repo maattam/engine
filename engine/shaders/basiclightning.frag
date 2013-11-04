@@ -77,9 +77,15 @@ uniform sampler2D gDirectionalLightShadowMap;
 uniform Material gMaterial;
 uniform vec3 gEyeWorldPos;
 uniform bool gHasTangents;
+uniform bool gShadowsEnabled;
 
 float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned int size)
 {
+    if(!gShadowsEnabled)
+    {
+        return 1.0;
+    }
+
 	// Project shadow map on current fragment
 	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
 	projCoords = 0.5 * projCoords + 0.5;

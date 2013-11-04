@@ -159,6 +159,11 @@ void BasicLightning::setPointLight(Entity::Light* light, const QVector3D& positi
     program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.linear").c_str(),     light->attenuation().linear);
 }
 
+void BasicLightning::setShadowEnabled(bool value)
+{
+    program()->setUniformValue("gShadowsEnabled", value);
+}
+
 std::string BasicLightning::formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members) const
 {

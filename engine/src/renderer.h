@@ -14,8 +14,6 @@ namespace Entity {
 class Renderer
 {
 public:
-    enum RenderFlags { DEBUG_AABB = 0x1, DEBUG_WIREFRAME = 0x2 };
-
     virtual ~Renderer() {};
 
     // Sets OpenGL viewport parameters.

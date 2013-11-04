@@ -90,6 +90,11 @@ bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
     return true;
 }
 
+size_t ShadowMap::numSpotLights() const
+{
+    return spotLights_.size();
+}
+
 //
 // Render methods
 //

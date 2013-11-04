@@ -5,6 +5,8 @@
 
 #include "visiblescene.h"
 #include "cubemaptexture.h"
+#include "sceneobserver.h"
+#include "observable.h"
 
 namespace Engine {
 
@@ -18,7 +20,7 @@ namespace Graph {
     class SceneNode;
 }
 
-class SceneModel : public VisibleScene
+class SceneModel : public VisibleScene, public Observable<SceneObserver>
 {
 public:
     virtual ~SceneModel() {};

@@ -91,7 +91,7 @@ void SponzaScene::initialise()
 
     spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_.setDirection(spotNode_->direction);
-    spotLight_.setDiffuseIntensity(18.0f);
+    spotLight_.setDiffuseIntensity(20.0f);
     spotLight_.setAttenuationExp(0.005f);
     spotLight_.setAttenuationConstant(1.0f);
     spotLight_.setAttenuationLinear(0.1f);

@@ -13,12 +13,14 @@
 
 #include "entity/camera.h"
 #include "forwardrenderer.h"
+#include "debugrenderer.h"
 
 #include "basicscene.h"
 #include "sponzascene.h"
 
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), frame_(0), context_(nullptr), funcs_(nullptr), controller_(nullptr)
+    renderer_(nullptr), debugRenderer_(nullptr), frame_(0), context_(nullptr),
+    funcs_(nullptr), controller_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
 
@@ -45,6 +47,9 @@ SceneView::~SceneView()
 
     if(renderer_ != nullptr)
         delete renderer_;
+
+    if(debugRenderer_ != nullptr)
+        delete debugRenderer_;
 }
 
 void SceneView::update()
@@ -86,7 +91,15 @@ void SceneView::render()
 {
     if(controller_ != nullptr)
     {
+        if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
+        {
+            model_.setView(renderer_);
+            controller_->renderScene();
+        }
+        
+        model_.setView(debugRenderer_);
         controller_->renderScene();
+
         ++frame_;
     }
 }
@@ -103,6 +116,10 @@ void SceneView::initialize()
         qCritical() << "Failed to initialize renderer!";
         exit(-1);
     }
+
+    debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
+    debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0);
+    debugRenderer_->setObservable(&model_);
 
     model_.setView(renderer_);
 
@@ -130,33 +147,33 @@ void SceneView::handleInput()
     if(input_->keyDown(Qt::Key::Key_F1))
     {
         input_->keyEvent(Qt::Key::Key_F1, false);
-
-        if(renderer_->flags() & Engine::Renderer::DEBUG_AABB)
-        {
-            renderer_->setFlags(renderer_->flags() & ~Engine::Renderer::DEBUG_AABB);
-        }
-
-        else
-        {
-            renderer_->setFlags(renderer_->flags() | Engine::Renderer::DEBUG_AABB);
-        }
+        toggleRenderFlag(debugRenderer_, Engine::DebugRenderer::DEBUG_AABB);
     }
 
     if(input_->keyDown(Qt::Key::Key_F2))
     {
         input_->keyEvent(Qt::Key::Key_F2, false);
-
-        if(renderer_->flags() & Engine::Renderer::DEBUG_WIREFRAME)
-        {
-            renderer_->setFlags(renderer_->flags() & ~Engine::Renderer::DEBUG_WIREFRAME);
-        }
-
-        else
-        {
-            renderer_->setFlags(renderer_->flags() | Engine::Renderer::DEBUG_WIREFRAME);
-        }
+        toggleRenderFlag(debugRenderer_, Engine::DebugRenderer::DEBUG_WIREFRAME);
     }
 
+    if(input_->keyDown(Qt::Key::Key_F3))
+    {
+        input_->keyEvent(Qt::Key::Key_F3, false);
+        toggleRenderFlag(renderer_, Engine::ForwardRenderer::RENDER_SHADOWS);
+    }
+}
+
+void SceneView::toggleRenderFlag(Engine::Renderer* renderer, unsigned int flag)
+{
+    if(renderer->flags() & flag)
+    {
+        renderer->setFlags(renderer->flags() & ~flag);
+    }
+
+    else
+    {
+        renderer->setFlags(renderer->flags() | flag);
+    }
 }
 
 void SceneView::resizeEvent(QResizeEvent* event)
@@ -172,6 +189,8 @@ void SceneView::resizeEvent(QResizeEvent* event)
             qCritical() << "Failed to initialize renderer!";
             exit(-1);
         }
+
+        debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0);
 
         if(controller_ != nullptr)
         {

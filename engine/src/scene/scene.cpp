@@ -112,6 +112,9 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
             // Check whether the entity's bounding volume is inside our view frustrum
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
+                // Notify observers
+                notify(&SceneObserver::beforeRendering, entity, node);
+
                 // Cache visible lights
                 Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
                 if(!shadowCasters && light != nullptr)

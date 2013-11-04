@@ -25,6 +25,7 @@ public:
     // Initialises shadow map framebuffers and textures
     bool initDirectionalLight(GLsizei width, GLsizei height);
     bool initSpotLights(GLsizei width, GLsizei height, size_t count);
+    size_t numSpotLights() const;
 
     // Resolves light frustrum and renders objects inside the frustrum to depth texture
     void renderDirectinalLight(Entity::Light* light, VisibleScene* visibles);

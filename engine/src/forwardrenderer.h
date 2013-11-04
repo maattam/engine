@@ -29,6 +29,8 @@ namespace Effect {
 class ForwardRenderer : public Renderer
 {
 public:
+    enum RenderFlags { RENDER_SHADOWS = 0x1 };
+
     explicit ForwardRenderer(ResourceDespatcher* despatcher);
     virtual ~ForwardRenderer();
 
@@ -44,8 +46,6 @@ public:
 
 private:
     QRect viewport_;
-
-    Renderable::Cube box_;
 
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
