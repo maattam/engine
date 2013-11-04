@@ -15,5 +15,7 @@
         <file>images/pink.png</file>
         <file>shaders/aabb.frag</file>
         <file>shaders/aabb.vert</file>
+        <file>shaders/wireframe.frag</file>
+        <file>shaders/wireframe.vert</file>
     </qresource>
 </RCC>
