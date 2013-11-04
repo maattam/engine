@@ -158,18 +158,16 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
 {
     const auto& lights = visibles->queryLights();
 
-    gl->glEnable(GL_CULL_FACE);
-    gl->glCullFace(GL_FRONT);
-
     if(!shadowTech_.enable())
     {
         return;
     }
 
-    VisibleScene::RenderQueue shadowCasters;
-    int spotLightIndex = 0;
+    gl->glEnable(GL_CULL_FACE);
+    gl->glCullFace(GL_FRONT);
 
     // Render depth for each spot light
+    int spotLightIndex = 0;
     for(const VisibleScene::VisibleLight& light : lights)
     {
         // Ignore other lights for now
@@ -178,25 +176,7 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
             continue;
         }
 
-        shadowTech_.enableSpotLight(spotLightIndex, light);
-        gl->glClear(GL_DEPTH_BUFFER_BIT);
-
-        // Resolve visibles for each light frustrum
-        const QMatrix4x4& spotVP = shadowTech_.spotLightVP(spotLightIndex);
-        visibles->queryVisibles(spotVP, shadowCasters, true);
-
-        for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
-        {
-            const RenderList& node = it->second;
-            shadowTech_.setLightMVP(spotVP * *it->first);
-
-            for(auto rit = node.begin(); rit != node.end(); ++rit)
-            {
-                rit->second->render();
-            }
-        }
-
-        spotLightIndex++;
+        shadowTech_.renderSpotLight(spotLightIndex++, light, visibles);
     }
 
     // Render depth for directional light
@@ -206,23 +186,7 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
         return;
     }
 
-    shadowTech_.enableDirectinalLight(directionalLight);
-    gl->glClear(GL_DEPTH_BUFFER_BIT);
-
-    // Resolve occluders for directional light
-    const QMatrix4x4& dirVP = shadowTech_.directionalLightVP();
-    visibles->queryVisibles(dirVP, shadowCasters, true);
-
-    for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
-    {
-        const RenderList& node = it->second;
-        shadowTech_.setLightMVP(dirVP * *it->first);
-
-        for(auto rit = node.begin(); rit != node.end(); ++rit)
-        {
-            rit->second->render();
-        }
-    }
+    shadowTech_.renderDirectinalLight(directionalLight, visibles);
 
     gl->glCullFace(GL_BACK);
 }
@@ -361,29 +325,10 @@ void ForwardRenderer::skyboxPass(VisibleScene* visibles, Entity::Camera* camera)
     if(flags_ & DEBUG_WIREFRAME)    // Don't draw skybox in wireframe mode to help debugging
         return;
 
-    if(visibles->skybox() == nullptr)
-        return;
-
     if(!skyboxTech_.enable())
         return;
 
-    QMatrix4x4 trans;
-    trans.translate(camera->position());
-
-    // Move cube so it covers our entire view
-    skyboxTech_.setMVP(camera->worldView() * trans);
-    skyboxTech_.setTextureUnit(0);
-
-    if(visibles->skybox()->bindActive(GL_TEXTURE0))
-    {
-        // We want to see the skybox texture from the inside
-        gl->glCullFace(GL_FRONT);
-        gl->glDepthFunc(GL_LEQUAL);
-
-        box_.render();
-
-        gl->glCullFace(GL_BACK);
-    }
+    skyboxTech_.render(camera, visibles->skybox());
 }
 
 void ForwardRenderer::drawTextureDebug()

@@ -2,6 +2,8 @@
 
 #include "resourcedespatcher.h"
 #include "shader.h"
+#include "cubemaptexture.h"
+#include "entity/camera.h"
 
 #include "common.h"
 
@@ -21,12 +23,25 @@ void Skybox::init()
     samplerLocation_ = program()->uniformLocation("gCubemapTexture");
 }
 
-void Skybox::setMVP(const QMatrix4x4& mvp)
+void Skybox::render(Entity::Camera* camera, CubemapTexture* texture)
 {
-    program()->setUniformValue(mvpLocation_, mvp);
-}
+    if(camera == nullptr || texture == nullptr)
+        return;
 
-void Skybox::setTextureUnit(unsigned int unit)
-{
-    program()->setUniformValue(samplerLocation_, unit);
+    QMatrix4x4 trans;
+    trans.translate(camera->position());
+
+    program()->setUniformValue(mvpLocation_, camera->worldView() * trans);
+    program()->setUniformValue(samplerLocation_, 0);
+
+    if(texture->bindActive(GL_TEXTURE0))
+    {
+        // We want to see the skybox texture from the inside
+        gl->glCullFace(GL_FRONT);
+        gl->glDepthFunc(GL_LEQUAL);
+
+        mesh_.render();
+
+        gl->glCullFace(GL_BACK);
+    }
 }

@@ -22,31 +22,41 @@ public:
     ShadowMap(ResourceDespatcher* despatcher);
     ~ShadowMap();
 
+    // Initialises shadow map framebuffers and textures
     bool initDirectionalLight(GLsizei width, GLsizei height);
-    void enableDirectinalLight(Entity::Light* light);
-    void bindDirectionalLight(GLenum textureUnit);
-    const QMatrix4x4& directionalLightVP() const;
-
     bool initSpotLights(GLsizei width, GLsizei height, size_t count);
-    void enableSpotLight(size_t index, const VisibleScene::VisibleLight& light);
-    void bindSpotLight(size_t index, GLenum textureUnit);
+
+    // Resolves light frustrum and renders objects inside the frustrum to depth texture
+    void renderDirectinalLight(Entity::Light* light, VisibleScene* visibles);
+    void renderSpotLight(size_t index, const VisibleScene::VisibleLight& light, VisibleScene* visibles);
+
+    // Binds light depth texture to given texture unit
+    bool bindDirectionalLight(GLenum textureUnit);
+    bool bindSpotLight(size_t index, GLenum textureUnit);
+
+    // Returns the light frustrum
+    const QMatrix4x4& directionalLightVP() const;
     const QMatrix4x4& spotLightVP(size_t index) const;
 
-    void setLightMVP(const QMatrix4x4& mvp);
-
 private:
-    std::vector<GLuint> spotLightFbos_;
-    std::vector<Texture2D::Ptr> spotLightTextures_;
-    std::vector<QMatrix4x4> spotLightVPs_;
+    struct LightData
+    {
+        GLuint fbo;
+        Texture2D::Ptr texture;
+        QMatrix4x4 worldView;
 
-    GLuint directionalLightFbo_;
-    Texture2D directionalLightTexture_;
-    QMatrix4x4 directionalLightVP_;
+        LightData();
+    };
 
+    std::vector<LightData> spotLights_;
+    LightData directionalLight_;
+
+    void renderLight(const LightData& light, VisibleScene* visibles);
+
+    // Helper functions to help allocating and deallocating opengl objects.
     void destroySpotLights();
-    void destroyDirectionalLight();
-
-    bool initDepthFBO(GLuint fbo, Texture2D& texture, GLsizei width, GLsizei height);
+    void destroyLight(LightData& light);
+    bool initLight(LightData& light, GLsizei width, GLsizei height);
 };
 
 }}

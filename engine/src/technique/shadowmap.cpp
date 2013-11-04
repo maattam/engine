@@ -2,11 +2,11 @@
 #include "common.h"
 
 #include <QDebug>
-#include <cassert>
 
 #include "resourcedespatcher.h"
 #include "shader.h"
 #include "entity/camera.h"
+#include "renderable/renderable.h"
 
 using namespace Engine;
 using namespace Engine::Technique;
@@ -20,141 +20,62 @@ ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
 ShadowMap::~ShadowMap()
 {
     destroySpotLights();
-    destroyDirectionalLight();
+    destroyLight(directionalLight_);
 }
+
+ShadowMap::LightData::LightData()
+    : fbo(0)
+{
+}
+
+//
+// Initialisation methods
+//
 
 bool ShadowMap::initSpotLights(GLsizei width, GLsizei height, size_t count)
 {
     destroySpotLights();
 
     // Reserve space
-    spotLightFbos_.resize(count, 0);
-    spotLightTextures_.resize(count);
-    spotLightVPs_.resize(count);
-
-    // Generate fbos/textures
-    gl->glGenFramebuffers(count, &spotLightFbos_[0]);
+    spotLights_.resize(count);
 
     for(size_t i = 0; i < count; ++i)
     {
-        spotLightTextures_[i] = std::make_shared<Texture2D>();
-        if(!initDepthFBO(spotLightFbos_[i], *spotLightTextures_[i], width, height))
+        if(!initLight(spotLights_[i], width, height))
             return false;
     }
 
     return true;
 }
 
-void ShadowMap::enableSpotLight(size_t index, const VisibleScene::VisibleLight& light)
-{
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, spotLightFbos_.at(index));
-
-    const Texture2D::Ptr& texture = spotLightTextures_.at(index);
-
-    // Calculate world matrix
-    QMatrix4x4& vp = spotLightVPs_.at(index);
-
-    vp.setToIdentity();
-    vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
-
-    QMatrix4x4 look;
-    look.lookAt(light.first, light.first + light.second->direction(), QVector3D(0, 1, 0));
-    vp *= look;
-
-    gl->glViewport(0, 0, texture->width(), texture->height());
-}
-
-void ShadowMap::bindSpotLight(size_t index, GLenum textureUnit)
-{
-    spotLightTextures_.at(index)->bindActive(textureUnit);
-}
-
-void ShadowMap::setLightMVP(const QMatrix4x4& mvp)
-{
-    program()->setUniformValue("gMVP", mvp);
-}
-
-void ShadowMap::destroySpotLights()
-{
-    if(spotLightFbos_.size() > 0)
-    {
-        gl->glDeleteFramebuffers(spotLightFbos_.size(), &spotLightFbos_[0]);
-        spotLightFbos_.clear();
-    }
-    
-    spotLightTextures_.clear();
-    spotLightVPs_.clear();
-}
-
-const QMatrix4x4& ShadowMap::spotLightVP(size_t index) const
-{
-    assert(index < spotLightVPs_.size());
-    return spotLightVPs_.at(index);
-}
-
 bool ShadowMap::initDirectionalLight(GLsizei width, GLsizei height)
 {
-    destroyDirectionalLight();
+    destroyLight(directionalLight_);
 
     if(width < 1 || height < 1)
         return false;
 
-    gl->glGenFramebuffers(1, &directionalLightFbo_);
-
-    return initDepthFBO(directionalLightFbo_, directionalLightTexture_, width, height);
+    return initLight(directionalLight_, width, height);
 }
 
-void ShadowMap::enableDirectinalLight(Entity::Light* light)
-{
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, directionalLightFbo_);
-
-    Entity::Camera view(QRectF(-95, -65, 190, 130), light->direction());
-    view.setNearPlane(-80.0f);
-    view.setFarPlane(400.0f);
-    view.update();
-
-    directionalLightVP_ = view.worldView();
-
-    gl->glViewport(0, 0, directionalLightTexture_.width(), directionalLightTexture_.height());
-}
-
-void ShadowMap::bindDirectionalLight(GLenum textureUnit)
-{
-    directionalLightTexture_.bindActive(textureUnit);
-}
-
-const QMatrix4x4& ShadowMap::directionalLightVP() const
-{
-    return directionalLightVP_;
-}
-
-void ShadowMap::destroyDirectionalLight()
-{
-    if(directionalLightFbo_ != 0)
-    {
-        gl->glDeleteFramebuffers(1, &directionalLightFbo_);
-        directionalLightFbo_ = 0;
-    }
-
-    directionalLightTexture_.release();
-}
-
-bool ShadowMap::initDepthFBO(GLuint fbo, Texture2D& texture, GLsizei width, GLsizei height)
+bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
 {
     // Initialize depth texture
-    if(!texture.create(width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT))
+    light.texture = std::make_shared<Texture2D>();
+    if(!light.texture->create(width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT))
     {
         return false;
     }
 
-    texture.texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    texture.texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    texture.texParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    texture.texParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    light.texture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    light.texture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    light.texture->texParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    light.texture->texParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     // Initialize framebuffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    gl->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texture.textureId(), 0);
+    gl->glGenFramebuffers(1, &light.fbo);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
+    gl->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, light.texture->textureId(), 0);
     gl->glDrawBuffer(GL_NONE);
 
     if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -167,4 +88,123 @@ bool ShadowMap::initDepthFBO(GLuint fbo, Texture2D& texture, GLsizei width, GLsi
     gl->glBindTexture(GL_TEXTURE_2D, 0);
 
     return true;
+}
+
+//
+// Render methods
+//
+
+void ShadowMap::renderSpotLight(size_t index, const VisibleScene::VisibleLight& light, VisibleScene* visibles)
+{
+    // Calculate light frustrum
+    const Texture2D::Ptr& texture = spotLights_.at(index).texture;
+    QMatrix4x4& vp = spotLights_.at(index).worldView;
+
+    vp.setToIdentity();
+    vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
+
+    QMatrix4x4 look;
+    look.lookAt(light.first, light.first + light.second->direction(), QVector3D(0, 1, 0));
+    vp *= look;
+
+    gl->glViewport(0, 0, texture->width(), texture->height());
+
+    // Cull & render visibles
+    renderLight(spotLights_.at(index), visibles);
+}
+
+void ShadowMap::renderDirectinalLight(Entity::Light* light, VisibleScene* visibles)
+{
+    if(light == nullptr)
+        return;
+
+    // Calculate light frustrum
+    Entity::Camera view(QRectF(-95, -65, 190, 130), light->direction());
+    view.setNearPlane(-80.0f);
+    view.setFarPlane(400.0f);
+    view.update();
+
+    directionalLight_.worldView = view.worldView();
+
+    gl->glViewport(0, 0, directionalLight_.texture->width(), directionalLight_.texture->height());
+
+    // Render objects inside frustrum
+    renderLight(directionalLight_, visibles);
+}
+
+void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
+{
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
+    gl->glClear(GL_DEPTH_BUFFER_BIT);
+
+    if(visibles == nullptr)
+        return;
+
+    // Cull & render visibles
+    VisibleScene::RenderQueue shadowCasters;
+    visibles->queryVisibles(light.worldView, shadowCasters, true);
+
+    for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
+    {
+        const RenderList& node = it->second;
+        program()->setUniformValue("gMVP", light.worldView * *it->first);
+
+        for(auto rit = node.begin(); rit != node.end(); ++rit)
+        {
+            rit->second->render();
+        }
+    }
+}
+
+//
+// Binding and VP methods
+//
+
+bool ShadowMap::bindSpotLight(size_t index, GLenum textureUnit)
+{
+    return spotLights_.at(index).texture->bindActive(textureUnit);
+}
+
+bool ShadowMap::bindDirectionalLight(GLenum textureUnit)
+{
+    return directionalLight_.texture->bindActive(textureUnit);
+}
+
+const QMatrix4x4& ShadowMap::spotLightVP(size_t index) const
+{
+    return spotLights_.at(index).worldView;
+}
+
+const QMatrix4x4& ShadowMap::directionalLightVP() const
+{
+    return directionalLight_.worldView;
+}
+
+//
+// Cleanup
+//
+
+void ShadowMap::destroySpotLights()
+{
+    for(auto it = spotLights_.begin(); it != spotLights_.end(); ++it)
+    {
+        destroyLight(*it);
+    }
+
+    spotLights_.clear();
+}
+
+void ShadowMap::destroyLight(LightData& light)
+{
+    if(light.fbo != 0)
+    {
+        gl->glDeleteFramebuffers(1, &light.fbo);
+        light.fbo = 0;
+    }
+
+    if(light.texture != nullptr)
+    {
+        light.texture->release();
+        light.texture.reset();
+    }
 }

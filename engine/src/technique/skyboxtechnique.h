@@ -2,12 +2,18 @@
 #define SKYBOXTECHNIQUE_H
 
 #include "technique.h"
+#include "renderable/cube.h"
 
 #include <QMatrix4x4>
 
 namespace Engine {
     
 class ResourceDespatcher;
+class CubemapTexture;
+
+namespace Entity {
+    class Camera;
+}
     
 namespace Technique {
 
@@ -16,8 +22,9 @@ class Skybox : public Technique
 public:
     Skybox(ResourceDespatcher* despatcher);
 
-    void setMVP(const QMatrix4x4& mvp);
-    void setTextureUnit(unsigned int unit);
+    // Renders skybox around given camera's view
+    // Does nothing if either camera or texture is null.
+    void render(Entity::Camera* camera, CubemapTexture* texture);
 
 protected:
     virtual void init();
@@ -25,6 +32,8 @@ protected:
 private:
     GLuint mvpLocation_;
     GLuint samplerLocation_;
+
+    Renderable::Cube mesh_;
 };
 
 }}
