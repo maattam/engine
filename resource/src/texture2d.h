@@ -12,7 +12,7 @@ namespace Engine {
 class TextureData : public ResourceData
 {
 public:
-    TextureData(ResourceDespatcher* despatcher);
+    explicit TextureData(ResourceDespatcher* despatcher);
     ~TextureData();
 
     virtual bool load(const QString& fileName);
@@ -20,15 +20,18 @@ public:
     gli::texture2D* operator->() const;
     gli::texture2D& operator*() const;
 
+    void loadSrgb(bool srgb);
+
 private:
     gli::texture2D* data_;
+    bool loadSrgb_;
 };
 
 class Texture2D : public Texture<GL_TEXTURE_2D>, public Resource<Texture2D, TextureData>
 {
 public:
     Texture2D();
-    Texture2D(const QString& name);
+    Texture2D(const QString& name, bool loadSrgb = false);
 
     // Fails if the resource is managed
     bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
@@ -36,19 +39,15 @@ public:
 
     virtual bool bind();
 
-    // Loads uncompressed textures as SRGB. Used for diffuse textures
-    void setSRGB(bool srgb);
-
     GLsizei width() const;
     GLsizei height() const;
 
 protected:
+    virtual ResourceData* createData();
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 
 private:
-    bool srgb_;
-
     GLsizei width_;
     GLsizei height_;
 };

@@ -52,9 +52,11 @@ bool Hdr::initialize(int width, int height, int samples)
     if(samples <= 0)
         samples = 1;
 
+    // Viewport
     width_ = width;
     height_ = height;
 
+    // Scale fbo to half resolution
     width = std::floor(width / 2.0f);
     height = std::floor(height / 2.0f);
 

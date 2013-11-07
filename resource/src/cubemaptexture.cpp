@@ -15,11 +15,13 @@ const GLenum FACES[CubemapData::Faces] = {
     GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 };
 
-CubemapTexture::CubemapTexture() : Texture(), Resource()
+CubemapTexture::CubemapTexture()
+    : Texture(false), Resource()
 {
 }
 
-CubemapTexture::CubemapTexture(const QString& name) : Texture(), Resource(name)
+CubemapTexture::CubemapTexture(const QString& name, bool loadSrgb)
+    : Texture(loadSrgb), Resource(name)
 {
 }
 
@@ -35,26 +37,30 @@ bool CubemapTexture::initialiseData(const DataType& data)
 
     for(int i = 0; i < CubemapData::Faces; ++i)
     {
-        if(gli::is_compressed(data.at(i)->format()))
+        const gli::texture2D* tex = data.at(i);
+
+        if(gli::is_compressed(tex->format()))
         {
             // TODO: Mipmaps?
             gl->glCompressedTexImage2D(FACES[i], 0,
-                //gli::internal_format(data.at(i)->format()),
-                GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
-                data.at(i)->dimensions().x,
-                data.at(i)->dimensions().y,
+                gli::internal_format(tex->format()),
+                tex->dimensions().x,
+                tex->dimensions().y,
                 0,
-                data.at(i)->size(),
-                data.at(i)->data());
+                tex->size(),
+                tex->data());
         }
 
         else
         {
-            gl->glTexImage2D(FACES[i], 0, gli::internal_format(data.at(i)->format()),
-                data.at(i)->dimensions().x,
-                data.at(i)->dimensions().y,
-                0, GL_BGRA, GL_UNSIGNED_BYTE,
-                data.at(i)->data());
+            gl->glTexImage2D(FACES[i], 0,
+                gli::internal_format(tex->format()),
+                tex->dimensions().x,
+                tex->dimensions().y,
+                0,
+                gli::external_format(tex->format()),
+                gli::type_format(tex->format()),
+                tex->data());
         }
     }
 
@@ -81,12 +87,20 @@ void CubemapTexture::queryFilesDebug(QStringList& files) const
     }
 }
 
+ResourceData* CubemapTexture::createData()
+{
+    CubemapData* data = new CubemapData(despatcher());
+    data->loadSrgb(isSrgb());
+
+    return data;
+}
+
 //
 // CubemapData
 //
 
 CubemapData::CubemapData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher)
+    : ResourceData(despatcher), loadSrgb_(false)
 {
     for(int i = 0; i < CubemapData::Faces; ++i)
         textures_[i] = nullptr;
@@ -108,7 +122,7 @@ bool CubemapData::load(const QString& fileName)
         QString file = fileName;
         file.replace(QString("*"), QString::number(i));
 
-        textures_[i] = loadTexture(file);
+        textures_[i] = loadTexture(file, loadSrgb_);
         if(textures_[i] == nullptr)
         {
             qWarning() << __FUNCTION__ << "Failed to load" << file;
@@ -124,4 +138,9 @@ bool CubemapData::load(const QString& fileName)
 gli::texture2D* CubemapData::at(unsigned int index) const
 {
     return textures_[index];
+}
+
+void CubemapData::loadSrgb(bool srgb)
+{
+    loadSrgb_ = srgb;
 }

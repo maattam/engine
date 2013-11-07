@@ -100,7 +100,7 @@ void FreeLookScene::update(unsigned int elapsed)
 
 void FreeLookScene::setSkyboxTexture(const QString& fileName)
 {
-    skybox_ = despatcher_->get<CubemapTexture>(fileName);
+    skybox_ = despatcher_->get<CubemapTexture>(fileName, true);
     skybox_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     scene_->setSkybox(skybox_);

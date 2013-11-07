@@ -42,12 +42,7 @@ const Texture2D::Ptr& Material::getTexture(TextureType type)
 
         if(type != TEXTURE_NORMALS)
         {
-            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"));
-
-            if(type == TEXTURE_DIFFUSE)
-            {
-                tex->setSRGB(true);
-            }
+            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"), type == TEXTURE_DIFFUSE);
         }
 
         return tex;
@@ -65,12 +60,6 @@ bool Material::hasNormals() const
 void Material::setTexture(TextureType type, Texture2D::Ptr& texture)
 {
     assert(texture != nullptr);
-
-    // Use SRGB textures
-    if(type == TEXTURE_DIFFUSE)
-    {
-        texture->setSRGB(true);
-    }
 
     textures_[type] = texture;
     setTextureOptions(texture);

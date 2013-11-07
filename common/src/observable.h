@@ -2,7 +2,6 @@
 #define OBSERVABLE_H
 
 #include <set>
-#include <functional>
 
 template<class TObserver>
 class Observable
@@ -13,8 +12,8 @@ public:
     Observable();
     virtual ~Observable();
 
-    bool addObserver(ObserverType* obs);
-    bool removeObserver(ObserverType* obs);
+    virtual bool addObserver(ObserverType* obs);
+    virtual bool removeObserver(ObserverType* obs);
 
 protected:
     // Notifies all observers
@@ -23,6 +22,9 @@ protected:
 
 private:
     std::set<ObserverType*> observers_;
+
+    Observable(const Observable&);
+    Observable& operator=(const Observable&);
 };
 
 #include "observable.inl"

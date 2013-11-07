@@ -212,8 +212,11 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
             if(material->GetTextureCount(textureMapping[j]) > 0 &&
                 material->GetTexture(textureMapping[j], 0, &path) == aiReturn_SUCCESS)
             {
-                Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
-                materials_[i]->setTexture(static_cast<Material::TextureType>(j), texture);
+                const Material::TextureType type = static_cast<Material::TextureType>(j);
+                Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data,
+                    type == Material::TEXTURE_DIFFUSE);
+
+                materials_[i]->setTexture(type, texture);
             }
         }
 

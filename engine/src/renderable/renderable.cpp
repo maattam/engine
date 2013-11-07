@@ -34,15 +34,3 @@ bool Renderable::bindVertexArray() const
     gl->glBindVertexArray(vertexArray_);
     return true;
 }
-
-void Renderable::renderWireframe() const
-{
-    // Disable culling so we can see the wireframe lines through objects
-    gl->glDisable(GL_CULL_FACE);
-    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-    render();
-
-    gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    gl->glEnable(GL_CULL_FACE);
-}

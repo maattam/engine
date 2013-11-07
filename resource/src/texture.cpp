@@ -9,14 +9,23 @@ namespace {
     bool isDDS(const QString& fileName);
 }
 
-gli::texture2D* Engine::loadTexture(const QString& fileName)
+gli::texture2D* Engine::loadTexture(const QString& fileName, bool srgb)
 {
     gli::texture2D* texture = nullptr;
     QImage image;
 
+    // Note: We only support DXT5
     if(isDDS(fileName))
     {
-        texture = new gli::texture2D(gli::loadStorageDDS(fileName.toStdString()));
+        const gli::storage storage = gli::loadStorageDDS(fileName.toStdString());
+        gli::format format = storage.format();
+
+        if(srgb)
+        {
+            format = gli::format::SRGB_ALPHA_DXT5;
+        }
+
+        texture = new gli::texture2D(format, storage, gli::detail::view(0, 0, 0, 0, 0, storage.levels() - 1));
 
         if(texture->empty())
         {
@@ -29,8 +38,14 @@ gli::texture2D* Engine::loadTexture(const QString& fileName)
     else if(image.load(fileName))
     {
         QImage argbData = image.convertToFormat(QImage::Format_ARGB32);
+        gli::format format = gli::format::RGBA8_UNORM;
 
-        texture = new gli::texture2D(1, gli::SRGB8_ALPHA8,
+        if(srgb)
+        {
+            format = gli::format::SRGB8_ALPHA8;
+        }
+
+        texture = new gli::texture2D(1, format,
             gli::texture2D::dimensions_type(argbData.width(), argbData.height()));
 
         uchar* linearAddress = texture->data<uchar>();

@@ -11,7 +11,7 @@ class CubemapData : public ResourceData
 public:
     enum { Faces = 6 };
 
-    CubemapData(ResourceDespatcher* despatcher);
+    explicit CubemapData(ResourceDespatcher* despatcher);
     ~CubemapData();
 
     // fileName has to be in format /path/to/file*.png where file0..5
@@ -19,8 +19,11 @@ public:
     virtual bool load(const QString& fileName);
     gli::texture2D* at(unsigned int index) const;
 
+    void loadSrgb(bool srgb);
+
 private:
     gli::texture2D* textures_[Faces];
+    bool loadSrgb_;
 };
 
 class CubemapTexture
@@ -28,11 +31,12 @@ class CubemapTexture
 {
 public:
     CubemapTexture();
-    CubemapTexture(const QString& name);
+    explicit CubemapTexture(const QString& name, bool loadSrgb = false);
 
     virtual bool bind();
 
 protected:
+    virtual ResourceData* createData();
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
 

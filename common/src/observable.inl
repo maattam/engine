@@ -8,8 +8,7 @@ Observable<TObserver>::Observable()
 template<class TObserver>
 Observable<TObserver>::~Observable()
 {
-    for(ObserverType* obs : observers_)
-        removeObserver(obs);
+    observers_.clear();
 }
 
 template<class TObserver>

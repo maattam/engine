@@ -61,6 +61,9 @@ private:
     void renderAABBs(Entity::Camera* camera);
 
     void addAABB(const QMatrix4x4& trans, const Entity::AABB& aabb, const QVector3D& color);
+
+    DebugRenderer(const DebugRenderer&);
+    DebugRenderer& operator=(const DebugRenderer&);
 };
 
 };

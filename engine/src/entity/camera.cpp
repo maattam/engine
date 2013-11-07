@@ -134,11 +134,6 @@ QMatrix4x4 Camera::view() const
     //
     // Where T = -(Transposed(Rot) * Pos)
 
-    /*QMatrix4x4 viewMatrix;
-    viewMatrix.rotate(orientation_);
-    viewMatrix.translate(-position_);
-
-    return viewMatrix;*/
     QMatrix4x4 view;    // TODO: More efficient solution as commented above.. QT sucks atm.
     view.lookAt(position_, position_  + direction(), up());
     return view;

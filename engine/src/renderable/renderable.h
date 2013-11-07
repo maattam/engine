@@ -15,7 +15,6 @@ public:
     virtual ~Renderable();
 
     virtual void render() const = 0;
-    virtual void renderWireframe() const;
 
     virtual bool hasTangents() const;
 

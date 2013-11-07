@@ -35,7 +35,7 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png")));
+        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png"), true));
 
     flags_ |= RENDER_SHADOWS;
 }

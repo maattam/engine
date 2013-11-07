@@ -101,7 +101,7 @@ void BasicScene::initialise()
     {
         QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
 
-        Texture2D::Ptr tex = despatcher()->get<Texture2D>(file);
+        Texture2D::Ptr tex = despatcher()->get<Texture2D>(file, true);
         if(tex != nullptr)
         {
             Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher());
