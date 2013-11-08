@@ -97,12 +97,6 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {
-            Entity::Entity* entity = node->getEntity(i);
-            if(entity == nullptr)
-            {
-                continue;
-            }
-            
             // Skip entities that don't cast shadows
             if(shadowCasters && !node->isShadowCaster())
             {
@@ -110,6 +104,8 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
             }
 
             // Check whether the entity's bounding volume is inside our view frustrum
+            Entity::Entity* entity = node->getEntity(i);
+
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
                 // Notify observers
@@ -120,7 +116,7 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
                 if(!shadowCasters && light != nullptr)
                 {
                     QVector3D position = nodeView.column(3).toVector3D();
-                    lights_.push_back(std::make_pair(position, light));
+                    lights_.push_back(light);
                 }
 
                 else

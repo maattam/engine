@@ -26,10 +26,9 @@ class VisibleScene
 {
 public:
     typedef std::pair<const QMatrix4x4* const, RenderList> VisibleNode;
-    typedef std::pair<QVector3D, Entity::Light*> VisibleLight;
 
     typedef std::deque<VisibleNode> RenderQueue;
-    typedef std::deque<VisibleLight> Lights;
+    typedef std::deque<Entity::Light*> Lights;
 
     virtual ~VisibleScene() {};
 

@@ -27,8 +27,6 @@ public:
 
     LightType type() const;
 
-    virtual void updateRenderList(RenderList& list);
-
     void setColor(const QVector3D& color);
     const QVector3D& color() const;
 
@@ -49,6 +47,8 @@ public:
     void setAttenuationExp(float attn);
 
     const Attenuation& Light::attenuation() const;
+
+    QVector3D position() const;
 
 private:
     void calculateAABB();

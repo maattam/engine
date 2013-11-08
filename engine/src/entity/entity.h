@@ -15,27 +15,39 @@ namespace Renderable {
     class Renderable;
 }
 
+namespace Graph {
+    class SceneNode;
+}
+
 namespace Entity {
 
 class Entity
 {
 public:
     Entity();
-    virtual ~Entity();
+    virtual ~Entity() = 0;
 
     // Called by renderer; entity must add its renderables to the list
-    virtual void updateRenderList(RenderList& list) = 0;
+    virtual void updateRenderList(RenderList& list) {};
 
     const AABB& boundingBox() const;
+
+    // Updated by SceneGraph when the attached node changes.
+    virtual void attach(Graph::SceneNode* node);
+    virtual void detach();
+
+    // Returns nullptr if the entity isn't attached to a node
+    Graph::SceneNode* parentNode() const;
 
 protected:
     void updateAABB(const AABB& aabb);
 
 private:
+    AABB aabb_;
+    Graph::SceneNode* node_;
+
     Entity(const Entity&);
     Entity& operator=(const Entity&);
-
-    AABB aabb_;
 };
 
 }}

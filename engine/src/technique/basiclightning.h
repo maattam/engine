@@ -53,8 +53,8 @@ private:
     std::string formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members = "") const;
 
-    void setSpotLight(Entity::Light* light, const QVector3D& position, int index);
-    void setPointLight(Entity::Light* light, const QVector3D& position, int index);
+    void setSpotLight(const Entity::Light* light, int index);
+    void setPointLight(const Entity::Light* light, int index);
 };
 
 }}

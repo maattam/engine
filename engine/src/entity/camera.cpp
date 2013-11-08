@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include "graph/scenenode.h"
+
 #include <QMatrix4x4>
 #include <qmath.h>
 
@@ -7,7 +9,7 @@ using namespace Engine;
 using namespace Engine::Entity;
 
 Camera::Camera(CameraType type, const QVector3D& dir)
-    : type_(type)
+    : Entity(), type_(type)
 {
     far_ = 500.0f;
     near_ = 0.1f;
@@ -20,7 +22,7 @@ Camera::Camera(CameraType type, const QVector3D& dir)
 }
 
 Camera::Camera(float aspectRatio, float fov, const QVector3D& dir)
-    : type_(PERSPECTIVE), aspect_(aspectRatio), fov_(fov)
+    : Entity(), type_(PERSPECTIVE), aspect_(aspectRatio), fov_(fov)
 {
     far_ = 500.0f;
     near_ = 0.1f;
@@ -31,7 +33,7 @@ Camera::Camera(float aspectRatio, float fov, const QVector3D& dir)
 }
 
 Camera::Camera(const QRectF& window, const QVector3D& dir)
-    : type_(ORTHOGRAPHIC), bounds_(window)
+    : Entity(), type_(ORTHOGRAPHIC), bounds_(window)
 {
     far_ = 500.0f;
     near_ = 0.1f;
@@ -48,6 +50,11 @@ void Camera::setPosition(const QVector3D& position)
 
 const QVector3D& Camera::position() const
 {
+    if(parentNode() != nullptr)
+    {
+        return parentNode()->worldPosition() + position_;
+    }
+
     return position_;
 }
 
@@ -74,6 +81,11 @@ void Camera::rotate(float angle, const QVector3D& axis)
 
 const QQuaternion& Camera::orientation() const
 {
+    if(parentNode() != nullptr)
+    {
+        return orientation_ * parentNode()->worldOrientation();
+    }
+
     return orientation_;
 }
 
@@ -104,13 +116,7 @@ void Camera::setDirection(const QVector3D& direction)
 
 void Camera::lookAt(const QVector3D& target)
 {
-    setDirection(target - position_);
-}
-
-QVector3D Camera::direction() const
-{
-    // Default direction points towards -Z
-    return orientation_.rotatedVector(-UNIT_Z);
+    setDirection(target - position());
 }
 
 const QMatrix4x4& Camera::worldView() const
@@ -135,7 +141,7 @@ QMatrix4x4 Camera::view() const
     // Where T = -(Transposed(Rot) * Pos)
 
     QMatrix4x4 view;    // TODO: More efficient solution as commented above.. QT sucks atm.
-    view.lookAt(position_, position_  + direction(), up());
+    view.lookAt(position(), position() + direction(), up());
     return view;
 }
 
@@ -179,14 +185,20 @@ void Camera::setNearPlane(float near)
 
 QVector3D Camera::up() const
 {
-    // Default up is +Y, so we are rotate +Y to find the current up.
-    return orientation_.rotatedVector(UNIT_Y);
+    // Default up is +Y, so we rotate +Y to find the current up.
+    return orientation().rotatedVector(UNIT_Y);
 }
 
 QVector3D Camera::right() const
 {
     // Default right is +X
-    return orientation_.rotatedVector(UNIT_X);
+    return orientation().rotatedVector(UNIT_X);
+}
+
+QVector3D Camera::direction() const
+{
+    // Default direction points towards -Z
+    return orientation().rotatedVector(-UNIT_Z);
 }
 
 void Camera::setFixedYaw(bool value, const QVector3D& yaw)
@@ -197,14 +209,12 @@ void Camera::setFixedYaw(bool value, const QVector3D& yaw)
 
 void Camera::pitch(float angle)
 {
-    const QVector3D axis(1, 0, 0);
-    rotate(angle, orientation_.rotatedVector(axis));
+    rotate(angle, orientation_.rotatedVector(UNIT_X));
 }
 
 void Camera::roll(float angle)
 {
-    const QVector3D axis(0, 0, 1);
-    rotate(angle, orientation_.rotatedVector(axis));
+    rotate(angle, orientation_.rotatedVector(UNIT_Z));
 }
 
 void Camera::yaw(float angle)
@@ -219,7 +229,7 @@ void Camera::yaw(float angle)
     else
     {
         // If axis is not fixed, we rotate by the local Y
-        axis = orientation_.rotatedVector(QVector3D(0, 1, 0));
+        axis = orientation_.rotatedVector(UNIT_Y);
     }
 
     rotate(angle, axis);

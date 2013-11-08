@@ -34,6 +34,7 @@ public:
     // Set node position in world space
     void setPosition(const QVector3D& position);
     const QVector3D& position() const;
+    const QVector3D& worldPosition() const;
 
     // Adds offset to the node's position
     void move(const QVector3D& offset);
@@ -46,6 +47,7 @@ public:
 
     void setOrientation(const QQuaternion& quaternion);
     const QQuaternion& orientation() const;
+    const QQuaternion& worldOrientation() const;
 
     // Makes the node face the given direction.
     void setDirection(const QVector3D& direction);
@@ -80,15 +82,21 @@ private:
     Node* parent_;
     ChildNodes children_;
 
-    QVector3D position_;
-    QVector3D scale_;
-    QQuaternion orientation_;
-
     bool updateNeeded_;
     QMatrix4x4 cachedTransformation_;
     QMatrix4x4 cachedLocalTrans_;
 
-    void updateTransformation(const QMatrix4x4& parentTransformation, bool dirtyParent);
+    struct Transformation
+    {
+        QVector3D position;
+        QVector3D scale;
+        QQuaternion orientation;
+    };
+
+    Transformation localTrans_;
+    Transformation cachedWorldTrans_;
+
+    void updateTransformation(bool dirtyParent);
 };
 
 }}

@@ -165,10 +165,10 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
 
     // Render depth for each spot light
     int spotLightIndex = 0;
-    for(const VisibleScene::VisibleLight& light : lights)
+    for(const Entity::Light* light : lights)
     {
         // Ignore other lights for now
-        if(light.second->type() != Entity::Light::LIGHT_SPOT)
+        if(light->type() != Entity::Light::LIGHT_SPOT)
         {
             continue;
         }

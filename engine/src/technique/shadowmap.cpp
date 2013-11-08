@@ -99,7 +99,7 @@ size_t ShadowMap::numSpotLights() const
 // Render methods
 //
 
-void ShadowMap::renderSpotLight(size_t index, const VisibleScene::VisibleLight& light, VisibleScene* visibles)
+void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles)
 {
     // Calculate light frustrum
     const Texture2D::Ptr& texture = spotLights_.at(index).texture;
@@ -109,7 +109,7 @@ void ShadowMap::renderSpotLight(size_t index, const VisibleScene::VisibleLight& 
     vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
 
     QMatrix4x4 look;
-    look.lookAt(light.first, light.first + light.second->direction(), QVector3D(0, 1, 0));
+    look.lookAt(light->position(), light->position() + light->direction(), QVector3D(0, 1, 0));
     vp *= look;
 
     gl->glViewport(0, 0, texture->width(), texture->height());

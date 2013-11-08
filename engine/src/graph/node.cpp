@@ -11,7 +11,7 @@ using namespace Engine::Graph;
 Node::Node()
     : parent_(nullptr)
 {
-    scale_ = QVector3D(1.0f, 1.0f, 1.0f);
+    localTrans_.scale = QVector3D(1.0f, 1.0f, 1.0f);
     updateNeeded_ = true;
 }
 
@@ -29,7 +29,7 @@ Node* Node::getParent() const
 void Node::update()
 {
     // Update children
-    updateTransformation(QMatrix4x4(), updateNeeded_);
+    updateTransformation(updateNeeded_);
 }
 
 const QMatrix4x4& Node::transformation() const
@@ -37,7 +37,7 @@ const QMatrix4x4& Node::transformation() const
     return cachedTransformation_;
 }
 
-void Node::updateTransformation(const QMatrix4x4& parentTransformation, bool dirtyParent)
+void Node::updateTransformation(bool dirtyParent)
 {
     bool dirty = updateNeeded_ | dirtyParent;
 
@@ -45,9 +45,9 @@ void Node::updateTransformation(const QMatrix4x4& parentTransformation, bool dir
     if(updateNeeded_)
     {
         cachedLocalTrans_.setToIdentity();
-        cachedLocalTrans_.translate(position_);
-        cachedLocalTrans_.rotate(orientation_);
-        cachedLocalTrans_.scale(scale_);
+        cachedLocalTrans_.translate(localTrans_.position);
+        cachedLocalTrans_.rotate(localTrans_.orientation);
+        cachedLocalTrans_.scale(localTrans_.scale);
 
         updateNeeded_ = false;
     }
@@ -55,13 +55,27 @@ void Node::updateTransformation(const QMatrix4x4& parentTransformation, bool dir
     // If parent or local transformation has changed; we can't rely on old cachedTransformation
     if(dirty)
     {
-        cachedTransformation_ = parentTransformation * cachedLocalTrans_;
+        Node* parent = getParent();
+        if(parent != nullptr)
+        {
+            cachedTransformation_ = parent->transformation() * cachedLocalTrans_;
+            
+            const Transformation& trans = parent->cachedWorldTrans_;
+            cachedWorldTrans_.position = localTrans_.position + trans.position;
+            cachedWorldTrans_.orientation = localTrans_.orientation * trans.orientation;
+        }
+
+        else
+        {
+            cachedTransformation_ = cachedLocalTrans_;
+            cachedWorldTrans_ = localTrans_;
+        }
     }
 
     // Walk through child nodes
     for(Node* child : children_)
     {
-        child->updateTransformation(cachedTransformation_, dirty);
+        child->updateTransformation(dirty);
     }
 }
 
@@ -75,7 +89,7 @@ void Node::applyTransformation(const QMatrix4x4& matrix)
     move(matrix.column(3).toVector3D());
 
     // Scale is the vector norm
-    scale_ *= QVector3D(right.length(), up.length(), forward.length());
+    localTrans_.scale *= QVector3D(right.length(), up.length(), forward.length());
 
     // Calculate orientation from axes
     rotate(orientationFromAxes(right.normalized(), up.normalized(), forward.normalized()));
@@ -97,7 +111,10 @@ Node* Node::getChild(ChildNodes::size_type index)
 void Node::addChild(Node* child)
 {
     if(child != nullptr)
+    {
+        child->setParent(this);
         children_.push_back(child);
+    }
 }
 
 Node* Node::removeChild(ChildNodes::size_type index)
@@ -147,24 +164,24 @@ void Node::setParent(Node* parent)
 
 void Node::setPosition(const QVector3D& position)
 {
-    position_ = position;
+    localTrans_.position = position;
     updateNeeded_ = true;
 }
 
 const QVector3D& Node::position() const
 {
-    return position_;
+    return localTrans_.position;
 }
 
 void Node::move(const QVector3D& offset)
 {
-    position_ += offset;
+    localTrans_.position += offset;
     updateNeeded_ = true;
 }
 
 void Node::rotate(const QQuaternion& quaternion)
 {
-    setOrientation(quaternion.normalized() * orientation_);
+    setOrientation(quaternion.normalized() * localTrans_.orientation);
 }
 
 void Node::rotate(float angle, const QVector3D& axis)
@@ -174,13 +191,13 @@ void Node::rotate(float angle, const QVector3D& axis)
 
 void Node::setOrientation(const QQuaternion& quaternion)
 {
-    orientation_ = quaternion;
+    localTrans_.orientation = quaternion.normalized();
     updateNeeded_ = true;
 }
 
 const QQuaternion& Node::orientation() const
 {
-    return orientation_;
+    return localTrans_.orientation;
 }
 
 void Node::setDirection(const QVector3D& direction)
@@ -208,27 +225,36 @@ void Node::setDirection(const QVector3D& direction)
 QVector3D Node::direction() const
 {
     // Default direction points towards -Z
-    return orientation_.rotatedVector(-UNIT_Z);
+    return localTrans_.orientation.rotatedVector(-UNIT_Z);
 }
 
 void Node::lookAt(const QVector3D& target)
 {
-    setDirection(target - position_);
+    setDirection(target - cachedWorldTrans_.position);
 }
 
 void Node::setScale(const QVector3D& scale)
 {
-    scale_ = scale;
+    localTrans_.scale = scale;
     updateNeeded_ = true;
 }
 
 void Node::setScale(float scale)
 {
-    scale_ = QVector3D(scale, scale, scale);
-    updateNeeded_ = true;
+    setScale(QVector3D(scale, scale, scale));
 }
 
 const QVector3D& Node::scale() const
 {
-    return scale_;
+    return localTrans_.scale;
+}
+
+const QVector3D& Node::worldPosition() const
+{
+    return cachedWorldTrans_.position;
+}
+
+const QQuaternion& Node::worldOrientation() const
+{
+    return cachedWorldTrans_.orientation;
 }

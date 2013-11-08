@@ -140,7 +140,6 @@ void BasicScene::initialise()
 
         hkNode_->setPosition(QVector3D(-2, 2, 0));
         hkNode_->setScale(0.025f);
-
         hkNode_->attachEntity(hellknight_.get());
     }
 

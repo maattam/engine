@@ -36,6 +36,9 @@ protected:
     void setDirectionalLight(const QVector3D& color, const QVector3D& direction,
         float ambientIntensity, float diffuseIntensity);
 
+    // Attaches the camera to the given node
+    void attachCamera(Engine::Graph::SceneNode* node);
+
     Engine::Graph::SceneNode* rootNode();
     Engine::ResourceDespatcher* despatcher();
     Input* const input() const;

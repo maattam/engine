@@ -1,6 +1,7 @@
 #include "freelookscene.h"
 
 #include "input.h"
+#include "graph/scenenode.h"
 
 using namespace Engine;
 
@@ -143,4 +144,12 @@ void FreeLookScene::setInput(Input* input)
 Input* const FreeLookScene::input() const
 {
     return input_;
+}
+
+void FreeLookScene::attachCamera(Engine::Graph::SceneNode* node)
+{
+    if(node != nullptr)
+    {
+        node->attachEntity(&camera_);
+    }
 }

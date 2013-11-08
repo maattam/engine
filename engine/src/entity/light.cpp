@@ -4,6 +4,7 @@
 #include <qmath.h>
 
 #include "mathelp.h"
+#include "graph/scenenode.h"
 
 using namespace Engine::Entity;
 
@@ -27,10 +28,6 @@ Light::Light(LightType type) : Entity(), type_(type)
 Light::LightType Light::type() const
 {
     return type_;
-}
-
-void Light::updateRenderList(Engine::RenderList& list)
-{
 }
 
 void Light::setColor(const QVector3D& color)
@@ -180,4 +177,14 @@ float Light::maxSpotDistance() const
         - 4 * attenuation_.exp * (attenuation_.constant - maxrgb * maxC * diffuseIntensity_);
 
     return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.exp);
+}
+
+QVector3D Light::position() const
+{
+    if(parentNode() != nullptr)
+    {
+        return parentNode()->worldPosition();
+    }
+
+    return QVector3D();
 }

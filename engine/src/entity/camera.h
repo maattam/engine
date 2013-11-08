@@ -8,9 +8,11 @@
 
 #include "mathelp.h"
 
+#include "entity.h"
+
 namespace Engine { namespace Entity {
 
-class Camera
+class Camera : public Entity
 {
 public:
     enum CameraType { PERSPECTIVE, ORTHOGRAPHIC };

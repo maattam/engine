@@ -29,7 +29,7 @@ public:
 
     // Resolves light frustrum and renders objects inside the frustrum to depth texture
     void renderDirectinalLight(Entity::Light* light, VisibleScene* visibles);
-    void renderSpotLight(size_t index, const VisibleScene::VisibleLight& light, VisibleScene* visibles);
+    void renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles);
 
     // Binds light depth texture to given texture unit
     bool bindDirectionalLight(GLenum textureUnit);
