@@ -61,11 +61,12 @@ void BasicLightning::setMaterialAttributes(const Material::Attributes& attribute
     program()->setUniformValue("gMaterial.shininess", attributes.shininess);
 }
 
-void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular)
+void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular, GLuint mask)
 {
     program()->setUniformValue("gDiffuseSampler", diffuse);
     program()->setUniformValue("gNormalSampler", normal);
     program()->setUniformValue("gSpecularSampler", specular);
+    program()->setUniformValue("gMaskSampler", mask);
 }
 
 void BasicLightning::setDirectionalLight(Entity::Light* light)

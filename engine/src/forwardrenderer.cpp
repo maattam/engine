@@ -204,7 +204,7 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
     }
 
     lightningTech_.setEyeWorldPos(camera->position());
-    lightningTech_.setTextureUnits(0, 1, 2);
+    lightningTech_.setTextureUnits(0, 1, 2, 3);
     lightningTech_.setDirectionalLight(visibles->directionalLight());
     lightningTech_.setPointAndSpotLights(visibles->queryLights());
     lightningTech_.setShadowEnabled(flags_ & RENDER_SHADOWS);

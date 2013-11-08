@@ -19,7 +19,7 @@ public:
     Material(ResourceDespatcher* despatcher);
     ~Material();
 
-    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_COUNT };
+    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_COUNT };
 
     const Texture2D::Ptr& getTexture(TextureType type);
     void setTexture(TextureType type, Texture2D::Ptr& texture);

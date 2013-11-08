@@ -184,7 +184,8 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
     const aiTextureType textureMapping[Material::TEXTURE_COUNT] = {
         aiTextureType_DIFFUSE,
         aiTextureType_NORMALS,
-        aiTextureType_SPECULAR
+        aiTextureType_SPECULAR,
+        aiTextureType_OPACITY
     };
 
     // Extract the directory part of the file name
