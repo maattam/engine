@@ -61,8 +61,8 @@ void Node::updateTransformation(bool dirtyParent)
             cachedTransformation_ = parent->transformation() * cachedLocalTrans_;
             
             const Transformation& trans = parent->cachedWorldTrans_;
-            cachedWorldTrans_.position = localTrans_.position + trans.position;
-            cachedWorldTrans_.orientation = localTrans_.orientation * trans.orientation;
+            cachedWorldTrans_.position = trans.orientation.rotatedVector(localTrans_.position) + trans.position;
+            cachedWorldTrans_.orientation = trans.orientation * localTrans_.orientation;
         }
 
         else

@@ -7,7 +7,10 @@ layout(location = 3) in vec3 tangent;
 
 uniform mat4 gMVP;
 
+out vec2 texCoord0;
+
 void main()
 {
+    texCoord0 = texCoord;
 	gl_Position = gMVP * vec4(position, 1.0);
 }

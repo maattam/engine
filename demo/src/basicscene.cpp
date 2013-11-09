@@ -120,6 +120,8 @@ void BasicScene::initialise()
     cubeNode_ = root->createSceneNodeChild();
     sphereNode_ = root->createSceneNodeChild();
 
+    attachCamera(root);
+
     // Oildrum
     {
         // Create rotation relation

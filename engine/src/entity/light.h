@@ -48,7 +48,7 @@ public:
 
     const Attenuation& Light::attenuation() const;
 
-    QVector3D position() const;
+    const QVector3D& position() const;
 
 private:
     void calculateAABB();
@@ -58,6 +58,7 @@ private:
 
     QVector3D color_;
     QVector3D direction_;
+    QVector3D basePosition_;
 
     float ambientIntensity_;
     float diffuseIntensity_;

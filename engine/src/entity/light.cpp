@@ -179,12 +179,14 @@ float Light::maxSpotDistance() const
     return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.exp);
 }
 
-QVector3D Light::position() const
+const QVector3D& Light::position() const
 {
+    // Update derived position is parent exists
     if(parentNode() != nullptr)
     {
         return parentNode()->worldPosition();
     }
 
-    return QVector3D();
+    // Fallback
+    return basePosition_;
 }

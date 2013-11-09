@@ -40,7 +40,8 @@ vec3 calcBloomColor()
 	return color;
 }
 
-void main() {
+void main()
+{
 	ivec2 st = ivec2(textureSize(renderedTexture) * uv);
 
     // Bloom is calculated in srgb space to reduce floating point precision error

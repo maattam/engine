@@ -50,11 +50,6 @@ void Camera::setPosition(const QVector3D& position)
 
 const QVector3D& Camera::position() const
 {
-    if(parentNode() != nullptr)
-    {
-        return parentNode()->worldPosition() + position_;
-    }
-
     return position_;
 }
 
@@ -81,11 +76,6 @@ void Camera::rotate(float angle, const QVector3D& axis)
 
 const QQuaternion& Camera::orientation() const
 {
-    if(parentNode() != nullptr)
-    {
-        return orientation_ * parentNode()->worldOrientation();
-    }
-
     return orientation_;
 }
 
@@ -111,12 +101,14 @@ void Camera::setDirection(const QVector3D& direction)
         orientation_ = rotationBetweenVectors(start, dest);
     }
 
+    // TODO: Transform to parent space when the orientation is derived from parent node
+
     orientation_.normalize();
 }
 
 void Camera::lookAt(const QVector3D& target)
 {
-    setDirection(target - position());
+    setDirection(target - position_);
 }
 
 const QMatrix4x4& Camera::worldView() const
@@ -186,19 +178,19 @@ void Camera::setNearPlane(float near)
 QVector3D Camera::up() const
 {
     // Default up is +Y, so we rotate +Y to find the current up.
-    return orientation().rotatedVector(UNIT_Y);
+    return orientation_.rotatedVector(UNIT_Y);
 }
 
 QVector3D Camera::right() const
 {
     // Default right is +X
-    return orientation().rotatedVector(UNIT_X);
+    return orientation_.rotatedVector(UNIT_X);
 }
 
 QVector3D Camera::direction() const
 {
     // Default direction points towards -Z
-    return orientation().rotatedVector(-UNIT_Z);
+    return orientation_.rotatedVector(-UNIT_Z);
 }
 
 void Camera::setFixedYaw(bool value, const QVector3D& yaw)

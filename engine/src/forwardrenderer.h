@@ -69,8 +69,6 @@ private:
 
     unsigned int flags_;
 
-    void drawTextureDebug();
-
     void shadowMapPass(VisibleScene* visibles);
     void renderPass(VisibleScene* visibles, Entity::Camera* camera, const VisibleScene::RenderQueue& queue);
     void skyboxPass(VisibleScene* visibles, Entity::Camera* camera);

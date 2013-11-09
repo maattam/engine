@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "entity/camera.h"
 #include "renderable/renderable.h"
+#include "material.h"
 
 using namespace Engine;
 using namespace Engine::Technique;
@@ -15,6 +16,7 @@ ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
     : Technique()
 {
     addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
+    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
 }
 
 ShadowMap::~ShadowMap()
@@ -145,6 +147,8 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
     if(visibles == nullptr)
         return;
 
+    program()->setUniformValue("gMaskSampler", 0);
+
     // Cull & render visibles
     VisibleScene::RenderQueue shadowCasters;
     visibles->queryVisibles(light.worldView, shadowCasters, true);
@@ -156,6 +160,9 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
 
         for(auto rit = node.begin(); rit != node.end(); ++rit)
         {
+            // Bind mask texture to discard fully opaque fragments
+            rit->first->getTexture(Material::TEXTURE_MASK)->bindActive(GL_TEXTURE0);
+
             rit->second->render();
         }
     }

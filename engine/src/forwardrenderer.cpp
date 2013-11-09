@@ -147,8 +147,6 @@ void ForwardRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
     {
         fx->render(quad_);
     }
-
-    //drawTextureDebug();
 }
 
 void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
@@ -270,19 +268,6 @@ void ForwardRenderer::skyboxPass(VisibleScene* visibles, Entity::Camera* camera)
         return;
 
     skyboxTech_.render(camera, visibles->skybox());
-}
-
-void ForwardRenderer::drawTextureDebug()
-{
-    shadowTech_.bindDirectionalLight(GL_TEXTURE0);
-    nullTech_.bind();
-    nullTech_.setUniformValue("gShadowMap", 0);
-
-    gl->glViewport(viewport_.x(), viewport_.y(), 512, 512);
-
-    quad_.render();
-
-    gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 }
 
 void ForwardRenderer::setFlags(unsigned int flags)

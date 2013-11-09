@@ -29,6 +29,7 @@ void Scene::renderScene(Entity::Camera* camera)
     {
         // Update scene transformations
         rootNode_.update();
+        camera->update();
 
         renderer_->render(camera, this);
     }

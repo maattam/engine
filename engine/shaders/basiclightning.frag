@@ -220,11 +220,10 @@ vec3 calcBumpedNormal()
 
 void main()
 {
+    bvec3 toDiscard = lessThan(texture2D(gMaskSampler, texCoord0), vec3(0.3));
     // Check if this part of the fragment is visible according to mask
-    if(texture2D(gMaskSampler, texCoord0).r < 0.2)
-    {
+    if(all(toDiscard))
         discard;
-    }
 
     // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
 	vec3 normal = calcBumpedNormal();

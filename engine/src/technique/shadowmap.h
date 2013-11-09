@@ -28,6 +28,7 @@ public:
     size_t numSpotLights() const;
 
     // Resolves light frustrum and renders objects inside the frustrum to depth texture
+    // Preconditions: Technique is enabled
     void renderDirectinalLight(Entity::Light* light, VisibleScene* visibles);
     void renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles);
 
