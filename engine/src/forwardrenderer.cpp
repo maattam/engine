@@ -10,6 +10,7 @@
 #include "entity/camera.h"
 #include "entity/light.h"
 #include "effect/hdr.h"
+#include "graph/scenenode.h"
 
 #include "resourcedespatcher.h"
 

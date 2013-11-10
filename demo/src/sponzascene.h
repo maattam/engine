@@ -29,7 +29,8 @@ private:
     Engine::ColladaNode::Ptr sceneMesh_;
 
     Engine::Entity::Mesh::Ptr sphere_;
-    Engine::Graph::SceneNode* sphereNode_[2];
+    Engine::Graph::SceneNode* sphereNode_;
+    Engine::Graph::SceneNode* cameraNode_;
 
     float velocity_;
 
@@ -44,7 +45,9 @@ private:
     QVector3D spotDirection_;
     PathNode* spotNode_;
     Engine::Entity::Light spotLight_;
+    Engine::Entity::Light flashLight_;
     float spotVelocity_;
+    bool flashLightToggle_;
 
     double elapsed_;
 };

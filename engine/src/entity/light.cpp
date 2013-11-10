@@ -25,6 +25,10 @@ Light::Light(LightType type) : Entity(), type_(type)
     calculateAABB();
 }
 
+Light::~Light()
+{
+}
+
 Light::LightType Light::type() const
 {
     return type_;

@@ -16,6 +16,12 @@ FreeLookScene::FreeLookScene(Engine::ResourceDespatcher* despatcher)
 
 FreeLookScene::~FreeLookScene()
 {
+    if(scene_ != nullptr)
+    {
+        scene_->rootNode()->removeAllChildren();
+        scene_->rootNode()->detachAllEntities();
+        scene_->setDirectionalLight(nullptr);
+    }
 }
 
 void FreeLookScene::setAspectRatio(float ratio)
@@ -141,7 +147,7 @@ void FreeLookScene::setInput(Input* input)
     input_ = input;
 }
 
-Input* const FreeLookScene::input() const
+Input* FreeLookScene::input()
 {
     return input_;
 }
@@ -152,4 +158,9 @@ void FreeLookScene::attachCamera(Engine::Graph::SceneNode* node)
     {
         node->attachEntity(&camera_);
     }
+}
+
+Engine::Entity::Camera* FreeLookScene::camera()
+{
+    return &camera_;
 }

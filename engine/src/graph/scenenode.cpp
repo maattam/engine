@@ -14,6 +14,7 @@ SceneNode::SceneNode()
 
 SceneNode::~SceneNode()
 {
+    detachAllEntities();
 }
 
 void SceneNode::attachEntity(Entity::Entity* entity)
@@ -51,6 +52,11 @@ Entity::Entity* SceneNode::detachEntity(Entities::size_type index)
 
 void SceneNode::detachAllEntities()
 {
+    for(Entity::Entity* ent : entities_)
+    {
+        ent->detach();
+    }
+
     entities_.clear();
 }
 

@@ -26,6 +26,8 @@ public:
     // Constructs a camera with orthogonal projection.
     Camera(const QRectF& window, const QVector3D& direction = UNIT_Z);
 
+    virtual ~Camera();
+
     CameraType type() const;
 
     void setPosition(const QVector3D& position);

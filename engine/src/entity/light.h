@@ -17,6 +17,7 @@ public:
 
     typedef std::shared_ptr<Light> Ptr;
     Light(LightType type);
+    virtual ~Light();
 
     struct Attenuation
     {

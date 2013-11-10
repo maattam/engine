@@ -252,8 +252,6 @@ void SceneView::swapScene(FreeLookScene* scene)
         delete controller_;
     }
 
-    model_.rootNode()->removeAllChildren();
-
     qDebug() << "Managed objects: " << despatcher_.numManaged();
 
     scene->setModel(&model_);

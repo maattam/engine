@@ -220,7 +220,7 @@ vec3 calcBumpedNormal()
 
 void main()
 {
-    bvec3 toDiscard = lessThan(texture2D(gMaskSampler, texCoord0), vec3(0.3));
+    bvec3 toDiscard = lessThanEqual(texture2D(gMaskSampler, texCoord0), vec3(0.2));
     // Check if this part of the fragment is visible according to mask
     if(all(toDiscard))
         discard;

@@ -2,6 +2,7 @@
 
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
+#include "input.h"
 
 #include <QDebug>
 #include <qmath.h>
@@ -9,7 +10,8 @@
 using namespace Engine;
 
 SponzaScene::SponzaScene(ResourceDespatcher* despatcher) : FreeLookScene(despatcher),
-    spotLight_(Entity::Light::LIGHT_SPOT), velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0)
+    spotLight_(Entity::Light::LIGHT_SPOT), flashLight_(Entity::Light::LIGHT_SPOT),
+    velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0), flashLightToggle_(false)
 {
     const int NUM_NODES = 4;
     const float h = 30.0f;
@@ -62,7 +64,7 @@ void SponzaScene::update(unsigned int elapsed)
     elapsed_ += t;
 
     // Traverse spot light path
-    QVector3D pos = sphereNode_[1]->position();
+    QVector3D pos = sphereNode_->position();
     if(QVector3D::dotProduct((pos - spotNode_->endpoint), spotDirection_) > 0)
     {
         pos = spotNode_->endpoint;
@@ -74,7 +76,29 @@ void SponzaScene::update(unsigned int elapsed)
     }
 
     pos += spotDirection_ * t * spotVelocity_;
-    sphereNode_[1]->setPosition(pos);
+    sphereNode_->setPosition(pos);
+
+    if(input()->keyDown(Qt::Key::Key_F))
+    {
+        input()->keyEvent(Qt::Key::Key_F, false);
+        flashLightToggle_ = !flashLightToggle_;
+
+        if(flashLightToggle_)
+        {
+            cameraNode_->attachEntity(&flashLight_);
+        }
+
+        else
+        {
+            cameraNode_->detachEntity(&flashLight_);
+        }
+    }
+
+    if(flashLightToggle_)
+    {
+        cameraNode_->setPosition(camera()->position());
+        flashLight_.setDirection(camera()->direction());
+    }
 }
 
 void SponzaScene::initialise()
@@ -97,29 +121,23 @@ void SponzaScene::initialise()
     spotLight_.setAttenuationLinear(0.1f);
     spotLight_.setCutoff(30.0f);
 
-    /*Entity::PointLight pointLight;
-    pointLight.attenuation.exp = 0.005f;
-    pointLight.attenuation.constant = 1.0f;
-    pointLight.attenuation.linear = 0.2f;
-    pointLight.position = QVector3D(0, 12, 0);
-    pointLight.color = QVector3D(255, 241, 224) / 255.0f;
-    pointLight.diffuseIntensity = 7.0f;
-    pointLight.ambientIntensity = 0.5f;
-    pointLights_.push_back(pointLight);*/
+    flashLight_.setColor(QVector3D(1, 1, 1));
+    flashLight_.setDiffuseIntensity(25.0f);
+    spotLight_.setAttenuationExp(0.005f);
+    flashLight_.setCutoff(30.0f);
 
     // Position entities
     Graph::SceneNode* node = rootNode()->createSceneNodeChild();
     node->setScale(0.05f);
     sceneMesh_->attach(node);
 
-    for(int i = 1; i < 2; ++i)
-    {
-        sphereNode_[i] = rootNode()->createSceneNodeChild();
-        sphereNode_[i]->attachEntity(sphere_.get());
-        sphereNode_[i]->setShadowCaster(false);
-        sphereNode_[i]->setScale(0.5f);
-    }
+    sphereNode_ = rootNode()->createSceneNodeChild();
+    sphereNode_->attachEntity(sphere_.get());
+    sphereNode_->setShadowCaster(false);
+    sphereNode_->setScale(0.5f);
+    sphereNode_->attachEntity(&spotLight_);
+    sphereNode_->setPosition(spotPath_.back().endpoint);
 
-    sphereNode_[1]->attachEntity(&spotLight_);
-    sphereNode_[1]->setPosition(spotPath_.back().endpoint);
+    cameraNode_ = rootNode()->createSceneNodeChild();
+    attachCamera(cameraNode_);
 }

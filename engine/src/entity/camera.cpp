@@ -43,6 +43,10 @@ Camera::Camera(const QRectF& window, const QVector3D& dir)
     update();
 }
 
+Camera::~Camera()
+{
+}
+
 void Camera::setPosition(const QVector3D& position)
 {
     position_ = position;

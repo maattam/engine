@@ -36,11 +36,11 @@ public:
     virtual void attach(Graph::SceneNode* node);
     virtual void detach();
 
-protected:
-    void updateAABB(const AABB& aabb);
-
     // Returns nullptr if the entity isn't attached to a node
     Graph::SceneNode* parentNode() const;
+
+protected:
+    void updateAABB(const AABB& aabb);
 
 private:
     AABB aabb_;
