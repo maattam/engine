@@ -59,7 +59,7 @@ bool Material::hasNormals() const
 
 void Material::setTexture(TextureType type, Texture2D::Ptr& texture)
 {
-    assert(texture != nullptr);
+    Q_ASSERT(texture != nullptr);
 
     textures_[type] = texture;
     setTextureOptions(texture);

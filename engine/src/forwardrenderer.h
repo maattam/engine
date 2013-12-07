@@ -38,14 +38,21 @@ public:
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left, unsigned int top);
 
+    virtual void setScene(VisibleScene* scene);
+
     // Renders the scene through the camera's viewport.
-    virtual void render(Entity::Camera* camera, VisibleScene* visibles);
+    virtual void render(Entity::Camera* camera);
 
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
 
 private:
+    VisibleScene* scene_;
+    unsigned int flags_;
     QRect viewport_;
+
+    // Error material
+    Material errorMaterial_;
 
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
@@ -64,16 +71,11 @@ private:
     // Quad for postprocessing
     Renderable::Quad quad_;
 
-    // Error material
-    Material errorMaterial_;
+    void shadowMapPass();
+    void renderPass(Entity::Camera* camera, const RenderQueue& queue);
+    void skyboxPass(Entity::Camera* camera);
 
-    unsigned int flags_;
-
-    void shadowMapPass(VisibleScene* visibles);
-    void renderPass(VisibleScene* visibles, Entity::Camera* camera, const VisibleScene::RenderQueue& queue);
-    void skyboxPass(VisibleScene* visibles, Entity::Camera* camera);
-
-    void renderNode(const RenderList& node);
+    void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);
     void destroyBuffers();

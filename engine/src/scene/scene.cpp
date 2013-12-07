@@ -31,7 +31,7 @@ void Scene::renderScene(Entity::Camera* camera)
         rootNode_.update();
         camera->update();
 
-        renderer_->render(camera, this);
+        renderer_->render(camera);
     }
 }
 
@@ -41,8 +41,6 @@ void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, 
     {
         lights_.clear();
     }
-
-    renderQueue.clear();
 
     findVisibles(viewProj, &rootNode_, renderQueue, shadowCasters);
 }
@@ -83,7 +81,7 @@ const Scene::Lights& Scene::queryLights() const
 }
 
 void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
-                         Scene::RenderQueue& queue, bool shadowCasters)
+                         RenderQueue& queue, bool shadowCasters)
 {
     if(node == nullptr)
     {
@@ -94,7 +92,7 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
     if(node->numEntities() > 0)
     {
         const QMatrix4x4& nodeView = node->transformation();
-        VisibleNode visibleNode = std::make_pair(&nodeView, RenderList());
+        queue.setModelView(&nodeView);
 
         for(size_t i = 0; i < node->numEntities(); ++i)
         {
@@ -104,33 +102,26 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
                 continue;
             }
 
-            // Check whether the entity's bounding volume is inside our view frustrum
             Entity::Entity* entity = node->getEntity(i);
 
+            // Check whether the entity's bounding volume is inside our view frustrum
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
                 // Notify observers
                 notify(&SceneObserver::beforeRendering, entity, node);
 
                 // Cache visible lights
-                Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
-                if(!shadowCasters && light != nullptr)
+                if(!shadowCasters)
                 {
-                    QVector3D position = nodeView.column(3).toVector3D();
-                    lights_.push_back(light);
+                    Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
+                    if(light != nullptr)
+                    {
+                        lights_.push_back(light);
+                    }
                 }
 
-                else
-                {
-                    entity->updateRenderList(visibleNode.second);
-                }
+                entity->updateRenderList(queue);
             }
-        }
-
-        // If some renderables were culled, push them down the queue
-        if(visibleNode.second.size() > 0)
-        {
-            queue.push_back(visibleNode);
         }
     }
 

@@ -71,7 +71,13 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
 
 void BasicLightning::setDirectionalLight(Entity::Light* light)
 {
-    program()->setUniformValue("gDirectionalLight.ambientIntensity", light->ambientIntensity());
+    float ambientFactor = 0.0f;
+    if(light->diffuseIntensity() > 0.0f)
+    {
+        ambientFactor = light->ambientIntensity() / light->diffuseIntensity();
+    }
+
+    program()->setUniformValue("gDirectionalLight.ambientIntensity", ambientFactor);
     program()->setUniformValue("gDirectionalLight.base.color", linear(light->color()) * light->diffuseIntensity());
 
     program()->setUniformValue("gDirectionalLight.direction", light->direction());

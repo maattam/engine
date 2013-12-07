@@ -10,7 +10,7 @@
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : viewport_(0, 0, 0, 0), observable_(nullptr), flags_(0)
+    : observable_(nullptr), scene_(nullptr), flags_(0)
 {
     // AABB debugging tech
     aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
@@ -34,16 +34,15 @@ bool DebugRenderer::setViewport(unsigned int width, unsigned int height, unsigne
     return true;
 }
 
-
-void DebugRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
+void DebugRenderer::setScene(VisibleScene* scene)
 {
-    if(camera == nullptr || visibles == nullptr || observable_ == nullptr)
-    {
-        return;
-    }
+    scene_ = scene;
+}
 
+void DebugRenderer::render(Entity::Camera* camera)
+{
     // If no debug flags are set, bail out
-    if(flags_ == 0)
+    if(observable_ == nullptr || flags_ == 0)
     {
         return;
     }
@@ -51,8 +50,8 @@ void DebugRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
     observable_->addObserver(this);
 
     // Cull visibles
-    VisibleScene::RenderQueue renderQueue;
-    visibles->queryVisibles(camera->worldView(), renderQueue);
+    RenderQueue renderQueue;
+    scene_->queryVisibles(camera->worldView(), renderQueue);
 
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
@@ -62,7 +61,7 @@ void DebugRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
     observable_->removeObserver(this);
 }
 
-void DebugRenderer::renderWireframe(Entity::Camera* camera, const VisibleScene::RenderQueue& queue)
+void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& queue)
 {
     if(!(flags_ & DEBUG_WIREFRAME))
     {
@@ -85,24 +84,15 @@ void DebugRenderer::renderWireframe(Entity::Camera* camera, const VisibleScene::
 
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
-        const RenderList& node = it->second;
-        const QMatrix4x4* transf = it->first;
+        wireframeTech_.setUniformValue("gMVP", camera->worldView() * *it->modelView);
 
-        wireframeTech_.setUniformValue("gMVP", camera->worldView() * *it->first);
-
-        for(auto rit = node.begin(); rit != node.end(); ++rit)
-        {
-            Material* material = (*rit).first;
-            const Renderable::Renderable* renderable = (*rit).second;
-
-            material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
+        it->material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
             
-            QVector3D highlight = material->attributes().ambientColor + QVector3D(0.2, 0.2, 0.2);
-            wireframeTech_.setUniformValue("ambientColor", highlight);
-            wireframeTech_.setUniformValue("diffuseColor", material->attributes().diffuseColor);
+        QVector3D highlight = it->material->attributes().ambientColor + QVector3D(0.2, 0.2, 0.2);
+        wireframeTech_.setUniformValue("ambientColor", highlight);
+        wireframeTech_.setUniformValue("diffuseColor", it->material->attributes().diffuseColor);
 
-            renderable->render();
-        }
+        it->renderable->render();
     }
 
     // Reset polygon mode

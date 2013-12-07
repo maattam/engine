@@ -41,7 +41,7 @@ private:
     Lights lights_;
 
     void findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
-        Scene::RenderQueue& queue, bool shadowCasters);
+        RenderQueue& queue, bool shadowCasters);
 
     Scene(const Scene&);
     Scene& operator=(const Scene&);

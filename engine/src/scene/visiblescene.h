@@ -7,27 +7,19 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 
+#include "../renderqueue.h"
+
 namespace Engine {
 
 namespace Entity {
     class Light;
 }
 
-class Material;
 class CubemapTexture;
-
-namespace Renderable {
-    class Renderable;
-}
-
-typedef std::deque<std::pair<Material*, Renderable::Renderable*>> RenderList;
 
 class VisibleScene
 {
 public:
-    typedef std::pair<const QMatrix4x4* const, RenderList> VisibleNode;
-
-    typedef std::deque<VisibleNode> RenderQueue;
     typedef std::deque<Entity::Light*> Lights;
 
     virtual ~VisibleScene() {};

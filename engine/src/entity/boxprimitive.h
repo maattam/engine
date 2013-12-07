@@ -13,7 +13,7 @@ public:
     BoxPrimitive();
     ~BoxPrimitive();
 
-    virtual void updateRenderList(RenderList& list);
+    virtual void updateRenderList(RenderQueue& list);
 
     void setMaterial(const Material::Ptr& material);
 

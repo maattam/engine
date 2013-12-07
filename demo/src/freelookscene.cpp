@@ -164,3 +164,8 @@ Engine::Entity::Camera* FreeLookScene::camera()
 {
     return &camera_;
 }
+
+Engine::Entity::Light* FreeLookScene::directionalLight()
+{
+    return &dirLight_;
+}

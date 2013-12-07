@@ -150,21 +150,16 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
     program()->setUniformValue("gMaskSampler", 0);
 
     // Cull & render visibles
-    VisibleScene::RenderQueue shadowCasters;
+    RenderQueue shadowCasters;
     visibles->queryVisibles(light.worldView, shadowCasters, true);
 
     for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
     {
-        const RenderList& node = it->second;
-        program()->setUniformValue("gMVP", light.worldView * *it->first);
+        program()->setUniformValue("gMVP", light.worldView * *it->modelView);
 
-        for(auto rit = node.begin(); rit != node.end(); ++rit)
-        {
-            // Bind mask texture to discard fully opaque fragments
-            rit->first->getTexture(Material::TEXTURE_MASK)->bindActive(GL_TEXTURE0);
-
-            rit->second->render();
-        }
+        // Bind mask texture to discard fully opaque fragments
+        it->material->getTexture(Material::TEXTURE_MASK)->bindActive(GL_TEXTURE0);
+        it->renderable->render();
     }
 }
 

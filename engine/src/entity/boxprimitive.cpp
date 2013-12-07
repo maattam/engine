@@ -12,9 +12,9 @@ BoxPrimitive::~BoxPrimitive()
 {
 }
 
-void BoxPrimitive::updateRenderList(RenderList& list)
+void BoxPrimitive::updateRenderList(RenderQueue& list)
 {
-    list.push_back(std::make_pair(material_.get(), &cube_));
+    list.addNode(material_.get(), &cube_);
 }
 
 void BoxPrimitive::setMaterial(const Material::Ptr& material)

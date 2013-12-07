@@ -201,7 +201,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Qt\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\lib\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -209,7 +209,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Qt\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>D:\lib\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

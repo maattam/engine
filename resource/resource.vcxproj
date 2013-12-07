@@ -191,7 +191,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>E:\Documents\Repos\engine\common\src;D:\Qt\gli-0.4.1.0;D:\Qt\glm-0.9.4.4;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Documents\Repos\engine\common\src;D:\lib\gli-0.5.0.0\external\glm-0.9.5-beta;D:\lib\gli-0.5.0.0;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -199,7 +199,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>E:\Documents\Repos\engine\common\src;D:\Qt\gli-0.4.1.0;D:\Qt\glm-0.9.4.4;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\;$(IncludePath)</IncludePath>
+    <IncludePath>E:\Documents\Repos\engine\common\src;D:\lib\gli-0.5.0.0\external\glm-0.9.5-beta;D:\lib\gli-0.5.0.0;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtGui;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.1.1\5.1.1\msvc2012_64_opengl\include\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -41,8 +41,10 @@ protected:
 
     Engine::Graph::SceneNode* rootNode();
     Engine::ResourceDespatcher* despatcher();
+
     Input* input();
     Engine::Entity::Camera* camera();
+    Engine::Entity::Light* directionalLight();
 
     // Called after scene model has been set and scenegraph can be populated.
     virtual void initialise() = 0;

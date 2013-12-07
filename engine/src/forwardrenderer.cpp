@@ -19,8 +19,8 @@
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
-    : lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher),
-    errorMaterial_(despatcher), flags_(0)
+    : scene_(nullptr), flags_(0), errorMaterial_(despatcher),
+    lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -56,6 +56,11 @@ bool ForwardRenderer::setViewport(unsigned int width, unsigned int height, unsig
     return initialiseBuffers(width, height, samples);
 }
 
+void ForwardRenderer::setScene(VisibleScene* scene)
+{
+    scene_ = scene;
+}
+
 void ForwardRenderer::destroyBuffers()
 {
     gl->glDeleteFramebuffers(1, &framebuffer_);
@@ -71,7 +76,7 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
     if(!shadowTech_.initSpotLights(1024, 1024, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
-    if(!shadowTech_.initDirectionalLight(2048, 2048))
+    if(!shadowTech_.initDirectionalLight(4096, 4096))
         return false;
 
     // Initialize textures
@@ -113,32 +118,27 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
     return true;
 }
 
-void ForwardRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
+void ForwardRenderer::render(Entity::Camera* camera)
 {
-    if(camera == nullptr || visibles == nullptr)
-    {
-        return;
-    }
-
     // Cull visibles
-    VisibleScene::RenderQueue renderQueue;
-    visibles->queryVisibles(camera->worldView(), renderQueue);
+    RenderQueue renderQueue;
+    scene_->queryVisibles(camera->worldView(), renderQueue);
 
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
 
     // Pass 1
     // Render to depth buffer
-    shadowMapPass(visibles);
+    shadowMapPass();
 
     // Pass 2
     // Render geometry to a multisampled framebuffer
     gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
 
-    renderPass(visibles, camera, renderQueue);
+    renderPass(camera, renderQueue);
 
     // Render skybox if set
-    skyboxPass(visibles, camera);
+    skyboxPass(camera);
 
     gl->glDisable(GL_DEPTH_TEST);
 
@@ -150,9 +150,9 @@ void ForwardRenderer::render(Entity::Camera* camera, VisibleScene* visibles)
     }
 }
 
-void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
+void ForwardRenderer::shadowMapPass()
 {
-    const auto& lights = visibles->queryLights();
+    const auto& lights = scene_->queryLights();
 
     if(!shadowTech_.enable() || !(flags_ & RENDER_SHADOWS))
     {
@@ -172,24 +172,24 @@ void ForwardRenderer::shadowMapPass(VisibleScene* visibles)
             continue;
         }
 
-        shadowTech_.renderSpotLight(spotLightIndex++, light, visibles);
+        shadowTech_.renderSpotLight(spotLightIndex++, light, scene_);
     }
 
     // Render depth for directional light
-    auto directionalLight = visibles->directionalLight();
+    auto directionalLight = scene_->directionalLight();
     if(directionalLight == nullptr)
     {
         return;
     }
 
-    shadowTech_.renderDirectinalLight(directionalLight, visibles);
+    shadowTech_.renderDirectinalLight(directionalLight, scene_);
 
     gl->glCullFace(GL_BACK);
 }
 
-void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera, const VisibleScene::RenderQueue& queue)
+void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queue)
 {
-    const auto& lights = visibles->queryLights();
+    const auto& lights = scene_->queryLights();
 
     // Prepare OpenGL state for render pass
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -204,8 +204,8 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
 
     lightningTech_.setEyeWorldPos(camera->position());
     lightningTech_.setTextureUnits(0, 1, 2, 3);
-    lightningTech_.setDirectionalLight(visibles->directionalLight());
-    lightningTech_.setPointAndSpotLights(visibles->queryLights());
+    lightningTech_.setDirectionalLight(scene_->directionalLight());
+    lightningTech_.setPointAndSpotLights(scene_->queryLights());
     lightningTech_.setShadowEnabled(flags_ & RENDER_SHADOWS);
 
     // Bind directional light shadow map
@@ -224,51 +224,48 @@ void ForwardRenderer::renderPass(VisibleScene* visibles, Entity::Camera* camera,
     // Render visibles
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
-        lightningTech_.setWorldView(*it->first);
-        lightningTech_.setMVP(camera->worldView() * *it->first);
+        lightningTech_.setWorldView(*it->modelView);
+        lightningTech_.setMVP(camera->worldView() * *it->modelView);
 
         // Set transformation matrix for each spot light
         for(size_t i = 0; i < shadowTech_.numSpotLights(); ++i)
         {
             const QMatrix4x4& spotVP = shadowTech_.spotLightVP(i);
-            lightningTech_.setSpotLightMVP(i, spotVP * *it->first);
+            lightningTech_.setSpotLightMVP(i, spotVP * *it->modelView);
         }
 
         // Set directional light mvp
-        lightningTech_.setDirectionalLightMVP(shadowTech_.directionalLightVP() * *it->first);
+        lightningTech_.setDirectionalLightMVP(shadowTech_.directionalLightVP() * *it->modelView);
 
-        renderNode(it->second);
+        renderNode(*it);
     }
 }
 
-void ForwardRenderer::renderNode(const RenderList& node)
+void ForwardRenderer::renderNode(const RenderQueue::RenderItem& node)
 {
-    for(auto it = node.begin(); it != node.end(); ++it)
+    Material* material = node.material;
+    Renderable::Renderable* renderable = node.renderable;
+
+    if(!material->bind())
     {
-        Material* material = (*it).first;
-        Renderable::Renderable* renderable = (*it).second;
+        material = &errorMaterial_;     // Draw error material to indicate a problem with the object
 
-        if(!material->bind())
-        {
-            material = &errorMaterial_;     // Draw error material to indicate a problem with the object
-
-            if(!errorMaterial_.bind())      // We can't fail further
-                continue;
-        }
-
-        lightningTech_.setHasTangents(renderable->hasTangents() && material->hasNormals());
-        lightningTech_.setMaterialAttributes(material->attributes());
-
-        renderable->render();
+        if(!errorMaterial_.bind())      // We can't fail further
+            return;
     }
+
+    lightningTech_.setHasTangents(renderable->hasTangents() && material->hasNormals());
+    lightningTech_.setMaterialAttributes(material->attributes());
+
+    renderable->render();
 }
 
-void ForwardRenderer::skyboxPass(VisibleScene* visibles, Entity::Camera* camera)
+void ForwardRenderer::skyboxPass(Entity::Camera* camera)
 {
     if(!skyboxTech_.enable())
         return;
 
-    skyboxTech_.render(camera, visibles->skybox());
+    skyboxTech_.render(camera, scene_->skybox());
 }
 
 void ForwardRenderer::setFlags(unsigned int flags)

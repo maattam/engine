@@ -117,9 +117,17 @@ void SceneView::initialize()
         exit(-1);
     }
 
+    renderer_->setScene(&model_);
+
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
-    debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0);
+    if(!debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0))
+    {
+        qCritical() << "Failed to initialize debug renderer!";
+        exit(-1);
+    }
+
     debugRenderer_->setObservable(&model_);
+    debugRenderer_->setScene(&model_);
 
     model_.setView(renderer_);
 

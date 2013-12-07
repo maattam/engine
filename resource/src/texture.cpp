@@ -17,7 +17,7 @@ gli::texture2D* Engine::loadTexture(const QString& fileName, bool srgb)
     // Note: We only support DXT5
     if(isDDS(fileName))
     {
-        const gli::storage storage = gli::loadStorageDDS(fileName.toStdString());
+        const gli::storage storage = gli::load_dds(fileName.toUtf8());
         gli::format format = storage.format();
 
         if(srgb)
@@ -25,11 +25,11 @@ gli::texture2D* Engine::loadTexture(const QString& fileName, bool srgb)
             format = gli::format::SRGB_ALPHA_DXT5;
         }
 
-        texture = new gli::texture2D(format, storage, gli::detail::view(0, 0, 0, 0, 0, storage.levels() - 1));
-
+        texture = new gli::texture2D(storage, format, 0, 0, 0, 0, 0, storage.levels() - 1);
         if(texture->empty())
         {
-            return false;
+            delete texture;
+            texture = nullptr;
         }
     }
 

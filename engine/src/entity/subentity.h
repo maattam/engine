@@ -17,7 +17,7 @@ public:
 
     SubEntity(const Renderable::SubMesh::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb);
 
-    virtual void updateRenderList(RenderList& list);
+    virtual void updateRenderList(RenderQueue& list);
 
     const Material::Ptr& material() const;
     void setMaterial(const Material::Ptr& material);

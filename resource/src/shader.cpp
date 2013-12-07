@@ -23,14 +23,14 @@ Shader::~Shader()
 bool Shader::initialiseData(const DataType& data)
 {
     shader_ = new QOpenGLShader(type_, this);
-    bool ok = shader_->compileSourceCode(data.data());
 
-    if(!ok)
+    if(!shader_->compileSourceCode(data.data()))
     {
        qWarning() << shader_->log();
+       return false;
     }
 
-    return ok;
+    return true;
 }
 
 void Shader::releaseData()

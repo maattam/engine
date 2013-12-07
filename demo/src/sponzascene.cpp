@@ -96,7 +96,9 @@ void SponzaScene::update(unsigned int elapsed)
 
     if(flashLightToggle_)
     {
-        cameraNode_->setPosition(camera()->position());
+        const QVector3D flashPos = camera()->position() - QVector3D(0, 2, 0);
+
+        cameraNode_->setPosition(flashPos);
         flashLight_.setDirection(camera()->direction());
     }
 }
@@ -111,7 +113,7 @@ void SponzaScene::initialise()
     sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
 
     // Set up lights
-    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.01f, 4.5f);
+    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 4.5f);
 
     spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_.setDirection(spotNode_->direction);

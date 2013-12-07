@@ -5,7 +5,7 @@
 
 #include <deque>
 #include "aabb.h"
-#include "scene/visiblescene.h"
+#include "../renderqueue.h"
 
 namespace Engine {
 
@@ -28,7 +28,7 @@ public:
     virtual ~Entity() = 0;
 
     // Called by renderer; entity must add its renderables to the list
-    virtual void updateRenderList(RenderList& list) {};
+    virtual void updateRenderList(RenderQueue& list) {};
 
     const AABB& boundingBox() const;
 

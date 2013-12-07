@@ -29,7 +29,7 @@ Mesh::~Mesh()
 {
 }
 
-void Mesh::updateRenderList(RenderList& list)
+void Mesh::updateRenderList(RenderQueue& list)
 {
     if(!ready())
         return;

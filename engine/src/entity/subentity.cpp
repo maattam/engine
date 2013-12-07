@@ -9,11 +9,11 @@ SubEntity::SubEntity(const Renderable::SubMesh::Ptr& subMesh, const Material::Pt
     updateAABB(aabb);
 }
 
-void SubEntity::updateRenderList(RenderList& list)
+void SubEntity::updateRenderList(RenderQueue& list)
 {
     if(subMesh_ != nullptr && material_ != nullptr)
     {
-        list.push_back(std::make_pair(material_.get(), subMesh_.get()));
+        list.addNode(material_.get(), subMesh_.get());
     }
 }
 

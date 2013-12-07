@@ -63,7 +63,7 @@ public:
     Mesh(const QString& name);
     ~Mesh();
 
-    virtual void updateRenderList(RenderList& list);
+    virtual void updateRenderList(RenderQueue& list);
 
     void addSubEntity(const SubEntity::Ptr& subEntity);
 

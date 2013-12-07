@@ -31,8 +31,10 @@ public:
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left, unsigned int top);
 
+    virtual void setScene(VisibleScene* scene);
+
     // Renders the scene through the camera's viewport.
-    virtual void render(Entity::Camera* camera, VisibleScene* visibles);
+    virtual void render(Entity::Camera* camera);
 
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
@@ -47,6 +49,7 @@ public:
 private:
     QRect viewport_;
     ObservableType* observable_;
+    VisibleScene* scene_;
     unsigned int flags_;
 
     Renderable::Cube boundingMesh_;
@@ -57,7 +60,7 @@ private:
     typedef std::pair<QMatrix4x4, QVector3D> AABBDraw;
     std::deque<AABBDraw> aabbs_;
 
-    void renderWireframe(Entity::Camera* camera, const VisibleScene::RenderQueue& queue);
+    void renderWireframe(Entity::Camera* camera, const RenderQueue& queue);
     void renderAABBs(Entity::Camera* camera);
 
     void addAABB(const QMatrix4x4& trans, const Entity::AABB& aabb, const QVector3D& color);
