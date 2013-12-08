@@ -61,8 +61,8 @@ public:
     InitialisePolicy initialisePolicy() const;
 
 signals:
-    void released();
-    void initialized();
+    void released(const QString& name);
+    void initialized(const QString& name);
 
 protected:
     virtual ResourceData* createData() = 0;

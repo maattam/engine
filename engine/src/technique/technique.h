@@ -1,7 +1,6 @@
 #ifndef TECHNIQUE_H
 #define TECHNIQUE_H
 
-#include "resource.h"
 #include "shaderprogram.h"
 
 namespace Engine { 
@@ -22,7 +21,8 @@ protected:
     QOpenGLShaderProgram* program();
 
     void addShader(const Shader::Ptr& shader);
-    virtual void init();
+
+    virtual void init() {};
 
 private:
     ShaderProgram program_;

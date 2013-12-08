@@ -95,7 +95,7 @@ bool ResourceBase::ready()
 
         if(initialized_)
         {
-            emit initialized();
+            emit initialized(name_);
         }
 
         else
@@ -151,7 +151,7 @@ void ResourceBase::release()
     initialized_ = false;
     released_ = true;
 
-    emit released();
+    emit released(name_);
 
     // Call implementation
     releaseData();

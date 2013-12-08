@@ -20,18 +20,21 @@ public:
 
     void addShader(const Shader::Ptr& shader);
     bool ready();
+    bool bind();
     bool shadersLoaded() const;
 
     QOpenGLShaderProgram* operator->();
     QOpenGLShaderProgram& get();
 
 public slots:
-    void shaderReleased();
-    void shaderCompiled();
+    void shaderReleased(const QString& name);
+    void shaderCompiled(const QString& name);
 
 private:
     std::vector<Shader::Ptr> shaders_;
     QOpenGLShaderProgram program_;
+    unsigned int compiledCount_;
+    bool needsLink_;
 
     ShaderProgram(const ShaderProgram&);
     ShaderProgram& operator=(const ShaderProgram&);

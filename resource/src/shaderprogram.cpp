@@ -1,11 +1,12 @@
 #include "shaderprogram.h"
 
+#include <algorithm>
 #include <QDebug>
 
 using namespace Engine;
 
 ShaderProgram::ShaderProgram(QObject* parent)
-    : QObject(parent), program_(nullptr)
+    : QObject(parent), program_(nullptr), compiledCount_(0), needsLink_(false)
 {
 }
 
@@ -18,6 +19,7 @@ void ShaderProgram::addShader(const Shader::Ptr& shader)
     if(shader != nullptr)
     {
         shaders_.push_back(shader);
+        needsLink_ = true;
 
         connect(shader.get(), &ResourceBase::released, this, &ShaderProgram::shaderReleased);
         connect(shader.get(), &ResourceBase::initialized, this, &ShaderProgram::shaderCompiled);
@@ -34,59 +36,68 @@ QOpenGLShaderProgram& ShaderProgram::get()
     return program_;
 }
 
-void ShaderProgram::shaderReleased()
+void ShaderProgram::shaderReleased(const QString& name)
 {
-    // Release program
-    program_.release();
-    program_.removeAllShaders();
+    // Find shader
+    auto iter = std::find_if(shaders_.begin(), shaders_.end(),
+        [&name](const std::shared_ptr<Shader>& shader) { return shader->name() == name; });
+
+    Q_ASSERT(iter != shaders_.end());
+
+    QList<QOpenGLShader*> linked = program_.shaders();
+    if(linked.count((*iter)->get()) > 0)
+    {
+        program_.removeShader((*iter)->get());
+        compiledCount_--;
+
+        program_.release();
+        needsLink_ = true;
+    }
 }
 
 bool ShaderProgram::ready()
 {
-    if(program_.isLinked())
+    if(needsLink_ && shadersLoaded())
     {
-        return true;
+        needsLink_ = false;
+
+        if(!program_.link())
+        {
+            qDebug() << __FUNCTION__ << "Failed to link program:";
+            qDebug() << program_.log();
+
+            return false;
+        }
     }
 
-    else if(!shadersLoaded())
-    {
-        return false;
-    }
+    return program_.isLinked();
+}
 
-    else if(!program_.link())
-    {
-        qDebug() << __FUNCTION__ << "Failed to link program";
-        return false;
-    }
-
-    return true;
+bool ShaderProgram::bind()
+{
+    return ready() && program_.bind();
 }
 
 bool ShaderProgram::shadersLoaded() const
 {
-    for(auto it = shaders_.begin(); it != shaders_.end(); ++it)
-    {
-        if(!(*it)->ready())
-            return false;
-    }
-
-    return true;
+    return !shaders_.empty() && compiledCount_ == shaders_.size();
 }
 
-void ShaderProgram::shaderCompiled()
+void ShaderProgram::shaderCompiled(const QString& name)
 {
-    // Check if all shaders have compiled
-    for(auto it = shaders_.begin(); it != shaders_.end(); ++it)
-    {
-        if((*it)->ready())
-        {
-            program_.addShader((*it)->get());
-        }
+    // Find shader
+    auto iter = std::find_if(shaders_.begin(), shaders_.end(),
+        [&name](const std::shared_ptr<Shader>& shader) { return shader->name() == name; });
 
-        else
-        {
-            program_.removeAllShaders();
-            return;
-        }
+    Q_ASSERT(iter != shaders_.end());
+
+    if(program_.addShader((*iter)->get()))
+    {
+        compiledCount_++;
+    }
+
+    else
+    {
+        qDebug() << __FUNCTION__ << "Failed to add shader:" << name;
     }
 }

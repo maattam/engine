@@ -9,9 +9,9 @@
 #include "observable.h"
 #include "renderable/cube.h"
 #include "entity/aabb.h"
+#include "shaderprogram.h"
 
 #include <QRect>
-#include <QOpenGLShaderProgram>
 #include <deque>
 #include <QVector3D>
 
@@ -54,8 +54,8 @@ private:
 
     Renderable::Cube boundingMesh_;
 
-    QOpenGLShaderProgram aabbTech_;
-    QOpenGLShaderProgram wireframeTech_;
+    ShaderProgram aabbTech_;
+    ShaderProgram wireframeTech_;
 
     typedef std::pair<QMatrix4x4, QVector3D> AABBDraw;
     std::deque<AABBDraw> aabbs_;

@@ -6,7 +6,7 @@
 #define MAX_SPOT_LIGHTS 4
 
 #define SHADOW_BIAS 0.0002
-#define SHADOWMAP_DIR_SIZE 2048
+#define SHADOWMAP_DIR_SIZE 4096
 #define SHADOWMAP_SIZE 1024
 
 in vec2 texCoord0;
@@ -109,9 +109,7 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned i
         }
     }
 
-    shadow /= 9;
-
-    return shadow;
+    return shadow / 9;
 }
 
 // Encapsules common stuff between the different light types

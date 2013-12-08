@@ -13,14 +13,12 @@ DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
     : observable_(nullptr), scene_(nullptr), flags_(0)
 {
     // AABB debugging tech
-    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/aabb.vert"));
-    aabbTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/aabb.frag"));
-    aabbTech_.link();
+    aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.vert"), Shader::Type::Vertex));
+    aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.frag"), Shader::Type::Fragment));
 
     // Wireframe tech
-    wireframeTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/wireframe.vert"));
-    wireframeTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/wireframe.frag"));
-    wireframeTech_.link();
+    wireframeTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/wireframe.vert"), Shader::Type::Vertex));
+    wireframeTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/wireframe.frag"), Shader::Type::Fragment));
 }
 
 DebugRenderer::~DebugRenderer()
@@ -76,7 +74,7 @@ void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& q
         return;
     }
 
-    wireframeTech_.setUniformValue("gDiffuseSampler", 0);
+    wireframeTech_->setUniformValue("gDiffuseSampler", 0);
 
     // Set polygon mode
     gl->glDisable(GL_CULL_FACE);
@@ -84,13 +82,13 @@ void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& q
 
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
-        wireframeTech_.setUniformValue("gMVP", camera->worldView() * *it->modelView);
+        wireframeTech_->setUniformValue("gMVP", camera->worldView() * *it->modelView);
 
         it->material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
             
         QVector3D highlight = it->material->attributes().ambientColor + QVector3D(0.2, 0.2, 0.2);
-        wireframeTech_.setUniformValue("ambientColor", highlight);
-        wireframeTech_.setUniformValue("diffuseColor", it->material->attributes().diffuseColor);
+        wireframeTech_->setUniformValue("ambientColor", highlight);
+        wireframeTech_->setUniformValue("diffuseColor", it->material->attributes().diffuseColor);
 
         it->renderable->render();
     }
@@ -112,8 +110,8 @@ void DebugRenderer::renderAABBs(Entity::Camera* camera)
 
     for(auto it = aabbs_.begin(); it != aabbs_.end(); ++it)
     {
-        aabbTech_.setUniformValue("gColor", it->second);
-        aabbTech_.setUniformValue("gMVP", camera->worldView() * it->first);
+        aabbTech_->setUniformValue("gColor", it->second);
+        aabbTech_->setUniformValue("gMVP", camera->worldView() * it->first);
         boundingMesh_.render();
     }
 

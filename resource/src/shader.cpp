@@ -29,7 +29,7 @@ bool Shader::initialiseData(const DataType& data)
        qWarning() << shader_->log();
        return false;
     }
-
+    
     return true;
 }
 

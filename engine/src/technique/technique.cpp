@@ -41,7 +41,3 @@ void Technique::addShader(const Engine::Shader::Ptr& shader)
 {
     program_.addShader(shader);
 }
-
-void Technique::init()
-{
-}
