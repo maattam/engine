@@ -21,7 +21,12 @@ public:
     ResourceData(ResourceDespatcher* despatcher);
     virtual ~ResourceData() {};
 
+    // Attemps to load the given file from disk
+    // precondition: true returned if load has been successful
     virtual bool load(const QString& fileName) = 0;
+
+    // Returns the despatcher used in this context
+    // precondition: despatcher != nullptr
     ResourceDespatcher* despatcher();
 
 private:
@@ -50,25 +55,54 @@ public:
     template<typename ResourceDataType>
     bool fromData(const ResourceDataType& data);
 
+    // Attemps to initialise the resource from data, or return true if
+    // the resource has already been initialised. Returns true if the resource is not
+    // managed.
     bool ready();
+
+    // Returns the despatcher used in this context
+    // precondition: despatcher != nullptr
     ResourceDespatcher* despatcher();
 
     // Deletes the loaded data
+    // postcondition: data released if not already been released
     void release();
 
+    // Tells if the resource is managed (created through ResourceDespatcher)
     bool managed() const;
+
+    // Returns the resource's name (filename when the resource is managed)
     const QString& name() const;
+
+    // InitialisePolicy tells when the resource should be loaded if the resource is managed.
+    // ON_DEMAND means lazy loading, and QUEUED immediate loading when the resource's data is ready.
     InitialisePolicy initialisePolicy() const;
 
 signals:
+    // Called before the resource's data is released
+    // precondition: data is present
+    // postcondition: data has been deleted
     void released(const QString& name);
+
+    // Called after the resource has been initialised successfully
+    // precondition: ready is true
+    // postcondition: data is valid
     void initialized(const QString& name);
 
 protected:
+    // Called upon resource initialisation
+    // precondition: old data has been deleted
+    // postcondition: new data has been returned, data != nullptr
     virtual ResourceData* createData() = 0;
+
+    // Initialises the resource from data
+    // precondition: data != nullptr
+    // postcondition: true if initialisation was successful
     virtual bool initialise(ResourceData* data) = 0;
 
     // Called when data needs to be released and memory freed
+    // precondition: data present
+    // postcondition: data released
     virtual void releaseData() = 0;
 
     // Reimplement to provide additional triggers for file watching
@@ -105,7 +139,14 @@ public:
     typedef std::shared_ptr<Type> Ptr;
 
 protected:
+    // Called upon resource initialisation
+    // precondition: old data has been deleted
+    // postcondition: new data has been returned, data != nullptr
     virtual ResourceData* createData();
+
+    // Initialises the resource from data
+    // precondition: data != nullptr
+    // postcondition: true if initialisation was successful
     virtual bool initialise(ResourceData* data);
 
     // Called when loadData has returned successfully and the data has not yet been

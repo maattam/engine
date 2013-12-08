@@ -20,6 +20,7 @@ public:
     gli::texture2D* operator->() const;
     gli::texture2D& operator*() const;
 
+    // If srgb is true, the texture is converted to linear color space
     void loadSrgb(bool srgb);
 
 private:

@@ -14,11 +14,12 @@ public:
     explicit CubemapData(ResourceDespatcher* despatcher);
     ~CubemapData();
 
-    // fileName has to be in format /path/to/file*.png where file0..5
-    // corresponds to cubemap faces
+    // precondition: fileName has to be in format /path/to/file*.png where file0..5
+    //               corresponds to cubemap faces
     virtual bool load(const QString& fileName);
     gli::texture2D* at(unsigned int index) const;
 
+    // If srgb is true, the texture is converted to linear color space
     void loadSrgb(bool srgb);
 
 private:

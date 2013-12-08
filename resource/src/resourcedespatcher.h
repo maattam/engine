@@ -47,6 +47,9 @@ signals:
 
 public slots:
     void fileChanged(const QString& path);
+
+    // Called when the resource needs to be initialised
+    // postcondition: if exists; attempted to initialise
     void resourceLoaded(const QString& id);
 
 private:

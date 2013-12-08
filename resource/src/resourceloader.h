@@ -28,6 +28,7 @@ public:
     void stop();
 
     // Enqueues a resource which's data will be loaded later
+    // precondition: resource != nullptr
     void pushResource(const ResourcePtr& resource);
 
 public slots:
@@ -35,6 +36,8 @@ public slots:
     void run();
 
 signals:
+    // Signaled when a resource's data has been loaded from disk
+    // precondition: InitialisePolicy == QUEUED
     void resourceLoaded(const QString& id);
 
 private:
