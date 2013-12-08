@@ -1,4 +1,4 @@
-// Defines light data structures
+// Common Light -class which can be a point, spot or a directional light
 
 #ifndef LIGHT_H
 #define LIGHT_H
@@ -16,6 +16,7 @@ public:
     enum LightType { LIGHT_POINT, LIGHT_SPOT, LIGHT_DIRECTIONAL };
 
     typedef std::shared_ptr<Light> Ptr;
+
     Light(LightType type);
     virtual ~Light();
 
@@ -49,6 +50,7 @@ public:
 
     const Attenuation& Light::attenuation() const;
 
+    // Returns the light's world position derived from parentNode, or (0, 0, 0)
     const QVector3D& position() const;
 
 private:

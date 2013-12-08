@@ -38,12 +38,19 @@ public:
         const SubMeshVec& subMeshes, const MaterialVec& materials);
 
     virtual bool load(const QString& fileName);
+
+    // Initialises the MeshData from aiScene
+    // precondition: scene != nullptr
     bool initFromScene(const aiScene* scene, const QString& fileName);
 
     SubMeshVec::size_type numSubMeshes() const;
+
+    // precondition: index < numSubMeshes
     const SubMeshData& subMesh(SubMeshVec::size_type index) const;
 
     MaterialVec::size_type numMaterials() const;
+
+    // precondition: index < numMaterials
     const Material::Ptr& material(MaterialVec::size_type index) const;
 
 private:
@@ -61,13 +68,17 @@ class Mesh : public Entity, public Resource<Mesh, MeshData>
 public:
     Mesh();
     Mesh(const QString& name);
-    ~Mesh();
+    virtual ~Mesh();
 
     virtual void updateRenderList(RenderQueue& list);
 
+    // Adds the given subEntity to this Mesh. The ownership is copied.
+    // precondition: subEntity != nullptr
     void addSubEntity(const SubEntity::Ptr& subEntity);
 
     SubEntityVec::size_type numSubEntities() const;
+
+    // precondition: index < numSubEntities
     const SubEntity::Ptr& subEntity(SubEntityVec::size_type index);
      
 protected:

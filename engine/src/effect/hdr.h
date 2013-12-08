@@ -25,7 +25,7 @@ public:
     ~Hdr();
 
     virtual bool initialize(int width, int height, int samples);
-    virtual void render(const Renderable::Quad& quad);
+    virtual void render();
 
 private:
     int samples_;
@@ -36,6 +36,7 @@ private:
     float exposure_;
 
     DownSampler downSampler_;
+    Renderable::Quad quad_;
     QOpenGLFramebufferObject* fbo_;
 
     ShaderProgram tonemap_;
@@ -46,8 +47,8 @@ private:
     int writeIndex_;
     int readIndex_;
 
-    void renderHighpass(const Renderable::Quad& quad);
-    void renderTonemap(const Renderable::Quad& quad);
+    void renderHighpass();
+    void renderTonemap();
 
     // Samples the last frame's luminance and calculates new exposure
     void sampleLuminance();

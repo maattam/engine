@@ -34,7 +34,6 @@ bool Material::bind()
 const Texture2D::Ptr& Material::getTexture(TextureType type)
 {
     auto iter = textures_.find(type);
-
     if(iter == textures_.end())
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
@@ -51,9 +50,9 @@ const Texture2D::Ptr& Material::getTexture(TextureType type)
     return iter->second;
 }
 
-bool Material::hasNormals() const
+bool Material::hasTexture(TextureType type) const
 {
-    auto iter = textures_.find(TEXTURE_NORMALS);
+    auto iter = textures_.find(type);
     return iter != textures_.end() && iter->second != nullptr;
 }
 

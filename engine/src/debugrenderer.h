@@ -31,6 +31,8 @@ public:
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left, unsigned int top);
 
+    virtual bool setPostfxHook(Effect::Postfx* postfx);
+
     virtual void setScene(VisibleScene* scene);
 
     // Renders the scene through the camera's viewport.

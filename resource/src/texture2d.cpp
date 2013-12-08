@@ -62,7 +62,6 @@ bool Texture2D::initialiseData(const DataType& data)
     if(gli::is_compressed(data->format()))
     {
         const gli::texture2D& texture = *data;
-        gli::internalFormat form = gli::internal_format(texture.format());
 
         gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
         gl->glTexStorage2D(Target, texture.levels(),

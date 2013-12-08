@@ -1,15 +1,12 @@
 #include "forwardrenderer.h"
 
-#include <QOpenGLShaderProgram>
 #include <QMatrix4x4>
 #include <QDebug>
 
 #include "texture2D.h"
-#include "cubemaptexture.h"
 #include "effect/postfx.h"
 #include "entity/camera.h"
 #include "entity/light.h"
-#include "effect/hdr.h"
 #include "graph/scenenode.h"
 
 #include "resourcedespatcher.h"
@@ -19,20 +16,12 @@
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
-    : scene_(nullptr), flags_(0), errorMaterial_(despatcher),
+    : scene_(nullptr), flags_(0), samples_(1), postfx_(nullptr), errorMaterial_(despatcher),
     lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
     depthRenderbuffer_ = 0;
-
-    // HDR postfx
-    postfxChain_.push_back(new Effect::Hdr(despatcher, 4));
-
-    // Program for debugging shadow maps
-    nullTech_.addShaderFromSourceFile(QOpenGLShader::Vertex, RESOURCE_PATH("shaders/passthrough.vert"));
-    nullTech_.addShaderFromSourceFile(QOpenGLShader::Fragment, RESOURCE_PATH("shaders/shadowmap.frag"));
-    nullTech_.link();
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
@@ -44,16 +33,44 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
 ForwardRenderer::~ForwardRenderer()
 {
     destroyBuffers();
-
-    for(Effect::Postfx* fx : postfxChain_)
-        delete fx;
 }
 
 bool ForwardRenderer::setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left = 0, unsigned int top = 0)
 {
     viewport_ = QRect(left, top, width, height);
-    return initialiseBuffers(width, height, samples);
+    samples_ = samples;
+
+    if(!initialiseBuffers(width, height, samples))
+    {
+        return false;
+    }
+
+    initialisePostfx();
+    return true;
+}
+
+bool ForwardRenderer::setPostfxHook(Effect::Postfx* postfx)
+{
+    postfx_ = postfx;
+    return initialisePostfx();
+}
+
+bool ForwardRenderer::initialisePostfx()
+{
+    if(postfx_ == nullptr)
+    {
+        return false;
+    }
+
+    if(!postfx_->initialize(viewport_.width(), viewport_.height(), samples_))
+    {
+        postfx_ = nullptr;
+        return false;
+    }
+
+    postfx_->setInputTexture(renderTexture_);
+    return true;
 }
 
 void ForwardRenderer::setScene(VisibleScene* scene)
@@ -105,16 +122,6 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
         return false;
 
     gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-    // Initialize postprocess chain
-    Effect::Postfx* fx = postfxChain_.front();
-
-    if(!fx->initialize(width, height, samples))
-        return false;
-
-    fx->setInputTexture(renderTexture_);
-    fx->setOutputFbo(0);    // Output to window
-
     return true;
 }
 
@@ -132,8 +139,9 @@ void ForwardRenderer::render(Entity::Camera* camera)
     shadowMapPass();
 
     // Pass 2
-    // Render geometry to a multisampled framebuffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+    // Render geometry to a multisampled framebuffer if postfx is set
+    GLuint targetFbo = postfx_ != nullptr ? framebuffer_ : 0;
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, targetFbo);
 
     renderPass(camera, renderQueue);
 
@@ -142,11 +150,10 @@ void ForwardRenderer::render(Entity::Camera* camera)
 
     gl->glDisable(GL_DEPTH_TEST);
 
-    // Pass 3
-    // Render postprocess chain
-    for(Effect::Postfx* fx : postfxChain_)
+    // Call postfx hook if set
+    if(postfx_ != nullptr)
     {
-        fx->render(quad_);
+        postfx_->render();
     }
 }
 
@@ -183,7 +190,6 @@ void ForwardRenderer::shadowMapPass()
     }
 
     shadowTech_.renderDirectinalLight(directionalLight, scene_);
-
     gl->glCullFace(GL_BACK);
 }
 
@@ -192,10 +198,9 @@ void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queu
     const auto& lights = scene_->queryLights();
 
     // Prepare OpenGL state for render pass
-    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
-
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
+    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
+    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(!lightningTech_.enable())
     {
@@ -254,7 +259,7 @@ void ForwardRenderer::renderNode(const RenderQueue::RenderItem& node)
             return;
     }
 
-    lightningTech_.setHasTangents(renderable->hasTangents() && material->hasNormals());
+    lightningTech_.setHasTangents(renderable->hasTangents() && material->hasTexture(Material::TEXTURE_NORMALS));
     lightningTech_.setMaterialAttributes(material->attributes());
 
     renderable->render();

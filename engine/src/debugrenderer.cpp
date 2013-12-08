@@ -32,6 +32,11 @@ bool DebugRenderer::setViewport(unsigned int width, unsigned int height, unsigne
     return true;
 }
 
+bool DebugRenderer::setPostfxHook(Effect::Postfx* postfx)
+{
+    return false;
+}
+
 void DebugRenderer::setScene(VisibleScene* scene)
 {
     scene_ = scene;

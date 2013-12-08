@@ -30,10 +30,16 @@ public:
     // Called by renderer; entity must add its renderables to the list
     virtual void updateRenderList(RenderQueue& list) {};
 
+    // Returns the axis-aligned bounding box which contains this Entity
     const AABB& boundingBox() const;
 
     // Updated by SceneGraph when the attached node changes.
+    // precondition: node != nullptr
+    // postcondition: parentNode() == node
     virtual void attach(Graph::SceneNode* node);
+
+    // Detaches the Entity from node
+    // postcondition: parentNode() is nullptr
     virtual void detach();
 
     // Returns nullptr if the entity isn't attached to a node

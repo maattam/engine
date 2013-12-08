@@ -32,6 +32,7 @@ public:
     virtual void update(unsigned int elapsed);
 
 protected:
+    void setFlySpeed(float speed);
     void setSkyboxTexture(const QString& fileName);
     void setDirectionalLight(const QVector3D& color, const QVector3D& direction,
         float ambientIntensity, float diffuseIntensity);
@@ -53,6 +54,7 @@ private:
     Engine::ResourceDespatcher* despatcher_;
     Engine::SceneModel* scene_;
     Input* input_;
+    float speed_;
 
     Engine::Entity::Light dirLight_;
     Engine::CubemapTexture::Ptr skybox_;

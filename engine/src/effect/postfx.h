@@ -5,8 +5,6 @@
 
 #include <QOpenGLContext>
 
-#include "renderable/quad.h"
-
 namespace Engine { namespace Effect {
 
 class Postfx
@@ -16,7 +14,7 @@ public:
     virtual ~Postfx();
 
     virtual bool initialize(int width, int height, int samples) = 0;
-    virtual void render(const Renderable::Quad& quad) = 0;
+    virtual void render() = 0;
     
     void setInputTexture(GLuint textureId);
     void setOutputFbo(GLuint framebufferId);

@@ -16,6 +16,10 @@
 namespace Engine {
     class Renderer;
     class DebugRenderer;
+
+    namespace Effect {
+        class Hdr;
+    }
 }
 
 class SceneView : public QWindow
@@ -57,6 +61,7 @@ private:
     Engine::Renderer* renderer_;
     Engine::DebugRenderer* debugRenderer_;
     Engine::ResourceDespatcher despatcher_;
+    Engine::Effect::Hdr* hdrPostfx_;
 
     Engine::Scene model_;
     FreeLookScene* controller_;

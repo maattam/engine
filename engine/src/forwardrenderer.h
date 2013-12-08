@@ -11,12 +11,7 @@
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
 #include "technique/skyboxtechnique.h"
-#include "renderable/quad.h"
-#include "renderable/cube.h"
 #include "material.h"
-
-#include <deque>
-#include <memory>
 
 namespace Engine {
 
@@ -38,6 +33,8 @@ public:
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left, unsigned int top);
 
+    virtual bool setPostfxHook(Effect::Postfx* postfx);
+
     virtual void setScene(VisibleScene* scene);
 
     // Renders the scene through the camera's viewport.
@@ -50,6 +47,10 @@ private:
     VisibleScene* scene_;
     unsigned int flags_;
     QRect viewport_;
+    unsigned int samples_;
+
+    // Postprocess hook
+    Effect::Postfx* postfx_;
 
     // Error material
     Material errorMaterial_;
@@ -58,18 +59,9 @@ private:
     Technique::ShadowMap shadowTech_;
     Technique::Skybox skyboxTech_;
 
-    // For debugging depth buffer
-    QOpenGLShaderProgram nullTech_;
-
     GLuint framebuffer_;
     GLuint renderTexture_;
     GLuint depthRenderbuffer_;
-
-    // Postprocess chain
-    std::list<Effect::Postfx*> postfxChain_;
-
-    // Quad for postprocessing
-    Renderable::Quad quad_;
 
     void shadowMapPass();
     void renderPass(Entity::Camera* camera, const RenderQueue& queue);
@@ -78,6 +70,7 @@ private:
     void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);
+    bool initialisePostfx();
     void destroyBuffers();
 
     ForwardRenderer(const ForwardRenderer&);

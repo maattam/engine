@@ -18,6 +18,7 @@ public:
     Node();
     virtual ~Node();
 
+    // Returns nullptr the node is root of the hierarchy
     Node* getParent() const;
 
     // Caches the node's world transformation if the orientation, scale or
@@ -63,14 +64,23 @@ public:
     const QVector3D& scale() const;
 
     ChildNodes::size_type numChildren() const;
+
+    // precondition: index < numChildren
+    // postcondition: valid child returned
     Node* getChild(ChildNodes::size_type index);
 
-    // Does not delete nodes!
+    // Detached child from the current node
+    // postcondition: the child is not deleted
     virtual Node* removeChild(ChildNodes::size_type index);
     virtual Node* removeChild(Node* child);
     virtual void removeAllChildren();
 
+    // Creates a new child and attaches it to the node
+    // postcondition: valid child returned and attached to the node
     virtual Node* createChild();
+
+    // Attached a child node to the node
+    // precondition: child != nullptr
     virtual void addChild(Node* child);
 
 protected:

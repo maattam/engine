@@ -142,4 +142,6 @@ void SponzaScene::initialise()
 
     cameraNode_ = rootNode()->createSceneNodeChild();
     attachCamera(cameraNode_);
+
+    //setFlySpeed(200.0f);
 }

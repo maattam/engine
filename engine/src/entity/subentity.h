@@ -20,6 +20,10 @@ public:
     virtual void updateRenderList(RenderQueue& list);
 
     const Material::Ptr& material() const;
+
+    // Sets the material used to render this sub entity
+    // precondition: material != nullptr
+    // postcondition: material ownership is copied
     void setMaterial(const Material::Ptr& material);
 
 private:

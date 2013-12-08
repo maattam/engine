@@ -14,12 +14,13 @@
 #include "entity/camera.h"
 #include "forwardrenderer.h"
 #include "debugrenderer.h"
+#include "effect/hdr.h"
 
 #include "basicscene.h"
 #include "sponzascene.h"
 
 SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), debugRenderer_(nullptr), frame_(0), context_(nullptr),
+    renderer_(nullptr), debugRenderer_(nullptr), hdrPostfx_(nullptr), frame_(0), context_(nullptr),
     funcs_(nullptr), controller_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
@@ -50,6 +51,9 @@ SceneView::~SceneView()
 
     if(debugRenderer_ != nullptr)
         delete debugRenderer_;
+
+    if(hdrPostfx_ != nullptr)
+        delete hdrPostfx_;
 }
 
 void SceneView::update()
@@ -118,6 +122,13 @@ void SceneView::initialize()
     }
 
     renderer_->setScene(&model_);
+
+    // Inject HDR tonemapping
+    hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
+    if(!renderer_->setPostfxHook(hdrPostfx_))
+    {
+        qWarning() << "Failed to attach postprocess hook";
+    }
 
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
     if(!debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0))

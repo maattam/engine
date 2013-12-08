@@ -99,7 +99,7 @@ bool Hdr::initialize(int width, int height, int samples)
     return downSampler_.init(width, height, fbo_->texture(), bloomLevels_);
 }
 
-void Hdr::render(const Renderable::Quad& quad)
+void Hdr::render()
 {
     if(inputTexture() == 0)
         return;
@@ -107,30 +107,30 @@ void Hdr::render(const Renderable::Quad& quad)
     else if(!tonemap_.ready() || !highpass_.ready())
         return;
 
-    quad.bindVaoDirect();
+    quad_.bindVaoDirect();
 
     // Pass 1
     // Highpass filter
-    renderHighpass(quad);
+    renderHighpass();
 
     // Sample previous highpass result luminance
     sampleLuminance();
 
     // Pass 2
     // Downsample and blur input
-    if(!downSampler_.downSample(fbo_->texture(), quad))
+    if(!downSampler_.downSample(fbo_->texture(), quad_))
     {
         return;
     }
 
     // Pass 3
     // Render tonemap to output
-    renderTonemap(quad);
+    renderTonemap();
 
     gl->glBindVertexArray(0);
 }
 
-void Hdr::renderHighpass(const Renderable::Quad& quad)
+void Hdr::renderHighpass()
 {
     fbo_->bind();
     gl->glClear(GL_COLOR_BUFFER_BIT);
@@ -144,14 +144,14 @@ void Hdr::renderHighpass(const Renderable::Quad& quad)
     highpass_->setUniformValue("renderedTexture", 0);
     highpass_->setUniformValue("threshold", 1.2f);
 
-    quad.renderDirect();
+    quad_.renderDirect();
 
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
     fbo_->release();
 }
 
-void Hdr::renderTonemap(const Renderable::Quad& quad)
+void Hdr::renderTonemap()
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, outputFbo());
     gl->glClear(GL_COLOR_BUFFER_BIT);
@@ -174,7 +174,7 @@ void Hdr::renderTonemap(const Renderable::Quad& quad)
     tonemap_->setUniformValue("bloomFactor", 0.2f);
     tonemap_->setUniformValue("bright", 2.0f);
 
-    quad.renderDirect();
+    quad_.renderDirect();
 
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 }

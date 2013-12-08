@@ -6,11 +6,12 @@
 using namespace Engine;
 
 FreeLookScene::FreeLookScene(Engine::ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), scene_(nullptr),
+    : despatcher_(despatcher), scene_(nullptr), speed_(15.0f),
     dirLight_(Entity::Light::LIGHT_DIRECTIONAL), camera_(Entity::Camera::PERSPECTIVE)
 {
     camera_.setDirection(QVector3D(1, 0, 0));
     camera_.setPosition(QVector3D(0, 10, 0));
+    camera_.setFarPlane(3000.0f);
     camera_.update();
 }
 
@@ -62,11 +63,10 @@ void FreeLookScene::update(unsigned int elapsed)
         return;
     }
 
-    const float speed = 15.0f;
     const float mouseSpeed = 5.0f;
 
     const float elapsedMs = elapsed / 1000.0f;
-    float distance = elapsedMs * speed;
+    float distance = elapsedMs * speed_;
 
     if(input_->keyDown(Qt::Key::Key_W))
     {
@@ -99,7 +99,7 @@ void FreeLookScene::update(unsigned int elapsed)
     // Mouse wheel moves the camera up and down
     if(input_->wheelDelta() != 0)
     {
-        camera_.move(QVector3D(0, input_->wheelDelta() / 100.0f, 0));
+        camera_.move(QVector3D(0, speed_ * input_->wheelDelta() / 1200.0f, 0));
     }
 
     camera_.update();
@@ -135,6 +135,11 @@ Graph::SceneNode* FreeLookScene::rootNode()
 ResourceDespatcher* FreeLookScene::despatcher()
 {
     return despatcher_;
+}
+
+void FreeLookScene::setFlySpeed(float speed)
+{
+    speed_ = speed;
 }
 
 const QVector3D& FreeLookScene::playerPosition() const

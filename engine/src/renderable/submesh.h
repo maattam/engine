@@ -24,11 +24,11 @@ public:
 
     virtual void render() const;
 
-    bool initMesh(  const std::vector<QVector3D>& vertices,
-                    const std::vector<QVector3D>& normals,
-                    const std::vector<QVector3D>& tangents,
-                    const std::vector<QVector2D>& uvs,
-                    const std::vector<unsigned int>& indices);
+    bool initMesh(const std::vector<QVector3D>& vertices,
+                  const std::vector<QVector3D>& normals,
+                  const std::vector<QVector3D>& tangents,
+                  const std::vector<QVector2D>& uvs,
+                  const std::vector<unsigned int>& indices);
 
 private:
     void destroy();
