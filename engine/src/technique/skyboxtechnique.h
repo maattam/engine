@@ -19,7 +19,7 @@ namespace Technique {
 class Skybox : public Technique
 {
 public:
-    Skybox(ResourceDespatcher* despatcher);
+    Skybox();
     virtual ~Skybox() {};
 
     // Renders skybox around given camera's view

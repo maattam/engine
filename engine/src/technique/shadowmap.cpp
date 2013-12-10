@@ -3,8 +3,6 @@
 
 #include <QDebug>
 
-#include "resourcedespatcher.h"
-#include "shader.h"
 #include "entity/camera.h"
 #include "renderable/renderable.h"
 #include "material.h"
@@ -12,8 +10,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
-    : Technique(despatcher)
+ShadowMap::ShadowMap()
+    : Technique()
 {
 }
 

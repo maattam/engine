@@ -12,7 +12,7 @@
 #include "input.h"
 
 #include "entity/camera.h"
-#include "forwardrenderer.h"
+#include "deferredrenderer.h"
 #include "debugrenderer.h"
 #include "effect/hdr.h"
 
@@ -29,7 +29,7 @@ SceneView::SceneView(QWindow* parent) : QWindow(parent),
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(2);
-    format.setSamples(4);
+    format.setSamples(1);
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     setFormat(format);
@@ -114,7 +114,7 @@ void SceneView::initialize()
     glViewport(0, 0, width(), height());
 
     // Initialize renderer
-    renderer_ = new Engine::ForwardRenderer(&despatcher_);
+    renderer_ = new Engine::DeferredRenderer(&despatcher_);
     if(!renderer_->setViewport(width(), height(), format().samples()))
     {
         qCritical() << "Failed to initialize renderer!";
@@ -175,11 +175,11 @@ void SceneView::handleInput()
         toggleRenderFlag(debugRenderer_, Engine::DebugRenderer::DEBUG_WIREFRAME);
     }
 
-    if(input_->keyDown(Qt::Key::Key_F3))
+    /*if(input_->keyDown(Qt::Key::Key_F3))
     {
         input_->keyEvent(Qt::Key::Key_F3, false);
         toggleRenderFlag(renderer_, Engine::ForwardRenderer::RENDER_SHADOWS);
-    }
+    }*/
 }
 
 void SceneView::toggleRenderFlag(Engine::Renderer* renderer, unsigned int flag)
@@ -199,7 +199,7 @@ void SceneView::resizeEvent(QResizeEvent* event)
 {
     Q_UNUSED(event);
 
-    if(renderer_ != nullptr)
+    if(renderer_ != nullptr && debugRenderer_ != nullptr)
     {
         glViewport(0, 0, width(), height());
 

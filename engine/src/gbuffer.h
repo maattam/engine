@@ -13,6 +13,8 @@ public:
     GBuffer();
     ~GBuffer();
 
+    enum GBufferTexture { TEXTURE_NORMALS, TEXTURE_DIFFUSE, TEXTURE_DEPTH, TEXTURE_COUNT };
+
     // Allocates textures and the framebuffer object. The format is used listed below:
     // TEXTURE_NORMALS : R10G10B10A2 -> Normal.X, Normal.Y, Specular intensity, Reserved
     // TEXTURE_DIFFUSE : R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Specular power
@@ -31,8 +33,6 @@ public:
     void bindTextures();
 
 private:
-    enum GBufferTexture { TEXTURE_NORMALS, TEXTURE_DIFFUSE, TEXTURE_DEPTH, TEXTURE_COUNT };
-
     GLuint fbo_;
     GLuint textures_[TEXTURE_COUNT];
 

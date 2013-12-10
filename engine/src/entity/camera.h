@@ -86,6 +86,9 @@ public:
     void setNearPlane(float nearPlane);
     void setFov(float value);
 
+    float nearPlane() const;
+    float farPlane() const;
+
     void setFixedYaw(bool value, const QVector3D& yaw = UNIT_Y);
 
     // Calculates and caches the camera's world view matrix

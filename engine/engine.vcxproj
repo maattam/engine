@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\debugrenderer.cpp" />
+    <ClCompile Include="src\deferredrenderer.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
@@ -188,6 +189,7 @@
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
+    <ClCompile Include="src\technique\dsmaterialshader.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skyboxtechnique.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -198,9 +200,12 @@
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\blur.frag" />
+    <None Include="shaders\dsmaterial.frag" />
+    <None Include="shaders\dsmaterial.vert" />
     <None Include="shaders\gbuffer.frag" />
     <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\highpass.frag" />
+    <None Include="shaders\passthrough.vert" />
     <None Include="shaders\shadowmap.frag" />
     <None Include="shaders\shadowmap.vert" />
     <None Include="shaders\skybox.frag" />
@@ -211,6 +216,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\debugrenderer.h" />
+    <ClInclude Include="src\deferredrenderer.h" />
     <ClInclude Include="src\effect\downsampler.h" />
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
@@ -240,6 +246,7 @@
     <ClInclude Include="src\scene\visiblescene.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />
+    <ClInclude Include="src\technique\dsmaterialshader.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skyboxtechnique.h" />
     <CustomBuild Include="src\technique\technique.h">

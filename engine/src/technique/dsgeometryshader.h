@@ -11,7 +11,7 @@ namespace Engine { namespace Technique {
 class DSGeometryShader : public Technique
 {
 public:
-    DSGeometryShader(ResourceDespatcher* despatcher);
+    DSGeometryShader();
     virtual ~DSGeometryShader();
 
     // Set data for the current rendering stage

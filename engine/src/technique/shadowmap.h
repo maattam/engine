@@ -15,7 +15,7 @@ namespace Engine { namespace Technique {
 class ShadowMap : public Technique
 {
 public:
-    ShadowMap(ResourceDespatcher* despatcher);
+    ShadowMap();
     virtual ~ShadowMap();
 
     // Initialises shadow map framebuffers and textures

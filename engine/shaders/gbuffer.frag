@@ -35,11 +35,11 @@ subroutine(NormalRoutineType)
 vec3 calculateBumpedNormal()
 {
     vec3 normal = normalize(normal0);
-	vec3 tangent = normalize(tangent0);
+    vec3 tangent = normalize(tangent0);
 
 	// Gramm-Schmidt; We have to form an orthonormal basis since the interpolated
 	// vectors are no longer orthogonal
-	newTangent = normalize(newTtangent - dot(tangent, normal) * normal);
+	tangent = normalize(tangent - dot(tangent, normal) * normal);
 	
 	vec3 bitangent = cross(tangent, normal);
 	vec3 bumpMapNormal = texture(material.normalSampler, texCoord0).xyz;
@@ -81,10 +81,9 @@ void packDiffuseSpecData()
 void main()
 {
     // Check if this part of the fragment is opaque according to mask
-    bvec3 toDiscard = lessThanEqual(texture2D(material.maskSampler, texCoord0), vec3(0.2));
-    if(all(toDiscard))
+    if(texture2D(material.maskSampler, texCoord0).r <= 0.2)
         discard;
 
     packNormalSpecData();
-    packDiffureSpecData();
+    packDiffuseSpecData();
 }

@@ -1,8 +1,5 @@
 #include "basiclightning.h"
 
-#include "resourcedespatcher.h"
-#include "shader.h"
-
 #include <QDebug>
 #include <qmath.h>
 #include <QTime>
@@ -18,8 +15,8 @@ namespace {
     QVector3D linear(const QVector3D& color);
 }
 
-BasicLightning::BasicLightning(ResourceDespatcher* despatcher)
-    : Technique(despatcher), mvpLocation_(-1)
+BasicLightning::BasicLightning()
+    : Technique(), mvpLocation_(-1)
 {
 }
 

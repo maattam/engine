@@ -19,7 +19,7 @@ class BasicLightning : public Technique
 public:
     enum { MAX_POINT_LIGHTS = 4, MAX_SPOT_LIGHTS = 4 };
 
-    BasicLightning(ResourceDespatcher* despatcher);
+    BasicLightning();
     virtual ~BasicLightning();
 
     void setMVP(const QMatrix4x4& mvp);

@@ -72,7 +72,8 @@ void GBuffer::bindTextures()
 {
     for(int i = 0; i < TEXTURE_COUNT; ++i)
     {
-        gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GL_TEXTURE0 + i);
+        gl->glActiveTexture(GL_TEXTURE0 + i);
+        gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[i]);
     }
 }
 

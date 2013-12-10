@@ -6,8 +6,7 @@
 
 using namespace Engine::Technique;
 
-Technique::Technique(Engine::ResourceDespatcher* despatcher)
-    : despatcher_(despatcher)
+Technique::Technique()
 {
 }
 
@@ -19,9 +18,10 @@ bool Technique::enable()
 {
     if(!program_->isLinked())
     {
-        if(program_.ready())
+        if(program_.bind())
         {
             init();
+            return true;
         }
 
         else
@@ -41,14 +41,4 @@ QOpenGLShaderProgram* Technique::program()
 void Technique::addShader(const Engine::Shader::Ptr& shader)
 {
     program_.addShader(shader);
-}
-
-void Technique::addShader(const QString& fileName, Engine::Shader::Type type)
-{
-    program_.addShader(despatcher_->get<Engine::Shader>(fileName, type));
-}
-
-Engine::ResourceDespatcher* Technique::despatcher() const
-{
-    return despatcher_;
 }

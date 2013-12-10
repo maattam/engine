@@ -1,7 +1,5 @@
 #include "skyboxtechnique.h"
 
-#include "resourcedespatcher.h"
-#include "shader.h"
 #include "cubemaptexture.h"
 #include "entity/camera.h"
 
@@ -10,8 +8,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-Skybox::Skybox(ResourceDespatcher* despatcher)
-    : Technique(despatcher), mvpLocation_(-1), samplerLocation_(-1)
+Skybox::Skybox()
+    : Technique(), mvpLocation_(-1), samplerLocation_(-1)
 {
 }
 

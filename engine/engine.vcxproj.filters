@@ -163,6 +163,12 @@
     <ClCompile Include="src\technique\dsgeometryshader.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
+    <ClCompile Include="src\deferredrenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\technique\dsmaterialshader.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -209,6 +215,15 @@
     </None>
     <None Include="shaders\gbuffer.vert">
       <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\dsmaterial.frag">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\dsmaterial.vert">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\passthrough.vert">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -306,6 +321,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\dsgeometryshader.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\deferredrenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\dsmaterialshader.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>

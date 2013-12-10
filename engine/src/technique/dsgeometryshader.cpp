@@ -1,12 +1,10 @@
 #include "dsgeometryshader.h"
 
-#include "resourcedespatcher.h"
-
 using namespace Engine;
 using namespace Engine::Technique;
 
-DSGeometryShader::DSGeometryShader(ResourceDespatcher* despatcher)
-    : Technique(despatcher)
+DSGeometryShader::DSGeometryShader()
+    : Technique()
 {
 }
 
@@ -60,12 +58,12 @@ void DSGeometryShader::init()
     }
 
     // Fetch attribute locations
-    modelViewLocation_ = program()->attributeLocation("modelViewMatrix");
-    mvpLocation_ = program()->attributeLocation("MVP");
+    modelViewLocation_ = program()->uniformLocation("modelViewMatrix");
+    mvpLocation_ = program()->uniformLocation("MVP");
 
-    materialLocation_.diffuseColor = program()->attributeLocation("material.diffuseColor");
-    materialLocation_.shininess = program()->attributeLocation("material.shininess");
-    materialLocation_.specularIntensity = program()->attributeLocation("material.specularIntensity");
+    materialLocation_.diffuseColor = program()->uniformLocation("material.diffuseColor");
+    materialLocation_.shininess = program()->uniformLocation("material.shininess");
+    materialLocation_.specularIntensity = program()->uniformLocation("material.specularIntensity");
 
     // Subroutine indices
     skipTangentIndex_ = gl->glGetSubroutineIndex(program()->programId(), GL_VERTEX_SHADER, "skipTangent");

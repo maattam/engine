@@ -16,8 +16,7 @@
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
-    : scene_(nullptr), flags_(0), samples_(1), postfx_(nullptr), errorMaterial_(despatcher),
-    lightningTech_(despatcher), shadowTech_(despatcher), skyboxTech_(despatcher)
+    : scene_(nullptr), flags_(0), samples_(1), postfx_(nullptr), errorMaterial_(despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -30,16 +29,16 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
     flags_ |= RENDER_SHADOWS;
 
     // ShadowMap shaders
-    shadowTech_.addShader(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex);
-    shadowTech_.addShader(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment);
+    shadowTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
+    shadowTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
 
     // BasicLightning shaders
-    lightningTech_.addShader(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex);
-    lightningTech_.addShader(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment);
+    lightningTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex));
+    lightningTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment));
 
     // Skybox shaders
-    skyboxTech_.addShader(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex);
-    skyboxTech_.addShader(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
+    skyboxTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
+    skyboxTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
 }
 
 ForwardRenderer::~ForwardRenderer()

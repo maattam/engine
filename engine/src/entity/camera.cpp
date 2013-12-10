@@ -179,6 +179,16 @@ void Camera::setNearPlane(float near)
     near_ = near;
 }
 
+float Camera::nearPlane() const
+{
+    return near_;
+}
+
+float Camera::farPlane() const
+{
+    return far_;
+}
+
 QVector3D Camera::up() const
 {
     // Default up is +Y, so we rotate +Y to find the current up.

@@ -4,7 +4,6 @@
         <file>shaders/tone.frag</file>
         <file>shaders/blur.frag</file>
         <file>shaders/highpass.frag</file>
-        <file>shaders/null.frag</file>
         <file>images/white.png</file>
         <file>shaders/basiclightning.frag</file>
         <file>shaders/basiclightning.vert</file>
@@ -18,5 +17,9 @@
         <file>shaders/wireframe.frag</file>
         <file>shaders/wireframe.vert</file>
         <file>images/mask.png</file>
+        <file>shaders/gbuffer.frag</file>
+        <file>shaders/gbuffer.vert</file>
+        <file>shaders/dsmaterial.frag</file>
+        <file>shaders/dsmaterial.vert</file>
     </qresource>
 </RCC>
