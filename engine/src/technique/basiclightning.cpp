@@ -5,6 +5,7 @@
 
 #include <QDebug>
 #include <qmath.h>
+#include <QTime>
 
 #include <sstream>
 #include <cassert>
@@ -18,10 +19,8 @@ namespace {
 }
 
 BasicLightning::BasicLightning(ResourceDespatcher* despatcher)
-    : Technique(), mvpLocation_(-1)
+    : Technique(despatcher), mvpLocation_(-1)
 {
-    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex));
-    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment));
 }
 
 BasicLightning::~BasicLightning()

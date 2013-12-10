@@ -19,12 +19,13 @@ public:
     virtual bool load(const QString& fileName);
     gli::texture2D* at(unsigned int index) const;
 
-    // If srgb is true, the texture is converted to linear color space
-    void loadSrgb(bool srgb);
+    // Sets the texture conversion to use upon loading
+    // If not set, the default TC_RGBA is used.
+    void setConversion(TextureConversion conversion);
 
 private:
     gli::texture2D* textures_[Faces];
-    bool loadSrgb_;
+    TextureConversion conversion_;
 };
 
 class CubemapTexture
@@ -32,7 +33,7 @@ class CubemapTexture
 {
 public:
     CubemapTexture();
-    explicit CubemapTexture(const QString& name, bool loadSrgb = false);
+    explicit CubemapTexture(const QString& name, TextureConversion conversion = TC_RGBA);
 
     virtual bool bind();
 
@@ -42,6 +43,9 @@ protected:
     virtual void releaseData();
 
     virtual void queryFilesDebug(QStringList& files) const;
+
+private:
+    TextureConversion conversion_;
 };
 
 }

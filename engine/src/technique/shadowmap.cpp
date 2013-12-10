@@ -13,10 +13,8 @@ using namespace Engine;
 using namespace Engine::Technique;
 
 ShadowMap::ShadowMap(ResourceDespatcher* despatcher)
-    : Technique()
+    : Technique(despatcher)
 {
-    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
-    addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
 }
 
 ShadowMap::~ShadowMap()

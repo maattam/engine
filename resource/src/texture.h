@@ -19,8 +19,7 @@ class Texture
 public:
     enum { Target = Type };
 
-    // If loadSrgb is true, the texture is mapped to linear color space in shaders
-    explicit Texture(bool loadSrgb);
+    Texture();
     virtual ~Texture() = 0;
 
     // Deletes the texture using glDeleteTextures.
@@ -46,15 +45,11 @@ public:
 
     GLuint textureId() const;
 
-    // Tells whether the texture is using SRGB texture format.
-    bool isSrgb() const;
-
 protected:
     void setParameters();
 
     GLuint textureId_;
     bool mipmaps_;
-    bool srgb_;
 
 private:
     typedef std::pair<GLenum, GLint> Parameteri;
@@ -62,8 +57,12 @@ private:
 };
 
 // Allocates a new texture, returns nullptr on failure,
-// If srgb is true, the texture is converted to linear color space upon loading.
-gli::texture2D* loadTexture(const QString& fileName, bool srgb = false);
+// The TextureConversion field affects the created texture's internal format:
+// TC_RGBA is the regular RGBA texture
+// TC_SRGBA is a regular RGBA texture mapped to linear color space
+// TC_GRAYSCALE is a grayscale image (all components are the same, without alpha)
+enum TextureConversion { TC_RGBA, TC_SRGBA, TC_GRAYSCALE };
+gli::texture2D* loadTexture(const QString& fileName, TextureConversion conversion = TC_RGBA);
 
 #include "texture.inl"
 

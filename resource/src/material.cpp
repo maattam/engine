@@ -39,9 +39,15 @@ const Texture2D::Ptr& Material::getTexture(TextureType type)
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
         Texture2D::Ptr& tex = textures_[type];
 
-        if(type != TEXTURE_NORMALS)
+        // Get default texture
+        if(type == TEXTURE_SPECULAR || type == TEXTURE_MASK)
         {
-            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"), type == TEXTURE_DIFFUSE);
+            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+        }
+
+        else if(type == TEXTURE_DIFFUSE)
+        {
+            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"), TC_SRGBA);
         }
 
         return tex;

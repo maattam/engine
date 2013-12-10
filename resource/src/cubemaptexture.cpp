@@ -16,12 +16,12 @@ const GLenum FACES[CubemapData::Faces] = {
 };
 
 CubemapTexture::CubemapTexture()
-    : Texture(false), Resource()
+    : Texture(), Resource()
 {
 }
 
-CubemapTexture::CubemapTexture(const QString& name, bool loadSrgb)
-    : Texture(loadSrgb), Resource(name)
+CubemapTexture::CubemapTexture(const QString& name, TextureConversion conversion)
+    : Texture(), Resource(name), conversion_(conversion)
 {
 }
 
@@ -90,7 +90,7 @@ void CubemapTexture::queryFilesDebug(QStringList& files) const
 ResourceData* CubemapTexture::createData()
 {
     CubemapData* data = new CubemapData(despatcher());
-    data->loadSrgb(isSrgb());
+    data->setConversion(conversion_);
 
     return data;
 }
@@ -100,7 +100,7 @@ ResourceData* CubemapTexture::createData()
 //
 
 CubemapData::CubemapData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher), loadSrgb_(false)
+    : ResourceData(despatcher), conversion_(TC_RGBA)
 {
     for(int i = 0; i < CubemapData::Faces; ++i)
         textures_[i] = nullptr;
@@ -122,14 +122,11 @@ bool CubemapData::load(const QString& fileName)
         QString file = fileName;
         file.replace(QString("*"), QString::number(i));
 
-        textures_[i] = loadTexture(file, loadSrgb_);
+        textures_[i] = loadTexture(file, conversion_);
         if(textures_[i] == nullptr)
         {
-            qWarning() << __FUNCTION__ << "Failed to load" << file;
             return false;
         }
- 
-        qDebug() << __FUNCTION__ << "Loaded" << file;
     }
 
     return true;
@@ -140,7 +137,7 @@ gli::texture2D* CubemapData::at(unsigned int index) const
     return textures_[index];
 }
 
-void CubemapData::loadSrgb(bool srgb)
+void CubemapData::setConversion(TextureConversion conversion)
 {
-    loadSrgb_ = srgb;
+    conversion_ = conversion;
 }

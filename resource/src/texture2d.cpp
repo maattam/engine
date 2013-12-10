@@ -7,12 +7,12 @@
 using namespace Engine;
 
 Texture2D::Texture2D()
-    : Texture(false), Resource(), width_(0), height_(0)
+    : Texture(), Resource(), width_(0), height_(0), conversion_(TC_RGBA)
 {
 }
 
-Texture2D::Texture2D(const QString& name, bool loadSrgb)
-    : Texture(loadSrgb), Resource(name), width_(0), height_(0)
+Texture2D::Texture2D(const QString& name, TextureConversion conversion)
+    : Texture(), Resource(name), width_(0), height_(0), conversion_(conversion)
 {
 }
 
@@ -126,7 +126,7 @@ GLsizei Texture2D::height() const
 ResourceData* Texture2D::createData()
 {
     TextureData* data = new TextureData(despatcher());
-    data->loadSrgb(isSrgb());
+    data->setConversion(conversion_);
 
     return data;
 }
@@ -136,7 +136,7 @@ ResourceData* Texture2D::createData()
 //
 
 TextureData::TextureData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher), data_(nullptr), loadSrgb_(false)
+    : ResourceData(despatcher), data_(nullptr), conversion_(TC_RGBA)
 {
 }
 
@@ -148,7 +148,7 @@ TextureData::~TextureData()
 
 bool TextureData::load(const QString& fileName)
 {
-    data_ = loadTexture(fileName, loadSrgb_);
+    data_ = loadTexture(fileName, conversion_);
     return data_ != nullptr;
 }
 
@@ -162,7 +162,7 @@ gli::texture2D& TextureData::operator*() const
     return *data_;
 }
 
-void TextureData::loadSrgb(bool srgb)
+void TextureData::setConversion(TextureConversion conversion)
 {
-    loadSrgb_ = srgb;
+    conversion_ = conversion;
 }

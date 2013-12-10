@@ -1,6 +1,6 @@
 // Basic lightning fragment shader
 
-#version 330 core
+#version 400 core
 
 #define MAX_POINT_LIGHTS 4
 #define MAX_SPOT_LIGHTS 4
@@ -92,24 +92,24 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned i
 	projCoords = 0.5 * projCoords + 0.5;
 
     float offset = 1.0 / size;
-    float shadow = 0.0;
+    float sum = 0;
 
-    // 3x3 PCF kernel
-    for(float y = -1; y <= 1; ++y)
+    // 2x2 PCF kernel
+    for(float y = -1; y <= 1; y += 2)
     {
-        for(float x = -1; x <= 1; ++x)
+        for(float x = -1; x <= 1; x += 2)
         {
             vec2 offsets = vec2(x * offset, y * offset);
 
             float depth = texture(shadowMap, projCoords.xy + offsets).z;
             if(depth >= projCoords.z - SHADOW_BIAS)
             {
-                shadow += 1.0;
+                sum += 1.0;
             }
         }
     }
 
-    return shadow / 9;
+    return sum * 0.25;
 }
 
 // Encapsules common stuff between the different light types
@@ -141,7 +141,7 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 		
 		if(specularFactor > 0)
 		{
-			specularColor = vec4(light.color, 1.0) * texture2D(gSpecularSampler, texCoord0) *
+			specularColor = vec4(light.color, 1.0) * texture2D(gSpecularSampler, texCoord0).r *
 				gMaterial.specularIntensity * specularFactor;
 		}
 	}
@@ -218,9 +218,8 @@ vec3 calcBumpedNormal()
 
 void main()
 {
-    bvec3 toDiscard = lessThanEqual(texture2D(gMaskSampler, texCoord0), vec3(0.2));
     // Check if this part of the fragment is visible according to mask
-    if(all(toDiscard))
+    if(texture2D(gMaskSampler, texCoord0).r <= 0.2)
         discard;
 
     // We have to normalize our normal (again) since the fragment shader does interpolation between vertices

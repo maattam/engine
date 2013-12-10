@@ -40,7 +40,7 @@ void ShaderProgram::shaderReleased(const QString& name)
 {
     // Find shader
     auto iter = std::find_if(shaders_.begin(), shaders_.end(),
-        [&name](const std::shared_ptr<Shader>& shader) { return shader->name() == name; });
+        [&name](const Shader::Ptr& shader) { return shader->name() == name; });
 
     Q_ASSERT(iter != shaders_.end());
 
@@ -87,7 +87,7 @@ void ShaderProgram::shaderCompiled(const QString& name)
 {
     // Find shader
     auto iter = std::find_if(shaders_.begin(), shaders_.end(),
-        [&name](const std::shared_ptr<Shader>& shader) { return shader->name() == name; });
+        [&name](const Shader::Ptr& shader) { return shader->name() == name; });
 
     Q_ASSERT(iter != shaders_.end());
 

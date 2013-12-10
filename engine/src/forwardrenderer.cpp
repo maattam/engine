@@ -25,9 +25,21 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png"), true));
+        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
 
     flags_ |= RENDER_SHADOWS;
+
+    // ShadowMap shaders
+    shadowTech_.addShader(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex);
+    shadowTech_.addShader(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment);
+
+    // BasicLightning shaders
+    lightningTech_.addShader(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex);
+    lightningTech_.addShader(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment);
+
+    // Skybox shaders
+    skyboxTech_.addShader(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex);
+    skyboxTech_.addShader(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -95,6 +107,8 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
 
     if(!shadowTech_.initDirectionalLight(4096, 4096))
         return false;
+
+    destroyBuffers();
 
     // Initialize textures
     gl->glGenTextures(1, &renderTexture_);

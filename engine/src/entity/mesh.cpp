@@ -180,12 +180,12 @@ void MeshData::initSubMesh(const aiMesh* mesh, MeshData::SubMeshData& data)
 
 void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
 {
-    // Create mapping between Material::TextureType and aiTextureType
-    const aiTextureType textureMapping[Material::TEXTURE_COUNT] = {
-        aiTextureType_DIFFUSE,
-        aiTextureType_NORMALS,
-        aiTextureType_SPECULAR,
-        aiTextureType_OPACITY
+    // Create mapping between Material::TextureType, TextureConversion and aiTextureType
+    const std::pair<aiTextureType, TextureConversion> textureMapping[Material::TEXTURE_COUNT] = {
+        std::make_pair(aiTextureType_DIFFUSE, TC_SRGBA),
+        std::make_pair(aiTextureType_NORMALS, TC_RGBA),
+        std::make_pair(aiTextureType_SPECULAR, TC_GRAYSCALE),
+        std::make_pair(aiTextureType_OPACITY, TC_GRAYSCALE)
     };
 
     // Extract the directory part of the file name
@@ -210,12 +210,12 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
         // Query supported materials
         for(int j = 0; j < Material::TEXTURE_COUNT; ++j)
         {
-            if(material->GetTextureCount(textureMapping[j]) > 0 &&
-                material->GetTexture(textureMapping[j], 0, &path) == aiReturn_SUCCESS)
+            if(material->GetTextureCount(textureMapping[j].first) > 0 &&
+                material->GetTexture(textureMapping[j].first, 0, &path) == aiReturn_SUCCESS)
             {
                 const Material::TextureType type = static_cast<Material::TextureType>(j);
                 Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data,
-                    type == Material::TEXTURE_DIFFUSE);
+                    textureMapping[j].second);
 
                 materials_[i]->setTexture(type, texture);
             }

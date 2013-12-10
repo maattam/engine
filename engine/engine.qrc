@@ -17,5 +17,6 @@
         <file>shaders/aabb.vert</file>
         <file>shaders/wireframe.frag</file>
         <file>shaders/wireframe.vert</file>
+        <file>images/mask.png</file>
     </qresource>
 </RCC>

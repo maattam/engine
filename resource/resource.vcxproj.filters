@@ -38,9 +38,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\texture.h">
-      <Filter>Header Files\texture</Filter>
-    </ClInclude>
     <ClInclude Include="src\texture2d.h">
       <Filter>Header Files\texture</Filter>
     </ClInclude>
@@ -50,8 +47,11 @@
     <ClInclude Include="src\shader.h">
       <Filter>Header Files\shader</Filter>
     </ClInclude>
-    <ClInclude Include="src\material.h">
+    <ClInclude Include="src\texture.h">
       <Filter>Header Files\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="src\material.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -104,7 +104,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\material.cpp">
-      <Filter>Source Files\texture</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

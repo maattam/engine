@@ -176,6 +176,7 @@
     <ClCompile Include="src\entity\mesh.cpp" />
     <ClCompile Include="src\entity\subentity.cpp" />
     <ClCompile Include="src\forwardrenderer.cpp" />
+    <ClCompile Include="src\gbuffer.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="src\scene\colladanode.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
+    <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skyboxtechnique.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -196,14 +198,14 @@
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\blur.frag" />
+    <None Include="shaders\gbuffer.frag" />
+    <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\highpass.frag" />
-    <None Include="shaders\null.frag" />
     <None Include="shaders\shadowmap.frag" />
     <None Include="shaders\shadowmap.vert" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\tone.frag" />
-    <None Include="shaders\passthrough.vert" />
     <None Include="shaders\wireframe.frag" />
     <None Include="shaders\wireframe.vert" />
   </ItemGroup>
@@ -221,6 +223,7 @@
     <ClInclude Include="src\entity\mesh.h" />
     <ClInclude Include="src\entity\subentity.h" />
     <ClInclude Include="src\forwardrenderer.h" />
+    <ClInclude Include="src\gbuffer.h" />
     <ClInclude Include="src\graph\node.h" />
     <ClInclude Include="src\graph\scenenode.h" />
     <ClInclude Include="src\renderable\cube.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="src\scene\sceneobserver.h" />
     <ClInclude Include="src\scene\visiblescene.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
+    <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skyboxtechnique.h" />
     <CustomBuild Include="src\technique\technique.h">

@@ -8,7 +8,6 @@
 
 namespace Engine {
     
-class ResourceDespatcher;
 class CubemapTexture;
 
 namespace Entity {
@@ -21,6 +20,7 @@ class Skybox : public Technique
 {
 public:
     Skybox(ResourceDespatcher* despatcher);
+    virtual ~Skybox() {};
 
     // Renders skybox around given camera's view
     // Does nothing if either camera or texture is null.

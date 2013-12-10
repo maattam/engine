@@ -20,19 +20,20 @@ public:
     gli::texture2D* operator->() const;
     gli::texture2D& operator*() const;
 
-    // If srgb is true, the texture is converted to linear color space
-    void loadSrgb(bool srgb);
+    // Sets the texture conversion to use upon loading
+    // If not set, the default TC_RGBA is used.
+    void setConversion(TextureConversion conversion);
 
 private:
     gli::texture2D* data_;
-    bool loadSrgb_;
+    TextureConversion conversion_;
 };
 
 class Texture2D : public Texture<GL_TEXTURE_2D>, public Resource<Texture2D, TextureData>
 {
 public:
     Texture2D();
-    Texture2D(const QString& name, bool loadSrgb = false);
+    Texture2D(const QString& name, TextureConversion conversion = TC_RGBA);
 
     // Fails if the resource is managed
     bool create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
@@ -51,6 +52,7 @@ protected:
 private:
     GLsizei width_;
     GLsizei height_;
+    TextureConversion conversion_;
 };
 
 }

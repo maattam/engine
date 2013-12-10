@@ -68,6 +68,15 @@
     <Filter Include="Source Files\renderable">
       <UniqueIdentifier>{965f7a32-612f-4bfb-819d-ac4a590bd7d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\technique">
+      <UniqueIdentifier>{8026e856-5365-40b4-a0b4-eeb44fc0be07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\debugging">
+      <UniqueIdentifier>{ebe98bfd-d505-4896-b2be-3b1de8fa51b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\postfx">
+      <UniqueIdentifier>{4f707cba-86f3-4df3-9f1b-be20eed93805}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\effect\downsampler.cpp">
@@ -148,52 +157,58 @@
     <ClCompile Include="src\renderqueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gbuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\technique\dsgeometryshader.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\passthrough.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\tone.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\blur.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\highpass.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\null.frag">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="shaders\basiclightning.frag">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\basiclightning.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\shadowmap.vert">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\shadowmap.frag">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\technique</Filter>
     </None>
-    <None Include="shaders\skybox.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\shadowmap.vert">
+      <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\skybox.frag">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\technique</Filter>
     </None>
-    <None Include="shaders\aabb.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\aabb.vert">
-      <Filter>Shaders</Filter>
+    <None Include="shaders\skybox.vert">
+      <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\wireframe.frag">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\debugging</Filter>
     </None>
     <None Include="shaders\wireframe.vert">
-      <Filter>Shaders</Filter>
+      <Filter>Shaders\debugging</Filter>
+    </None>
+    <None Include="shaders\aabb.frag">
+      <Filter>Shaders\debugging</Filter>
+    </None>
+    <None Include="shaders\aabb.vert">
+      <Filter>Shaders\debugging</Filter>
+    </None>
+    <None Include="shaders\tone.frag">
+      <Filter>Shaders\postfx</Filter>
+    </None>
+    <None Include="shaders\highpass.frag">
+      <Filter>Shaders\postfx</Filter>
+    </None>
+    <None Include="shaders\blur.frag">
+      <Filter>Shaders\postfx</Filter>
+    </None>
+    <None Include="shaders\gbuffer.frag">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\gbuffer.vert">
+      <Filter>Shaders\technique</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -286,6 +301,12 @@
     </ClInclude>
     <ClInclude Include="src\renderqueue.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gbuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\dsgeometryshader.h">
+      <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

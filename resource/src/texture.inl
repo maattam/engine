@@ -1,6 +1,6 @@
 template<GLenum Type>
-Texture<Type>::Texture(bool loadSrgb)
-    : textureId_(0), mipmaps_(false), srgb_(loadSrgb)
+Texture<Type>::Texture()
+    : textureId_(0), mipmaps_(false)
 {
 }
 
@@ -86,10 +86,4 @@ void Texture<Type>::setParameters()
     {
         gl->glGenerateMipmap(Type);
     }
-}
-
-template<GLenum Type>
-bool Texture<Type>::isSrgb() const
-{
-    return srgb_;
 }

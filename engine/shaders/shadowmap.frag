@@ -6,8 +6,6 @@ in vec2 texCoord0;
 
 void main()
 {
-    bvec3 toDiscard = lessThanEqual(texture2D(gMaskSampler, texCoord0), vec3(0.2));
-
-    if(all(toDiscard))
+    if(texture2D(gMaskSampler, texCoord0).r <= 0.2)
         discard;
 }
