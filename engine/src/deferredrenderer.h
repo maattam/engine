@@ -44,6 +44,8 @@ public:
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
 
+    GBuffer* getGBuffer();
+
 private:
     QRect viewport_;
     unsigned int samples_;

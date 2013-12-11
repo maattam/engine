@@ -14,34 +14,40 @@ DSGeometryShader::~DSGeometryShader()
 
 void DSGeometryShader::setModelViewMatrix(const QMatrix4x4& modelView)
 {
-    program()->setUniformValue(modelViewLocation_, modelView);
+    program()->setUniformValue(cachedUniformLocation("modelViewMatrix"), modelView);
 }
 
 void DSGeometryShader::setMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue(mvpLocation_, mvp);
+    program()->setUniformValue(cachedUniformLocation("MVP"), mvp);
 }
 
 void DSGeometryShader::setMaterialAttributes(const Material::Attributes& attrib)
 {
-    program()->setUniformValue(materialLocation_.diffuseColor, attrib.diffuseColor);
-    program()->setUniformValue(materialLocation_.shininess, attrib.shininess);
-    program()->setUniformValue(materialLocation_.specularIntensity, attrib.specularIntensity);
+    program()->setUniformValue(cachedUniformLocation("material.diffuseColor"), attrib.diffuseColor);
+    program()->setUniformValue(cachedUniformLocation("material.shininess"), attrib.shininess);
+    program()->setUniformValue(cachedUniformLocation("material.specularIntensity"), attrib.specularIntensity);
 }
 
 void DSGeometryShader::setHasTangentsAndNormals(bool value)
 {
+    GLuint fragLoc = -1;
+    GLuint vertLoc = -1;
+
     if(value)
     {
-        gl->glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &calcTangentIndex_);
-        gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &calcNormalIndex_);
+        vertLoc = cachedSubroutineLocation("calculateTangent");
+        fragLoc = cachedSubroutineLocation("calculateBumpedNormal");
     }
 
     else
     {
-        gl->glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &skipTangentIndex_);
-        gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &interpNormalIndex_);
+        vertLoc = cachedSubroutineLocation("skipTangent");
+        fragLoc = cachedSubroutineLocation("calculateInterpolatedNormal");
     }
+
+    gl->glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &vertLoc);
+    gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &fragLoc);
 }
 
 void DSGeometryShader::init()
@@ -54,21 +60,21 @@ void DSGeometryShader::init()
     // Set texture units
     for(int i = 0; i < Material::TEXTURE_COUNT; ++i)
     {
-        program()->setUniformValue(SAMPLERS[i], i);
+        program()->setUniformValue(resolveUniformLocation(SAMPLERS[i]), i);
     }
 
-    // Fetch attribute locations
-    modelViewLocation_ = program()->uniformLocation("modelViewMatrix");
-    mvpLocation_ = program()->uniformLocation("MVP");
+    // Register uniforms
+    resolveUniformLocation("modelViewMatrix");
+    resolveUniformLocation("MVP");
 
-    materialLocation_.diffuseColor = program()->uniformLocation("material.diffuseColor");
-    materialLocation_.shininess = program()->uniformLocation("material.shininess");
-    materialLocation_.specularIntensity = program()->uniformLocation("material.specularIntensity");
+    resolveUniformLocation("material.diffuseColor");
+    resolveUniformLocation("material.shininess");
+    resolveUniformLocation("material.specularIntensity");
 
     // Subroutine indices
-    skipTangentIndex_ = gl->glGetSubroutineIndex(program()->programId(), GL_VERTEX_SHADER, "skipTangent");
-    calcTangentIndex_ = gl->glGetSubroutineIndex(program()->programId(), GL_VERTEX_SHADER, "calculateTangent");
+    resolveSubroutineLocation("skipTangent", GL_VERTEX_SHADER);
+    resolveSubroutineLocation("calculateTangent", GL_VERTEX_SHADER);
 
-    calcNormalIndex_ = gl->glGetSubroutineIndex(program()->programId(), GL_FRAGMENT_SHADER, "calculateBumpedNormal");
-    interpNormalIndex_ = gl->glGetSubroutineIndex(program()->programId(), GL_FRAGMENT_SHADER, "calculateInterpolatedNormal");
+    resolveSubroutineLocation("calculateBumpedNormal", GL_FRAGMENT_SHADER);
+    resolveSubroutineLocation("calculateInterpolatedNormal", GL_FRAGMENT_SHADER);
 }

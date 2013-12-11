@@ -21,5 +21,6 @@
         <file>shaders/gbuffer.vert</file>
         <file>shaders/dsmaterial.frag</file>
         <file>shaders/dsmaterial.vert</file>
+        <file>shaders/dsmaterial_debug.frag</file>
     </qresource>
 </RCC>

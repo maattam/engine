@@ -190,6 +190,7 @@
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
+    <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skyboxtechnique.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -202,6 +203,7 @@
     <None Include="shaders\blur.frag" />
     <None Include="shaders\dsmaterial.frag" />
     <None Include="shaders\dsmaterial.vert" />
+    <None Include="shaders\dsmaterial_debug.frag" />
     <None Include="shaders\gbuffer.frag" />
     <None Include="shaders\gbuffer.vert" />
     <None Include="shaders\highpass.frag" />
@@ -247,6 +249,7 @@
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\dsmaterialshader.h" />
+    <ClInclude Include="src\technique\gbuffervisualizer.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skyboxtechnique.h" />
     <CustomBuild Include="src\technique\technique.h">

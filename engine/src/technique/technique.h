@@ -6,6 +6,9 @@
 
 #include "shaderprogram.h"
 
+#include <QString>
+#include <QHash>
+
 namespace Engine { 
     
 class Shader;
@@ -37,8 +40,23 @@ protected:
     // precondition: shaders added
     QOpenGLShaderProgram* program();
 
+    // Returns a cached uniform location from the hash.
+    // The uniform must have been registered through resolveUniformLocation, or
+    // resolveSubroutineLocation.
+    // If the uniform is not found, -1 is returned.
+    int cachedUniformLocation(const QString& name) const;
+    GLuint cachedSubroutineLocation(const QString& name) const;
+
+    // Attemps to locate uniforms from the bound program
+    // Returns -1 if given uniform is invalid.
+    // precondition: Technique has been enabled successfully
+    int resolveUniformLocation(const QString& name);
+    GLuint resolveSubroutineLocation(const QString& name, GLenum shaderType);
+
 private:
     ShaderProgram program_;
+    QHash<QString, int> uniforms_;
+    QHash<QString, GLuint> subroutines_;
 
     Technique(const Technique&);
     Technique& operator=(const Technique&);

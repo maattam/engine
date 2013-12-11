@@ -17,16 +17,13 @@ public:
     // Set sample count according to use MSAA level
     void setSampleCount(unsigned int count);
 
-    void setViewport(const QRect& viewport);
-
     // Sets the near and far clip spaces used to render the scene
     // precondition: technique is enabled
     void setDepthRange(float rnear, float rfar);
 
-    // Sets the inverse projection matrix used to calculate eye-space coordinate
-    // from window space.
+    // Sets the projection matrix used to calculate eye-space coordinate from window space.
     // precondition: technique is enabled
-    void setInvProjMatrix(const QMatrix4x4& invProj);
+    void setProjMatrix(const QMatrix4x4& proj);
 
 protected:
     virtual void init();
@@ -34,11 +31,7 @@ protected:
 private:
     int samples_;
     QVector4D viewport_;
-
-    int samplesLocation_;
-    int depthRangeLocation_;
-    int invProjLocation_;
-    int viewportLocation_;
+    QVector2D depthRange_;
 };
 
 }}

@@ -45,6 +45,11 @@ bool DeferredRenderer::setPostfxHook(Effect::Postfx* postfx)
     return false;
 }
 
+GBuffer* DeferredRenderer::getGBuffer()
+{
+    return &gbuffer_;
+}
+
 void DeferredRenderer::render(Entity::Camera* camera)
 {
     camera_ = camera;
@@ -115,8 +120,7 @@ void DeferredRenderer::preLightPass()
         return;
     }
 
-    materialShader_.setDepthRange(camera_->nearPlane(), camera_->farPlane());
-    materialShader_.setInvProjMatrix(camera_->projection().inverted());
+    materialShader_.setProjMatrix(camera_->projection());
 
     gbuffer_.bindTextures();
     quad_.render();
@@ -130,7 +134,8 @@ bool DeferredRenderer::initialise(unsigned int width, unsigned int height, unsig
     }
 
     materialShader_.setSampleCount(samples);
-    materialShader_.setViewport(viewport_);
+    materialShader_.setDepthRange(0, 1);
+
     return true;
 }
 

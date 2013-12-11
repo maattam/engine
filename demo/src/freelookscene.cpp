@@ -11,7 +11,7 @@ FreeLookScene::FreeLookScene(Engine::ResourceDespatcher* despatcher)
 {
     camera_.setDirection(QVector3D(1, 0, 0));
     camera_.setPosition(QVector3D(0, 10, 0));
-    camera_.setFarPlane(3000.0f);
+    camera_.setFarPlane(1000.0f);
     camera_.update();
 }
 
@@ -68,24 +68,31 @@ void FreeLookScene::update(unsigned int elapsed)
     const float elapsedMs = elapsed / 1000.0f;
     float distance = elapsedMs * speed_;
 
+    QVector3D direction;
+
     if(input_->keyDown(Qt::Key::Key_W))
     {
-        camera_.move(camera_.direction() * distance);
+        direction += camera_.direction();
     }
 
     if(input_->keyDown(Qt::Key::Key_S))
     {
-        camera_.move(-camera_.direction() * distance);
+        direction -= camera_.direction();
     }
 
     if(input_->keyDown(Qt::Key::Key_D))
     {
-        camera_.move(camera_.right() * distance);
+        direction += camera_.right();
     }
 
     if(input_->keyDown(Qt::Key::Key_A))
     {
-        camera_.move(-camera_.right() * distance);
+        direction -= camera_.right();
+    }
+
+    if(direction.length() > 0)
+    {
+        camera_.move(direction.normalized() * distance);
     }
 
     if(input_->keyDown(Input::KEY_MOUSE_RIGHT))

@@ -5,7 +5,7 @@
 using namespace Engine::Technique;
 
 DSMaterialShader::DSMaterialShader()
-    : Technique(), samples_(1)
+    : Technique(), samples_(1), depthRange_(0, 1)
 {
 }
 
@@ -19,28 +19,24 @@ void DSMaterialShader::setSampleCount(unsigned int count)
 
     if(program()->isLinked())
     {
-        program()->setUniformValue(samplesLocation_, samples_);
+        program()->setUniformValue(cachedUniformLocation("samples"), samples_);
     }
 }
 
 void DSMaterialShader::setDepthRange(float rnear, float rfar)
 {
-    program()->setUniformValue(depthRangeLocation_, QVector2D(rnear, rfar));
-}
-
-void DSMaterialShader::setInvProjMatrix(const QMatrix4x4& invProj)
-{
-    program()->setUniformValue(invProjLocation_, invProj);
-}
-
-void DSMaterialShader::setViewport(const QRect& viewport)
-{
-    viewport_ = QVector4D(viewport.left(), viewport.top(), viewport.width(), viewport.height());
+    depthRange_.setX(rnear);
+    depthRange_.setY(rfar);
 
     if(program()->isLinked())
     {
-        program()->setUniformValue(viewportLocation_, viewport_);
+        program()->setUniformValue(cachedUniformLocation("depthRange"), depthRange_);
     }
+}
+
+void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
+{
+    program()->setUniformValue(cachedUniformLocation("persProj"), proj);
 }
 
 void DSMaterialShader::init()
@@ -52,15 +48,17 @@ void DSMaterialShader::init()
     // Set texture samplers
     for(int i = 0; i < GBuffer::TEXTURE_COUNT; ++i)
     {
-        program()->setUniformValue(SAMPLERS[i], i);
+        program()->setUniformValue(resolveUniformLocation(SAMPLERS[i]), i);
     }
 
-    samplesLocation_ = program()->uniformLocation("samples");
-    program()->setUniformValue(samplesLocation_, samples_);
+    int samplesLocation = resolveUniformLocation("samples");
+    program()->setUniformValue(samplesLocation, samples_);
 
-    viewportLocation_ = program()->uniformLocation("viewport");
-    program()->setUniformValue(viewportLocation_, viewport_);
+    int depthRangeLocation = resolveUniformLocation("depthRange");
+    program()->setUniformValue(depthRangeLocation, depthRange_);
 
-    depthRangeLocation_ = program()->uniformLocation("depthRange");
-    invProjLocation_ = program()->uniformLocation("inverseProj");
+    resolveUniformLocation("persProj");
+
+    GLuint lightFunc = resolveSubroutineLocation("nullLight", GL_FRAGMENT_SHADER);
+    gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &lightFunc);
 }

@@ -6,11 +6,12 @@
 #include "entity/entity.h"
 #include "entity/light.h"
 #include "material.h"
+#include "gbuffer.h"
 
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), scene_(nullptr), flags_(0)
+    : observable_(nullptr), scene_(nullptr), camera_(nullptr), flags_(0), gbuffer_(nullptr)
 {
     // AABB debugging tech
     aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.vert"), Shader::Type::Vertex));
@@ -19,6 +20,10 @@ DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
     // Wireframe tech
     wireframeTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/wireframe.vert"), Shader::Type::Vertex));
     wireframeTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/wireframe.frag"), Shader::Type::Fragment));
+
+    // GBuffer visualizer
+    gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
+    gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial_debug.frag"), Shader::Type::Fragment));
 }
 
 DebugRenderer::~DebugRenderer()
@@ -29,6 +34,10 @@ bool DebugRenderer::setViewport(unsigned int width, unsigned int height, unsigne
                  unsigned int left, unsigned int top)
 {
     viewport_ = QRect(left, top, width, height);
+
+    gbufferMS_.setSampleCount(samples);
+    gbufferMS_.setDepthRange(0, 1);
+
     return true;
 }
 
@@ -42,8 +51,15 @@ void DebugRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
+void DebugRenderer::setGBuffer(GBuffer* gbuffer)
+{
+    gbuffer_ = gbuffer;
+}
+
 void DebugRenderer::render(Entity::Camera* camera)
 {
+    camera_ = camera;
+
     // If no debug flags are set, bail out
     if(observable_ == nullptr || flags_ == 0)
     {
@@ -58,13 +74,14 @@ void DebugRenderer::render(Entity::Camera* camera)
 
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
-    renderWireframe(camera, renderQueue);
-    renderAABBs(camera);
+    renderWireframe(renderQueue);
+    renderAABBs();
+    renderGBuffer();
 
     observable_->removeObserver(this);
 }
 
-void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& queue)
+void DebugRenderer::renderWireframe(const RenderQueue& queue)
 {
     if(!(flags_ & DEBUG_WIREFRAME))
     {
@@ -87,7 +104,7 @@ void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& q
 
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
-        wireframeTech_->setUniformValue("gMVP", camera->worldView() * *it->modelView);
+        wireframeTech_->setUniformValue("gMVP", camera_->worldView() * *it->modelView);
 
         it->material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
             
@@ -103,7 +120,7 @@ void DebugRenderer::renderWireframe(Entity::Camera* camera, const RenderQueue& q
     gl->glEnable(GL_CULL_FACE);
 }
 
-void DebugRenderer::renderAABBs(Entity::Camera* camera)
+void DebugRenderer::renderAABBs()
 {
     if(!aabbTech_.bind())
     {
@@ -116,7 +133,7 @@ void DebugRenderer::renderAABBs(Entity::Camera* camera)
     for(auto it = aabbs_.begin(); it != aabbs_.end(); ++it)
     {
         aabbTech_->setUniformValue("gColor", it->second);
-        aabbTech_->setUniformValue("gMVP", camera->worldView() * it->first);
+        aabbTech_->setUniformValue("gMVP", camera_->worldView() * it->first);
         boundingMesh_.render();
     }
 
@@ -154,6 +171,39 @@ void DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* no
         }
 
         addAABB(node->transformation(), entity->boundingBox(), color);
+    }
+}
+
+void DebugRenderer::renderGBuffer()
+{
+    if(!(flags_ & DEBUG_GBUFFER) || gbuffer_ == nullptr)
+    {
+        return;
+    }
+
+    if(!gbufferMS_.enable())
+    {
+        return;
+    }
+
+    gbuffer_->bindTextures();
+    gbufferMS_.setProjMatrix(camera_->projection());
+
+    int width = viewport_.width() / 4;
+    int height = viewport_.height() / 4;
+    int numTextures = Technique::GBufferVisualizer::GB_COUNT;
+    int gap = (viewport_.height() - numTextures * height) / (numTextures + 1);
+
+    int viewY = gap;
+    for(int i = 0; i < numTextures; ++i)
+    {
+        gl->glViewport(16, viewY, width, height);
+
+        // Render gbuffer texture
+        gbufferMS_.outputTexture(static_cast<Technique::GBufferVisualizer::TextureType>(i));
+        quad_.render();
+
+        viewY += height + gap;
     }
 }
 

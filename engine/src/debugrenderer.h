@@ -8,8 +8,10 @@
 #include "scene/visiblescene.h"
 #include "observable.h"
 #include "renderable/cube.h"
+#include "renderable/quad.h"
 #include "entity/aabb.h"
 #include "shaderprogram.h"
+#include "technique/gbuffervisualizer.h"
 
 #include <QRect>
 #include <deque>
@@ -18,11 +20,12 @@
 namespace Engine {
 
 class ResourceDespatcher;
+class GBuffer;
 
 class DebugRenderer : public Renderer, public SceneObserver
 {
 public:
-    enum DebugFlags { DEBUG_AABB = 0x1, DEBUG_WIREFRAME = 0x2 };
+    enum DebugFlags { DEBUG_AABB = 0x1, DEBUG_WIREFRAME = 0x2, DEBUG_GBUFFER = 0x4 };
 
     explicit DebugRenderer(ResourceDespatcher* despatcher);
     virtual ~DebugRenderer();
@@ -48,22 +51,31 @@ public:
     // SceneObserver definitions
     virtual void beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
 
+    // Visualize GBuffer for debugging.
+    // precondition: Viewport and camera has to be the same as the debuggee's
+    void setGBuffer(GBuffer* gbuffer);
+
 private:
     QRect viewport_;
     ObservableType* observable_;
     VisibleScene* scene_;
+    Entity::Camera* camera_;
+    GBuffer* gbuffer_;
     unsigned int flags_;
 
     Renderable::Cube boundingMesh_;
+    Renderable::Quad quad_;
 
     ShaderProgram aabbTech_;
     ShaderProgram wireframeTech_;
+    Technique::GBufferVisualizer gbufferMS_;
 
     typedef std::pair<QMatrix4x4, QVector3D> AABBDraw;
     std::deque<AABBDraw> aabbs_;
 
-    void renderWireframe(Entity::Camera* camera, const RenderQueue& queue);
-    void renderAABBs(Entity::Camera* camera);
+    void renderWireframe(const RenderQueue& queue);
+    void renderAABBs();
+    void renderGBuffer();
 
     void addAABB(const QMatrix4x4& trans, const Entity::AABB& aabb, const QVector3D& color);
 

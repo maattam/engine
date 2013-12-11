@@ -24,25 +24,6 @@ public:
 
 protected:
     virtual void init();
-
-private:
-    int modelViewLocation_;
-    int mvpLocation_;
-
-    struct MaterialLocation
-    {
-        int diffuseColor;
-        int shininess;
-        int specularIntensity;
-    };
-
-    MaterialLocation materialLocation_;
-
-    GLuint skipTangentIndex_;
-    GLuint calcTangentIndex_;
-
-    GLuint calcNormalIndex_;
-    GLuint interpNormalIndex_;
 };
 
 }}

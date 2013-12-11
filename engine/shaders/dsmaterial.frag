@@ -17,62 +17,55 @@ uniform int samples;
 // Near and far values used to produce the clip space
 uniform vec2 depthRange;
 
-// Inverse of the projection matrix
-uniform mat4 inverseProj;
-
-// Viewport: (left, right, width, height)
-uniform vec4 viewport;
+// The perspective projection matrix
+uniform mat4 persProj;
 
 // Input quad uv
 in vec2 texCoord;
+
+in vec3 eyeDirection;
 
 // Output fragment color
 layout (location = 0) out vec4 fragColor;
 
 // Unpacked per-fragment data
-struct VertexData
+struct VertexInfo
 {
     vec4 position;
     vec3 normal;
-} vertex;
+};
 
-struct MaterialData
+struct MaterialInfo
 {
     vec4 diffuseColor;
     float shininess;
     float specularIntensity;
-} material;
+};
 
-// Returns average sample from texture
-vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv)
+// Subroutine used to implement lightning functions
+// n is the sample index.
+subroutine vec4 CalculateLightType(in VertexInfo vertex, in MaterialInfo material, int n);
+subroutine uniform CalculateLightType calculateLight;
+
+// Returns the nth sample from a multisampled texture
+vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
 {
-    vec4 result = vec4(0, 0, 0, 0);
-    ivec2 st = ivec2(viewport.zw * uv);
-
-    for(int i = 0; i < samples; ++i)
-    {
-        result += texelFetch(sampler, st, i);
-    }
-
-    return result / samples;
+    ivec2 st = ivec2(textureSize(sampler) * uv);
+    return texelFetch(sampler, st, n);
 }
 
-void unpackPosition()
+void unpackPosition(inout VertexInfo vertex, int n)
 {
-    vec4 ndc;
-    float depth = sampleTexture(depthData, texCoord);
+    float z = sampleTexture(depthData, texCoord, n).z;
 
-    ndc.xy = ((2.0 * gl_FragCoord.xy) - (2.0 * viewport.xy)) / viewport.zw - 1;
-    ndc.z = (2.0 * depth - depthRange.x - depthRange.y) / (depthRange.y - depthRange.x);
-    ndc.w = 1.0;
-
-    vec4 clip = ndc / gl_FragCoord.w;
-    vertex.position = inverseProj * clip;
+    float ndcZ = (2.0 * z - depthRange.x - depthRange.y) / (depthRange.y - depthRange.x);
+    float eyeZ = persProj[3][2] / ((persProj[2][3] * ndcZ) - persProj[2][2]);
+    vertex.position = vec4(eyeDirection * eyeZ, 1);
 }
 
-void unpackNormalSpec()
+void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int n)
 {
-    vec4 data = sampleTexture(normalSpecData, texCoord);
+    vec4 data = sampleTexture(normalSpecData, texCoord, n);
 
     // Inverse spheremap transformation
     vec2 fenc = data.rg * 4 - 2;
@@ -84,21 +77,36 @@ void unpackNormalSpec()
     material.specularIntensity = data.b;
 }
 
-void unpackDiffuseSpec()
+void unpackDiffuseSpec(inout MaterialInfo material, int n)
 {
-    vec4 data = sampleTexture(diffuseSpecData, texCoord);
+    vec4 data = sampleTexture(diffuseSpecData, texCoord, n);
 
     material.diffuseColor = vec4(data.rgb, 0);
     material.shininess = data.a;
 }
 
+subroutine(CalculateLightType)
+vec4 nullLight(in VertexInfo vertex, in MaterialInfo material, int n)
+{
+    discard;
+    return vec4(0, 0, 0, 0);
+}
+
 void main()
 {
-    unpackPosition();
-    unpackNormalSpec();
-    unpackDiffuseSpec();
+    VertexInfo vertex;
+    MaterialInfo material;
 
-    //fragColor = material.diffuseColor;
-    //fragColor.rgb = vertex.normal;
-    fragColor.rgb = vertex.position.xyz;
+    vec4 color = vec4(0, 0, 0, 0);
+
+    for(int i = 0; i < samples; ++i)
+    {
+        unpackPosition(vertex, i);
+        unpackNormalSpec(material, vertex, i);
+        unpackDiffuseSpec(material, i);
+
+        color += calculateLight(vertex, material, i);
+    }
+
+    fragColor = color / samples;
 }

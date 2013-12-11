@@ -1,5 +1,6 @@
 #include "technique.h"
 
+#include "common.h"
 #include "resourcedespatcher.h"
 
 #include <QDebug>
@@ -41,4 +42,62 @@ QOpenGLShaderProgram* Technique::program()
 void Technique::addShader(const Engine::Shader::Ptr& shader)
 {
     program_.addShader(shader);
+}
+
+int Technique::resolveUniformLocation(const QString& name)
+{
+    int id = program_->uniformLocation(name);
+    if(id == -1)
+    {
+        qWarning() << "Failed to resolve uniform location:" << name;
+    }
+
+    else
+    {
+        uniforms_[name] = id;
+    }
+
+    return id;
+}
+
+GLuint Technique::resolveSubroutineLocation(const QString& name, GLenum type)
+{
+    GLuint id = gl->glGetSubroutineIndex(program()->programId(), type, name.toLatin1());
+    if(id == GL_INVALID_INDEX)
+    {
+        qWarning() << "Failed to resolve subroutine uniform location:" << name;
+    }
+
+    else
+    {
+        subroutines_[name] = id;
+    }
+
+    return id;
+}
+
+int Technique::cachedUniformLocation(const QString& name) const
+{
+    int location = -1;
+
+    auto iter = uniforms_.find(name);
+    if(iter != uniforms_.end())
+    {
+        location = iter.value();
+    }
+
+    return location;
+}
+
+GLuint Technique::cachedSubroutineLocation(const QString& name) const
+{
+    GLuint location = GL_INVALID_INDEX;
+
+    auto iter = subroutines_.find(name);
+    if(iter != subroutines_.end())
+    {
+        location = iter.value();
+    }
+
+    return location;
 }
