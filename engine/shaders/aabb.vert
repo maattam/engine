@@ -1,6 +1,6 @@
 // AABB vertex shader
 
-#version 330 core
+#version 420
 
 layout(location = 0) in vec3 position;
 

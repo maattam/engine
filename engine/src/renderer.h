@@ -20,7 +20,8 @@ class Renderer
 public:
     virtual ~Renderer() {};
 
-    // Sets OpenGL viewport parameters
+    // Sets OpenGL viewport parameters and initialises buffers
+    // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left = 0, unsigned int top = 0) = 0;
 

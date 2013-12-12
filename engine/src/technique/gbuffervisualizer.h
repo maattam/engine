@@ -19,7 +19,7 @@ public:
     void outputTexture(TextureType type);
 
 protected:
-    virtual void init();
+    virtual bool init();
 };
 
 }}

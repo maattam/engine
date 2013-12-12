@@ -1,6 +1,6 @@
 // Basic lightning fragment shader
 
-#version 400 core
+#version 420
 
 #define MAX_POINT_LIGHTS 4
 #define MAX_SPOT_LIGHTS 4
@@ -101,7 +101,7 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned i
         {
             vec2 offsets = vec2(x * offset, y * offset);
 
-            float depth = texture(shadowMap, projCoords.xy + offsets).z;
+            float depth = texture(shadowMap, projCoords.xy + offsets).r;
             if(depth >= projCoords.z - SHADOW_BIAS)
             {
                 sum += 1.0;
@@ -141,7 +141,7 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 		
 		if(specularFactor > 0)
 		{
-			specularColor = vec4(light.color, 1.0) * texture2D(gSpecularSampler, texCoord0).r *
+			specularColor = vec4(light.color, 1.0) * texture(gSpecularSampler, texCoord0).r *
 				gMaterial.specularIntensity * specularFactor;
 		}
 	}
@@ -238,6 +238,6 @@ void main()
 		light += shadow * calcSpotLight(gSpotLights[i], normal);
 	}
 	
-	fragColor = texture2D(gDiffuseSampler, texCoord0) * light *
+	fragColor = texture(gDiffuseSampler, texCoord0) * light *
 				vec4(gMaterial.diffuseColor, 1.0) + vec4(gMaterial.ambientColor, 1.0);
 }

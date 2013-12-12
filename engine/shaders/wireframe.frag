@@ -1,4 +1,4 @@
-#version 330 core
+#version 420
 
 uniform sampler2D gDiffuseSampler;
 uniform vec3 ambientColor;

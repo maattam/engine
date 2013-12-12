@@ -22,7 +22,7 @@ public:
     virtual ~Technique() = 0;
 
     // Binds a shader to the current OpenGL context
-    // precondition: shaders added
+    // precondition: shaders added, init was successful
     // postcondition: shader bound and true returned
     virtual bool enable();
 
@@ -34,7 +34,7 @@ public:
 protected:
     // Called after the program has been linked for the first time
     // precondition: enable called successfully
-    virtual void init() {};
+    virtual bool init();
 
     // Returns the current QOpenGLShaderProgram encapsulated by the ShaderProgram
     // precondition: shaders added

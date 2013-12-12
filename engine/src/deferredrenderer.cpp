@@ -1,6 +1,7 @@
 #include "deferredrenderer.h"
 
 #include "common.h"
+#include "gbuffer.h"
 #include "resourcedespatcher.h"
 #include "scene/visiblescene.h"
 #include "renderable/renderable.h"
@@ -9,7 +10,7 @@
 using namespace Engine;
 
 DeferredRenderer::DeferredRenderer(ResourceDespatcher* despatcher)
-    : errorMaterial_(despatcher), scene_(nullptr), camera_(nullptr)
+    : errorMaterial_(despatcher), scene_(nullptr), camera_(nullptr), gbuffer_(nullptr)
 {
     geometryShader_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
     geometryShader_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), Shader::Type::Fragment));
@@ -45,9 +46,10 @@ bool DeferredRenderer::setPostfxHook(Effect::Postfx* postfx)
     return false;
 }
 
-GBuffer* DeferredRenderer::getGBuffer()
+void DeferredRenderer::setGBuffer(GBuffer* gbuffer)
 {
-    return &gbuffer_;
+    gbuffer_ = gbuffer;
+    materialShader_.setGBuffer(gbuffer);
 }
 
 void DeferredRenderer::render(Entity::Camera* camera)
@@ -74,7 +76,7 @@ void DeferredRenderer::geometryPass(const RenderQueue& queue)
         return;
     }
 
-    gbuffer_.bindFbo();
+    gbuffer_->bindFbo();
 
     // Only the geometry pass can write to the gbuffer
     gl->glDepthMask(GL_TRUE);
@@ -82,12 +84,13 @@ void DeferredRenderer::geometryPass(const RenderQueue& queue)
 
     gl->glEnable(GL_DEPTH_TEST);
 
+    QMatrix4x4 view = camera_->view();
     for(auto it = queue.begin(); it != queue.end(); ++it)
     {
         Material* material = it->material;
         Renderable::Renderable* renderable = it->renderable;
 
-        geometryShader_.setModelViewMatrix(*it->modelView);
+        geometryShader_.setNormalMatrix((view * *it->modelView).normalMatrix());
         geometryShader_.setMVP(camera_->worldView() * *it->modelView);
 
         if(!material->bind())
@@ -121,14 +124,15 @@ void DeferredRenderer::preLightPass()
     }
 
     materialShader_.setProjMatrix(camera_->projection());
+    materialShader_.setLightDirection(camera_->view().mapVector(QVector3D(0.0f, -1.0f, -0.09f)));
 
-    gbuffer_.bindTextures();
+    gbuffer_->bindTextures();
     quad_.render();
 }
 
 bool DeferredRenderer::initialise(unsigned int width, unsigned int height, unsigned int samples)
 {
-    if(!gbuffer_.initialise(width, height, samples))
+    if(gbuffer_ == nullptr || !gbuffer_->initialise(width, height, samples))
     {
         return false;
     }

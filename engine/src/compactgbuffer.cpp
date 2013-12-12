@@ -1,10 +1,10 @@
-#include "gbuffer.h"
+#include "compactgbuffer.h"
 
 #include <QDebug>
 
 using namespace Engine;
 
-GBuffer::GBuffer()
+CompactGBuffer::CompactGBuffer()
     : fbo_(0)
 {
     for(int i = 0; i < TEXTURE_COUNT; ++i)
@@ -13,12 +13,18 @@ GBuffer::GBuffer()
     }
 }
 
-GBuffer::~GBuffer()
+CompactGBuffer::~CompactGBuffer()
 {
     deleteBuffers();
 }
 
-bool GBuffer::initialise(unsigned int width, unsigned int height, unsigned int samples)
+std::vector<QString> CompactGBuffer::textures() const
+{
+    const QString CHANNELS[TEXTURE_COUNT] = { "normalSpec", "diffuseSpec", "depth" };
+    return std::vector<QString>(CHANNELS, CHANNELS + TEXTURE_COUNT);
+}
+
+bool CompactGBuffer::initialise(unsigned int width, unsigned int height, unsigned int samples)
 {
     deleteBuffers();
 
@@ -56,19 +62,19 @@ bool GBuffer::initialise(unsigned int width, unsigned int height, unsigned int s
 
     if(status != GL_FRAMEBUFFER_COMPLETE)
     {
-        qWarning() << __FUNCTION__ << "Failed to init GBuffer:" << status;
+        qWarning() << __FUNCTION__ << "Failed to init CompactGBuffer:" << status;
         return false;
     }
 
     return true;
 }
 
-void GBuffer::bindFbo()
+void CompactGBuffer::bindFbo()
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 }
 
-void GBuffer::bindTextures()
+void CompactGBuffer::bindTextures() const
 {
     for(int i = 0; i < TEXTURE_COUNT; ++i)
     {
@@ -77,7 +83,7 @@ void GBuffer::bindTextures()
     }
 }
 
-void GBuffer::deleteBuffers()
+void CompactGBuffer::deleteBuffers()
 {
     gl->glDeleteFramebuffers(1, &fbo_);
     gl->glDeleteTextures(TEXTURE_COUNT, textures_);

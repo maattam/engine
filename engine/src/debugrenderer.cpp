@@ -51,9 +51,10 @@ void DebugRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void DebugRenderer::setGBuffer(GBuffer* gbuffer)
+void DebugRenderer::setGBuffer(GBuffer const* gbuffer)
 {
     gbuffer_ = gbuffer;
+    gbufferMS_.setGBuffer(gbuffer_);
 }
 
 void DebugRenderer::render(Entity::Camera* camera)
@@ -66,19 +67,23 @@ void DebugRenderer::render(Entity::Camera* camera)
         return;
     }
 
-    observable_->addObserver(this);
+    if(flags_ != DEBUG_GBUFFER)
+    {
+        observable_->addObserver(this);
 
-    // Cull visibles
-    RenderQueue renderQueue;
-    scene_->queryVisibles(camera->worldView(), renderQueue);
+        // Cull visibles
+        RenderQueue renderQueue;
+        scene_->queryVisibles(camera->worldView(), renderQueue);
 
-    gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
+        gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
-    renderWireframe(renderQueue);
-    renderAABBs();
+        renderWireframe(renderQueue);
+        renderAABBs();
+
+        observable_->removeObserver(this);
+    }
+
     renderGBuffer();
-
-    observable_->removeObserver(this);
 }
 
 void DebugRenderer::renderWireframe(const RenderQueue& queue)
@@ -89,7 +94,7 @@ void DebugRenderer::renderWireframe(const RenderQueue& queue)
     }
 
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
+    gl->glClearColor(0.01f, 0.01f, 0.01f, 0);
 
     if(!wireframeTech_.bind())
     {

@@ -1,4 +1,4 @@
-#version 330 core
+#version 420
 
 uniform sampler2D tex;
 uniform int width, height;

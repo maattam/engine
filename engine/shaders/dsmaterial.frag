@@ -1,6 +1,6 @@
 // GBuffer unpack material fragment shader
 
-#version 400
+#version 420
 
 // R32F        -> Depth attachment
 uniform sampler2DMS depthData;
@@ -14,15 +14,18 @@ uniform sampler2DMS diffuseSpecData;
 // Sample count used when rendering gbuffer
 uniform int samples;
 
-// Near and far values used to produce the clip space
+// Near and far values used to produce clip space
 uniform vec2 depthRange;
 
 // The perspective projection matrix
 uniform mat4 persProj;
 
+uniform vec3 lightDirection;
+
 // Input quad uv
 in vec2 texCoord;
 
+// View direction in eye space
 in vec3 eyeDirection;
 
 // Output fragment color
@@ -37,14 +40,13 @@ struct VertexInfo
 
 struct MaterialInfo
 {
-    vec4 diffuseColor;
+    vec3 diffuseColor;
     float shininess;
     float specularIntensity;
 };
 
 // Subroutine used to implement lightning functions
-// n is the sample index.
-subroutine vec4 CalculateLightType(in VertexInfo vertex, in MaterialInfo material, int n);
+subroutine vec4 CalculateLightType(in VertexInfo vertex, in MaterialInfo material);
 subroutine uniform CalculateLightType calculateLight;
 
 // Returns the nth sample from a multisampled texture
@@ -58,6 +60,7 @@ void unpackPosition(inout VertexInfo vertex, int n)
 {
     float z = sampleTexture(depthData, texCoord, n).z;
 
+	// z/w to ndc z
     float ndcZ = (2.0 * z - depthRange.x - depthRange.y) / (depthRange.y - depthRange.x);
     float eyeZ = persProj[3][2] / ((persProj[2][3] * ndcZ) - persProj[2][2]);
     vertex.position = vec4(eyeDirection * eyeZ, 1);
@@ -81,15 +84,29 @@ void unpackDiffuseSpec(inout MaterialInfo material, int n)
 {
     vec4 data = sampleTexture(diffuseSpecData, texCoord, n);
 
-    material.diffuseColor = vec4(data.rgb, 0);
+    material.diffuseColor = data.rgb;
     material.shininess = data.a;
 }
 
 subroutine(CalculateLightType)
-vec4 nullLight(in VertexInfo vertex, in MaterialInfo material, int n)
+vec4 nullLight(in VertexInfo vertex, in MaterialInfo material)
 {
-    discard;
-    return vec4(0, 0, 0, 0);
+    vec3 lightColor = pow(vec3(1, 1, 251.0 / 255), vec3(2.2));
+    float ambientFac = 0.05;
+
+    vec3 ambient = lightColor * ambientFac;
+    float sDotN = max(dot(-lightDirection, vertex.normal), 0.0);
+    vec3 diffuse = lightColor * sDotN;
+
+    vec3 specular = vec3(0.0);
+    if(sDotN > 0)
+    {
+        vec3 r = reflect(-lightDirection, vertex.normal);
+        float power = pow(max(dot(r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
+        specular = lightColor * material.specularIntensity * power;
+    }
+	
+	return vec4(material.diffuseColor * (ambient + diffuse + specular), 0);
 }
 
 void main()
@@ -97,7 +114,7 @@ void main()
     VertexInfo vertex;
     MaterialInfo material;
 
-    vec4 color = vec4(0, 0, 0, 0);
+    vec4 color = vec4(0);
 
     for(int i = 0; i < samples; ++i)
     {
@@ -105,8 +122,9 @@ void main()
         unpackNormalSpec(material, vertex, i);
         unpackDiffuseSpec(material, i);
 
-        color += calculateLight(vertex, material, i);
+        color += calculateLight(vertex, material);
     }
 
     fragColor = color / samples;
+	fragColor.rgb = pow(fragColor.rgb, vec3(1/2.2));
 }

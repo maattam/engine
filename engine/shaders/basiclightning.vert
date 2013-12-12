@@ -1,6 +1,6 @@
 // Basic lightning vertex shader
 
-#version 400 core
+#version 420
 
 #define MAX_SPOT_LIGHTS 4
 
@@ -29,7 +29,7 @@ void main()
 {
 	gl_Position = gMVP * vec4(position, 1.0);
 	
-	texCoord0 = texCoord;
+	texCoord0 = texCoord.xy;
 	normal0 = (gWorld * vec4(normal, 0.0)).xyz;
 	worldPos0 = (gWorld * vec4(position, 1.0)).xyz;
 	

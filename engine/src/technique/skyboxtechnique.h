@@ -27,7 +27,7 @@ public:
     void render(Entity::Camera* camera, CubemapTexture* texture);
 
 protected:
-    virtual void init();
+    virtual bool init();
 
 private:
     GLuint mvpLocation_;

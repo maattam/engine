@@ -3,7 +3,6 @@
 
 #include "renderer.h"
 
-#include "gbuffer.h"
 #include "technique/dsgeometryshader.h"
 #include "technique/dsmaterialshader.h"
 #include "renderqueue.h"
@@ -15,6 +14,7 @@
 namespace Engine {
 
 class ResourceDespatcher;
+class GBuffer;
 
 class DeferredRenderer : public Renderer
 {
@@ -22,7 +22,8 @@ public:
     DeferredRenderer(ResourceDespatcher* despatcher);
     virtual ~DeferredRenderer();
 
-    // Sets OpenGL viewport parameters
+    // Sets OpenGL viewport parameters and initialises buffers
+    // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
         unsigned int left = 0, unsigned int top = 0);
 
@@ -44,7 +45,10 @@ public:
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
 
-    GBuffer* getGBuffer();
+    // Sets the GBuffer
+    // precondition: gbuffer != nullptr
+    // postcondition: The associated buffer is maintained by the renderer.
+    void setGBuffer(GBuffer* gbuffer);
 
 private:
     QRect viewport_;
@@ -52,7 +56,7 @@ private:
     VisibleScene* scene_;
     Entity::Camera* camera_;
 
-    GBuffer gbuffer_;
+    GBuffer* gbuffer_;
     Technique::DSGeometryShader geometryShader_;
     Technique::DSMaterialShader materialShader_;
 

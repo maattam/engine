@@ -12,9 +12,9 @@ DSGeometryShader::~DSGeometryShader()
 {
 }
 
-void DSGeometryShader::setModelViewMatrix(const QMatrix4x4& modelView)
+void DSGeometryShader::setNormalMatrix(const QMatrix3x3& normalMatrix)
 {
-    program()->setUniformValue(cachedUniformLocation("modelViewMatrix"), modelView);
+    program()->setUniformValue(cachedUniformLocation("normalMatrix"), normalMatrix);
 }
 
 void DSGeometryShader::setMVP(const QMatrix4x4& mvp)
@@ -50,7 +50,7 @@ void DSGeometryShader::setHasTangentsAndNormals(bool value)
     gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &fragLoc);
 }
 
-void DSGeometryShader::init()
+bool DSGeometryShader::init()
 {
     const char* SAMPLERS[Material::TEXTURE_COUNT] = {
         "material.diffuseSampler", "material.normalSampler",
@@ -64,7 +64,7 @@ void DSGeometryShader::init()
     }
 
     // Register uniforms
-    resolveUniformLocation("modelViewMatrix");
+    resolveUniformLocation("normalMatrix");
     resolveUniformLocation("MVP");
 
     resolveUniformLocation("material.diffuseColor");
@@ -77,4 +77,6 @@ void DSGeometryShader::init()
 
     resolveSubroutineLocation("calculateBumpedNormal", GL_FRAGMENT_SHADER);
     resolveSubroutineLocation("calculateInterpolatedNormal", GL_FRAGMENT_SHADER);
+
+    return true;
 }

@@ -51,16 +51,16 @@ public:
     // SceneObserver definitions
     virtual void beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
 
-    // Visualize GBuffer for debugging.
-    // precondition: Viewport and camera has to be the same as the debuggee's
-    void setGBuffer(GBuffer* gbuffer);
+    // Visualize GBuffer for debugging. The GBuffer is not modified.
+    // precondition: Viewport and camera has to be the same as the debuggee's, gbuffer != nullptr
+    void setGBuffer(GBuffer const* gbuffer);
 
 private:
     QRect viewport_;
     ObservableType* observable_;
     VisibleScene* scene_;
     Entity::Camera* camera_;
-    GBuffer* gbuffer_;
+    GBuffer const* gbuffer_;
     unsigned int flags_;
 
     Renderable::Cube boundingMesh_;

@@ -24,9 +24,10 @@ BasicLightning::~BasicLightning()
 {
 }
 
-void BasicLightning::init()
+bool BasicLightning::init()
 {
     mvpLocation_ = program()->uniformLocation("gMVP");
+    return true;
 }
 
 void BasicLightning::setMVP(const QMatrix4x4& mvp)

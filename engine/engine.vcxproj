@@ -163,6 +163,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\compactgbuffer.cpp" />
     <ClCompile Include="src\debugrenderer.cpp" />
     <ClCompile Include="src\deferredrenderer.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
@@ -177,7 +178,6 @@
     <ClCompile Include="src\entity\mesh.cpp" />
     <ClCompile Include="src\entity\subentity.cpp" />
     <ClCompile Include="src\forwardrenderer.cpp" />
-    <ClCompile Include="src\gbuffer.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
@@ -217,6 +217,7 @@
     <None Include="shaders\wireframe.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\compactgbuffer.h" />
     <ClInclude Include="src\debugrenderer.h" />
     <ClInclude Include="src\deferredrenderer.h" />
     <ClInclude Include="src\effect\downsampler.h" />

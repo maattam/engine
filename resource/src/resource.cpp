@@ -70,7 +70,10 @@ bool ResourceBase::load(const QString& fileName)
     else
     {
         if(!(initialized_ = initialise(data_)))
+        {
+            qDebug() << "Failed to initialise resource:" << name_;
             releaseData();
+        }
     }
 
     delete data_;
@@ -100,6 +103,7 @@ bool ResourceBase::ready()
 
         else
         {
+            qDebug() << "Failed to initialise resource:" << name_;
             releaseData();
         }
 

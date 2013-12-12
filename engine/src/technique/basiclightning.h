@@ -41,7 +41,7 @@ public:
     void setShadowEnabled(bool value);
 
 protected:
-    virtual void init();
+    virtual bool init();
 
 private:
     GLuint mvpLocation_;

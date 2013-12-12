@@ -36,11 +36,14 @@ void GBufferVisualizer::outputTexture(TextureType type)
     gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &id);
 }
 
-void GBufferVisualizer::init()
+bool GBufferVisualizer::init()
 {
-    DSMaterialShader::init();
+    if(!DSMaterialShader::init())
+        return false;
 
     resolveSubroutineLocation("outputPositions", GL_FRAGMENT_SHADER);
     resolveSubroutineLocation("outputNormals", GL_FRAGMENT_SHADER);
     resolveSubroutineLocation("outputDiffuse", GL_FRAGMENT_SHADER);
+
+    return true;
 }

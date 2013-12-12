@@ -4,6 +4,7 @@
 #include <QWindow>
 #include "common.h"
 #include <QOpenGLContext>
+#include <QSurfaceFormat>
 #include <QElapsedTimer>
 #include <QDebug>
 
@@ -13,9 +14,12 @@
 #include "sponzascene.h"
 #include "basicscene.h"
 
+class QOpenGLDebugLogger;
+
 namespace Engine {
     class Renderer;
     class DebugRenderer;
+    class GBuffer;
 
     namespace Effect {
         class Hdr;
@@ -27,7 +31,7 @@ class SceneView : public QWindow
     Q_OBJECT
 
 public:
-    explicit SceneView(QWindow* parent = nullptr);
+    explicit SceneView(const QSurfaceFormat& format, QWindow* parent = nullptr);
     ~SceneView();
 
 public slots:
@@ -52,9 +56,14 @@ private:
     void initialize();
     void handleInput();
     void swapScene(FreeLookScene* scene);
+    void swapRenderer();
+
+    bool deferred_;
 
     QOpenGLContext* context_;
     QOPENGL_FUNCTIONS* funcs_;
+
+    QOpenGLDebugLogger* debugLogger_;
 
     Input* input_;
 
@@ -62,6 +71,7 @@ private:
     Engine::DebugRenderer* debugRenderer_;
     Engine::ResourceDespatcher despatcher_;
     Engine::Effect::Hdr* hdrPostfx_;
+    Engine::GBuffer* gbuffer_;
 
     Engine::Scene model_;
     FreeLookScene* controller_;

@@ -1,16 +1,23 @@
 #include "dsmaterialshader.h"
 
-#include "../gbuffer.h"
+#include "common.h"
+#include "gbuffer.h"
 
+using namespace Engine;
 using namespace Engine::Technique;
 
 DSMaterialShader::DSMaterialShader()
-    : Technique(), samples_(1), depthRange_(0, 1)
+    : Technique(), gbuffer_(nullptr), samples_(1), depthRange_(0, 1)
 {
 }
 
 DSMaterialShader::~DSMaterialShader()
 {
+}
+
+void DSMaterialShader::setGBuffer(GBuffer const* gbuffer)
+{
+    gbuffer_ = gbuffer;
 }
 
 void DSMaterialShader::setSampleCount(unsigned int count)
@@ -39,18 +46,32 @@ void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
     program()->setUniformValue(cachedUniformLocation("persProj"), proj);
 }
 
-void DSMaterialShader::init()
+void DSMaterialShader::setLightDirection(const QVector3D& dir)
 {
-    const char* SAMPLERS[GBuffer::TEXTURE_COUNT] = {
-        "normalSpecData", "diffuseSpecData", "depthData",
-    };
+    program()->setUniformValue("lightDirection", dir.normalized());
+}
 
-    // Set texture samplers
-    for(int i = 0; i < GBuffer::TEXTURE_COUNT; ++i)
+bool DSMaterialShader::init()
+{
+    if(gbuffer_ == nullptr)
     {
-        program()->setUniformValue(resolveUniformLocation(SAMPLERS[i]), i);
+        return false;
     }
 
+    // Set texture samplers
+    int i = 0;
+    for(const QString& texture : gbuffer_->textures())
+    {
+        GLuint id = resolveUniformLocation(texture + "Data");
+        if(id == GL_INVALID_INDEX)
+        {
+            return false;
+        }
+
+        program()->setUniformValue(id, i++);
+    }
+
+    // The other uniforms are not critical as they can be replaced by subclasses
     int samplesLocation = resolveUniformLocation("samples");
     program()->setUniformValue(samplesLocation, samples_);
 
@@ -61,4 +82,6 @@ void DSMaterialShader::init()
 
     GLuint lightFunc = resolveSubroutineLocation("nullLight", GL_FRAGMENT_SHADER);
     gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &lightFunc);
+
+    return true;
 }

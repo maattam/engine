@@ -13,10 +13,12 @@ Skybox::Skybox()
 {
 }
 
-void Skybox::init()
+bool Skybox::init()
 {
     mvpLocation_ = program()->uniformLocation("gMVP");
     samplerLocation_ = program()->uniformLocation("gCubemapTexture");
+
+    return true;
 }
 
 void Skybox::render(Entity::Camera* camera, CubemapTexture* texture)

@@ -13,6 +13,7 @@
 
 #include "entity/camera.h"
 #include "deferredrenderer.h"
+#include "compactgbuffer.h"
 #include "forwardrenderer.h"
 #include "debugrenderer.h"
 #include "effect/hdr.h"
@@ -20,19 +21,15 @@
 #include "basicscene.h"
 #include "sponzascene.h"
 
-SceneView::SceneView(QWindow* parent) : QWindow(parent),
-    renderer_(nullptr), debugRenderer_(nullptr), hdrPostfx_(nullptr), frame_(0), context_(nullptr),
-    funcs_(nullptr), controller_(nullptr)
+#ifdef _DEBUG
+#include <QOpenGLDebugLogger>
+#endif
+
+SceneView::SceneView(const QSurfaceFormat& format, QWindow* parent) : QWindow(parent),
+    deferred_(true), renderer_(nullptr), debugRenderer_(nullptr), hdrPostfx_(nullptr), frame_(0), context_(nullptr),
+    funcs_(nullptr), controller_(nullptr), debugLogger_(nullptr), gbuffer_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
-
-    // Create OpenGL 4.2 context
-    QSurfaceFormat format;
-    format.setMajorVersion(4);
-    format.setMinorVersion(2);
-    format.setSamples(4);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
     setFormat(format);
 
     QTimer* frameTimer = new QTimer(this);
@@ -55,6 +52,9 @@ SceneView::~SceneView()
 
     if(hdrPostfx_ != nullptr)
         delete hdrPostfx_;
+
+    if(gbuffer_ != nullptr)
+        delete gbuffer_;
 }
 
 void SceneView::update()
@@ -107,30 +107,37 @@ void SceneView::render()
 
         ++frame_;
     }
+
+#ifdef _DEBUG
+    for(auto message : debugLogger_->loggedMessages())
+    {
+        qDebug() << message;
+    }
+#endif
 }
 
 void SceneView::initialize()
 {
     setWindowState(Qt::WindowMaximized);
+
+#ifdef _DEBUG
+    // Start logging OpenGL messages if DebugContext is set
+    if(format().testOption(QSurfaceFormat::DebugContext))
+    {
+        if(debugLogger_ != nullptr)
+        {
+            delete debugLogger_;
+        }
+
+        debugLogger_ = new QOpenGLDebugLogger(this);
+        debugLogger_->initialize();
+    }
+#endif
+
     glViewport(0, 0, width(), height());
 
-    // Initialize renderer
-    Engine::DeferredRenderer* deferred = new Engine::DeferredRenderer(&despatcher_);
-    renderer_ = deferred;
-    if(!renderer_->setViewport(width(), height(), format().samples()))
-    {
-        qCritical() << "Failed to initialize renderer!";
-        exit(-1);
-    }
-
-    renderer_->setScene(&model_);
-
-    // Inject HDR tonemapping
+    // HDR tonemapping
     hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
-    if(!renderer_->setPostfxHook(hdrPostfx_))
-    {
-        qWarning() << "Failed to attach postprocess hook";
-    }
 
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
     if(!debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0))
@@ -141,13 +148,62 @@ void SceneView::initialize()
 
     debugRenderer_->setObservable(&model_);
     debugRenderer_->setScene(&model_);
-    debugRenderer_->setGBuffer(deferred->getGBuffer());
+
+    swapRenderer();
 
     model_.setView(renderer_);
 
     // Load scene
     swapScene(new SponzaScene(&despatcher_));
     lastTime_.start();
+}
+
+void SceneView::swapRenderer()
+{
+    if(renderer_ != nullptr)
+    {
+        delete renderer_;
+        renderer_ = nullptr;
+
+        if(gbuffer_ != nullptr)
+        {
+            delete gbuffer_;
+            gbuffer_ = nullptr;
+            debugRenderer_->setGBuffer(nullptr);
+        }
+    }
+
+    if(deferred_)
+    {
+        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(&despatcher_);
+        gbuffer_ = new Engine::CompactGBuffer();
+
+        debugRenderer_->setGBuffer(gbuffer_);
+        renderer->setGBuffer(gbuffer_);
+
+        renderer_ = renderer;
+    }
+
+    else
+    {
+        renderer_ = new Engine::ForwardRenderer(&despatcher_);
+    }
+
+    if(!renderer_->setViewport(width(), height(), format().samples()))
+    {
+        qCritical() << "Failed to initialize renderer!";
+        exit(-1);
+    }
+
+    renderer_->setScene(&model_);
+
+    // Inject HDR tonemapping
+    if(!renderer_->setPostfxHook(hdrPostfx_))
+    {
+        qWarning() << "Failed to attach postprocess hook";
+    }
+
+    model_.setView(renderer_);
 }
 
 void SceneView::handleInput()
@@ -163,6 +219,14 @@ void SceneView::handleInput()
     {
         input_->keyEvent(Qt::Key::Key_2, false);
         swapScene(new BasicScene(&despatcher_));
+    }
+
+    // Swap renderer
+    if(input_->keyDown(Qt::Key_M))
+    {
+        input_->keyEvent(Qt::Key_M, false);
+        deferred_ = !deferred_;
+        swapRenderer();
     }
 
     // Renderer flags

@@ -33,8 +33,7 @@ bool Shader::initialiseData(const DataType& data)
 
     if(!shader_->compileSourceCode(data.data()))
     {
-       qWarning() << shader_->log();
-       return false;
+        return false;
     }
     
     return true;
@@ -104,7 +103,7 @@ namespace {
                     QString dir = QFileInfo(fileName).dir().path();
                     if(!dir.isEmpty())
                     {
-                        dir += "/";
+                        dir += QDir::separator();
                     }
 
                     if(!parseShader(dir + fileRel, result))

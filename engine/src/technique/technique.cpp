@@ -19,16 +19,7 @@ bool Technique::enable()
 {
     if(!program_->isLinked())
     {
-        if(program_.bind())
-        {
-            init();
-            return true;
-        }
-
-        else
-        {
-            return false;
-        }
+        return program_.bind() && init();
     }
 
     return program_->bind();
@@ -100,4 +91,9 @@ GLuint Technique::cachedSubroutineLocation(const QString& name) const
     }
 
     return location;
+}
+
+bool Technique::init()
+{
+    return true;
 }
