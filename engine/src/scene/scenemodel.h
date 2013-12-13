@@ -3,7 +3,6 @@
 #ifndef SCENEMODEL_H
 #define SCENEMODEL_H
 
-#include "visiblescene.h"
 #include "cubemaptexture.h"
 #include "sceneobserver.h"
 #include "observable.h"
@@ -14,13 +13,14 @@ class Renderer;
 
 namespace Entity {
     class Camera;
+    class Light;
 }
 
 namespace Graph {
     class SceneNode;
 }
 
-class SceneModel : public VisibleScene, public Observable<SceneObserver>
+class SceneModel : public Observable<SceneObserver>
 {
 public:
     virtual ~SceneModel() {};

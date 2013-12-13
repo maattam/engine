@@ -26,9 +26,12 @@
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\mathelp.h" />
     <ClInclude Include="src\observable.h" />
+    <ClInclude Include="src\visitable.h" />
+    <ClInclude Include="src\visitor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\observable.inl" />
+    <None Include="src\visitable.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C073D863-B938-464D-8584-8C9776A93268}</ProjectGuid>

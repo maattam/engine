@@ -14,6 +14,7 @@
 #include "entity/camera.h"
 #include "deferredrenderer.h"
 #include "postprocess.h"
+#include "quadlighting.h"
 #include "compactgbuffer.h"
 #include "forwardrenderer.h"
 #include "debugrenderer.h"
@@ -181,7 +182,7 @@ void SceneView::swapRenderer()
         Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(*gbuffer_, despatcher_);
 
         debugRenderer_->setGBuffer(gbuffer_);
-        newRenderer= renderer;
+        newRenderer = new Engine::QuadLighting(renderer, *gbuffer_, despatcher_);
     }
 
     else

@@ -12,6 +12,8 @@ namespace Engine { namespace Entity {
 
 class Light : public Entity
 {
+    VISITABLE
+
 public:
     enum LightType { LIGHT_POINT, LIGHT_SPOT, LIGHT_DIRECTIONAL };
 
@@ -52,6 +54,8 @@ public:
 
     // Returns the light's world position derived from parentNode, or (0, 0, 0)
     const QVector3D& position() const;
+
+    virtual void updateRenderList(RenderQueue& list) {}
 
 private:
     void calculateAABB();

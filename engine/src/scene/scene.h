@@ -5,12 +5,15 @@
 #define SCENE_H
 
 #include "scenemodel.h"
+#include "visiblescene.h"
 
 #include "graph/scenenode.h"
 
+#include <QSet>
+
 namespace Engine {
 
-class Scene : public SceneModel
+class Scene : public SceneModel, public VisibleScene
 {
 public:
     Scene();
@@ -21,6 +24,9 @@ public:
     virtual const Lights& queryLights() const;
     virtual Entity::Light* directionalLight() const;
     virtual CubemapTexture* skybox() const;
+
+    virtual void addVisitor(BaseVisitor* visitor);
+    virtual void removeVisitor(BaseVisitor* visitor);
 
     // Implemented methods from SceneModel
     virtual void setDirectionalLight(Entity::Light* light);
@@ -33,6 +39,8 @@ public:
 
 private:
     Renderer* renderer_;
+
+    QSet<BaseVisitor*> visitors_;
 
     Graph::SceneNode rootNode_;
     CubemapTexture::Ptr skybox_;

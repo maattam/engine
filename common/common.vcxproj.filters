@@ -33,9 +33,18 @@
     <ClInclude Include="src\observable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\visitor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\visitable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\observable.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\visitable.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

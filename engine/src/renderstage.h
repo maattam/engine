@@ -38,6 +38,9 @@ public:
 
 private:
     Renderer* renderer_;
+
+    RenderStage(const RenderStage&);
+    RenderStage& operator=(const RenderStage&);
 };
 
 }

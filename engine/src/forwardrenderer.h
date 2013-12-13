@@ -11,6 +11,7 @@
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
 #include "technique/skyboxtechnique.h"
+#include "renderqueue.h"
 #include "material.h"
 
 namespace Engine {

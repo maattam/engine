@@ -14,6 +14,8 @@ namespace Engine { namespace Entity {
 
 class Camera : public Entity
 {
+    VISITABLE
+
 public:
     enum CameraType { PERSPECTIVE, ORTHOGRAPHIC };
 
@@ -93,6 +95,8 @@ public:
 
     // Calculates and caches the camera's world view matrix
     void update();
+
+    virtual void updateRenderList(RenderQueue& list) {}
 
 private:
     CameraType type_;

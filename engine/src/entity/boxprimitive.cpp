@@ -1,5 +1,7 @@
 #include "boxprimitive.h"
 
+#include "renderqueue.h"
+
 using namespace Engine;
 using namespace Engine::Entity;
 

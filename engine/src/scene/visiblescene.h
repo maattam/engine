@@ -5,9 +5,8 @@
 
 #include <deque>
 #include <QMatrix4x4>
-#include <QVector3D>
 
-#include "../renderqueue.h"
+class BaseVisitor;
 
 namespace Engine {
 
@@ -16,6 +15,7 @@ namespace Entity {
 }
 
 class CubemapTexture;
+class RenderQueue;
 
 class VisibleScene
 {
@@ -25,9 +25,17 @@ public:
     virtual ~VisibleScene() {};
 
     // Queries list of potentially visible objects within the view frustrum and populates the renderQueue.
+    // For each potentially visible entity, the visitees are accepted.
     // If shadowCasters is true, adds only shadow casting entities to the queue.
-    // queryVisibles also caches all the lights within the camera's frustrum if shadowCasters is false.
     virtual void queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters = false) = 0;
+
+    // Adds an entity visitor, which will be called for culled entities.
+    // If the visitor already exists, it won't be duplicated.
+    // precondition: visitor != nullptr
+    virtual void addVisitor(BaseVisitor* visitor) = 0;
+
+    // Removes a visitor from the visitor list.
+    virtual void removeVisitor(BaseVisitor* visitor) = 0;
 
     // Retrivies all the lights within the cached frustrum that were resolved during the last queryVisibles.
     virtual const Lights& queryLights() const = 0;

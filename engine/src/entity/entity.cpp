@@ -5,7 +5,8 @@
 using namespace Engine::Graph;
 using namespace Engine::Entity;
 
-Entity::Entity() : node_(nullptr)
+Entity::Entity()
+    : node_(nullptr)
 {
 }
 

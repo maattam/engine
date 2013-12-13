@@ -7,6 +7,8 @@
 #include "entity/frustum.h"
 
 #include "renderer.h"
+#include "visitor.h"
+#include "renderqueue.h"
 
 using namespace Engine;
 
@@ -21,6 +23,16 @@ Scene::~Scene()
 void Scene::setView(Renderer* view)
 {
     renderer_ = view;
+}
+
+void Scene::addVisitor(BaseVisitor* visitor)
+{
+    visitors_.insert(visitor);
+}
+
+void Scene::removeVisitor(BaseVisitor* visitor)
+{
+    visitors_.remove(visitor);
 }
 
 void Scene::renderScene(Entity::Camera* camera)
@@ -108,22 +120,16 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
                 // Notify observers. The observer can prevent the entity from being inserted to the render queue.
-               if(!notify(&SceneObserver::beforeRendering, entity, node))
-               {
-                   continue;
-               }
-
-                // Cache visible lights
-                if(!shadowCasters)
+                if(notify(&SceneObserver::beforeRendering, entity, node))
                 {
-                    Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
-                    if(light != nullptr)
-                    {
-                        lights_.push_back(light);
-                    }
+                    entity->updateRenderList(queue);
                 }
 
-                entity->updateRenderList(queue);
+                // Visit entity
+                for(BaseVisitor* visitor : visitors_)
+                {
+                    entity->accept(*visitor);
+                }
             }
         }
     }

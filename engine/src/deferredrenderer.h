@@ -4,8 +4,6 @@
 #include "renderer.h"
 
 #include "technique/dsgeometryshader.h"
-#include "technique/dsmaterialshader.h"
-#include "renderable/quad.h"
 #include "material.h"
 
 #include <QRect>
@@ -38,11 +36,6 @@ public:
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
 
-    // Sets and initialises the GBuffer.
-    // precondition: Viewport has been set
-    // postcondition: The associated buffer is maintained by the renderer.
-    void setGBuffer(GBuffer& gbuffer);
-
     // Renders the scene to a render target instead of the default surface.
     // If fbo is nullptr, the default framebuffer (0) is used.
     virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
@@ -50,25 +43,19 @@ public:
 private:
     GBuffer& gbuffer_;
     QRect viewport_;
-    unsigned int samples_;
 
     QOpenGLFramebufferObject* output_;
     VisibleScene* scene_;
     Entity::Camera* camera_;
 
     Technique::DSGeometryShader geometryShader_;
-    Technique::DSMaterialShader materialShader_;
 
     // Error material
     Material errorMaterial_;
 
-    // Quad for screen-space rendering
-    Renderable::Quad quad_;
-
     bool initialise(unsigned int width, unsigned int height, unsigned int samples);
 
     void geometryPass(const RenderQueue& queue);
-    void preLightPass();
 
     DeferredRenderer(const DeferredRenderer&);
     DeferredRenderer& operator=(const DeferredRenderer&);

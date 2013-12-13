@@ -180,7 +180,9 @@
     <ClCompile Include="src\forwardrenderer.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
+    <ClCompile Include="src\lightingstage.cpp" />
     <ClCompile Include="src\postprocess.cpp" />
+    <ClCompile Include="src\quadlighting.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
     <ClCompile Include="src\renderable\quad.cpp" />
     <ClCompile Include="src\renderable\renderable.cpp" />
@@ -237,7 +239,9 @@
     <ClInclude Include="src\gbuffer.h" />
     <ClInclude Include="src\graph\node.h" />
     <ClInclude Include="src\graph\scenenode.h" />
+    <ClInclude Include="src\lightingstage.h" />
     <ClInclude Include="src\postprocess.h" />
+    <ClInclude Include="src\quadlighting.h" />
     <ClInclude Include="src\renderable\cube.h" />
     <ClInclude Include="src\renderable\quad.h" />
     <ClInclude Include="src\renderable\renderable.h" />

@@ -1,5 +1,7 @@
 #include "subentity.h"
 
+#include "renderqueue.h"
+
 using namespace Engine;
 using namespace Engine::Entity;
 

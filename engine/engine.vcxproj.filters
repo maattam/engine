@@ -184,6 +184,12 @@
     <ClCompile Include="src\postprocess.cpp">
       <Filter>Source Files\renderstage</Filter>
     </ClCompile>
+    <ClCompile Include="src\lightingstage.cpp">
+      <Filter>Source Files\renderstage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\quadlighting.cpp">
+      <Filter>Source Files\renderstage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -357,6 +363,12 @@
       <Filter>Header Files\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\postprocess.h">
+      <Filter>Header Files\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lightingstage.h">
+      <Filter>Header Files\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\quadlighting.h">
       <Filter>Header Files\renderstage</Filter>
     </ClInclude>
   </ItemGroup>

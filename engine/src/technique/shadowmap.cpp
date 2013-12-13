@@ -6,6 +6,7 @@
 #include "entity/camera.h"
 #include "renderable/renderable.h"
 #include "material.h"
+#include "renderqueue.h"
 
 using namespace Engine;
 using namespace Engine::Technique;

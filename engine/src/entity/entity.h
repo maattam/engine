@@ -3,32 +3,27 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include <deque>
 #include "aabb.h"
-#include "../renderqueue.h"
+#include "visitable.h"
 
 namespace Engine {
-
-class Material;
-    
-namespace Renderable {
-    class Renderable;
-}
 
 namespace Graph {
     class SceneNode;
 }
 
+class RenderQueue;
+
 namespace Entity {
 
-class Entity
+class Entity : public BaseVisitable
 {
 public:
     Entity();
-    virtual ~Entity() = 0;
+    virtual ~Entity();
 
     // Called by renderer; entity must add its renderables to the list
-    virtual void updateRenderList(RenderQueue& list) {};
+    virtual void updateRenderList(RenderQueue& list) = 0;
 
     // Returns the axis-aligned bounding box which contains this Entity
     const AABB& boundingBox() const;

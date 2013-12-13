@@ -7,6 +7,7 @@
 #include "entity/light.h"
 #include "material.h"
 #include "gbuffer.h"
+#include "renderqueue.h"
 
 using namespace Engine;
 
