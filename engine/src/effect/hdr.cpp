@@ -8,7 +8,7 @@ using namespace Engine;
 using namespace Engine::Effect;
 
 Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
-    : fbo_(nullptr), samples_(1), downSampler_(despatcher),
+    : fbo_(nullptr), downSampler_(despatcher),
     width_(0), height_(0), bloomLevels_(bloomLevels), exposure_(1.0f), sampleLevel_(0)
 {
     exposures_.resize(NUM_EXPOSURES, 0.0f);
@@ -49,9 +49,6 @@ bool Hdr::initialize(int width, int height, int samples)
         samplePbo_[0] = samplePbo_[1] = 0;
     }
 
-    if(samples <= 0)
-        samples = 1;
-
     // Viewport
     width_ = width;
     height_ = height;
@@ -59,8 +56,6 @@ bool Hdr::initialize(int width, int height, int samples)
     // Scale fbo to half resolution
     width = std::floor(width / 2.0f);
     height = std::floor(height / 2.0f);
-
-    samples_ = samples;
 
     QOpenGLFramebufferObjectFormat format;
     format.setTextureTarget(GL_TEXTURE_2D);
@@ -139,14 +134,14 @@ void Hdr::renderHighpass()
     gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
     gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
+    gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
     highpass_->setUniformValue("threshold", 1.2f);
 
     quad_.renderDirect();
 
-    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    gl->glBindTexture(GL_TEXTURE_2D, 0);
 
     fbo_->release();
 }
@@ -161,7 +156,7 @@ void Hdr::renderTonemap()
     tonemap_->bind();
 
     gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, inputTexture());
+    gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
     tonemap_->setUniformValue("renderedTexture", 0);
 
     gl->glActiveTexture(GL_TEXTURE1);
@@ -169,14 +164,13 @@ void Hdr::renderTonemap()
     tonemap_->setUniformValue("bloomSampler", 1);
     tonemap_->setUniformValue("bloomLevels", bloomLevels_);
 
-    tonemap_->setUniformValue("samples", samples_);
     tonemap_->setUniformValue("exposure", exposure_);
     tonemap_->setUniformValue("bloomFactor", 0.2f);
     tonemap_->setUniformValue("bright", 2.0f);
 
     quad_.renderDirect();
 
-    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    gl->glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Hdr::sampleLuminance()

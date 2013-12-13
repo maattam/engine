@@ -37,3 +37,20 @@ void Observable<TObserver>::notify(void (ObserverType::*func)(Args...), Args... 
         (obs->*func)(std::forward<Args>(args)...);
     }
 }
+
+template<class TObserver>
+template<typename... Args>
+bool Observable<TObserver>::notify(bool (ObserverType::*func)(Args...), Args... args) const
+{
+    bool ret = true;
+
+    for(ObserverType* obs : observers_)
+    {
+        if(!(obs->*func)(std::forward<Args>(args)...))
+        {
+            ret = false;
+        }
+    }
+
+    return ret;
+}

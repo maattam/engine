@@ -107,8 +107,11 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
             // Check whether the entity's bounding volume is inside our view frustrum
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))
             {
-                // Notify observers
-                notify(&SceneObserver::beforeRendering, entity, node);
+                // Notify observers. The observer can prevent the entity from being inserted to the render queue.
+               if(!notify(&SceneObserver::beforeRendering, entity, node))
+               {
+                   continue;
+               }
 
                 // Cache visible lights
                 if(!shadowCasters)

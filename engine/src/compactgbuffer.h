@@ -10,7 +10,7 @@ class CompactGBuffer : public GBuffer
 {
 public:
     CompactGBuffer();
-    ~CompactGBuffer();
+    virtual ~CompactGBuffer();
 
     enum GBufferTexture { TEXTURE_NORMALS, TEXTURE_DIFFUSE, TEXTURE_DEPTH, TEXTURE_COUNT };
 
@@ -19,6 +19,9 @@ public:
     // TEXTURE_DIFFUSE : R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Specular power
     // TEXTURE_DEPTH   : R32F        -> Depth attachment
     virtual bool initialise(unsigned int width, unsigned int height, unsigned int samples);
+
+    // Tells if the last initialise -call was successful
+    virtual bool isInitialised() const;
 
     // Binds the FBO for writing
     // MRTs: GL_COLOR_ATTACHMENT0 -> TEXTURE_NORMALS
@@ -39,6 +42,9 @@ private:
     GLuint textures_[TEXTURE_COUNT];
 
     void deleteBuffers();
+
+    CompactGBuffer(const CompactGBuffer&);
+    CompactGBuffer& operator=(const CompactGBuffer&);
 };
 
 }

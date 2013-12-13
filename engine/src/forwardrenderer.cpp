@@ -15,8 +15,8 @@
 
 using namespace Engine;
 
-ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
-    : scene_(nullptr), flags_(0), samples_(1), postfx_(nullptr), errorMaterial_(despatcher)
+ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
+    : scene_(nullptr), flags_(0), samples_(1), postfx_(nullptr), errorMaterial_(&despatcher)
 {
     framebuffer_ = 0;
     renderTexture_ = 0;
@@ -24,21 +24,21 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher* despatcher)
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher->get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
+        despatcher.get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
 
     flags_ |= RENDER_SHADOWS;
 
     // ShadowMap shaders
-    shadowTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
-    shadowTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
+    shadowTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));
+    shadowTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
 
     // BasicLightning shaders
-    lightningTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex));
-    lightningTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment));
 
     // Skybox shaders
-    skyboxTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
-    skyboxTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
+    skyboxTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
+    skyboxTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -46,13 +46,12 @@ ForwardRenderer::~ForwardRenderer()
     destroyBuffers();
 }
 
-bool ForwardRenderer::setViewport(unsigned int width, unsigned int height, unsigned int samples,
-        unsigned int left = 0, unsigned int top = 0)
+bool ForwardRenderer::setViewport(const QRect& viewport, unsigned int samples)
 {
-    viewport_ = QRect(left, top, width, height);
+    viewport_ = viewport;
     samples_ = samples;
 
-    if(!initialiseBuffers(width, height, samples))
+    if(!initialiseBuffers(viewport.width(), viewport.height(), samples))
     {
         return false;
     }
@@ -87,6 +86,11 @@ bool ForwardRenderer::initialisePostfx()
 void ForwardRenderer::setScene(VisibleScene* scene)
 {
     scene_ = scene;
+}
+
+void ForwardRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
+{
+    // TODO
 }
 
 void ForwardRenderer::destroyBuffers()

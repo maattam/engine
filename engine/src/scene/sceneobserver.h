@@ -20,7 +20,8 @@ public:
     virtual ~SceneObserver() {};
 
     // Called before the visible entity is pushed down the render queue.
-    virtual void beforeRendering(Entity::Entity* entity, Graph::SceneNode* node) = 0;
+    // If this function returns false, the entity is not pushed to the default render queue.
+    virtual bool beforeRendering(Entity::Entity* entity, Graph::SceneNode* node) = 0;
 };
 
 }

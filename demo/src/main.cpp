@@ -1,7 +1,6 @@
 #include <QGuiApplication>
 #include <QSurfaceFormat>
-
-#include <QDebug>
+#include <QScreen>
 
 #include "sceneview.h"
 
@@ -25,7 +24,8 @@ int main(int argc, char *argv[])
     view.resize(800, 600);
 
 #ifdef _DEBUG
-    view.setScreen(app.screens().last());
+    // Move the window to second monitor for debugging convenience
+    view.setGeometry(app.screens().last()->geometry());
 #endif
 
     view.show();

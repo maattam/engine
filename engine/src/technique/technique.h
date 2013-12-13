@@ -19,7 +19,7 @@ class Technique
 {
 public:
     Technique();
-    virtual ~Technique() = 0;
+    virtual ~Technique();
 
     // Binds a shader to the current OpenGL context
     // precondition: shaders added, init was successful
@@ -30,11 +30,6 @@ public:
     // precondition: shader not null
     // postcondition: shader will be linked when enable is called
     void addShader(const Shader::Ptr& shader);
-
-protected:
-    // Called after the program has been linked for the first time
-    // precondition: enable called successfully
-    virtual bool init();
 
     // Returns the current QOpenGLShaderProgram encapsulated by the ShaderProgram
     // precondition: shaders added
@@ -52,6 +47,11 @@ protected:
     // precondition: Technique has been enabled successfully
     int resolveUniformLocation(const QString& name);
     GLuint resolveSubroutineLocation(const QString& name, GLenum shaderType);
+
+protected:
+    // Called after the program has been linked for the first time
+    // precondition: enable called successfully
+    virtual bool init();
 
 private:
     ShaderProgram program_;

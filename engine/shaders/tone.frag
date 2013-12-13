@@ -1,6 +1,6 @@
 #version 420
 
-uniform sampler2DMS renderedTexture;
+uniform sampler2D renderedTexture;
 
 uniform sampler2D bloomSampler;
 uniform int bloomLevels;
@@ -8,8 +8,6 @@ uniform int bloomLevels;
 uniform float exposure;
 uniform float bloomFactor;
 uniform float bright;
-
-uniform int samples;
 
 in vec2 uv;
 
@@ -42,19 +40,9 @@ vec3 calcBloomColor()
 
 void main()
 {
-	ivec2 st = ivec2(textureSize(renderedTexture) * uv);
-
     // Bloom is calculated in srgb space to reduce floating point precision error
 	vec3 colorBloom = pow(calcBloomColor(), vec3(2.2));
-	vec3 color = vec3(0, 0, 0);
-
-    // Get average sample
-	for(int i = 0; i < samples; ++i)
-	{
-		color += texelFetch(renderedTexture, st, i).rgb;
-	}
-
-	color = color / samples;
+	vec3 color = texture(renderedTexture, uv).rgb;
 
 	// Add bloom
 	color += colorBloom * bloomFactor;

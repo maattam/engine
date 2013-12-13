@@ -16,6 +16,9 @@ public:
     // postcondition: The texture type is GL_TEXTURE_2D_MULTISAMPLE
     virtual bool initialise(unsigned int width, unsigned int height, unsigned int samples) = 0;
 
+    // Tells if the last initialise -call was successful
+    virtual bool isInitialised() const = 0;
+
     // Binds the FBO for writing
     // precondition: GBuffer has been initialised
     virtual void bindFbo() = 0;

@@ -3,16 +3,16 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <QRect>
+
+class QOpenGLFramebufferObject;
+
 namespace Engine {
 
 class VisibleScene;
 
 namespace Entity {
     class Camera;
-}
-
-namespace Effect {
-    class Postfx;
 }
 
 class Renderer
@@ -22,18 +22,11 @@ public:
 
     // Sets OpenGL viewport parameters and initialises buffers
     // postcondition: true on success, viewport set and buffers initialised
-    virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
-        unsigned int left = 0, unsigned int top = 0) = 0;
+    virtual bool setViewport(const QRect& viewport, unsigned int samples) = 0;
 
     // Sets the scene to be used for future render calls
     // precondition: scene != nullptr
     virtual void setScene(VisibleScene* scene) = 0;
-
-    // Sets the Postfx hook to be executed after the last rendering stage.
-    // precondition: Viewport has been set
-    // postcondition: hook is called after render() call, or cleared if postfx is null.
-    //                If postfx->initialise returns false, the postfx hook is not installed.
-    virtual bool setPostfxHook(Effect::Postfx* postfx) = 0;
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
@@ -42,6 +35,10 @@ public:
     // TODO: Replace flags with a proper configuration interface
     virtual void setFlags(unsigned int flags) = 0;
     virtual unsigned int flags() const = 0;
+
+    // Renders the scene to a render target instead of the default surface.
+    // If fbo is nullptr, the default framebuffer (0) is used.
+    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo) = 0;
 };
 
 };

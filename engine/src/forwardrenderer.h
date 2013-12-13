@@ -26,12 +26,11 @@ class ForwardRenderer : public Renderer
 public:
     enum RenderFlags { RENDER_SHADOWS = 0x1 };
 
-    explicit ForwardRenderer(ResourceDespatcher* despatcher);
+    explicit ForwardRenderer(ResourceDespatcher& despatcher);
     virtual ~ForwardRenderer();
 
     // Sets OpenGL viewport parameters.
-    virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
-        unsigned int left, unsigned int top);
+    virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
     virtual bool setPostfxHook(Effect::Postfx* postfx);
 
@@ -42,6 +41,10 @@ public:
 
     virtual void setFlags(unsigned int flags);
     virtual unsigned int flags() const;
+
+    // Renders the scene to a render target instead of the default surface.
+    // If fbo is nullptr, the default framebuffer (0) is used.
+    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
 
 private:
     VisibleScene* scene_;

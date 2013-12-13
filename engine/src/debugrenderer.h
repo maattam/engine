@@ -31,10 +31,7 @@ public:
     virtual ~DebugRenderer();
 
     // Sets OpenGL viewport parameters.
-    virtual bool setViewport(unsigned int width, unsigned int height, unsigned int samples,
-        unsigned int left, unsigned int top);
-
-    virtual bool setPostfxHook(Effect::Postfx* postfx);
+    virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
     virtual void setScene(VisibleScene* scene);
 
@@ -49,11 +46,15 @@ public:
     void setObservable(ObservableType* obs);
 
     // SceneObserver definitions
-    virtual void beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
+    virtual bool beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
 
     // Visualize GBuffer for debugging. The GBuffer is not modified.
     // precondition: Viewport and camera has to be the same as the debuggee's, gbuffer != nullptr
     void setGBuffer(GBuffer const* gbuffer);
+
+    // Renders the scene to a render target instead of the default surface.
+    // If fbo is nullptr, the default framebuffer (0) is used.
+    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
 
 private:
     QRect viewport_;

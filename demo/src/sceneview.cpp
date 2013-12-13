@@ -13,6 +13,7 @@
 
 #include "entity/camera.h"
 #include "deferredrenderer.h"
+#include "postprocess.h"
 #include "compactgbuffer.h"
 #include "forwardrenderer.h"
 #include "debugrenderer.h"
@@ -140,7 +141,7 @@ void SceneView::initialize()
     hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
 
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
-    if(!debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0))
+    if(!debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
     {
         qCritical() << "Failed to initialize debug renderer!";
         exit(-1);
@@ -173,35 +174,31 @@ void SceneView::swapRenderer()
         }
     }
 
+    Engine::Renderer* newRenderer = nullptr;
     if(deferred_)
     {
-        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(&despatcher_);
         gbuffer_ = new Engine::CompactGBuffer();
+        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(*gbuffer_, despatcher_);
 
         debugRenderer_->setGBuffer(gbuffer_);
-        renderer->setGBuffer(gbuffer_);
-
-        renderer_ = renderer;
+        newRenderer= renderer;
     }
 
     else
     {
-        renderer_ = new Engine::ForwardRenderer(&despatcher_);
+        newRenderer = new Engine::ForwardRenderer(despatcher_);
     }
 
-    if(!renderer_->setViewport(width(), height(), format().samples()))
+    Engine::PostProcess* fxRenderer = new Engine::PostProcess(newRenderer);
+    renderer_ = fxRenderer;
+    if(!renderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
     {
         qCritical() << "Failed to initialize renderer!";
         exit(-1);
     }
 
+    fxRenderer->setEffect(hdrPostfx_);
     renderer_->setScene(&model_);
-
-    // Inject HDR tonemapping
-    if(!renderer_->setPostfxHook(hdrPostfx_))
-    {
-        qWarning() << "Failed to attach postprocess hook";
-    }
 
     model_.setView(renderer_);
 }
@@ -276,13 +273,13 @@ void SceneView::resizeEvent(QResizeEvent* event)
     {
         glViewport(0, 0, width(), height());
 
-        if(!renderer_->setViewport(width(), height(), format().samples()))
+        if(!renderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
         {
             qCritical() << "Failed to initialize renderer!";
             exit(-1);
         }
 
-        debugRenderer_->setViewport(width(), height(), format().samples(), 0, 0);
+        debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples());
 
         if(controller_ != nullptr)
         {

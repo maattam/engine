@@ -28,7 +28,6 @@ public:
     virtual void render();
 
 private:
-    int samples_;
     int width_;
     int height_;
     int bloomLevels_;

@@ -77,6 +77,12 @@
     <Filter Include="Shaders\postfx">
       <UniqueIdentifier>{4f707cba-86f3-4df3-9f1b-be20eed93805}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\renderstage">
+      <UniqueIdentifier>{aa8fa2c6-21fd-49b9-ad99-a2ddde6715f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\renderstage">
+      <UniqueIdentifier>{57dda25a-8bb2-40a4-9dbb-ec2772d10e02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\effect\downsampler.cpp">
@@ -171,6 +177,12 @@
     </ClCompile>
     <ClCompile Include="src\compactgbuffer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderstage.cpp">
+      <Filter>Source Files\renderstage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\postprocess.cpp">
+      <Filter>Source Files\renderstage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -340,6 +352,12 @@
     </ClInclude>
     <ClInclude Include="src\compactgbuffer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderstage.h">
+      <Filter>Header Files\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\postprocess.h">
+      <Filter>Header Files\renderstage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -63,10 +63,16 @@ bool CompactGBuffer::initialise(unsigned int width, unsigned int height, unsigne
     if(status != GL_FRAMEBUFFER_COMPLETE)
     {
         qWarning() << __FUNCTION__ << "Failed to init CompactGBuffer:" << status;
+        deleteBuffers();
         return false;
     }
 
     return true;
+}
+
+bool CompactGBuffer::isInitialised() const
+{
+    return fbo_ != 0;
 }
 
 void CompactGBuffer::bindFbo()
@@ -87,4 +93,10 @@ void CompactGBuffer::deleteBuffers()
 {
     gl->glDeleteFramebuffers(1, &fbo_);
     gl->glDeleteTextures(TEXTURE_COUNT, textures_);
+
+    fbo_ = 0;
+    for(int i = 0; i < TEXTURE_COUNT; ++i)
+    {
+        textures_[i] = 0;
+    }
 }

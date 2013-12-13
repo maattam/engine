@@ -30,10 +30,9 @@ DebugRenderer::~DebugRenderer()
 {
 }
 
-bool DebugRenderer::setViewport(unsigned int width, unsigned int height, unsigned int samples,
-                 unsigned int left, unsigned int top)
+bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
 {
-    viewport_ = QRect(left, top, width, height);
+    viewport_ = viewport;
 
     gbufferMS_.setSampleCount(samples);
     gbufferMS_.setDepthRange(0, 1);
@@ -41,9 +40,9 @@ bool DebugRenderer::setViewport(unsigned int width, unsigned int height, unsigne
     return true;
 }
 
-bool DebugRenderer::setPostfxHook(Effect::Postfx* postfx)
+void DebugRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
 {
-    return false;
+    // TODO
 }
 
 void DebugRenderer::setScene(VisibleScene* scene)
@@ -163,7 +162,7 @@ void DebugRenderer::setObservable(ObservableType* obs)
     observable_ = obs;
 }
 
-void DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* node)
+bool DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* node)
 {
     if(flags_ & DEBUG_AABB)
     {
@@ -177,6 +176,8 @@ void DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* no
 
         addAABB(node->transformation(), entity->boundingBox(), color);
     }
+
+    return flags_ & DEBUG_WIREFRAME;
 }
 
 void DebugRenderer::renderGBuffer()

@@ -20,6 +20,11 @@ protected:
     template<typename... Args>
     void notify(void (ObserverType::*func)(Args...), Args... args) const;
 
+    // Notifies all observers
+    // Returns false if any of the observers returned false.
+    template<typename... Args>
+    bool notify(bool (ObserverType::*func)(Args...), Args... args) const;
+
 private:
     std::set<ObserverType*> observers_;
 
