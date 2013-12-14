@@ -38,8 +38,9 @@ public:
     // Renders the scene through the camera's viewport.
     virtual void render(Entity::Camera* camera);
 
-    virtual void setFlags(unsigned int flags);
-    virtual unsigned int flags() const;
+    // Sets debugging flags
+    void setFlags(unsigned int flags);
+    unsigned int flags() const;
 
     // Set observable that provides debug data
     typedef Observable<SceneObserver> ObservableType;

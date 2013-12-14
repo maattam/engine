@@ -137,7 +137,7 @@ void Hdr::renderHighpass()
     gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", 3.0f);
+    highpass_->setUniformValue("threshold", 1.5f);
 
     quad_.renderDirect();
 

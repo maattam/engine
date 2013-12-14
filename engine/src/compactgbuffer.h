@@ -35,7 +35,7 @@ public:
     virtual void bindTextures() const;
 
     // postcondition: Returns texture names ("normals", "diffuse", "depth"..) in the order of binding.
-    virtual std::vector<QString> textures() const;
+    virtual QList<QString> textures() const;
 
 private:
     GLuint fbo_;

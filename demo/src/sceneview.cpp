@@ -19,6 +19,9 @@
 #include "forwardrenderer.h"
 #include "debugrenderer.h"
 #include "effect/hdr.h"
+#include "technique/skybox.h"
+#include "skyboxstage.h"
+#include "renderable/cube.h"
 
 #include "basicscene.h"
 #include "sponzascene.h"
@@ -179,10 +182,21 @@ void SceneView::swapRenderer()
     if(deferred_)
     {
         gbuffer_ = new Engine::CompactGBuffer();
-        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(*gbuffer_, despatcher_);
-
         debugRenderer_->setGBuffer(gbuffer_);
-        newRenderer = new Engine::QuadLighting(renderer, *gbuffer_, despatcher_);
+
+        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(*gbuffer_, despatcher_);
+        Engine::QuadLighting* lighting = new Engine::QuadLighting(renderer, *gbuffer_, despatcher_);
+
+        Engine::SkyboxStage* skybox = new Engine::SkyboxStage(lighting);
+        skybox->setGBuffer(gbuffer_);
+        skybox->setSkyboxMesh(std::make_shared<Engine::Renderable::Cube>());
+        Engine::SkyboxStage::SkyboxPtr sky = std::make_shared<Engine::Technique::Skybox>();
+        sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.vert"), Engine::Shader::Type::Vertex));
+        sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.frag"), Engine::Shader::Type::Fragment));
+        sky->setBrightness(5.0f);
+        skybox->setSkyboxTechnique(sky);
+
+        newRenderer = skybox;
     }
 
     else
@@ -243,17 +257,11 @@ void SceneView::handleInput()
     if(input_->keyDown(Qt::Key::Key_F3))
     {
         input_->keyEvent(Qt::Key::Key_F3, false);
-        toggleRenderFlag(renderer_, Engine::ForwardRenderer::RENDER_SHADOWS);
-    }
-
-    if(input_->keyDown(Qt::Key::Key_F4))
-    {
-        input_->keyEvent(Qt::Key::Key_F4, false);
         toggleRenderFlag(debugRenderer_, Engine::DebugRenderer::DEBUG_GBUFFER);
     }
 }
 
-void SceneView::toggleRenderFlag(Engine::Renderer* renderer, unsigned int flag)
+void SceneView::toggleRenderFlag(Engine::DebugRenderer* renderer, unsigned int flag)
 {
     if(renderer->flags() & flag)
     {

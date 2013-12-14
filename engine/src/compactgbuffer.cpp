@@ -18,10 +18,11 @@ CompactGBuffer::~CompactGBuffer()
     deleteBuffers();
 }
 
-std::vector<QString> CompactGBuffer::textures() const
+QList<QString> CompactGBuffer::textures() const
 {
-    const QString CHANNELS[TEXTURE_COUNT] = { "normalSpec", "diffuseSpec", "depth" };
-    return std::vector<QString>(CHANNELS, CHANNELS + TEXTURE_COUNT);
+    QList<QString> textures;
+    textures << "normalSpec" << "diffuseSpec" << "depth";
+    return textures;
 }
 
 bool CompactGBuffer::initialise(unsigned int width, unsigned int height, unsigned int samples)

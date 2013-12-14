@@ -27,16 +27,6 @@ void RenderStage::render(Entity::Camera* camera)
     renderer_->render(camera);
 }
 
-void RenderStage::setFlags(unsigned int flags)
-{
-    renderer_->setFlags(flags);
-}
-
-unsigned int RenderStage::flags() const
-{
-    return renderer_->flags();
-}
-
 void RenderStage::setOutputFBO(QOpenGLFramebufferObject* fbo)
 {
     renderer_->setOutputFBO(fbo);

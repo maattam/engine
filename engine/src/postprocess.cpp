@@ -8,7 +8,7 @@
 using namespace Engine;
 
 PostProcess::PostProcess(Renderer* renderer)
-    : RenderStage(renderer), proxy_(nullptr), out_(nullptr), samples_(1)
+    : RenderStage(renderer), effect_(nullptr), proxy_(nullptr), out_(nullptr), samples_(1)
 {
 }
 

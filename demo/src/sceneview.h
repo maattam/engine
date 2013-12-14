@@ -81,7 +81,7 @@ private:
     QElapsedTimer lastTime_;
     QElapsedTimer frameTime_;
 
-    void toggleRenderFlag(Engine::Renderer* renderer, unsigned int flag);
+    void toggleRenderFlag(Engine::DebugRenderer* renderer, unsigned int flag);
 };
 
 #endif // SCENEVIEW_H

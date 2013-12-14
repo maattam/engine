@@ -103,9 +103,6 @@
     <ClCompile Include="src\technique\technique.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\technique\skyboxtechnique.cpp">
-      <Filter>Source Files\technique</Filter>
-    </ClCompile>
     <ClCompile Include="src\scene\scene.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
@@ -190,6 +187,12 @@
     <ClCompile Include="src\quadlighting.cpp">
       <Filter>Source Files\renderstage</Filter>
     </ClCompile>
+    <ClCompile Include="src\technique\skybox.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyboxstage.cpp">
+      <Filter>Source Files\renderstage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -264,9 +267,6 @@
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\shadowmap.h">
-      <Filter>Header Files\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\technique\skyboxtechnique.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\colladanode.h">
@@ -369,6 +369,12 @@
       <Filter>Header Files\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\quadlighting.h">
+      <Filter>Header Files\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\skybox.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyboxstage.h">
       <Filter>Header Files\renderstage</Filter>
     </ClInclude>
   </ItemGroup>

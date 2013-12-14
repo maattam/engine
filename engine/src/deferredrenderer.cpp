@@ -111,12 +111,3 @@ void DeferredRenderer::geometryPass()
     gl->glDisable(GL_DEPTH_TEST);
     gl->glDepthMask(GL_FALSE);
 }
-
-void DeferredRenderer::setFlags(unsigned int flags)
-{
-}
-
-unsigned int DeferredRenderer::flags() const
-{
-    return 0;
-}

@@ -195,12 +195,13 @@
     <ClCompile Include="src\renderstage.cpp" />
     <ClCompile Include="src\scene\colladanode.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
+    <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
-    <ClCompile Include="src\technique\skyboxtechnique.cpp" />
+    <ClCompile Include="src\technique\skybox.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -259,12 +260,13 @@
     <ClInclude Include="src\scene\scenemodel.h" />
     <ClInclude Include="src\scene\sceneobserver.h" />
     <ClInclude Include="src\scene\visiblescene.h" />
+    <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\dsmaterialshader.h" />
     <ClInclude Include="src\technique\gbuffervisualizer.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
-    <ClInclude Include="src\technique\skyboxtechnique.h" />
+    <ClInclude Include="src\technique\skybox.h" />
     <CustomBuild Include="src\technique\technique.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </Message>

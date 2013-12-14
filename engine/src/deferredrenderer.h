@@ -32,10 +32,6 @@ public:
     // preconditions: scene has been set, viewport has been set, camera != nullptr
     virtual void render(Entity::Camera* camera);
 
-    // TODO: Replace flags with a proper configuration interface
-    virtual void setFlags(unsigned int flags);
-    virtual unsigned int flags() const;
-
     // Renders the scene to a render target instead of the default surface.
     // If fbo is nullptr, the default framebuffer (0) is used.
     virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);

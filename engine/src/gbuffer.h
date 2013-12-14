@@ -5,7 +5,7 @@
 #define GBUFFER_H
 
 #include <QString>
-#include <vector>
+#include <QList>
 
 namespace Engine {
 
@@ -29,7 +29,8 @@ public:
     virtual void bindTextures() const = 0;
 
     // postcondition: Returns texture names ("normals", "diffuse", "depth"..) in the order of binding.
-    virtual std::vector<QString> textures() const = 0;
+    //                "depth" is guaranteed.
+    virtual QList<QString> textures() const = 0;
 };
 
 }

@@ -1,13 +1,35 @@
 #version 420
 
-in vec3 texCoord0;
+in vec3 texCoord;
 
 out vec4 fragColor;
 
-uniform samplerCube gCubemapTexture;
+uniform sampler2DMS depth;
+uniform samplerCube cubemap;
+uniform float brightness;
+
+subroutine void DepthTestType();
+subroutine uniform DepthTestType depthTest;
+
+subroutine(DepthTestType)
+void sampleDepthTest()
+{
+    float depth = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
+    if(gl_FragCoord.z > depth)
+    {
+        discard;
+    }
+}
+
+subroutine(DepthTestType)
+void skipDepthTest()
+{
+}
 
 void main()
 {
+    depthTest();
+
     // Simulate HDR Skybox.. todo proper implementation using masks?
-    fragColor = 3.0 * texture(gCubemapTexture, texCoord0);
+    fragColor = brightness * texture(cubemap, texCoord);
 }
