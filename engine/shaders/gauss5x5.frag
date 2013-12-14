@@ -1,22 +1,22 @@
 #version 420
 
-uniform sampler2D tex;
+// http://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
+// 5x5 Gaussian kernel
+//   1  4  7  4 1
+//   4 16 26 16 4
+//   7 26 41 26 7 / 273
+//   4 16 26 16 4
+//   1  4  7  4 1
+
+uniform sampler2D inputTexture;
 uniform int width, height;
 uniform float lodLevel;
 
 in vec2 uv;
 
-    // http://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
-    // 5x5 Gaussian kernel
-    //   1  4  7  4 1
-    //   4 16 26 16 4
-    //   7 26 41 26 7 / 273
-    //   4 16 26 16 4
-    //   1  4  7  4 1
-
 vec4 sample5x5(in float dx, in float dy, int x, int y)
 {
-    return textureLod(tex, uv + vec2((x - 2) * dx, (y - 2) * dy), lodLevel);
+    return textureLod(inputTexture, uv + vec2((x - 2) * dx, (y - 2) * dy), lodLevel);
 }
 
 void main()
@@ -26,7 +26,6 @@ void main()
                                     7, 26, 41, 26, 7,
                                     4, 16, 26, 16, 4,
                                     1, 4,  7,  4,  1);
-
 	float dx = 1.0 / width;
 	float dy = 1.0 / height;
 

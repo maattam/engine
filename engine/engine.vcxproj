@@ -172,6 +172,7 @@
     <ClCompile Include="src\deferredrenderer.cpp" />
     <ClCompile Include="src\effect\downsampler.cpp" />
     <ClCompile Include="src\effect\hdr.cpp" />
+    <ClCompile Include="src\effect\lumaexposure.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
     <ClCompile Include="src\entity\aabb.cpp" />
     <ClCompile Include="src\entity\boxprimitive.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
+    <ClCompile Include="src\technique\blurfilter.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
@@ -209,7 +211,7 @@
     <None Include="shaders\aabb.vert" />
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
-    <None Include="shaders\blur.frag" />
+    <None Include="shaders\gauss5x5.frag" />
     <None Include="shaders\dsmaterial.frag" />
     <None Include="shaders\dsmaterial.vert" />
     <None Include="shaders\dsmaterial_debug.frag" />
@@ -229,9 +231,11 @@
     <ClInclude Include="src\compactgbuffer.h" />
     <ClInclude Include="src\debugrenderer.h" />
     <ClInclude Include="src\deferredrenderer.h" />
+    <ClInclude Include="src\effect\lumaexposure.h" />
     <ClInclude Include="src\effect\downsampler.h" />
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
+    <ClInclude Include="src\effect\samplerfunction.h" />
     <ClInclude Include="src\entity\aabb.h" />
     <ClInclude Include="src\entity\boxprimitive.h" />
     <ClInclude Include="src\entity\camera.h" />
@@ -262,6 +266,7 @@
     <ClInclude Include="src\scene\visiblescene.h" />
     <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
+    <ClInclude Include="src\technique\blurfilter.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\dsmaterialshader.h" />
     <ClInclude Include="src\technique\gbuffervisualizer.h" />

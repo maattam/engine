@@ -2,16 +2,18 @@
 #define DOWNSAMPLER_H
 
 #include "common.h"
-#include <QOpenGLFramebufferObject>
-#include "shaderprogram.h"
+#include "renderable/quad.h"
 
 #include <vector>
-
-#include "renderable/quad.h"
+#include <memory>
 
 namespace Engine {
 
-    class ResourceDespatcher;
+class ResourceDespatcher;
+
+namespace Technique {
+    class BlurFilter;
+}
     
 namespace Effect {
 
@@ -22,11 +24,19 @@ public:
     ~DownSampler();
 
     // Texture must have have maxLod mipmap levels allocated
-    bool init(int width, int height, GLuint texture, GLuint maxLod);
+    bool initialise(int width, int height, GLuint texture, GLuint maxLod);
 
-    // Expects the quad to be bound
-    // textureId must have maxLod mipmap levels as initialised
+    // Performs the downsampling to the given textureId.
+    // precondition: initialise is called and must match the given textureId.
+    //               quad must be bound for direct rendering.
     bool downSample(GLuint textureId, const Renderable::Quad& quad);
+
+    typedef std::shared_ptr<Technique::BlurFilter> FilterPtr;
+
+    // Sets the used blur technique.
+    // precondition: filter != nullptr
+    // postcondition: Filter ownership is maintained.
+    void setBlurFilter(const FilterPtr& filter);
 
 private:
     void destroy();
@@ -34,7 +44,7 @@ private:
     int width_;
     int height_;
 
-    ShaderProgram program_;
+    FilterPtr filter_;
     std::vector<GLuint> fbos_;
 };
 

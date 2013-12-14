@@ -10,6 +10,13 @@ using namespace Engine;
 PostProcess::PostProcess(Renderer* renderer)
     : RenderStage(renderer), effect_(nullptr), proxy_(nullptr), out_(nullptr), samples_(1)
 {
+    format_.setAttachment(QOpenGLFramebufferObject::NoAttachment);
+    format_.setInternalTextureFormat(GL_RGBA16F);
+}
+
+PostProcess::PostProcess(Renderer* renderer, const QOpenGLFramebufferObjectFormat& format)
+    : RenderStage(renderer), effect_(nullptr), proxy_(nullptr), out_(nullptr), samples_(1), format_(format)
+{
 }
 
 PostProcess::~PostProcess()
@@ -36,11 +43,7 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
         proxy_ = nullptr;
     }
 
-    QOpenGLFramebufferObjectFormat format;
-    format.setAttachment(QOpenGLFramebufferObject::NoAttachment);
-    format.setInternalTextureFormat(GL_RGBA16F);
-
-    proxy_ = new QOpenGLFramebufferObject(viewport.width(), viewport.height(), format);
+    proxy_ = new QOpenGLFramebufferObject(viewport.width(), viewport.height(), format_);
     if(!proxy_->isValid())
     {
         qDebug() << "Failed to create framebuffer object for post-processing!";

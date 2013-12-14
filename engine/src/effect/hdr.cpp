@@ -1,8 +1,10 @@
 #include "hdr.h"
 
 #include "resourcedespatcher.h"
+#include "technique/blurfilter.h"
+#include "samplerfunction.h"
 
-#include <vector>
+#include <QOpenGLFramebufferObject>
 
 using namespace Engine;
 using namespace Engine::Effect;
@@ -11,12 +13,6 @@ Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     : fbo_(nullptr), downSampler_(despatcher),
     width_(0), height_(0), bloomLevels_(bloomLevels), exposure_(1.0f), sampleLevel_(0)
 {
-    exposures_.resize(NUM_EXPOSURES, 0.0f);
-
-    samplePbo_[0] = samplePbo_[1] = 0;
-    writeIndex_ = 1;
-    readIndex_ = 0;
-
     // Tonemap program
     tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
     tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/tone.frag"), Shader::Type::Fragment));
@@ -24,15 +20,18 @@ Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     // Highpass program
     highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
     highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag"), Shader::Type::Fragment));
+
+    // Downsampler filter
+    DownSampler::FilterPtr filter = std::make_shared<Technique::BlurFilter>();
+    filter->addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    filter->addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Shader::Type::Fragment));
+    downSampler_.setBlurFilter(filter);
 }
 
 Hdr::~Hdr()
 {
     if(fbo_ != nullptr)
         delete fbo_;
-
-    if(samplePbo_ != 0)
-        gl->glDeleteBuffers(2, samplePbo_);
 }
 
 bool Hdr::initialize(int width, int height, int samples)
@@ -42,12 +41,6 @@ bool Hdr::initialize(int width, int height, int samples)
 
     if(fbo_ != nullptr)
         delete fbo_;
-
-    if(samplePbo_ != 0)
-    {
-        gl->glDeleteBuffers(2, samplePbo_);
-        samplePbo_[0] = samplePbo_[1] = 0;
-    }
 
     // Viewport
     width_ = width;
@@ -73,13 +66,6 @@ bool Hdr::initialize(int width, int height, int samples)
     if(!fbo_->isValid())
         return false;
 
-    // Create PBOs
-    gl->glGenBuffers(2, samplePbo_);
-    gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, samplePbo_[0]);
-    gl->glBufferData(GL_PIXEL_PACK_BUFFER, 4 * sizeof(float), nullptr, GL_STREAM_READ);
-    gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, samplePbo_[1]);
-    gl->glBufferData(GL_PIXEL_PACK_BUFFER, 4 * sizeof(float), nullptr, GL_STREAM_READ);
-
     // Calculate the smallest mipmap level
     int twidth = width;
     int theight = height;
@@ -91,7 +77,13 @@ bool Hdr::initialize(int width, int height, int samples)
 
     sampleLevel_ = qMax(tx, ty);
 
-    return downSampler_.init(width, height, fbo_->texture(), bloomLevels_);
+    if(exposureFunc_ != nullptr
+        && !exposureFunc_->setInputTexture(fbo_->texture(), 1, 1, sampleLevel_))
+    {
+        return false;
+    }
+
+    return downSampler_.initialise(width, height, fbo_->texture(), bloomLevels_);
 }
 
 void Hdr::render()
@@ -109,7 +101,7 @@ void Hdr::render()
     renderHighpass();
 
     // Sample previous highpass result luminance
-    sampleLuminance();
+    sampleExposure();
 
     // Pass 2
     // Downsample and blur input
@@ -165,69 +157,30 @@ void Hdr::renderTonemap()
     tonemap_->setUniformValue("bloomLevels", bloomLevels_);
 
     tonemap_->setUniformValue("exposure", exposure_);
-    tonemap_->setUniformValue("bloomFactor", 0.2f);
+    tonemap_->setUniformValue("bloomFactor", 1.0f / bloomLevels_);
     tonemap_->setUniformValue("bright", 5.0f);
+    tonemap_->setUniformValue("gamma", 2.2f);
 
     quad_.renderDirect();
 
     gl->glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Hdr::sampleLuminance()
+void Hdr::sampleExposure()
 {
+    if(exposureFunc_ == nullptr)
+    {
+        return;
+    }
+
     // Generate mipmaps for fbo
     gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
     gl->glGenerateMipmap(GL_TEXTURE_2D);
 
-    // Swap pbos each frame
-    writeIndex_ = (writeIndex_ + 1) % 2;
-    readIndex_ = (readIndex_ + 1) % 2;
-
-    // Read from gpu asynchronously
-    gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, samplePbo_[writeIndex_]);
-    gl->glGetTexImage(GL_TEXTURE_2D, sampleLevel_, GL_RGBA, GL_FLOAT, nullptr);
-
-    // Read previous frame's data
-    gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, samplePbo_[readIndex_]);
-    float* pixel = static_cast<float*>(gl->glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY));
-
-    if(pixel != nullptr)
-    {
-        float red = pixel[0];
-        float green = pixel[1];
-        float blue = pixel[2];
-
-        exposure_ = calculateExposure(red, green, blue);
-
-        gl->glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-    }
-
-    gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    exposure_ = exposureFunc_->result();
 }
 
-float Hdr::calculateExposure(float r, float g, float b)
+void Hdr::setExposureFunction(const ExposureFuncPtr& function)
 {
-    // YUV luminance
-    float Y = 0.299 * r + 0.114 * g + 0.587 * b;
-    Y = std::powf(Y, 1/2.2f);
-
-    //if(Y > 1.0)
-    //    Y = 1.0f;
-
-    if(exposures_.size() >= NUM_EXPOSURES)
-    {
-        exposures_.pop_front();
-    }
-
-    exposures_.push_back(Y);
-
-    float average = 0.0f;
-    for(float exposure : exposures_)
-    {
-        average += exposure;
-    }
-
-    average /= static_cast<float>(NUM_EXPOSURES);
-
-    return std::exp(-(2.0 * average));
+    exposureFunc_ = function;
 }

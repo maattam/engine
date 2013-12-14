@@ -4,20 +4,26 @@
 #include "common.h"
 
 #include "renderer.h"
-#include "scene/visiblescene.h"
 
 #include <QRect>
+#include <QList>
 
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
 #include "renderqueue.h"
 #include "material.h"
+#include "visitor.h"
 
 namespace Engine {
 
+namespace Entity {
+    class Light;
+}
+
 class ResourceDespatcher;
 
-class ForwardRenderer : public Renderer
+class ForwardRenderer : public Renderer,
+    public BaseVisitor, public Visitor<Entity::Light>
 {
 public:
     explicit ForwardRenderer(ResourceDespatcher& despatcher);
@@ -35,6 +41,8 @@ public:
     // If fbo is nullptr, the default framebuffer (0) is used.
     virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
 
+    virtual void visit(Entity::Light& light);
+
 private:
     VisibleScene* scene_;
     QRect viewport_;
@@ -46,17 +54,15 @@ private:
     Technique::BasicLightning lightningTech_;
     Technique::ShadowMap shadowTech_;
 
-    GLuint framebuffer_;
-    GLuint renderTexture_;
-    GLuint depthRenderbuffer_;
+    QOpenGLFramebufferObject* fbo_;
+
+    QList<Entity::Light*> lights_;
 
     void shadowMapPass();
     void renderPass(Entity::Camera* camera, const RenderQueue& queue);
-
     void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);
-    void destroyBuffers();
 
     ForwardRenderer(const ForwardRenderer&);
     ForwardRenderer& operator=(const ForwardRenderer&);

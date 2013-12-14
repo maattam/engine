@@ -3,26 +3,20 @@
 #include <QMatrix4x4>
 #include <QDebug>
 
-#include "texture2D.h"
-#include "effect/postfx.h"
 #include "entity/camera.h"
 #include "entity/light.h"
 #include "graph/scenenode.h"
 #include "renderable/renderable.h"
-
+#include "scene/visiblescene.h"
 #include "resourcedespatcher.h"
 
-#include <cassert>
+#include <QOpenGLFramebufferObject>
 
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
-    : scene_(nullptr), samples_(1), errorMaterial_(&despatcher)
+    : scene_(nullptr), samples_(1), errorMaterial_(&despatcher), fbo_(nullptr)
 {
-    framebuffer_ = 0;
-    renderTexture_ = 0;
-    depthRenderbuffer_ = 0;
-
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
         despatcher.get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
@@ -38,7 +32,6 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
 
 ForwardRenderer::~ForwardRenderer()
 {
-    destroyBuffers();
 }
 
 bool ForwardRenderer::setViewport(const QRect& viewport, unsigned int samples)
@@ -61,63 +54,34 @@ void ForwardRenderer::setScene(VisibleScene* scene)
 
 void ForwardRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
 {
-    // TODO
+    fbo_ = fbo;
 }
 
-void ForwardRenderer::destroyBuffers()
+void ForwardRenderer::visit(Entity::Light& light)
 {
-    gl->glDeleteFramebuffers(1, &framebuffer_);
-    gl->glDeleteTextures(1, &renderTexture_);
-    gl->glDeleteRenderbuffers(1, &depthRenderbuffer_);
+    lights_.push_back(&light);
 }
 
 bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples)
 {
-    if(width <= 0 || height <= 0 || samples < 0)
-        return false;
-
     if(!shadowTech_.initSpotLights(1024, 1024, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
     if(!shadowTech_.initDirectionalLight(4096, 4096))
         return false;
 
-    destroyBuffers();
-
-    // Initialize textures
-    gl->glGenTextures(1, &renderTexture_);
-
-    // Target texture
-    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, renderTexture_);
-    gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, width, height, GL_TRUE);
-	gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
-
-    // Create depthbuffer
-    gl->glGenRenderbuffers(1, &depthRenderbuffer_);
-    gl->glBindRenderbuffer(GL_RENDERBUFFER, depthRenderbuffer_);
-    gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT24, width, height);
-
-    // Initialize framebuffers
-    gl->glGenFramebuffers(1, &framebuffer_);
-
-    // Renderbuffer
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
-
-    gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderbuffer_);
-    gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, renderTexture_, 0);
-
-    if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        return false;
-
-    gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
     return true;
 }
 
 void ForwardRenderer::render(Entity::Camera* camera)
 {
+    // Gather visible lights
+    scene_->addVisitor(this);
+
     // Cull visibles
     RenderQueue renderQueue;
     scene_->queryVisibles(camera->worldView(), renderQueue);
+    scene_->removeVisitor(this);
 
     gl->glEnable(GL_DEPTH_TEST);
     gl->glDepthFunc(GL_LESS);
@@ -127,18 +91,21 @@ void ForwardRenderer::render(Entity::Camera* camera)
     shadowMapPass();
 
     // Pass 2
-    // Render geometry to a multisampled framebuffer if postfx is set
-    gl->glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_);
+    // Render geometry and lightning
+    if(fbo_ == nullptr || !fbo_->bind())
+    {
+        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
     renderPass(camera, renderQueue);
 
     gl->glDisable(GL_DEPTH_TEST);
+
+    lights_.clear();
 }
 
 void ForwardRenderer::shadowMapPass()
 {
-    const auto& lights = scene_->queryLights();
-
     if(!shadowTech_.enable())
     {
         return;
@@ -149,7 +116,7 @@ void ForwardRenderer::shadowMapPass()
 
     // Render depth for each spot light
     int spotLightIndex = 0;
-    for(const Entity::Light* light : lights)
+    for(Entity::Light* light : lights_)
     {
         // Ignore other lights for now
         if(light->type() != Entity::Light::LIGHT_SPOT)
@@ -173,8 +140,6 @@ void ForwardRenderer::shadowMapPass()
 
 void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queue)
 {
-    const auto& lights = scene_->queryLights();
-
     // Prepare OpenGL state for render pass
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
     gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
@@ -188,7 +153,7 @@ void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queu
     lightningTech_.setEyeWorldPos(camera->position());
     lightningTech_.setTextureUnits(0, 1, 2, 3);
     lightningTech_.setDirectionalLight(scene_->directionalLight());
-    lightningTech_.setPointAndSpotLights(scene_->queryLights());
+    lightningTech_.setPointAndSpotLights(lights_);
     lightningTech_.setShadowEnabled(true);
 
     // Bind directional light shadow map

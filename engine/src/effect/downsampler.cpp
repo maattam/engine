@@ -1,8 +1,7 @@
 #include "downsampler.h"
 
 #include "resourcedespatcher.h"
-
-#include <QOpenGLFramebufferObjectFormat>
+#include "technique/blurfilter.h"
 
 using namespace Engine;
 using namespace Engine::Effect;
@@ -10,8 +9,6 @@ using namespace Engine::Effect;
 DownSampler::DownSampler(ResourceDespatcher* despatcher)
     : width_(0), height_(0)
 {
-    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    program_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/blur.frag"), Shader::Type::Fragment));
 }
 
 DownSampler::~DownSampler()
@@ -29,7 +26,13 @@ void DownSampler::destroy()
     fbos_.clear();
 }
 
-bool DownSampler::init(int width, int height, GLuint texture, GLuint maxLod)
+void DownSampler::setBlurFilter(const FilterPtr& filter)
+{
+    filter_ = filter;
+    filter_->setTextureUnit(0);
+}
+
+bool DownSampler::initialise(int width, int height, GLuint texture, GLuint maxLod)
 {
     destroy();
 
@@ -63,14 +66,13 @@ bool DownSampler::init(int width, int height, GLuint texture, GLuint maxLod)
 
 bool DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
 {
-    if(!program_.ready())
+    if(filter_ == nullptr || !filter_->enable())
+    {
         return false;
-
-    program_->bind();
+    }
 
     gl->glActiveTexture(GL_TEXTURE0);
     gl->glBindTexture(GL_TEXTURE_2D, textureId);
-    program_->setUniformValue("tex", 0);
 
     int width = width_;
     int height = height_;
@@ -82,9 +84,7 @@ bool DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
 
         gl->glBindFramebuffer(GL_FRAMEBUFFER, fbos_[i]);
 
-        program_->setUniformValue("width", width);
-        program_->setUniformValue("height", height);
-        program_->setUniformValue("lodLevel", static_cast<float>(i));
+        filter_->setTextureParams(width, height, static_cast<float>(i));
 
         gl->glViewport(0, 0, width, height);
 
@@ -92,7 +92,5 @@ bool DownSampler::downSample(GLuint textureId, const Renderable::Quad& quad)
     }
 
     gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    program_->release();
-
     return true;
 }

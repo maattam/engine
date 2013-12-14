@@ -60,18 +60,27 @@ void SkyboxStage::render(Entity::Camera* camera)
     trans.translate(camera->position());
     skybox_->setMVP(camera->worldView() * trans);
 
-    if(gbuffer_ != nullptr)
-    {
-        gbuffer_->bindTextures();
-    }
-
     if(scene_->skybox()->bindActive(GL_TEXTURE0))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
-        gl->glDepthFunc(GL_LEQUAL);
 
-        mesh_->render();
+        // When using depth texture, we don't want to use hardware z rejection
+        if(gbuffer_ != nullptr)
+        {
+            gbuffer_->bindTextures();
+            mesh_->render();
+        }
+
+        else
+        {
+            gl->glEnable(GL_DEPTH_TEST);
+            gl->glDepthFunc(GL_LEQUAL);
+
+            mesh_->render();
+
+            gl->glDisable(GL_DEPTH_TEST);
+        }
 
         gl->glCullFace(GL_BACK);
     }

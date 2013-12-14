@@ -193,6 +193,12 @@
     <ClCompile Include="src\skyboxstage.cpp">
       <Filter>Source Files\renderstage</Filter>
     </ClCompile>
+    <ClCompile Include="src\technique\blurfilter.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
+    <ClCompile Include="src\effect\lumaexposure.cpp">
+      <Filter>Source Files\effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -231,9 +237,6 @@
     <None Include="shaders\highpass.frag">
       <Filter>Shaders\postfx</Filter>
     </None>
-    <None Include="shaders\blur.frag">
-      <Filter>Shaders\postfx</Filter>
-    </None>
     <None Include="shaders\gbuffer.frag">
       <Filter>Shaders\technique</Filter>
     </None>
@@ -251,6 +254,9 @@
     </None>
     <None Include="shaders\dsmaterial_debug.frag">
       <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\gauss5x5.frag">
+      <Filter>Shaders\postfx</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -376,6 +382,15 @@
     </ClInclude>
     <ClInclude Include="src\skyboxstage.h">
       <Filter>Header Files\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\blurfilter.h">
+      <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effect\samplerfunction.h">
+      <Filter>Header Files\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\effect\lumaexposure.h">
+      <Filter>Header Files\effect</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

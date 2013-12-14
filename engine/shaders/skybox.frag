@@ -12,6 +12,11 @@ subroutine void DepthTestType();
 subroutine uniform DepthTestType depthTest;
 
 subroutine(DepthTestType)
+void skipDepthTest()
+{
+}
+
+subroutine(DepthTestType)
 void sampleDepthTest()
 {
     float depth = texelFetch(depth, ivec2(gl_FragCoord.xy), 0).x;
@@ -19,11 +24,6 @@ void sampleDepthTest()
     {
         discard;
     }
-}
-
-subroutine(DepthTestType)
-void skipDepthTest()
-{
 }
 
 void main()

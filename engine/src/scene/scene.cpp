@@ -49,11 +49,6 @@ void Scene::renderScene(Entity::Camera* camera)
 
 void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters)
 {
-    if(!shadowCasters)
-    {
-        lights_.clear();
-    }
-
     findVisibles(viewProj, &rootNode_, renderQueue, shadowCasters);
 }
 
@@ -85,11 +80,6 @@ void Scene::setSkybox(const CubemapTexture::Ptr& texture)
 Graph::SceneNode* Scene::rootNode()
 {
     return &rootNode_;
-}
-
-const Scene::Lights& Scene::queryLights() const
-{
-    return lights_;
 }
 
 void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,

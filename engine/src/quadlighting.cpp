@@ -39,7 +39,6 @@ void QuadLighting::setOutputFBO(QOpenGLFramebufferObject* fbo)
 
 void QuadLighting::render(Entity::Camera* camera)
 {
-    lights_.clear();
     LightingStage::render(camera);
 
     // For each visited light, render..
@@ -62,6 +61,8 @@ void QuadLighting::render(Entity::Camera* camera)
 
     gbuffer_.bindTextures();
     quad_.render();
+
+    lights_.clear();
 }
 
 void QuadLighting::visit(Entity::Light& light)

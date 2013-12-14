@@ -2,21 +2,25 @@
 #define HDR_H
 
 #include "postfx.h"
-#include "downsampler.h"
 
 #include "common.h"
+#include "downsampler.h"
 #include "shaderprogram.h"
-#include <QOpenGLFramebufferObject>
-
 #include "renderable/quad.h"
 
 #include <list>
+#include <memory>
+
+class QOpenGLFramebufferObject;
 
 namespace Engine {
     
-    class ResourceDespatcher;
+class ResourceDespatcher;
 
 namespace Effect {
+
+template<typename T>
+class SamplerFunction;
 
 class Hdr : public Postfx
 {
@@ -27,10 +31,18 @@ public:
     virtual bool initialize(int width, int height, int samples);
     virtual void render();
 
+    typedef std::shared_ptr<SamplerFunction<float>> ExposureFuncPtr;
+
+    // Sets the exposure function for automatic adaptation.
+    // If the function is null, no automatic correction is used.
+    // postcondition: Initialize must be called after calling this function.
+    void setExposureFunction(const ExposureFuncPtr& function);
+
 private:
     int width_;
     int height_;
     int bloomLevels_;
+    int sampleLevel_;
 
     float exposure_;
 
@@ -41,21 +53,11 @@ private:
     ShaderProgram tonemap_;
     ShaderProgram highpass_;
 
-    GLuint samplePbo_[2];
-    GLuint sampleLevel_;
-    int writeIndex_;
-    int readIndex_;
+    ExposureFuncPtr exposureFunc_;
 
     void renderHighpass();
     void renderTonemap();
-
-    // Samples the last frame's luminance and calculates new exposure
-    void sampleLuminance();
-    float calculateExposure(float r, float g, float b);
-
-    enum { NUM_EXPOSURES = 30 };
-
-    std::list<float> exposures_;
+    void sampleExposure();
 };
 
 }}

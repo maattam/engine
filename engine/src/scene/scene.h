@@ -21,7 +21,7 @@ public:
 
     // Implemented methods from VisibleScene
     virtual void queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters = false);
-    virtual const Lights& queryLights() const;
+
     virtual Entity::Light* directionalLight() const;
     virtual CubemapTexture* skybox() const;
 
@@ -46,7 +46,6 @@ private:
     CubemapTexture::Ptr skybox_;
 
     Entity::Light* directionalLight_;
-    Lights lights_;
 
     void findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
         RenderQueue& queue, bool shadowCasters);

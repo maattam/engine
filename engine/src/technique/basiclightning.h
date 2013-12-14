@@ -1,18 +1,21 @@
 #ifndef BASICLIGHTNING_H
 #define BASICLIGHTNING_H
 
-#include "scene/visiblescene.h"
-
 #include "technique.h"
-#include "entity/light.h"
 #include "material.h"
 
 #include <QMatrix4x4>
 
-#include <deque>
+#include <QList>
 #include <string>
 
-namespace Engine { namespace Technique {
+namespace Engine { 
+
+namespace Entity {
+    class Light;
+}
+
+namespace Technique {
 
 class BasicLightning : public Technique
 {
@@ -36,7 +39,7 @@ public:
     void setDirectionalLightShadowUnit(GLuint shadow);
 
     void setDirectionalLight(Entity::Light* light);
-    void setPointAndSpotLights(const VisibleScene::Lights& lights);
+    void setPointAndSpotLights(const QList<Entity::Light*>& lights);
 
     void setShadowEnabled(bool value);
 
@@ -44,8 +47,6 @@ protected:
     virtual bool init();
 
 private:
-    GLuint mvpLocation_;
-
     std::string formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members = "") const;
 

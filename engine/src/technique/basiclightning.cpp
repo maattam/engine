@@ -1,8 +1,9 @@
 #include "basiclightning.h"
 
+#include "entity/light.h"
+
 #include <QDebug>
 #include <qmath.h>
-#include <QTime>
 
 #include <sstream>
 #include <cassert>
@@ -16,7 +17,7 @@ namespace {
 }
 
 BasicLightning::BasicLightning()
-    : Technique(), mvpLocation_(-1)
+    : Technique()
 {
 }
 
@@ -26,44 +27,64 @@ BasicLightning::~BasicLightning()
 
 bool BasicLightning::init()
 {
-    mvpLocation_ = program()->uniformLocation("gMVP");
+    resolveUniformLocation("gMVP");
+    resolveUniformLocation("gWorld");
+    resolveUniformLocation("gEyeWorldPos");
+    resolveUniformLocation("gHasTangents");
+
+    resolveUniformLocation("gMaterial.ambientColor");
+    resolveUniformLocation("gMaterial.diffuseColor");
+    resolveUniformLocation("gMaterial.specularIntensity");
+    resolveUniformLocation("gMaterial.shininess");
+
+    resolveUniformLocation("gDiffuseSampler");
+    resolveUniformLocation("gNormalSampler");
+    resolveUniformLocation("gSpecularSampler");
+    resolveUniformLocation("gMaskSampler");
+
+    resolveUniformLocation("gDirectionalLight.ambientIntensity");
+    resolveUniformLocation("gDirectionalLight.base.color");
+    resolveUniformLocation("gDirectionalLight.direction");
+    resolveUniformLocation("gDirectionalLightMVP");
+    resolveUniformLocation("gDirectionalLightShadowMap");
+
     return true;
 }
 
 void BasicLightning::setMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue(mvpLocation_, mvp);
+    program()->setUniformValue(cachedUniformLocation("gMVP"), mvp);
 }
 
 void BasicLightning::setWorldView(const QMatrix4x4& vp)
 {
-    program()->setUniformValue("gWorld", vp);
+    program()->setUniformValue(cachedUniformLocation("gWorld"), vp);
 }
 
 void BasicLightning::setEyeWorldPos(const QVector3D& eyePos)
 {
-    program()->setUniformValue("gEyeWorldPos", eyePos);
+    program()->setUniformValue(cachedUniformLocation("gEyeWorldPos"), eyePos);
 }
 
 void BasicLightning::setHasTangents(bool tangents)
 {
-    program()->setUniformValue("gHasTangents", tangents);
+    program()->setUniformValue(cachedUniformLocation("gHasTangents"), tangents);
 }
 
 void BasicLightning::setMaterialAttributes(const Material::Attributes& attributes)
 {
-    program()->setUniformValue("gMaterial.ambientColor", linear(attributes.ambientColor));
-    program()->setUniformValue("gMaterial.diffuseColor", linear(attributes.diffuseColor));
-    program()->setUniformValue("gMaterial.specularIntensity", attributes.specularIntensity);
-    program()->setUniformValue("gMaterial.shininess", attributes.shininess);
+    program()->setUniformValue(cachedUniformLocation("gMaterial.ambientColor"), linear(attributes.ambientColor));
+    program()->setUniformValue(cachedUniformLocation("gMaterial.diffuseColor"), linear(attributes.diffuseColor));
+    program()->setUniformValue(cachedUniformLocation("gMaterial.specularIntensity"), attributes.specularIntensity);
+    program()->setUniformValue(cachedUniformLocation("gMaterial.shininess"), attributes.shininess);
 }
 
 void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular, GLuint mask)
 {
-    program()->setUniformValue("gDiffuseSampler", diffuse);
-    program()->setUniformValue("gNormalSampler", normal);
-    program()->setUniformValue("gSpecularSampler", specular);
-    program()->setUniformValue("gMaskSampler", mask);
+    program()->setUniformValue(cachedUniformLocation("gDiffuseSampler"), diffuse);
+    program()->setUniformValue(cachedUniformLocation("gNormalSampler"), normal);
+    program()->setUniformValue(cachedUniformLocation("gSpecularSampler"), specular);
+    program()->setUniformValue(cachedUniformLocation("gMaskSampler"), mask);
 }
 
 void BasicLightning::setDirectionalLight(Entity::Light* light)
@@ -74,10 +95,10 @@ void BasicLightning::setDirectionalLight(Entity::Light* light)
         ambientFactor = light->ambientIntensity() / light->diffuseIntensity();
     }
 
-    program()->setUniformValue("gDirectionalLight.ambientIntensity", ambientFactor);
-    program()->setUniformValue("gDirectionalLight.base.color", linear(light->color()) * light->diffuseIntensity());
+    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.ambientIntensity"), ambientFactor);
+    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.base.color"), linear(light->color()) * light->diffuseIntensity());
 
-    program()->setUniformValue("gDirectionalLight.direction", light->direction());
+    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.direction"), light->direction());
 }
 
 void BasicLightning::setSpotLightMVP(size_t index, const QMatrix4x4& mvp)
@@ -94,15 +115,15 @@ void BasicLightning::setSpotLightShadowUnit(size_t index, GLuint shadow)
 
 void BasicLightning::setDirectionalLightMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue("gDirectionalLightMVP", mvp);
+    program()->setUniformValue(cachedUniformLocation("gDirectionalLightMVP"), mvp);
 }
 
 void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
 {
-    program()->setUniformValue("gDirectionalLightShadowMap", shadow);
+    program()->setUniformValue(cachedUniformLocation("gDirectionalLightShadowMap"), shadow);
 }
 
-void BasicLightning::setPointAndSpotLights(const VisibleScene::Lights& lights)
+void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
 {
     int numSpotLights = 0;
     int numPointLights = 0;

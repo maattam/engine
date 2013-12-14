@@ -22,6 +22,7 @@
 #include "technique/skybox.h"
 #include "skyboxstage.h"
 #include "renderable/cube.h"
+#include "effect/lumaexposure.h"
 
 #include "basicscene.h"
 #include "sponzascene.h"
@@ -143,6 +144,7 @@ void SceneView::initialize()
 
     // HDR tonemapping
     hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
+    hdrPostfx_->setExposureFunction(std::make_shared<Engine::Effect::LumaExposure>());
 
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
     if(!debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
@@ -179,6 +181,14 @@ void SceneView::swapRenderer()
     }
 
     Engine::Renderer* newRenderer = nullptr;
+    QOpenGLFramebufferObjectFormat fboFormat;
+
+    // Skybox technique
+    Engine::SkyboxStage::SkyboxPtr sky = std::make_shared<Engine::Technique::Skybox>();
+    sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.vert"), Engine::Shader::Type::Vertex));
+    sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.frag"), Engine::Shader::Type::Fragment));
+    sky->setBrightness(5.0f);
+
     if(deferred_)
     {
         gbuffer_ = new Engine::CompactGBuffer();
@@ -190,21 +200,27 @@ void SceneView::swapRenderer()
         Engine::SkyboxStage* skybox = new Engine::SkyboxStage(lighting);
         skybox->setGBuffer(gbuffer_);
         skybox->setSkyboxMesh(std::make_shared<Engine::Renderable::Cube>());
-        Engine::SkyboxStage::SkyboxPtr sky = std::make_shared<Engine::Technique::Skybox>();
-        sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.vert"), Engine::Shader::Type::Vertex));
-        sky->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/skybox.frag"), Engine::Shader::Type::Fragment));
-        sky->setBrightness(5.0f);
         skybox->setSkyboxTechnique(sky);
 
         newRenderer = skybox;
+
+        fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
+        fboFormat.setInternalTextureFormat(GL_RGBA16F);
     }
 
     else
     {
-        newRenderer = new Engine::ForwardRenderer(despatcher_);
+        Engine::SkyboxStage* skybox = new Engine::SkyboxStage(new Engine::ForwardRenderer(despatcher_));
+        skybox->setSkyboxMesh(std::make_shared<Engine::Renderable::Cube>());
+        skybox->setSkyboxTechnique(sky);
+
+        newRenderer = skybox;
+
+        fboFormat.setAttachment(QOpenGLFramebufferObject::Depth);
+        fboFormat.setInternalTextureFormat(GL_RGBA16F);
     }
 
-    Engine::PostProcess* fxRenderer = new Engine::PostProcess(newRenderer);
+    Engine::PostProcess* fxRenderer = new Engine::PostProcess(newRenderer, fboFormat);
     renderer_ = fxRenderer;
     if(!renderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
     {

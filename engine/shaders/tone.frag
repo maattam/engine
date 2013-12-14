@@ -1,13 +1,16 @@
 #version 420
 
+// A post-process compositor which consists of tonemapping, bloom blending and gamma correction.
+
 uniform sampler2D renderedTexture;
 
 uniform sampler2D bloomSampler;
 uniform int bloomLevels;
+uniform float bloomFactor;
 
 uniform float exposure;
-uniform float bloomFactor;
 uniform float bright;
+uniform float gamma;
 
 in vec2 uv;
 
@@ -35,17 +38,16 @@ vec3 calcBloomColor()
 		color += textureLod(bloomSampler, uv, i).rgb;
 	}
 
-	return color;
+    // Bloom is converted to srgb to mask some aliasing on blur edges
+	return pow(color, vec3(2.2));
 }
 
 void main()
 {
-    // Bloom is calculated in srgb space to reduce floating point precision error
-	vec3 colorBloom = pow(calcBloomColor(), vec3(2.2));
 	vec3 color = texture(renderedTexture, uv).rgb;
 
 	// Add bloom
-	color += colorBloom * bloomFactor;
+	color += calcBloomColor() * bloomFactor;
 
     color *= exposure;
 
@@ -55,6 +57,6 @@ void main()
     vec3 whiteScale = 1.0 / tonemap(vec3(bright));
     vec3 tone = current * whiteScale;
 
-    // Map from linear color space to srgb with gamma 2.2
-    gl_FragColor.rgb = pow(tone, vec3(1/2.2));
+    // Apply gamma correction
+    gl_FragColor.rgb = pow(tone, vec3(1/gamma));
 }
