@@ -47,7 +47,9 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
         return false;
     }
 
+    setEffect(effect_);
     RenderStage::setOutputFBO(proxy_);
+
     return true;
 }
 

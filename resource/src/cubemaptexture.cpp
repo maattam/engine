@@ -47,7 +47,7 @@ bool CubemapTexture::initialiseData(const DataType& data)
                 tex->dimensions().x,
                 tex->dimensions().y,
                 0,
-                tex->size(),
+                static_cast<GLsizei>(tex->size()),
                 tex->data());
         }
 

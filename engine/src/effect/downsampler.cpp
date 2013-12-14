@@ -52,7 +52,6 @@ bool DownSampler::init(int width, int height, GLuint texture, GLuint maxLod)
 
         // Bind mipmap level to fbo
         gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, i+1);
-
         if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         {
             return false;

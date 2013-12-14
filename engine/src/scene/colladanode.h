@@ -8,7 +8,7 @@
 
 #include <vector>
 
-class aiNode;
+struct aiNode;
 
 template<typename T>
 class aiMatrix4x4t;

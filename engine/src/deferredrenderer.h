@@ -5,6 +5,7 @@
 
 #include "technique/dsgeometryshader.h"
 #include "material.h"
+#include "renderqueue.h"
 
 #include <QRect>
 
@@ -12,7 +13,6 @@ namespace Engine {
 
 class ResourceDespatcher;
 class GBuffer;
-class RenderQueue;
 
 class DeferredRenderer : public Renderer
 {
@@ -48,6 +48,7 @@ private:
     VisibleScene* scene_;
     Entity::Camera* camera_;
 
+    RenderQueue renderQueue_;
     Technique::DSGeometryShader geometryShader_;
 
     // Error material
@@ -55,7 +56,7 @@ private:
 
     bool initialise(unsigned int width, unsigned int height, unsigned int samples);
 
-    void geometryPass(const RenderQueue& queue);
+    void geometryPass();
 
     DeferredRenderer(const DeferredRenderer&);
     DeferredRenderer& operator=(const DeferredRenderer&);

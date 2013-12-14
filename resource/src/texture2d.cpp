@@ -64,10 +64,10 @@ bool Texture2D::initialiseData(const DataType& data)
         const gli::texture2D& texture = *data;
 
         gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
-        gl->glTexStorage2D(Target, texture.levels(),
+        gl->glTexStorage2D(Target, static_cast<GLint>(texture.levels()),
             gli::internal_format(texture.format()),
-            texture.dimensions().x,
-            texture.dimensions().y);
+            static_cast<GLsizei>(texture.dimensions().x),
+            static_cast<GLsizei>(texture.dimensions().y));
 
         // Upload mipmaps
         for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
@@ -77,7 +77,7 @@ bool Texture2D::initialiseData(const DataType& data)
                 texture[level].dimensions().x,
                 texture[level].dimensions().y,
                 gli::internal_format(texture.format()),
-                texture[level].size(),
+                static_cast<GLsizei>(texture[level].size()),
                 texture[level].data());
         }
 

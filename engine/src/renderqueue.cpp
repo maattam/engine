@@ -5,6 +5,7 @@ using namespace Engine;
 RenderQueue::RenderQueue()
     : modelView_(nullptr)
 {
+    current_ = queue_.begin();
 }
 
 void RenderQueue::setModelView(const QMatrix4x4* modelView)
@@ -14,10 +15,31 @@ void RenderQueue::setModelView(const QMatrix4x4* modelView)
 
 void RenderQueue::addNode(Material* material, Renderable::Renderable* renderable)
 {
+    RenderItem item = { modelView_, material, renderable };
+
     // TODO: Sort by material
 
-    RenderItem item = { modelView_, material, renderable };
-    queue_.push_back(item);
+    if(current_ == queue_.end())
+    {
+        queue_.push_back(item);
+        current_ = queue_.end();
+    }
+
+    else
+    {
+        *current_++ = item;
+    }
+}
+
+void RenderQueue::reset()
+{
+    current_ = queue_.begin();
+}
+
+void RenderQueue::clear()
+{
+    queue_.clear();
+    current_ = queue_.begin();
 }
 
 RenderQueue::RenderList::const_iterator RenderQueue::begin() const
@@ -27,5 +49,5 @@ RenderQueue::RenderList::const_iterator RenderQueue::begin() const
 
 RenderQueue::RenderList::const_iterator RenderQueue::end() const
 {
-    return queue_.end();
+    return current_;
 }

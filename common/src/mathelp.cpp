@@ -63,8 +63,8 @@ QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot)
     else
     {
         // |w| <= 1/2
-        const size_t next[3] = { 1, 2, 0 };
-        size_t i = 0;
+        const int next[3] = { 1, 2, 0 };
+        int i = 0;
 
         if(rot(1, 1) > rot(0, 0))
             i = 1;
@@ -72,8 +72,8 @@ QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot)
         if(rot(2, 2) > rot(i, i))
             i = 2;
 
-        size_t j = next[i];
-        size_t k = next[j];
+        int j = next[i];
+        int k = next[j];
 
         root = qSqrt(rot(i, i) - rot(j, j) - rot(k, k) + 1.0f);
         quatv[i] = 0.5f * root;

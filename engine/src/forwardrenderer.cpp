@@ -237,7 +237,7 @@ void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queu
     // Bind spot light shadow maps after material samplers
     for(size_t i = 0; i < shadowTech_.numSpotLights(); ++i)
     {
-        int index = Material::TEXTURE_COUNT + i + 1;
+        GLenum index = Material::TEXTURE_COUNT + i + 1;
 
         shadowTech_.bindSpotLight(i, GL_TEXTURE0 + index);
         lightningTech_.setSpotLightShadowUnit(i, index);

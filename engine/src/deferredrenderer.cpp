@@ -53,20 +53,23 @@ void DeferredRenderer::render(Entity::Camera* camera)
         return;
     }
 
+    gl->glEnable(GL_CULL_FACE);
+    gl->glCullFace(GL_BACK);
+
     camera_ = camera;
 
     // Cull visibles
-    RenderQueue renderQueue;
-    scene_->queryVisibles(camera->worldView(), renderQueue);
+    renderQueue_.reset();
+    scene_->queryVisibles(camera->worldView(), renderQueue_);
 
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
     gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
 
     // Render scene geometry to GBuffer
-    geometryPass(renderQueue);
+    geometryPass();
 }
 
-void DeferredRenderer::geometryPass(const RenderQueue& queue)
+void DeferredRenderer::geometryPass()
 {
     if(!geometryShader_.enable())
     {
@@ -82,7 +85,7 @@ void DeferredRenderer::geometryPass(const RenderQueue& queue)
     gl->glEnable(GL_DEPTH_TEST);
 
     QMatrix4x4 view = camera_->view();
-    for(auto it = queue.begin(); it != queue.end(); ++it)
+    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
     {
         Material* material = it->material;
         Renderable::Renderable* renderable = it->renderable;

@@ -1,5 +1,5 @@
 // Basic GBuffer geometry shader.
-// The shaders loaded to this Technique should use the approriate textures for the used GBuffer.
+// Shaders loaded by this Technique should use the approriate textures for the used GBuffer.
 
 #ifndef DSGEOMETRYSHADER_H
 #define DSGEOMETRYSHADER_H

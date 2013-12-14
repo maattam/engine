@@ -2,7 +2,7 @@
 #define RENDERQUEUE_H
 
 #include <QMatrix4x4>
-#include <deque>
+#include <QVector>
 
 namespace Engine {
 
@@ -32,14 +32,22 @@ public:
     // precondition: model view matrix set, material != nullptr, renderable != nullptr
     void addNode(Material* material, Renderable::Renderable* renderable);
 
-    typedef std::deque<RenderItem> RenderList;
+    // Resets the queue's pointer but doesn't deallocate existing RenderItems.
+    void reset();
+
+    // Clears the RenderList.
+    void clear();
+
+    typedef QVector<RenderItem> RenderList;
 
     RenderList::const_iterator begin() const;
     RenderList::const_iterator end() const;
 
 private:
     const QMatrix4x4* modelView_;
-    std::deque<RenderItem> queue_;
+
+    RenderList queue_;
+    RenderList::iterator current_;
 };
 
 }

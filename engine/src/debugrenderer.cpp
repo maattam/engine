@@ -9,10 +9,12 @@
 #include "gbuffer.h"
 #include "renderqueue.h"
 
+#include <QOpenGLFramebufferObject>
+
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), scene_(nullptr), camera_(nullptr), flags_(0), gbuffer_(nullptr)
+    : observable_(nullptr), scene_(nullptr), fbo_(nullptr), camera_(nullptr), flags_(0), gbuffer_(nullptr)
 {
     // AABB debugging tech
     aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.vert"), Shader::Type::Vertex));
@@ -43,7 +45,7 @@ bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
 
 void DebugRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
 {
-    // TODO
+    fbo_ = fbo;
 }
 
 void DebugRenderer::setScene(VisibleScene* scene)
@@ -65,6 +67,11 @@ void DebugRenderer::render(Entity::Camera* camera)
     if(observable_ == nullptr || flags_ == 0)
     {
         return;
+    }
+
+    if(fbo_ == nullptr || !fbo_->bind())
+    {
+        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     if(flags_ != DEBUG_GBUFFER)
@@ -113,7 +120,7 @@ void DebugRenderer::renderWireframe(const RenderQueue& queue)
 
         it->material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
             
-        QVector3D highlight = it->material->attributes().ambientColor + QVector3D(0.2, 0.2, 0.2);
+        QVector3D highlight = it->material->attributes().ambientColor + QVector3D(0.2f, 0.2f, 0.2f);
         wireframeTech_->setUniformValue("ambientColor", highlight);
         wireframeTech_->setUniformValue("diffuseColor", it->material->attributes().diffuseColor);
 
@@ -204,7 +211,7 @@ void DebugRenderer::renderGBuffer()
     int viewY = gap;
     for(int i = 0; i < numTextures; ++i)
     {
-        gl->glViewport(16, viewY, width, height);
+        gl->glViewport(gap, viewY, width, height);
 
         // Render gbuffer texture
         gbufferMS_.outputTexture(static_cast<Technique::GBufferVisualizer::TextureType>(i));

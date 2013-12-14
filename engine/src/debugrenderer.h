@@ -60,6 +60,7 @@ private:
     QRect viewport_;
     ObservableType* observable_;
     VisibleScene* scene_;
+    QOpenGLFramebufferObject* fbo_;
     Entity::Camera* camera_;
     GBuffer const* gbuffer_;
     unsigned int flags_;

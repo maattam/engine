@@ -91,7 +91,7 @@ void unpackDiffuseSpec(inout MaterialInfo material, int n)
 subroutine(CalculateLightType)
 vec4 nullLight(in VertexInfo vertex, in MaterialInfo material)
 {
-    vec3 lightColor = pow(vec3(1, 1, 251.0 / 255), vec3(2.2)) * 4.5;
+    vec3 lightColor = pow(vec3(1, 1, 251.0 / 255), vec3(2.2)) * 5;
     float ambientFac = 0.05;
 
     vec3 ambient = lightColor * ambientFac;

@@ -137,7 +137,7 @@ void Hdr::renderHighpass()
     gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", 1.2f);
+    highpass_->setUniformValue("threshold", 3.0f);
 
     quad_.renderDirect();
 
@@ -166,7 +166,7 @@ void Hdr::renderTonemap()
 
     tonemap_->setUniformValue("exposure", exposure_);
     tonemap_->setUniformValue("bloomFactor", 0.2f);
-    tonemap_->setUniformValue("bright", 2.0f);
+    tonemap_->setUniformValue("bright", 5.0f);
 
     quad_.renderDirect();
 
@@ -209,7 +209,7 @@ float Hdr::calculateExposure(float r, float g, float b)
 {
     // YUV luminance
     float Y = 0.299 * r + 0.114 * g + 0.587 * b;
-    Y = std::powf(Y, 1/2.2);
+    Y = std::powf(Y, 1/2.2f);
 
     //if(Y > 1.0)
     //    Y = 1.0f;
