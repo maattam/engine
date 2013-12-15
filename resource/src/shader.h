@@ -1,9 +1,11 @@
+// Shader wraps QOpenGLShader into Resource
+
 #ifndef SHADER_H
 #define SHADER_H
 
 #include "resource.h"
 
-#include <QOpenGLShaderProgram>
+#include <QOpenGLShader>
 
 namespace Engine {
 
@@ -29,6 +31,8 @@ public:
     Shader(const QString& name, Type type);
     virtual ~Shader();
 
+    // Returns the managed QOpenGLShader object
+    // postcondition: If the resource is not loaded, nullptr is returned
     QOpenGLShader* get() const;
 
 protected:

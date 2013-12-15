@@ -10,7 +10,7 @@
 using namespace Engine;
 
 SkyboxStage::SkyboxStage(Renderer* renderer)
-    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), scene_(nullptr)
+    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), scene_(nullptr), cubemapUnit_(0)
 {
 }
 
@@ -27,11 +27,7 @@ void SkyboxStage::setScene(VisibleScene* scene)
 void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
 {
     gbuffer_ = gbuffer;
-
-    if(skybox_ != nullptr)
-    {
-        skybox_->setDepthTextureUnit(gbuffer_->textures().indexOf("depth"));
-    }
+    initTechnique();
 }
 
 void SkyboxStage::render(Entity::Camera* camera)
@@ -55,7 +51,7 @@ void SkyboxStage::render(Entity::Camera* camera)
     trans.translate(camera->position());
     skybox_->setMVP(camera->worldView() * trans);
 
-    if(scene_->skybox()->bindActive(GL_TEXTURE0))
+    if(scene_->skybox()->bindActive(GL_TEXTURE0 + cubemapUnit_))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
@@ -74,6 +70,7 @@ void SkyboxStage::render(Entity::Camera* camera)
 
             mesh_->render();
 
+            gl->glDepthFunc(GL_LESS);
             gl->glDisable(GL_DEPTH_TEST);
         }
 
@@ -90,15 +87,28 @@ void SkyboxStage::setOutputFBO(GLuint fbo)
 void SkyboxStage::setSkyboxTechnique(const SkyboxPtr& skybox)
 {
     skybox_ = skybox;
-    skybox_->setTextureUnit(0);
-
-    if(gbuffer_ != nullptr)
-    {
-        skybox_->setDepthTextureUnit(gbuffer_->textures().indexOf("depth"));
-    }
+    initTechnique();
 }
 
 void SkyboxStage::setSkyboxMesh(const MeshPtr& mesh)
 {
     mesh_ = mesh;
+}
+
+void SkyboxStage::initTechnique()
+{
+    if(skybox_ == nullptr)
+    {
+        return;
+    }
+
+    if(gbuffer_ != nullptr)
+    {
+        int depthUnit = gbuffer_->textures().indexOf("depth");
+        cubemapUnit_ = depthUnit + 1;
+
+        skybox_->setDepthTextureUnit(depthUnit);
+    }
+
+    skybox_->setTextureUnit(cubemapUnit_);
 }

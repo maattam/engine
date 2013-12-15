@@ -76,6 +76,7 @@ namespace {
     bool parseShader(const QString& fileName, QByteArray& result)
     {
         const QRegExp rxInclude("^\\s*#include\\s*\"[^\"\']+\"\\s*$");
+        const QRegExp rxFileName("\".+\"");
 
         QFile file(fileName);
         QString line;
@@ -94,25 +95,21 @@ namespace {
                 result.append(line);
             }
 
-            else
+            else if(rxFileName.indexIn(line) != -1)
             {
-                QRegExp rx("\".+\"");
-                if(rx.indexIn(line) != -1)
-                {
-                    QString fileRel = rx.cap().remove('\"');
-                    QString dir = QFileInfo(fileName).dir().path();
-                    if(!dir.isEmpty())
-                    {
-                        dir += QDir::separator();
-                    }
+                QString fileRel = rxFileName.cap().remove('\"');
+                QString dir = QFileInfo(fileName).dir().path();
 
-                    if(!parseShader(dir + fileRel, result))
-                    {
-                        return false;
-                    }
+                if(!dir.isEmpty())
+                {
+                    dir += QDir::separator();
+                }
+
+                if(!parseShader(dir + fileRel, result))
+                {
+                    return false;
                 }
             }
-
         }
 
         return true;

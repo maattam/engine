@@ -14,16 +14,35 @@ ShaderProgram::~ShaderProgram()
 {
 }
 
-void ShaderProgram::addShader(const Shader::Ptr& shader)
+bool ShaderProgram::addShader(const Shader::Ptr& shader)
 {
-    if(shader != nullptr)
+    if(shader == nullptr)
     {
-        shaders_.push_back(shader);
-        needsLink_ = true;
-
-        connect(shader.get(), &ResourceBase::released, this, &ShaderProgram::shaderReleased);
-        connect(shader.get(), &ResourceBase::initialized, this, &ShaderProgram::shaderCompiled);
+        return false;
     }
+    
+    // If the shader is already compiled, we don't need to wait for signal
+    if(shader->ready() && shader->get()->isCompiled())
+    {
+        if(program_.addShader(shader->get()))
+        {
+            compiledCount_++;
+        }
+
+        else
+        {
+            qDebug() << __FUNCTION__ << "Failed to add shader:" << shader->name();
+            return false;
+        }
+    }
+
+    shaders_.push_back(shader);
+    needsLink_ = true;
+
+    connect(shader.get(), &ResourceBase::released, this, &ShaderProgram::shaderReleased);
+    connect(shader.get(), &ResourceBase::initialized, this, &ShaderProgram::shaderCompiled);
+
+    return true;
 }
 
 QOpenGLShaderProgram* ShaderProgram::operator->()

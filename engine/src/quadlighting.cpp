@@ -53,6 +53,7 @@ void QuadLighting::render(Entity::Camera* camera)
     materialShader_.setLightDirection(camera->view().mapVector(QVector3D(0.0f, -1.0f, -0.09f)));
 
     gbuffer_.bindTextures();
+
     quad_.render();
 
     lights_.clear();

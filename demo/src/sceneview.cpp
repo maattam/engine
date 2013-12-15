@@ -144,6 +144,44 @@ void SceneView::initialize()
 
     glViewport(0, 0, width(), height());
 
+    debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
+    if(!debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
+    {
+        qCritical() << "Failed to initialize debug renderer!";
+        exit(-1);
+    }
+
+    debugRenderer_->setObservable(&model_);
+    debugRenderer_->setScene(&model_);
+
+    swapRenderer();
+
+    // Load scene
+    swapScene(new SponzaScene(&despatcher_));
+    lastTime_.start();
+}
+
+void SceneView::swapRenderer()
+{
+    if(renderer_ != nullptr)
+    {
+        delete renderer_;
+        renderer_ = nullptr;
+
+        if(gbuffer_ != nullptr)
+        {
+            delete gbuffer_;
+            gbuffer_ = nullptr;
+            debugRenderer_->setGBuffer(nullptr);
+        }
+
+        if(hdrPostfx_ != nullptr)
+        {
+            delete hdrPostfx_;
+            hdrPostfx_ = nullptr;
+        }
+    }
+
     // HDR tonemapping
     hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
     hdrPostfx_->setExposureFunction(std::make_shared<Engine::Effect::LumaExposure>());
@@ -164,40 +202,6 @@ void SceneView::initialize()
     tonemap->setBloomFactor(0.25f);
     tonemap->setBrightLevel(5.0f);
     tonemap->setGamma(2.2f);
-
-    debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
-    if(!debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
-    {
-        qCritical() << "Failed to initialize debug renderer!";
-        exit(-1);
-    }
-
-    debugRenderer_->setObservable(&model_);
-    debugRenderer_->setScene(&model_);
-
-    swapRenderer();
-
-    model_.setView(renderer_);
-
-    // Load scene
-    swapScene(new SponzaScene(&despatcher_));
-    lastTime_.start();
-}
-
-void SceneView::swapRenderer()
-{
-    if(renderer_ != nullptr)
-    {
-        delete renderer_;
-        renderer_ = nullptr;
-
-        if(gbuffer_ != nullptr)
-        {
-            delete gbuffer_;
-            gbuffer_ = nullptr;
-            debugRenderer_->setGBuffer(nullptr);
-        }
-    }
 
     Engine::Renderer* newRenderer = nullptr;
 

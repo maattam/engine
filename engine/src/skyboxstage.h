@@ -55,9 +55,12 @@ private:
     GBuffer const* gbuffer_;
     GLuint fbo_;
     VisibleScene* scene_;
+    int cubemapUnit_;
 
     SkyboxPtr skybox_;
     MeshPtr mesh_;
+
+    void initTechnique();
 };
 
 }

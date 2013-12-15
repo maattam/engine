@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     QSurfaceFormat format;
     format.setMajorVersion(4);
     format.setMinorVersion(2);
-    format.setSamples(2);
+    format.setSamples(4);
     format.setProfile(QSurfaceFormat::CoreProfile);
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
 

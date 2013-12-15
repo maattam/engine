@@ -81,8 +81,8 @@ void ForwardRenderer::render(Entity::Camera* camera)
     scene_->queryVisibles(camera->worldView(), renderQueue);
     scene_->removeVisitor(this);
 
+    gl->glEnable(GL_CULL_FACE);
     gl->glEnable(GL_DEPTH_TEST);
-    gl->glDepthFunc(GL_LESS);
 
     // Pass 1
     // Render to depth buffer
@@ -95,6 +95,7 @@ void ForwardRenderer::render(Entity::Camera* camera)
     renderPass(camera, renderQueue);
 
     gl->glDisable(GL_DEPTH_TEST);
+    gl->glDisable(GL_CULL_FACE);
 
     lights_.clear();
 }
@@ -106,7 +107,6 @@ void ForwardRenderer::shadowMapPass()
         return;
     }
 
-    gl->glEnable(GL_CULL_FACE);
     gl->glCullFace(GL_FRONT);
 
     // Render depth for each spot light

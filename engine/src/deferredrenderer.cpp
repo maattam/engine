@@ -52,7 +52,6 @@ void DeferredRenderer::render(Entity::Camera* camera)
     }
 
     gl->glEnable(GL_CULL_FACE);
-    gl->glCullFace(GL_BACK);
 
     camera_ = camera;
 
@@ -65,6 +64,8 @@ void DeferredRenderer::render(Entity::Camera* camera)
 
     // Render scene geometry to GBuffer
     geometryPass();
+
+    gl->glDisable(GL_CULL_FACE);
 }
 
 void DeferredRenderer::geometryPass()
@@ -76,11 +77,8 @@ void DeferredRenderer::geometryPass()
 
     gbuffer_.bindFbo();
 
-    // Only geometry pass can write to the gbuffer
-    gl->glDepthMask(GL_TRUE);
-    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     gl->glEnable(GL_DEPTH_TEST);
+    gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     QMatrix4x4 view = camera_->view();
     for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
@@ -107,5 +105,4 @@ void DeferredRenderer::geometryPass()
     }
 
     gl->glDisable(GL_DEPTH_TEST);
-    gl->glDepthMask(GL_FALSE);
 }
