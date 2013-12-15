@@ -31,6 +31,11 @@ ShadowMap::LightData::LightData()
 // Initialisation methods
 //
 
+bool ShadowMap::init()
+{
+    return true;
+}
+
 bool ShadowMap::initSpotLights(GLsizei width, GLsizei height, size_t count)
 {
     destroySpotLights();
@@ -144,7 +149,7 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
     if(visibles == nullptr)
         return;
 
-    program()->setUniformValue("gMaskSampler", 0);
+    setUniformValue("gMaskSampler", 0);
 
     // Cull & render visibles
     RenderQueue shadowCasters;
@@ -152,7 +157,7 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
 
     for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
     {
-        program()->setUniformValue("gMVP", light.worldView * *it->modelView);
+        setUniformValue("gMVP", light.worldView * *it->modelView);
 
         // Bind mask texture to discard fully opaque fragments
         it->material->getTexture(Material::TEXTURE_MASK)->bindActive(GL_TEXTURE0);

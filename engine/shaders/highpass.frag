@@ -1,6 +1,6 @@
 #version 420
 
-uniform sampler2D renderedTexture;
+uniform sampler2DMS renderedTexture;
 
 uniform float threshold;
 
@@ -8,7 +8,7 @@ in vec2 uv;
 
 void main()
 {
-    vec3 color = texture(renderedTexture, uv).rgb;
+    vec3 color = texelFetch(renderedTexture, ivec2(textureSize(renderedTexture) * uv), 0).rgb;
 
     // Bloom is converted to srgb to mask some aliasing on blur edges
     color = pow(color, vec3(1/2.2));

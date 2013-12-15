@@ -54,14 +54,14 @@ public:
     void setGBuffer(GBuffer const* gbuffer);
 
     // Renders the scene to a render target instead of the default surface.
-    // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
+    // If fbo is 0, the default framebuffer is used.
+    virtual void setOutputFBO(GLuint fbo);
 
 private:
     QRect viewport_;
     ObservableType* observable_;
     VisibleScene* scene_;
-    QOpenGLFramebufferObject* fbo_;
+    GLuint fbo_;
     Entity::Camera* camera_;
     GBuffer const* gbuffer_;
     unsigned int flags_;

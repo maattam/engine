@@ -1,7 +1,5 @@
 #include "deferredrenderer.h"
 
-#include <QOpenGLFramebufferObject>
-
 #include "common.h"
 #include "gbuffer.h"
 #include "resourcedespatcher.h"
@@ -15,7 +13,7 @@
 using namespace Engine;
 
 DeferredRenderer::DeferredRenderer(GBuffer& gbuffer, ResourceDespatcher& despatcher)
-    : gbuffer_(gbuffer), output_(nullptr), errorMaterial_(&despatcher), scene_(nullptr), camera_(nullptr)
+    : gbuffer_(gbuffer), errorMaterial_(&despatcher), scene_(nullptr), camera_(nullptr)
 {
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), Shader::Type::Fragment));
@@ -41,9 +39,9 @@ void DeferredRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void DeferredRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void DeferredRenderer::setOutputFBO(GLuint /*fbo*/)
 {
-    output_ = fbo;
+    // Geometry pass doesn't output anything to screen
 }
 
 void DeferredRenderer::render(Entity::Camera* camera)

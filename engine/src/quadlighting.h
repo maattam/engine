@@ -31,12 +31,12 @@ public:
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
+    virtual void setOutputFBO(GLuint fbo);
 
     virtual void visit(Entity::Light& light);
 
 private:
-    QOpenGLFramebufferObject* fbo_;
+    GLuint fbo_;
     GBuffer& gbuffer_;
 
     QVector<Entity::Light*> lights_;

@@ -202,6 +202,7 @@
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
+    <ClCompile Include="src\technique\hdrtonemap.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skybox.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -223,9 +224,10 @@
     <None Include="shaders\shadowmap.vert" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
-    <None Include="shaders\tone.frag" />
+    <None Include="shaders\postprocess.frag" />
     <None Include="shaders\wireframe.frag" />
     <None Include="shaders\wireframe.vert" />
+    <None Include="src\technique\technique.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\compactgbuffer.h" />
@@ -270,6 +272,7 @@
     <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\dsmaterialshader.h" />
     <ClInclude Include="src\technique\gbuffervisualizer.h" />
+    <ClInclude Include="src\technique\hdrtonemap.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skybox.h" />
     <CustomBuild Include="src\technique\technique.h">

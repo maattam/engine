@@ -3,6 +3,7 @@
 #include "resourcedespatcher.h"
 #include "technique/blurfilter.h"
 #include "samplerfunction.h"
+#include "technique/hdrtonemap.h"
 
 #include <QOpenGLFramebufferObject>
 
@@ -10,28 +11,28 @@ using namespace Engine;
 using namespace Engine::Effect;
 
 Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
-    : fbo_(nullptr), downSampler_(despatcher),
-    width_(0), height_(0), bloomLevels_(bloomLevels), exposure_(1.0f), sampleLevel_(0)
+    : fbo_(nullptr), downSampler_(despatcher), threshold_(1.0f),
+    width_(0), height_(0), bloomLevels_(bloomLevels), sampleLevel_(0)
 {
-    // Tonemap program
-    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    tonemap_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/tone.frag"), Shader::Type::Fragment));
-
     // Highpass program
     highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
     highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag"), Shader::Type::Fragment));
-
-    // Downsampler filter
-    DownSampler::FilterPtr filter = std::make_shared<Technique::BlurFilter>();
-    filter->addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    filter->addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Shader::Type::Fragment));
-    downSampler_.setBlurFilter(filter);
 }
 
 Hdr::~Hdr()
 {
     if(fbo_ != nullptr)
         delete fbo_;
+}
+
+void Hdr::setBrightThreshold(float threshold)
+{
+    threshold_ = threshold;
+}
+
+void Hdr::setBlurFilter(const DownSampler::FilterPtr& filter)
+{
+    downSampler_.setBlurFilter(filter);
 }
 
 bool Hdr::initialize(int width, int height, int samples)
@@ -83,6 +84,14 @@ bool Hdr::initialize(int width, int height, int samples)
         return false;
     }
 
+    if(tonemap_ == nullptr)
+    {
+        return false;
+    }
+
+    tonemap_->setInputTexture(0, samples);
+    tonemap_->setBloomTexture(1, bloomLevels_);
+
     return downSampler_.initialise(width, height, fbo_->texture(), bloomLevels_);
 }
 
@@ -91,7 +100,7 @@ void Hdr::render()
     if(inputTexture() == 0)
         return;
 
-    else if(!tonemap_.ready() || !highpass_.ready())
+    else if(tonemap_ == nullptr || !highpass_.ready())
         return;
 
     quad_.bindVaoDirect();
@@ -99,9 +108,6 @@ void Hdr::render()
     // Pass 1
     // Highpass filter
     renderHighpass();
-
-    // Sample previous highpass result luminance
-    sampleExposure();
 
     // Pass 2
     // Downsample and blur input
@@ -126,16 +132,24 @@ void Hdr::renderHighpass()
     gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
     gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
+    gl->glBindTexture(inputType(), inputTexture());
 
     highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", 1.5f);
+    highpass_->setUniformValue("threshold", threshold_);
 
     quad_.renderDirect();
 
-    gl->glBindTexture(GL_TEXTURE_2D, 0);
+    gl->glBindTexture(inputType(), 0);
 
     fbo_->release();
+
+    // Generate mipmaps for exposure sampler
+    if(exposureFunc_ != nullptr)
+    {
+        gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
+        gl->glGenerateMipmap(GL_TEXTURE_2D);
+        gl->glBindTexture(GL_TEXTURE_2D, 0);
+    }
 }
 
 void Hdr::renderTonemap()
@@ -145,42 +159,33 @@ void Hdr::renderTonemap()
 
     gl->glViewport(0, 0, width_, height_);
 
-    tonemap_->bind();
-
-    gl->glActiveTexture(GL_TEXTURE0);
-    gl->glBindTexture(GL_TEXTURE_2D, inputTexture());
-    tonemap_->setUniformValue("renderedTexture", 0);
-
-    gl->glActiveTexture(GL_TEXTURE1);
-    gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
-    tonemap_->setUniformValue("bloomSampler", 1);
-    tonemap_->setUniformValue("bloomLevels", bloomLevels_);
-
-    tonemap_->setUniformValue("exposure", exposure_);
-    tonemap_->setUniformValue("bloomFactor", 1.0f / bloomLevels_);
-    tonemap_->setUniformValue("bright", 5.0f);
-    tonemap_->setUniformValue("gamma", 2.2f);
-
-    quad_.renderDirect();
-
-    gl->glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Hdr::sampleExposure()
-{
-    if(exposureFunc_ == nullptr)
+    if(!tonemap_->enable())
     {
         return;
     }
 
-    // Generate mipmaps for fbo
-    gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
-    gl->glGenerateMipmap(GL_TEXTURE_2D);
+    if(exposureFunc_ != nullptr)
+    {
+        tonemap_->setExposure(exposureFunc_->result());
+    }
 
-    exposure_ = exposureFunc_->result();
+    gl->glActiveTexture(GL_TEXTURE0);
+    gl->glBindTexture(inputType(), inputTexture());
+
+    gl->glActiveTexture(GL_TEXTURE1);
+    gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
+
+    quad_.renderDirect();
+
+    gl->glBindTexture(inputType(), 0);
 }
 
 void Hdr::setExposureFunction(const ExposureFuncPtr& function)
 {
     exposureFunc_ = function;
+}
+
+void Hdr::setHDRTonemapShader(const HDRTonemapPtr& shader)
+{
+    tonemap_ = shader;
 }

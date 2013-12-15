@@ -31,9 +31,26 @@ public:
     // postcondition: shader will be linked when enable is called
     void addShader(const Shader::Ptr& shader);
 
+    // A convenience function which uses the cached uniform name if resolved,
+    // or resolves and caches to location before setting the value.
+    // precondition: Technique is enabled
+    // postcondition: Value set and name cached when true is returned.
+    template<typename T>
+    bool setUniformValue(const QString& name, T&& value);
+
+    // A convenience function which binds the cached subroutine name or resolves it
+    // before setting the subroutine uniform.
+    // precondition: Technique is enabled
+    bool useSubroutine(const QString& name, GLenum shaderType);
+
     // Returns the current QOpenGLShaderProgram encapsulated by the ShaderProgram
     // precondition: shaders added
     QOpenGLShaderProgram* program();
+
+protected:
+    // Called after the program has been linked successfully for the first time
+    // precondition: enable called successfully
+    virtual bool init() = 0;
 
     // Returns a cached uniform location from the hash.
     // The uniform must have been registered through resolveUniformLocation, or
@@ -48,11 +65,6 @@ public:
     int resolveUniformLocation(const QString& name);
     GLuint resolveSubroutineLocation(const QString& name, GLenum shaderType);
 
-protected:
-    // Called after the program has been linked for the first time
-    // precondition: enable called successfully
-    virtual bool init();
-
 private:
     ShaderProgram program_;
     QHash<QString, int> uniforms_;
@@ -61,6 +73,8 @@ private:
     Technique(const Technique&);
     Technique& operator=(const Technique&);
 };
+
+#include "technique.inl"
 
 }}
 

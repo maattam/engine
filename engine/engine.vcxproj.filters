@@ -199,6 +199,9 @@
     <ClCompile Include="src\effect\lumaexposure.cpp">
       <Filter>Source Files\effect</Filter>
     </ClCompile>
+    <ClCompile Include="src\technique\hdrtonemap.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -231,9 +234,6 @@
     <None Include="shaders\aabb.vert">
       <Filter>Shaders\debugging</Filter>
     </None>
-    <None Include="shaders\tone.frag">
-      <Filter>Shaders\postfx</Filter>
-    </None>
     <None Include="shaders\highpass.frag">
       <Filter>Shaders\postfx</Filter>
     </None>
@@ -256,6 +256,12 @@
       <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\gauss5x5.frag">
+      <Filter>Shaders\postfx</Filter>
+    </None>
+    <None Include="src\technique\technique.inl">
+      <Filter>Source Files\technique</Filter>
+    </None>
+    <None Include="shaders\postprocess.frag">
       <Filter>Shaders\postfx</Filter>
     </None>
   </ItemGroup>
@@ -391,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="src\effect\lumaexposure.h">
       <Filter>Header Files\effect</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\hdrtonemap.h">
+      <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

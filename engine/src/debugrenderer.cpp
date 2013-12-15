@@ -9,12 +9,10 @@
 #include "gbuffer.h"
 #include "renderqueue.h"
 
-#include <QOpenGLFramebufferObject>
-
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), scene_(nullptr), fbo_(nullptr), camera_(nullptr), flags_(0), gbuffer_(nullptr)
+    : observable_(nullptr), scene_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr)
 {
     // AABB debugging tech
     aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.vert"), Shader::Type::Vertex));
@@ -43,7 +41,7 @@ bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
     return true;
 }
 
-void DebugRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void DebugRenderer::setOutputFBO(GLuint fbo)
 {
     fbo_ = fbo;
 }
@@ -69,10 +67,7 @@ void DebugRenderer::render(Entity::Camera* camera)
         return;
     }
 
-    if(fbo_ == nullptr || !fbo_->bind())
-    {
-        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
     if(flags_ != DEBUG_GBUFFER)
     {

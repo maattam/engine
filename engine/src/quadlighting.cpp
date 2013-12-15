@@ -5,12 +5,10 @@
 #include "entity/light.h"
 #include "gbuffer.h"
 
-#include <QOpenGLFramebufferObject>
-
 using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher)
-    : LightingStage(renderer), gbuffer_(gbuffer), fbo_(nullptr)
+    : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0)
 {
     materialShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
     materialShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.frag"), Shader::Type::Fragment));
@@ -30,10 +28,9 @@ bool QuadLighting::setViewport(const QRect& viewport, unsigned int samples)
     return LightingStage::setViewport(viewport, samples);
 }
 
-void QuadLighting::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void QuadLighting::setOutputFBO(GLuint fbo)
 {
     LightingStage::setOutputFBO(fbo);
-
     fbo_ = fbo;
 }
 
@@ -43,11 +40,7 @@ void QuadLighting::render(Entity::Camera* camera)
 
     // For each visited light, render..
 
-    if(fbo_ == nullptr || !fbo_->bind())
-    {
-        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl->glClear(GL_COLOR_BUFFER_BIT);
 
     // Output each GBuffer component to screen for now

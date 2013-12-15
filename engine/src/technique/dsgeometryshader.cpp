@@ -14,40 +14,34 @@ DSGeometryShader::~DSGeometryShader()
 
 void DSGeometryShader::setNormalMatrix(const QMatrix3x3& normalMatrix)
 {
-    program()->setUniformValue(cachedUniformLocation("normalMatrix"), normalMatrix);
+    setUniformValue("normalMatrix", normalMatrix);
 }
 
 void DSGeometryShader::setMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue(cachedUniformLocation("MVP"), mvp);
+    setUniformValue("MVP", mvp);
 }
 
 void DSGeometryShader::setMaterialAttributes(const Material::Attributes& attrib)
 {
-    program()->setUniformValue(cachedUniformLocation("material.diffuseColor"), attrib.diffuseColor);
-    program()->setUniformValue(cachedUniformLocation("material.shininess"), attrib.shininess);
-    program()->setUniformValue(cachedUniformLocation("material.specularIntensity"), attrib.specularIntensity);
+    setUniformValue("material.diffuseColor", attrib.diffuseColor);
+    setUniformValue("material.shininess", attrib.shininess);
+    setUniformValue("material.specularIntensity", attrib.specularIntensity);
 }
 
 void DSGeometryShader::setHasTangentsAndNormals(bool value)
 {
-    GLuint fragLoc = -1;
-    GLuint vertLoc = -1;
-
     if(value)
     {
-        vertLoc = cachedSubroutineLocation("calculateTangent");
-        fragLoc = cachedSubroutineLocation("calculateBumpedNormal");
+        useSubroutine("calculateTangent", GL_VERTEX_SHADER);
+        useSubroutine("calculateBumpedNormal", GL_FRAGMENT_SHADER);
     }
 
     else
     {
-        vertLoc = cachedSubroutineLocation("skipTangent");
-        fragLoc = cachedSubroutineLocation("calculateInterpolatedNormal");
+        useSubroutine("skipTangent", GL_VERTEX_SHADER);
+        useSubroutine("calculateInterpolatedNormal", GL_FRAGMENT_SHADER);
     }
-
-    gl->glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &vertLoc);
-    gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &fragLoc);
 }
 
 bool DSGeometryShader::init()
@@ -60,7 +54,10 @@ bool DSGeometryShader::init()
     // Set texture units
     for(int i = 0; i < Material::TEXTURE_COUNT; ++i)
     {
-        program()->setUniformValue(resolveUniformLocation(SAMPLERS[i]), i);
+        if(!setUniformValue(SAMPLERS[i], i))
+        {
+            return false;
+        }
     }
 
     // Register uniforms

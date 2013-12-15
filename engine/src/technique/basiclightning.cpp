@@ -27,64 +27,43 @@ BasicLightning::~BasicLightning()
 
 bool BasicLightning::init()
 {
-    resolveUniformLocation("gMVP");
-    resolveUniformLocation("gWorld");
-    resolveUniformLocation("gEyeWorldPos");
-    resolveUniformLocation("gHasTangents");
-
-    resolveUniformLocation("gMaterial.ambientColor");
-    resolveUniformLocation("gMaterial.diffuseColor");
-    resolveUniformLocation("gMaterial.specularIntensity");
-    resolveUniformLocation("gMaterial.shininess");
-
-    resolveUniformLocation("gDiffuseSampler");
-    resolveUniformLocation("gNormalSampler");
-    resolveUniformLocation("gSpecularSampler");
-    resolveUniformLocation("gMaskSampler");
-
-    resolveUniformLocation("gDirectionalLight.ambientIntensity");
-    resolveUniformLocation("gDirectionalLight.base.color");
-    resolveUniformLocation("gDirectionalLight.direction");
-    resolveUniformLocation("gDirectionalLightMVP");
-    resolveUniformLocation("gDirectionalLightShadowMap");
-
     return true;
 }
 
 void BasicLightning::setMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue(cachedUniformLocation("gMVP"), mvp);
+    setUniformValue("gMVP", mvp);
 }
 
 void BasicLightning::setWorldView(const QMatrix4x4& vp)
 {
-    program()->setUniformValue(cachedUniformLocation("gWorld"), vp);
+    setUniformValue("gWorld", vp);
 }
 
 void BasicLightning::setEyeWorldPos(const QVector3D& eyePos)
 {
-    program()->setUniformValue(cachedUniformLocation("gEyeWorldPos"), eyePos);
+    setUniformValue("gEyeWorldPos", eyePos);
 }
 
 void BasicLightning::setHasTangents(bool tangents)
 {
-    program()->setUniformValue(cachedUniformLocation("gHasTangents"), tangents);
+    setUniformValue("gHasTangents", tangents);
 }
 
 void BasicLightning::setMaterialAttributes(const Material::Attributes& attributes)
 {
-    program()->setUniformValue(cachedUniformLocation("gMaterial.ambientColor"), linear(attributes.ambientColor));
-    program()->setUniformValue(cachedUniformLocation("gMaterial.diffuseColor"), linear(attributes.diffuseColor));
-    program()->setUniformValue(cachedUniformLocation("gMaterial.specularIntensity"), attributes.specularIntensity);
-    program()->setUniformValue(cachedUniformLocation("gMaterial.shininess"), attributes.shininess);
+    setUniformValue("gMaterial.ambientColor", linear(attributes.ambientColor));
+    setUniformValue("gMaterial.diffuseColor", linear(attributes.diffuseColor));
+    setUniformValue("gMaterial.specularIntensity", attributes.specularIntensity);
+    setUniformValue("gMaterial.shininess", attributes.shininess);
 }
 
 void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular, GLuint mask)
 {
-    program()->setUniformValue(cachedUniformLocation("gDiffuseSampler"), diffuse);
-    program()->setUniformValue(cachedUniformLocation("gNormalSampler"), normal);
-    program()->setUniformValue(cachedUniformLocation("gSpecularSampler"), specular);
-    program()->setUniformValue(cachedUniformLocation("gMaskSampler"), mask);
+    setUniformValue("gDiffuseSampler", diffuse);
+    setUniformValue("gNormalSampler", normal);
+    setUniformValue("gSpecularSampler", specular);
+    setUniformValue("gMaskSampler", mask);
 }
 
 void BasicLightning::setDirectionalLight(Entity::Light* light)
@@ -95,32 +74,31 @@ void BasicLightning::setDirectionalLight(Entity::Light* light)
         ambientFactor = light->ambientIntensity() / light->diffuseIntensity();
     }
 
-    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.ambientIntensity"), ambientFactor);
-    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.base.color"), linear(light->color()) * light->diffuseIntensity());
-
-    program()->setUniformValue(cachedUniformLocation("gDirectionalLight.direction"), light->direction());
+    setUniformValue("gDirectionalLight.ambientIntensity", ambientFactor);
+    setUniformValue("gDirectionalLight.base.color", linear(light->color()) * light->diffuseIntensity());
+    setUniformValue("gDirectionalLight.direction", light->direction());
 }
 
 void BasicLightning::setSpotLightMVP(size_t index, const QMatrix4x4& mvp)
 {
     assert(index < MAX_SPOT_LIGHTS);
-    program()->setUniformValue(formatUniformTableName("gLightMVP", index).c_str(), mvp);
+    setUniformValue(formatUniformTableName("gLightMVP", index).c_str(), mvp);
 }
 
 void BasicLightning::setSpotLightShadowUnit(size_t index, GLuint shadow)
 {
      assert(index < MAX_SPOT_LIGHTS);
-     program()->setUniformValue(formatUniformTableName("gSpotLightShadowMap", index).c_str(), shadow);
+     setUniformValue(formatUniformTableName("gSpotLightShadowMap", index).c_str(), shadow);
 }
 
 void BasicLightning::setDirectionalLightMVP(const QMatrix4x4& mvp)
 {
-    program()->setUniformValue(cachedUniformLocation("gDirectionalLightMVP"), mvp);
+    setUniformValue("gDirectionalLightMVP", mvp);
 }
 
 void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
 {
-    program()->setUniformValue(cachedUniformLocation("gDirectionalLightShadowMap"), shadow);
+    setUniformValue("gDirectionalLightShadowMap", shadow);
 }
 
 void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
@@ -157,36 +135,36 @@ void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
         }
     }
 
-    program()->setUniformValue("gNumPointLights", numPointLights);
-    program()->setUniformValue("gNumSpotLights", numSpotLights);
+    setUniformValue("gNumPointLights", numPointLights);
+    setUniformValue("gNumSpotLights", numSpotLights);
 }
 
 void BasicLightning::setSpotLight(const Entity::Light* light, int index)
 {
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               light->position());
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.constant").c_str(),   light->attenuation().constant);
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation().exp);
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.linear").c_str(),     light->attenuation().linear);
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               light->position());
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.constant").c_str(),   light->attenuation().constant);
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation().exp);
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.linear").c_str(),     light->attenuation().linear);
 
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "direction").c_str(),               light->direction());
+    setUniformValue(formatUniformTableName("gSpotLights", index, "direction").c_str(),               light->direction());
 
     // Convert cutoff to radians
-    program()->setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),                  cosf(qDegreesToRadians(light->cutoff())));
+    setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),                  cosf(qDegreesToRadians(light->cutoff())));
 }
 
 void BasicLightning::setPointLight(const Entity::Light* light, int index)
 {
-    program()->setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
-    program()->setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               light->position());
-    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.constant").c_str(),   light->attenuation().constant);
-    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation().exp);
-    program()->setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.linear").c_str(),     light->attenuation().linear);
+    setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
+    setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               light->position());
+    setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.constant").c_str(),   light->attenuation().constant);
+    setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation().exp);
+    setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.linear").c_str(),     light->attenuation().linear);
 }
 
 void BasicLightning::setShadowEnabled(bool value)
 {
-    program()->setUniformValue("gShadowsEnabled", value);
+    setUniformValue("gShadowsEnabled", value);
 }
 
 std::string BasicLightning::formatUniformTableName(const std::string& table,

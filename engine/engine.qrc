@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>shaders/passthrough.vert</file>
-        <file>shaders/tone.frag</file>
+        <file>shaders/postprocess.frag</file>
         <file>shaders/gauss5x5.frag</file>
         <file>shaders/highpass.frag</file>
         <file>images/white.png</file>

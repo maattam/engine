@@ -23,6 +23,8 @@
 #include "skyboxstage.h"
 #include "renderable/cube.h"
 #include "effect/lumaexposure.h"
+#include "technique/hdrtonemap.h"
+#include "technique/blurfilter.h"
 
 #include "basicscene.h"
 #include "sponzascene.h"
@@ -145,6 +147,23 @@ void SceneView::initialize()
     // HDR tonemapping
     hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
     hdrPostfx_->setExposureFunction(std::make_shared<Engine::Effect::LumaExposure>());
+    hdrPostfx_->setBrightThreshold(1.5f);
+
+    // 5x5 Gaussian blur filter
+    Engine::Effect::Hdr::BlurFilterPtr filter(new Engine::Technique::BlurFilter);
+    filter->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Engine::Shader::Type::Vertex));
+    filter->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Engine::Shader::Type::Fragment));
+    hdrPostfx_->setBlurFilter(filter);
+
+    // Tonemap shader
+    Engine::Effect::Hdr::HDRTonemapPtr tonemap(new Engine::Technique::HDRTonemap);
+    tonemap->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Engine::Shader::Type::Vertex));
+    tonemap->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Engine::Shader::Type::Fragment));
+    hdrPostfx_->setHDRTonemapShader(tonemap);
+
+    tonemap->setBloomFactor(0.25f);
+    tonemap->setBrightLevel(5.0f);
+    tonemap->setGamma(2.2f);
 
     debugRenderer_ = new Engine::DebugRenderer(&despatcher_);
     if(!debugRenderer_->setViewport(QRect(0, 0, width(), height()), format().samples()))
@@ -181,7 +200,9 @@ void SceneView::swapRenderer()
     }
 
     Engine::Renderer* newRenderer = nullptr;
+
     QOpenGLFramebufferObjectFormat fboFormat;
+    fboFormat.setInternalTextureFormat(GL_RGBA16F);
 
     // Skybox technique
     Engine::SkyboxStage::SkyboxPtr sky = std::make_shared<Engine::Technique::Skybox>();
@@ -205,7 +226,7 @@ void SceneView::swapRenderer()
         newRenderer = skybox;
 
         fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
-        fboFormat.setInternalTextureFormat(GL_RGBA16F);
+        fboFormat.setSamples(1);
     }
 
     else
@@ -217,7 +238,7 @@ void SceneView::swapRenderer()
         newRenderer = skybox;
 
         fboFormat.setAttachment(QOpenGLFramebufferObject::Depth);
-        fboFormat.setInternalTextureFormat(GL_RGBA16F);
+        fboFormat.setSamples(requestedFormat().samples());
     }
 
     Engine::PostProcess* fxRenderer = new Engine::PostProcess(newRenderer, fboFormat);

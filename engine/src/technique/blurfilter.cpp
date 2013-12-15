@@ -18,21 +18,23 @@ void BlurFilter::setTextureUnit(int unit)
 
     if(program()->isLinked())
     {
-        program()->setUniformValue(cachedUniformLocation("inputTexture"), textureUnit_);
+        setUniformValue("inputTexture", textureUnit_);
     }
 }
 
 void BlurFilter::setTextureParams(int width, int height, float lodLevel)
 {
-    program()->setUniformValue(cachedUniformLocation("width"), width);
-    program()->setUniformValue(cachedUniformLocation("height"), height);
-    program()->setUniformValue(cachedUniformLocation("lodLevel"), lodLevel);
+    setUniformValue("width", width);
+    setUniformValue("height", height);
+    setUniformValue("lodLevel", lodLevel);
 }
 
 bool BlurFilter::init()
 {
-    int unitLocation = resolveUniformLocation("inputTexture");
-    program()->setUniformValue(unitLocation, textureUnit_);
+    if(!setUniformValue("inputTexture", textureUnit_))
+    {
+        return false;
+    }
 
     resolveUniformLocation("width");
     resolveUniformLocation("height");

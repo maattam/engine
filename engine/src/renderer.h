@@ -3,9 +3,8 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include "common.h"
 #include <QRect>
-
-class QOpenGLFramebufferObject;
 
 namespace Engine {
 
@@ -33,8 +32,8 @@ public:
     virtual void render(Entity::Camera* camera) = 0;
 
     // Renders the scene to a render target instead of the default surface.
-    // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo) = 0;
+    // If fbo is 0, the default framebuffer is used.
+    virtual void setOutputFBO(GLuint fbo) = 0;
 };
 
 };

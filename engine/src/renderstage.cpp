@@ -27,7 +27,7 @@ void RenderStage::render(Entity::Camera* camera)
     renderer_->render(camera);
 }
 
-void RenderStage::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void RenderStage::setOutputFBO(GLuint fbo)
 {
     renderer_->setOutputFBO(fbo);
 }

@@ -26,21 +26,23 @@ public:
 
     virtual void render(Entity::Camera* camera);
 
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
+    virtual void setOutputFBO(GLuint fbo);
 
     // Precondition: Viewport has been set
     bool setEffect(Effect::Postfx* effect);
 
 private:
     QRect viewport_;
-    unsigned int samples_;
 
     QOpenGLFramebufferObjectFormat format_;
+    GLuint proxy_;
+    GLuint texture_;
+    GLuint depth_;
 
-    QOpenGLFramebufferObject* proxy_;
-    QOpenGLFramebufferObject* out_;
-
+    GLuint out_;
     Effect::Postfx* effect_;
+
+    void deleteBuffers();
 };
 
 }

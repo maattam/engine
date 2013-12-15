@@ -32,8 +32,8 @@ public:
     virtual void render(Entity::Camera* camera);
 
     // Renders the scene to a render target instead of the default surface.
-    // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
+    // If fbo is 0, the default framebuffer is used.
+    virtual void setOutputFBO(GLuint fbo);
 
     typedef std::shared_ptr<Technique::Skybox> SkyboxPtr;
     typedef std::shared_ptr<Renderable::Renderable> MeshPtr;
@@ -53,7 +53,7 @@ public:
 
 private:
     GBuffer const* gbuffer_;
-    QOpenGLFramebufferObject* fbo_;
+    GLuint fbo_;
     VisibleScene* scene_;
 
     SkyboxPtr skybox_;

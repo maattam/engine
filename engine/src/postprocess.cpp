@@ -8,23 +8,36 @@
 using namespace Engine;
 
 PostProcess::PostProcess(Renderer* renderer)
-    : RenderStage(renderer), effect_(nullptr), proxy_(nullptr), out_(nullptr), samples_(1)
+    : RenderStage(renderer), effect_(nullptr), proxy_(0), out_(0)
 {
     format_.setAttachment(QOpenGLFramebufferObject::NoAttachment);
     format_.setInternalTextureFormat(GL_RGBA16F);
+    format_.setSamples(1);
+
+    texture_ = depth_ = 0;
 }
 
 PostProcess::PostProcess(Renderer* renderer, const QOpenGLFramebufferObjectFormat& format)
-    : RenderStage(renderer), effect_(nullptr), proxy_(nullptr), out_(nullptr), samples_(1), format_(format)
+    : RenderStage(renderer), effect_(nullptr), proxy_(0), out_(0), format_(format)
 {
+    texture_ = depth_ = 0;
 }
 
 PostProcess::~PostProcess()
 {
-    if(proxy_ != nullptr)
-    {
-        delete proxy_;
-    }
+    deleteBuffers();
+}
+
+void PostProcess::deleteBuffers()
+{
+    if(texture_ != 0)
+        gl->glDeleteTextures(1, &texture_);
+
+    if(depth_ != 0)
+        gl->glDeleteTextures(1, &depth_);
+
+    if(proxy_ != 0)
+        gl->glDeleteFramebuffers(1, &proxy_);
 }
 
 bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
@@ -35,16 +48,40 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
     }
 
     viewport_ = viewport;
-    samples_ = samples;
 
-    if(proxy_ != nullptr)
+    deleteBuffers();
+
+    // Create new framebuffer object based on the given format
+    gl->glGenFramebuffers(1, &proxy_);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, proxy_);
+
+    // Color attachment
+    gl->glGenTextures(1, &texture_);
+    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, texture_);
+    gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, format_.samples(), format_.internalTextureFormat(),
+        viewport.width(), viewport.height(), GL_TRUE);
+
+    gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+    gl->glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture_, 0);
+
+    // Depth attachment
+    if(format_.attachment() == QOpenGLFramebufferObject::Depth)
     {
-        delete proxy_;
-        proxy_ = nullptr;
+        gl->glGenRenderbuffers(1, &depth_);
+        gl->glBindRenderbuffer(GL_RENDERBUFFER, depth_);
+        gl->glRenderbufferStorageMultisample(GL_RENDERBUFFER, format_.samples(), GL_DEPTH_COMPONENT32,
+            viewport.width(), viewport.height());
+
+        gl->glBindRenderbuffer(GL_RENDERBUFFER, 0);
+        gl->glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depth_);
     }
 
-    proxy_ = new QOpenGLFramebufferObject(viewport.width(), viewport.height(), format_);
-    if(!proxy_->isValid())
+    // TODO: If stencil is needed in output pass, create it here
+
+    GLenum status = gl->glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    if(status != GL_FRAMEBUFFER_COMPLETE)
     {
         qDebug() << "Failed to create framebuffer object for post-processing!";
         return false;
@@ -66,10 +103,10 @@ void PostProcess::render(Entity::Camera* camera)
     }
 }
 
-void PostProcess::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void PostProcess::setOutputFBO(GLuint fbo)
 {
     out_ = fbo;
-    effect_->setOutputFbo(out_ != nullptr ? out_->handle() : 0);
+    effect_->setOutputFbo(out_);
 }
 
 bool PostProcess::setEffect(Effect::Postfx* effect)
@@ -80,8 +117,8 @@ bool PostProcess::setEffect(Effect::Postfx* effect)
         return false;
     }
 
-    effect_->setInputTexture(proxy_->texture());
-    effect_->setOutputFbo(out_ != nullptr ? out_->handle() : 0);
+    effect_->setInputTexture(texture_);
+    effect_->setOutputFbo(out_);
 
-    return effect_->initialize(viewport_.width(), viewport_.height(), samples_);
+    return effect_->initialize(viewport_.width(), viewport_.height(), format_.samples());
 }

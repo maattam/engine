@@ -33,14 +33,13 @@ public:
     virtual void render(Entity::Camera* camera);
 
     // Renders the scene to a render target instead of the default surface.
-    // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(QOpenGLFramebufferObject* fbo);
+    // If fbo is 0, the default framebuffer is used.
+    virtual void setOutputFBO(GLuint fbo);
 
 private:
     GBuffer& gbuffer_;
     QRect viewport_;
 
-    QOpenGLFramebufferObject* output_;
     VisibleScene* scene_;
     Entity::Camera* camera_;
 

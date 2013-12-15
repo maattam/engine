@@ -26,7 +26,7 @@ void DSMaterialShader::setSampleCount(unsigned int count)
 
     if(program()->isLinked())
     {
-        program()->setUniformValue(cachedUniformLocation("samples"), samples_);
+        setUniformValue("samples", samples_);
     }
 }
 
@@ -37,18 +37,18 @@ void DSMaterialShader::setDepthRange(float rnear, float rfar)
 
     if(program()->isLinked())
     {
-        program()->setUniformValue(cachedUniformLocation("depthRange"), depthRange_);
+        setUniformValue("depthRange", depthRange_);
     }
 }
 
 void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
 {
-    program()->setUniformValue(cachedUniformLocation("persProj"), proj);
+    setUniformValue("persProj", proj);
 }
 
 void DSMaterialShader::setLightDirection(const QVector3D& dir)
 {
-    program()->setUniformValue("lightDirection", dir.normalized());
+    setUniformValue("lightDirection", dir.normalized());
 }
 
 bool DSMaterialShader::init()
@@ -62,26 +62,27 @@ bool DSMaterialShader::init()
     int i = 0;
     for(const QString& texture : gbuffer_->textures())
     {
-        GLuint id = resolveUniformLocation(texture + "Data");
-        if(id == GL_INVALID_INDEX)
+        if(!setUniformValue(texture + "Data", i++))
         {
             return false;
         }
-
-        program()->setUniformValue(id, i++);
     }
 
     // The other uniforms are not critical as they can be replaced by subclasses
-    int samplesLocation = resolveUniformLocation("samples");
-    program()->setUniformValue(samplesLocation, samples_);
+    if(!setUniformValue("samples", samples_))
+    {
+        return false;
+    }
 
-    int depthRangeLocation = resolveUniformLocation("depthRange");
-    program()->setUniformValue(depthRangeLocation, depthRange_);
+    if(!setUniformValue("depthRange", depthRange_))
+    {
+        return false;
+    }
 
-    resolveUniformLocation("persProj");
+    if(!useSubroutine("nullLight", GL_FRAGMENT_SHADER))
+    {
+        return false;
+    }
 
-    GLuint lightFunc = resolveSubroutineLocation("nullLight", GL_FRAGMENT_SHADER);
-    gl->glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &lightFunc);
-
-    return true;
+    return resolveUniformLocation("persProj") != -1;
 }

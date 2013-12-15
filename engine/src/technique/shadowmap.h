@@ -36,6 +36,9 @@ public:
     const QMatrix4x4& directionalLightVP() const;
     const QMatrix4x4& spotLightVP(size_t index) const;
 
+protected:
+    virtual bool init();
+
 private:
     struct LightData
     {

@@ -93,7 +93,19 @@ GLuint Technique::cachedSubroutineLocation(const QString& name) const
     return location;
 }
 
-bool Technique::init()
+bool Technique::useSubroutine(const QString& name, GLenum shaderType)
 {
+    GLenum location = cachedSubroutineLocation(name);
+    if(location == GL_INVALID_INDEX)
+    {
+        location = resolveSubroutineLocation(name, shaderType);
+    }
+
+    if(location == GL_INVALID_INDEX)
+    {
+        return false;
+    }
+
+    gl->glUniformSubroutinesuiv(shaderType, 1, &location);
     return true;
 }

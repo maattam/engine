@@ -10,12 +10,10 @@
 #include "scene/visiblescene.h"
 #include "resourcedespatcher.h"
 
-#include <QOpenGLFramebufferObject>
-
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
-    : scene_(nullptr), samples_(1), errorMaterial_(&despatcher), fbo_(nullptr)
+    : scene_(nullptr), samples_(1), errorMaterial_(&despatcher), fbo_(0)
 {
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
@@ -52,7 +50,7 @@ void ForwardRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void ForwardRenderer::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void ForwardRenderer::setOutputFBO(GLuint fbo)
 {
     fbo_ = fbo;
 }
@@ -92,10 +90,7 @@ void ForwardRenderer::render(Entity::Camera* camera)
 
     // Pass 2
     // Render geometry and lightning
-    if(fbo_ == nullptr || !fbo_->bind())
-    {
-        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
     renderPass(camera, renderQueue);
 

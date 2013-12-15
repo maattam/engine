@@ -7,12 +7,10 @@
 #include "entity/camera.h"
 #include "gbuffer.h"
 
-#include <QOpenGLFramebufferObject>
-
 using namespace Engine;
 
 SkyboxStage::SkyboxStage(Renderer* renderer)
-    : RenderStage(renderer), gbuffer_(nullptr), fbo_(nullptr), scene_(nullptr)
+    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), scene_(nullptr)
 {
 }
 
@@ -45,15 +43,12 @@ void SkyboxStage::render(Entity::Camera* camera)
         return; // Skybox now set
     }
 
-    if(fbo_ == nullptr || !fbo_->bind())
-    {
-        gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
     if(mesh_ == nullptr || skybox_ == nullptr || !skybox_->enable())
     {
         return;
     }
+
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
     // Translate the skybox mesh to view origin
     QMatrix4x4 trans;
@@ -86,7 +81,7 @@ void SkyboxStage::render(Entity::Camera* camera)
     }
 }
 
-void SkyboxStage::setOutputFBO(QOpenGLFramebufferObject* fbo)
+void SkyboxStage::setOutputFBO(GLuint fbo)
 {
     RenderStage::setOutputFBO(fbo);
     fbo_ = fbo;
