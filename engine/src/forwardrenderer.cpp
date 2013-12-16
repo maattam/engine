@@ -9,6 +9,7 @@
 #include "renderable/renderable.h"
 #include "scene/visiblescene.h"
 #include "resourcedespatcher.h"
+#include "texture2dresource.h"
 
 using namespace Engine;
 
@@ -17,7 +18,7 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
 {
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher.get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
+        despatcher.get<Texture2DResource>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
 
     // ShadowMap shaders
     shadowTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/shadowmap.vert"), Shader::Type::Vertex));

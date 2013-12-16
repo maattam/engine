@@ -30,7 +30,7 @@ public:
 
     // Implemented methods from SceneModel
     virtual void setDirectionalLight(Entity::Light* light);
-    virtual void setSkybox(const CubemapTexture::Ptr& texture);
+    virtual void setSkybox(const std::shared_ptr<CubemapTexture>& texture);
 
     virtual Graph::SceneNode* rootNode();
 
@@ -43,7 +43,7 @@ private:
     QSet<BaseVisitor*> visitors_;
 
     Graph::SceneNode rootNode_;
-    CubemapTexture::Ptr skybox_;
+    std::shared_ptr<CubemapTexture> skybox_;
 
     Entity::Light* directionalLight_;
 

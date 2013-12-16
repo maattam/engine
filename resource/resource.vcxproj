@@ -19,8 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\cubemapresource.h" />
     <ClInclude Include="src\cubemaptexture.h" />
     <ClInclude Include="src\material.h" />
+    <ClInclude Include="src\texture2dresource.h" />
+    <ClInclude Include="src\textureloader.h" />
     <CustomBuild Include="src\resourcedespatcher.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing resourcedespatcher.h...</Message>
@@ -130,6 +133,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="src\cubemapresource.cpp" />
     <ClCompile Include="src\cubemaptexture.cpp" />
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\resource.cpp" />
@@ -137,8 +141,9 @@
     <ClCompile Include="src\resourceloader.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\shaderprogram.cpp" />
-    <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\textureloader.cpp" />
     <ClCompile Include="src\texture2d.cpp" />
+    <ClCompile Include="src\texture2dresource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\resource.inl" />

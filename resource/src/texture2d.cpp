@@ -1,168 +1,51 @@
-#include "texture2D.h"
-
-#include <QDebug>
-
-#include <gli/gli.hpp>
+#include "texture2d.h"
 
 using namespace Engine;
 
 Texture2D::Texture2D()
-    : Texture(), Resource(), width_(0), height_(0), conversion_(TC_RGBA)
+    : Texture()
 {
 }
 
-Texture2D::Texture2D(const QString& name, TextureConversion conversion)
-    : Texture(), Resource(name), width_(0), height_(0), conversion_(conversion)
+Texture2D::~Texture2D()
 {
 }
 
-bool Texture2D::bind()
+bool Texture2D::create(GLint level, GLint internalFormat, GLsizei width, GLsizei height,
+                       GLint border, GLenum format, GLenum type, const GLvoid* data)
 {
-    return ready() && Texture::bind();
-}
-
-bool Texture2D::create(GLsizei width, GLsizei height, GLint internalFormat, GLint format,
-                     GLenum type, const GLvoid* pixels)
-{
-    if(managed())
-    {
-        qWarning() << __FUNCTION__ << "Can't modify managed resource";
-        return false;
-    }
-
-    else if(width < 1 || height < 1)
+    if(width < 1 || height < 1)
     {
         return false;
     }
 
-    releaseData();
-    gl->glGenTextures(1, &textureId_);
+    remove();
 
-    if(!bind())
-    {
-        return false;
-    }
-
-    gl->glTexImage2D(Target, 0, internalFormat, width, height, 0, format, type, pixels);
-
-    width_ = width;
-    height_ = height;
-
-    // Set cached texture flags
-    setParameters();
-
-    return true;
-}
-
-bool Texture2D::initialiseData(const DataType& data)
-{
     gl->glGenTextures(1, &textureId_);
     gl->glBindTexture(Target, textureId_);
+    gl->glTexImage2D(Target, level, internalFormat, width, height, border, format, type, data);
 
-    if(gli::is_compressed(data->format()))
-    {
-        const gli::texture2D& texture = *data;
-
-        gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
-        gl->glTexStorage2D(Target, static_cast<GLint>(texture.levels()),
-            gli::internal_format(texture.format()),
-            static_cast<GLsizei>(texture.dimensions().x),
-            static_cast<GLsizei>(texture.dimensions().y));
-
-        // Upload mipmaps
-        for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
-        {
-            gl->glCompressedTexSubImage2D(Target,
-                level, 0, 0,
-                texture[level].dimensions().x,
-                texture[level].dimensions().y,
-                gli::internal_format(texture.format()),
-                static_cast<GLsizei>(texture[level].size()),
-                texture[level].data());
-        }
-
-        // Don't generate mipmaps again
-        if(texture.levels() > 1)
-        {
-            mipmaps_ = false;
-        }
-    }
-
-    else
-    {
-        gl->glTexImage2D(Target, 0,
-            gli::internal_format(data->format()),
-            data->dimensions().x,
-            data->dimensions().y, 0,
-            gli::external_format(data->format()),
-            gli::type_format(data->format()),
-            data->data());
-    }
-
-    width_ = data->dimensions().x;
-    height_ = data->dimensions().y;
-
-    // Set cached texture flags
+    setDimensions(width, height);
     setParameters();
+
     return true;
 }
 
-void Texture2D::releaseData()
+bool Texture2D::createTexStorage(GLint levels, GLint internalFormat, GLsizei width, GLsizei height)
 {
+    if(width < 1 || height < 1)
+    {
+        return false;
+    }
+
     remove();
-    width_ = height_ = 0;
-}
 
-GLsizei Texture2D::width() const
-{
-    return width_;
-}
+    gl->glGenTextures(1, &textureId_);
+    gl->glBindTexture(Target, textureId_);
+    gl->glTexStorage2D(Target, levels, internalFormat, width, height);
 
-GLsizei Texture2D::height() const
-{
-    return height_;
-}
+    setDimensions(width, height);
+    setParameters();
 
-ResourceData* Texture2D::createData()
-{
-    TextureData* data = new TextureData(despatcher());
-    data->setConversion(conversion_);
-
-    return data;
-}
-
-//
-// TextureData definitions
-//
-
-TextureData::TextureData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher), data_(nullptr), conversion_(TC_RGBA)
-{
-}
-
-TextureData::~TextureData()
-{
-    if(data_ != nullptr)
-        delete data_;
-}
-
-bool TextureData::load(const QString& fileName)
-{
-    data_ = loadTexture(fileName, conversion_);
-    return data_ != nullptr;
-}
-
-gli::texture2D* TextureData::operator->() const
-{
-    return data_;
-}
-
-gli::texture2D& TextureData::operator*() const
-{
-    return *data_;
-}
-
-void TextureData::setConversion(TextureConversion conversion)
-{
-    conversion_ = conversion;
+    return true;
 }

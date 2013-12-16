@@ -7,7 +7,7 @@
 #include <memory>
 #include <QVector3D>
 
-#include "texture2D.h"
+#include "texture2d.h"
 
 namespace Engine {
 
@@ -17,6 +17,7 @@ class Material
 {
 public:
     typedef std::shared_ptr<Material> Ptr;
+    typedef std::shared_ptr<Texture2D> TexturePtr;
 
     Material(ResourceDespatcher* despatcher);
     ~Material();
@@ -28,12 +29,12 @@ public:
     // TEXTURE_NORMALS which doesn't have a default texture.
     // precondition: despatcher != nullptr
     // postcondition: a valid texture handle returned, or nullptr
-    const Texture2D::Ptr& getTexture(TextureType type);
+    const TexturePtr& getTexture(TextureType type);
 
     // Associates texture with the given type. The texture's ownership is copied.
     // precondition: texture != nullptr
     // postcondition: texture is associated with the type
-    void setTexture(TextureType type, Texture2D::Ptr& texture);
+    void setTexture(TextureType type, const TexturePtr& texture);
 
     // Returns true if a texture has been associated with the given type.
     bool hasTexture(TextureType type) const;
@@ -67,11 +68,11 @@ public:
     void setAttributes(const Attributes& attrib);
 
 private:
-    std::map<TextureType, Texture2D::Ptr> textures_;
+    std::map<TextureType, TexturePtr> textures_;
     Attributes attributes_;
     ResourceDespatcher* despatcher_;
 
-    void setTextureOptions(const Texture2D::Ptr& texture) const;
+    void setTextureOptions(const TexturePtr& texture) const;
 
     Material(const Material&);
     Material& operator=(const Material&);

@@ -57,7 +57,7 @@ private:
     float speed_;
 
     Engine::Entity::Light dirLight_;
-    Engine::CubemapTexture::Ptr skybox_;
+    std::shared_ptr<Engine::CubemapTexture> skybox_;
     Engine::Entity::Camera camera_;
 };
 

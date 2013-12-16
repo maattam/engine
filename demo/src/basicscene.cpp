@@ -2,6 +2,7 @@
 
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
+#include "texture2dresource.h"
 
 #include <qmath.h>
 #include <QDebug>
@@ -101,7 +102,7 @@ void BasicScene::initialise()
     {
         QString file = "assets/wooden_crate" + QString::number(i+1) + ".png";
 
-        Texture2D::Ptr tex = despatcher()->get<Texture2D>(file, TC_SRGBA);
+        Material::TexturePtr tex = despatcher()->get<Texture2DResource>(file, TC_SRGBA);
         if(tex != nullptr)
         {
             Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher());

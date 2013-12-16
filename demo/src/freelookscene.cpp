@@ -2,6 +2,7 @@
 
 #include "input.h"
 #include "graph/scenenode.h"
+#include "cubemapresource.h"
 
 using namespace Engine;
 
@@ -114,7 +115,7 @@ void FreeLookScene::update(unsigned int elapsed)
 
 void FreeLookScene::setSkyboxTexture(const QString& fileName)
 {
-    skybox_ = despatcher_->get<CubemapTexture>(fileName, TC_SRGBA);
+    skybox_ = despatcher_->get<CubemapResource>(fileName, TC_SRGBA);
     skybox_->setFiltering(GL_LINEAR, GL_LINEAR);
 
     scene_->setSkybox(skybox_);

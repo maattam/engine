@@ -1,7 +1,8 @@
 #include "mesh.h"
 #include "common.h"
 #include "resourcedespatcher.h"
-#include  "material.h"
+#include "material.h"
+#include "texture2dresource.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -214,7 +215,7 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
                 material->GetTexture(textureMapping[j].first, 0, &path) == aiReturn_SUCCESS)
             {
                 const Material::TextureType type = static_cast<Material::TextureType>(j);
-                Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data,
+                Material::TexturePtr texture = despatcher()->get<Texture2DResource>(fullpath + path.data,
                     textureMapping[j].second);
 
                 materials_[i]->setTexture(type, texture);
@@ -225,7 +226,7 @@ void MeshData::initMaterials(const aiScene* scene, const QString& fileName)
         if(material->GetTextureCount(aiTextureType_HEIGHT) > 0 &&
             material->GetTexture(aiTextureType_HEIGHT, 0, &path) == aiReturn_SUCCESS)
         {
-            Texture2D::Ptr texture = despatcher()->get<Texture2D>(fullpath + path.data);
+            Material::TexturePtr texture = despatcher()->get<Texture2DResource>(fullpath + path.data);
             materials_[i]->setTexture(Material::TEXTURE_NORMALS, texture);
         }
 

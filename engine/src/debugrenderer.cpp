@@ -68,6 +68,7 @@ void DebugRenderer::render(Entity::Camera* camera)
     }
 
     gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
+    gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
     if(flags_ != DEBUG_GBUFFER)
     {
@@ -76,8 +77,6 @@ void DebugRenderer::render(Entity::Camera* camera)
         // Cull visibles
         RenderQueue renderQueue;
         scene_->queryVisibles(camera->worldView(), renderQueue);
-
-        gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
         renderWireframe(renderQueue);
         renderAABBs();
@@ -172,7 +171,8 @@ bool DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* no
         QVector3D color(0, 0, 1);   // Mesh color is blue
 
         // Light volumes are green
-        if(dynamic_cast<Entity::Light*>(entity) != nullptr)
+        Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
+        if(light != nullptr)
         {
             color = QVector3D(0, 1, 0);
         }

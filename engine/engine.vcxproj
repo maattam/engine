@@ -225,6 +225,8 @@
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\postprocess.frag" />
+    <None Include="shaders\testquad.frag" />
+    <None Include="shaders\testquad.vert" />
     <None Include="shaders\wireframe.frag" />
     <None Include="shaders\wireframe.vert" />
     <None Include="src\technique\technique.inl" />

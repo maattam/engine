@@ -1,6 +1,9 @@
 #include "material.h"
+
 #include "common.h"
 #include "resourcedespatcher.h"
+#include "textureloader.h"
+#include "texture2dresource.h"
 
 #include <QDebug>
 
@@ -20,7 +23,7 @@ bool Material::bind()
     // Bind all textures
     for(int i = 0; i < TEXTURE_COUNT; ++i)
     {
-        const Texture2D::Ptr& tex = getTexture(static_cast<TextureType>(i));
+        const TexturePtr& tex = getTexture(static_cast<TextureType>(i));
 
         if(tex != nullptr && !tex->bindActive(GL_TEXTURE0 + i))
         {
@@ -31,23 +34,23 @@ bool Material::bind()
     return true;
 }
 
-const Texture2D::Ptr& Material::getTexture(TextureType type)
+const Material::TexturePtr& Material::getTexture(TextureType type)
 {
     auto iter = textures_.find(type);
     if(iter == textures_.end())
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
-        Texture2D::Ptr& tex = textures_[type];
+        TexturePtr& tex = textures_[type];
 
         // Get default texture
         if(type == TEXTURE_SPECULAR || type == TEXTURE_MASK)
         {
-            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+            tex = despatcher_->get<Texture2DResource>(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
         }
 
         else if(type == TEXTURE_DIFFUSE)
         {
-            tex = despatcher_->get<Texture2D>(RESOURCE_PATH("images/white.png"), TC_SRGBA);
+            tex = despatcher_->get<Texture2DResource>(RESOURCE_PATH("images/white.png"), TC_SRGBA);
         }
 
         return tex;
@@ -62,7 +65,7 @@ bool Material::hasTexture(TextureType type) const
     return iter != textures_.end() && iter->second != nullptr;
 }
 
-void Material::setTexture(TextureType type, Texture2D::Ptr& texture)
+void Material::setTexture(TextureType type, const TexturePtr& texture)
 {
     Q_ASSERT(texture != nullptr);
 
@@ -100,11 +103,11 @@ void Material::setAttributes(const Attributes& attrib)
     attributes_ = attrib;
 }
 
-void Material::setTextureOptions(const Texture2D::Ptr& texture) const
+void Material::setTextureOptions(const TexturePtr& texture) const
 {
     texture->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture->setWrap(GL_REPEAT, GL_REPEAT);
-    texture->generateMipmaps();
+    texture->setMipmap(true);
 
     // Set 16x anisotropy... TODO!
     texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);

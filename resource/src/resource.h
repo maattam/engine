@@ -22,11 +22,11 @@ public:
     virtual ~ResourceData() {};
 
     // Attemps to load the given file from disk
-    // precondition: true returned if load has been successful
+    // precondition: true returned if loading has been successful
     virtual bool load(const QString& fileName) = 0;
 
     // Returns the despatcher used in this context
-    // precondition: despatcher != nullptr
+    // postcondition: despatcher != nullptr
     ResourceDespatcher* despatcher();
 
 private:
@@ -56,7 +56,7 @@ public:
     bool fromData(const ResourceDataType& data);
 
     // Attemps to initialise the resource from data, or return true if
-    // the resource has already been initialised. Returns true if the resource is not
+    // the resource has already been initialised. Returns always true if the resource is not
     // managed.
     bool ready();
 

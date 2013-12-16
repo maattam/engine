@@ -72,7 +72,7 @@ CubemapTexture* Scene::skybox() const
     return skybox_.get();
 }
 
-void Scene::setSkybox(const CubemapTexture::Ptr& texture)
+void Scene::setSkybox(const std::shared_ptr<CubemapTexture>& texture)
 {
     skybox_ = texture;
 }

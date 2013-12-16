@@ -7,6 +7,8 @@
 #include "sceneobserver.h"
 #include "observable.h"
 
+#include <memory>
+
 namespace Engine {
 
 class Renderer;
@@ -29,7 +31,7 @@ public:
     virtual void renderScene(Entity::Camera* camera) = 0;
 
     virtual void setDirectionalLight(Entity::Light* light) = 0;
-    virtual void setSkybox(const CubemapTexture::Ptr& texture) = 0;
+    virtual void setSkybox(const std::shared_ptr<CubemapTexture>& texture) = 0;
 
     // Returns the root node of the scene hierarchy
     virtual Graph::SceneNode* rootNode() = 0;

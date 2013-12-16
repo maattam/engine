@@ -66,7 +66,7 @@ bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
 {
     // Initialize depth texture
     light.texture = std::make_shared<Texture2D>();
-    if(!light.texture->create(width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT))
+    if(!light.texture->create(0, GL_DEPTH_COMPONENT32, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT))
     {
         return false;
     }
@@ -106,7 +106,7 @@ size_t ShadowMap::numSpotLights() const
 void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles)
 {
     // Calculate light frustrum
-    const Texture2D::Ptr& texture = spotLights_.at(index).texture;
+    const auto& texture = spotLights_.at(index).texture;
     QMatrix4x4& vp = spotLights_.at(index).worldView;
 
     vp.setToIdentity();
@@ -213,7 +213,7 @@ void ShadowMap::destroyLight(LightData& light)
 
     if(light.texture != nullptr)
     {
-        light.texture->release();
+        light.texture->remove();
         light.texture.reset();
     }
 }

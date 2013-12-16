@@ -9,6 +9,7 @@
 #include <QMatrix4x4>
 
 #include <vector>
+#include <memory>
 
 namespace Engine { namespace Technique {
 
@@ -43,7 +44,7 @@ private:
     struct LightData
     {
         GLuint fbo;
-        Texture2D::Ptr texture;
+        std::shared_ptr<Texture2D> texture;
         QMatrix4x4 worldView;
 
         LightData();

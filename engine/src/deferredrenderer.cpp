@@ -9,6 +9,7 @@
 #include "entity/light.h"
 #include "graph/scenenode.h"
 #include "renderqueue.h"
+#include "texture2dresource.h"
 
 using namespace Engine;
 
@@ -20,7 +21,7 @@ DeferredRenderer::DeferredRenderer(GBuffer& gbuffer, ResourceDespatcher& despatc
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
-        despatcher.get<Texture2D>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
+        despatcher.get<Texture2DResource>(RESOURCE_PATH("images/pink.png"), TC_SRGBA));
 }
 
 DeferredRenderer::~DeferredRenderer()

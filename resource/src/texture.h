@@ -5,11 +5,8 @@
 
 #include "common.h"
 
-#include <vector>
-
-namespace gli {
-    class texture2D;
-}
+#include <QList>
+#include <QPair>
 
 namespace Engine {
 
@@ -23,10 +20,11 @@ public:
     virtual ~Texture() = 0;
 
     // Deletes the texture using glDeleteTextures.
+    // postcondition: textureId == 0
     void remove();
 
     // Queues a texture parameter, calls glTexParameteri
-    void texParameteri(GLenum pname, GLint target);
+    virtual void texParameteri(GLenum pname, GLint target);
 
     // Sets the mag and min filtering to use
     void setFiltering(GLenum magFilter, GLenum minFilter);
@@ -34,8 +32,9 @@ public:
     // Sets texture wrapping
     void setWrap(GLenum wrap_s, GLenum wrap_t);
 
-    // Generated mipmaps when the texture is loaded
-    void generateMipmaps();
+    // Generates mipmaps when the texture is loaded
+    virtual void setMipmap(bool enable);
+    bool mipmap() const;
 
     // Attempts to bind the texture, returns false on failure
     virtual bool bind();
@@ -43,26 +42,31 @@ public:
     // Attemps to bind the texture to the given texture slot
     bool bindActive(GLenum target);
 
+    // Returns the texture handle. 0 if texture is no texture is generated.
     GLuint textureId() const;
 
+    // Returns texture dimensions
+    GLsizei width() const;
+    GLsizei height() const;
+
 protected:
+    // Sets the cached texture parameters and mipmaps
     void setParameters();
+    void setDimensions(GLsizei width, GLsizei height);
 
     GLuint textureId_;
-    bool mipmaps_;
 
 private:
-    typedef std::pair<GLenum, GLint> Parameteri;
-    std::vector<Parameteri> parametersi_;
-};
+    typedef QPair<GLenum, GLint> Parameteri;
+    QList<Parameteri> parametersi_;
 
-// Allocates a new texture, returns nullptr on failure,
-// The TextureConversion field affects the created texture's internal format:
-// TC_RGBA is the regular RGBA texture
-// TC_SRGBA is a regular RGBA texture mapped to linear color space
-// TC_GRAYSCALE is a grayscale image (all components are the same, without alpha)
-enum TextureConversion { TC_RGBA, TC_SRGBA, TC_GRAYSCALE };
-gli::texture2D* loadTexture(const QString& fileName, TextureConversion conversion = TC_RGBA);
+    bool mipmap_;
+    GLsizei width_;
+    GLsizei height_;
+
+    Texture(const Texture&);
+    Texture& operator=(const Texture&);
+};
 
 #include "texture.inl"
 

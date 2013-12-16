@@ -264,6 +264,12 @@
     <None Include="shaders\postprocess.frag">
       <Filter>Shaders\postfx</Filter>
     </None>
+    <None Include="shaders\testquad.vert">
+      <Filter>Shaders\debugging</Filter>
+    </None>
+    <None Include="shaders\testquad.frag">
+      <Filter>Shaders\debugging</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\effect\downsampler.h">
