@@ -105,7 +105,7 @@ void BasicScene::initialise()
         Material::TexturePtr tex = despatcher()->get<Texture2DResource>(file, TC_SRGBA);
         if(tex != nullptr)
         {
-            Engine::Material::Ptr mat = std::make_shared<Engine::Material>(despatcher());
+            Engine::Material::Ptr mat(new Engine::Material);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
             cube_[i] = std::make_shared<Entity::BoxPrimitive>();

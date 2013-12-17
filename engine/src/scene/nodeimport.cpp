@@ -51,7 +51,7 @@ QVector<MaterialPtr> NodeImport::importMaterials(aiMaterial** materials, unsigne
     for(unsigned int i = 0; i < count; ++i)
     {
         MaterialPtr& material = materialVec[i];
-        material.reset(new Material(despatcher));
+        material.reset(new Material());
 
         importMaterial(materials[i], *material, rootDir, despatcher);
     }

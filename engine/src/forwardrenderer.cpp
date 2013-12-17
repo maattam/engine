@@ -14,7 +14,7 @@
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
-    : scene_(nullptr), samples_(1), errorMaterial_(&despatcher), fbo_(0)
+    : scene_(nullptr), samples_(1), fbo_(0)
 {
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,

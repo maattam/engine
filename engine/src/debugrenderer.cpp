@@ -8,6 +8,7 @@
 #include "material.h"
 #include "gbuffer.h"
 #include "renderqueue.h"
+#include "texture2d.h"
 
 using namespace Engine;
 

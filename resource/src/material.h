@@ -7,11 +7,9 @@
 #include <memory>
 #include <QVector3D>
 
-#include "texture2d.h"
-
 namespace Engine {
 
-class ResourceDespatcher;
+class Texture2D;
 
 class Material
 {
@@ -19,7 +17,7 @@ public:
     typedef std::shared_ptr<Material> Ptr;
     typedef std::shared_ptr<Texture2D> TexturePtr;
 
-    Material(ResourceDespatcher* despatcher);
+    Material();
     ~Material();
 
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_COUNT };
@@ -70,9 +68,15 @@ public:
 private:
     std::map<TextureType, TexturePtr> textures_;
     Attributes attributes_;
-    ResourceDespatcher* despatcher_;
 
     void setTextureOptions(const TexturePtr& texture) const;
+
+    // Returns the default 1x1 texture for the type.
+    static TexturePtr defaultTexture(TextureType type);
+
+    static std::weak_ptr<Texture2D> nullMaskTexture;
+    static std::weak_ptr<Texture2D> nullDiffuseTexture;
+    static std::weak_ptr<Texture2D> nullSpecularTexture;
 
     Material(const Material&);
     Material& operator=(const Material&);

@@ -1,7 +1,6 @@
 #include "material.h"
 
 #include "common.h"
-#include "resourcedespatcher.h"
 #include "textureloader.h"
 #include "texture2dresource.h"
 
@@ -9,8 +8,11 @@
 
 using namespace Engine;
 
-Material::Material(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher)
+namespace {
+    Material::TexturePtr makeDefault(const QString& fileName, TextureConversion conversion);
+}
+
+Material::Material()
 {
 }
 
@@ -40,18 +42,9 @@ const Material::TexturePtr& Material::getTexture(TextureType type)
     if(iter == textures_.end())
     {
         qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
+
         TexturePtr& tex = textures_[type];
-
-        // Get default texture
-        if(type == TEXTURE_SPECULAR || type == TEXTURE_MASK)
-        {
-            tex = despatcher_->get<Texture2DResource>(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
-        }
-
-        else if(type == TEXTURE_DIFFUSE)
-        {
-            tex = despatcher_->get<Texture2DResource>(RESOURCE_PATH("images/white.png"), TC_SRGBA);
-        }
+        tex = defaultTexture(type);
 
         return tex;
     }
@@ -111,4 +104,70 @@ void Material::setTextureOptions(const TexturePtr& texture) const
 
     // Set 16x anisotropy... TODO!
     texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+}
+
+Material::TexturePtr Material::defaultTexture(TextureType type)
+{
+    TexturePtr target;
+
+    if(type == TEXTURE_DIFFUSE)
+    {
+        if(nullDiffuseTexture.expired())
+        {
+            target = makeDefault(RESOURCE_PATH("images/white.png"), TC_RGBA);
+            nullDiffuseTexture = target;
+        }
+
+        else
+        {
+            target = nullDiffuseTexture.lock();
+        }
+    }
+
+    else if(type == TEXTURE_MASK)
+    {
+        if(nullMaskTexture.expired())
+        {
+            target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+            nullMaskTexture = target;
+        }
+
+        else
+        {
+            target = nullMaskTexture.lock();
+        }
+    }
+
+    else if(type == TEXTURE_SPECULAR)
+    {
+        if(nullSpecularTexture.expired())
+        {
+            target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+            nullSpecularTexture = target;
+        }
+
+        else
+        {
+            target = nullSpecularTexture.lock();
+        }
+    }
+
+    return target;
+}
+
+std::weak_ptr<Texture2D> Material::nullMaskTexture;
+std::weak_ptr<Texture2D> Material::nullDiffuseTexture;
+std::weak_ptr<Texture2D> Material::nullSpecularTexture;
+
+namespace {
+    Material::TexturePtr makeDefault(const QString& fileName, TextureConversion conversion)
+    {
+        std::shared_ptr<Texture2DResource> resource(new Texture2DResource(fileName, conversion));
+        if(resource->load(fileName))
+        {
+            return resource;
+        }
+
+        return nullptr;
+    }
 }

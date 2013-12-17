@@ -126,7 +126,6 @@ bool ResourceBase::managed() const
 
 ResourceDespatcher* ResourceBase::despatcher()
 {
-    assert(despatcher_);
     return despatcher_;
 }
 

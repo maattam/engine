@@ -14,7 +14,7 @@
 using namespace Engine;
 
 DeferredRenderer::DeferredRenderer(GBuffer& gbuffer, ResourceDespatcher& despatcher)
-    : gbuffer_(gbuffer), errorMaterial_(&despatcher), scene_(nullptr), camera_(nullptr)
+    : gbuffer_(gbuffer), scene_(nullptr), camera_(nullptr)
 {
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), Shader::Type::Fragment));
