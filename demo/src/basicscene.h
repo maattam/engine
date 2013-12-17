@@ -8,6 +8,8 @@
 #include "entity/boxprimitive.h"
 #include "scene/importednode.h"
 
+#include <QObject>
+
 #include <vector>
 #include <memory>
 
@@ -15,14 +17,19 @@ namespace Engine {
     class ResourceDespatcher;
 }
 
-class BasicScene : public FreeLookScene
+class BasicScene : public QObject, public FreeLookScene
 {
+    Q_OBJECT
+
 public:
     explicit BasicScene(Engine::ResourceDespatcher* despatcher);
     ~BasicScene();
 
     // Reimplemented methods from FreeLookScene
     virtual void update(unsigned int elapsed);
+
+public slots:
+    void resourceInitialized(const QString& name);
 
 protected:
     // Implemented methods from FreeLookScene

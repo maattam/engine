@@ -55,7 +55,7 @@ struct IndexMesh
 // Imports index meshes from the scene.
 // precondition: meshes != nullptr, count is the mesh count
 // throws: ImportException
-QVector<IndexMesh> importMeshes(aiMesh** meshes, unsigned int count);
+void importMeshes(QVector<IndexMesh>& indexVec, aiMesh** meshes, unsigned int count);
 
 // Imports materials. rootDir should be the root directory for textures.
 // precondition: materials != nullptr, count is the material count

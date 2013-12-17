@@ -4,7 +4,9 @@
 #define SCENENODE_H
 
 #include "node.h"
-#include "entity/aabb.h"
+
+#include <QString>
+#include <QList>
 
 namespace Engine {
     
@@ -39,6 +41,11 @@ public:
     // Tells if the node's entities should cast shadows
     bool isShadowCaster() const;
     void setShadowCaster(bool shadows);
+
+    // Returns a list of entities matching the given name.
+    // The search is done recursively downwards the tree, so this function should
+    // be called from the root node.
+    QList<Entity::Entity*> findEntities(const QString& name) const;
 
     // Utility method for creating SceneNode children
     SceneNode* createSceneNodeChild();

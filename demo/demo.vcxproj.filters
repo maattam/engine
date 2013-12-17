@@ -43,6 +43,9 @@
     <CustomBuild Include="src\input.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\basicscene.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_scene.cpp">
@@ -81,11 +84,14 @@
     <ClCompile Include="GeneratedFiles\Release\moc_input.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_basicscene.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_basicscene.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\basicscene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\freelookscene.h">
       <Filter>Header Files</Filter>
     </ClInclude>

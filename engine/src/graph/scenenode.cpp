@@ -92,3 +92,25 @@ SceneNode* SceneNode::createSceneNodeChild()
 {
     return dynamic_cast<SceneNode*>(createChild());
 }
+
+QList<Entity::Entity*> SceneNode::findEntities(const QString& name) const
+{
+    QList<Entity::Entity*> matches;
+
+    // Find matches from this node
+    for(Entity::Entity* entity : entities_)
+    {
+        if(entity->name() == name)
+        {
+            matches << entity;
+        }
+    }
+
+    // Follow child nodes
+    for(ChildNodes::size_type i = 0; i < numChildren(); ++i)
+    {
+        matches += dynamic_cast<SceneNode*>(getChild(i))->findEntities(name);
+    }
+
+    return matches;
+}

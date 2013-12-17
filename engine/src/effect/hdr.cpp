@@ -111,10 +111,7 @@ void Hdr::render()
 
     // Pass 2
     // Downsample and blur input
-    if(!downSampler_.downSample(fbo_->texture(), quad_))
-    {
-        return;
-    }
+    downSampler_.downSample(fbo_->texture(), quad_);
 
     // Pass 3
     // Render tonemap to output

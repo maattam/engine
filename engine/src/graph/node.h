@@ -67,7 +67,7 @@ public:
 
     // precondition: index < numChildren
     // postcondition: valid child returned
-    Node* getChild(ChildNodes::size_type index);
+    Node* getChild(ChildNodes::size_type index) const;
 
     // Detached child from the current node
     // postcondition: the child is not deleted

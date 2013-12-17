@@ -100,7 +100,7 @@ Node::ChildNodes::size_type Node::numChildren() const
     return children_.size();
 }
 
-Node* Node::getChild(ChildNodes::size_type index)
+Node* Node::getChild(ChildNodes::size_type index) const
 {
     if(index >= children_.size())
         return nullptr;

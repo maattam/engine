@@ -10,7 +10,7 @@
 using namespace Engine;
 
 BasicScene::BasicScene(ResourceDespatcher* despatcher)
-    : FreeLookScene(despatcher), time_(0)
+    : FreeLookScene(despatcher), QObject(), time_(0)
 {
 }
 
@@ -54,8 +54,36 @@ void BasicScene::update(unsigned int elapsedMs)
         else
             cubes_[i]->rotate(15.0f * elapsed, QVector3D(1, 0, 0));
     }
+}
 
-    //hkNode_->lookAt(playerPosition());
+void BasicScene::resourceInitialized(const QString& name)
+{
+    if(name == "assets/oildrum.dae")
+    {
+        QList<Entity::Entity*> result = platformNode_->findEntities("Oildrum-ref");
+        if(result.count() > 0)
+        {
+            Graph::SceneNode* node = result.first()->parentNode()->createSceneNodeChild();
+
+            node->setPosition(QVector3D(6, -2, 0));
+            node->attachEntity(result.first());
+        }
+    }
+
+    else if(name == "assets/sphere.obj")
+    {
+        QList<Entity::Entity*> result = sphereNode_->findEntities("Sphere");
+        if(result.count() > 0)
+        {
+            // Platform spot light
+            Graph::SceneNode* node = rootNode()->createSceneNodeChild();
+            node->setPosition(2*QVector3D(-6.0f, 7/2, 6.0f));
+            node->setScale(0.1f);
+            node->attachEntity(result.first());
+            node->setShadowCaster(false);
+            node->attachEntity(lights_[2].get());
+        }
+    }
 }
 
 void BasicScene::initialise()
@@ -74,11 +102,11 @@ void BasicScene::initialise()
 
     pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
     pointLight->setColor(QVector3D(0.0f, 0.0f, 1.0f));
-    pointLight->setAttenuationQuadratic(0.5f);
+    pointLight->setAttenuationQuadratic(0.025f);
     pointLight->setDiffuseIntensity(100.0f);
     lights_.push_back(pointLight);
 
-    blueLightNode_ = dynamic_cast<Graph::SceneNode*>(rootNode()->createChild());
+    blueLightNode_ = rootNode()->createSceneNodeChild();
     blueLightNode_->attachEntity(pointLight.get());
 
     // Set up spot lights
@@ -96,6 +124,9 @@ void BasicScene::initialise()
     platform_ = despatcher()->get<ImportedNode>("assets/blocks.dae");
     sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
     torus_ = despatcher()->get<ImportedNode>("assets/torus.obj");
+
+    connect(oildrum_.get(), &ImportedNode::initialized, this, &BasicScene::resourceInitialized);
+    connect(sphere_.get(), &ImportedNode::initialized, this, &BasicScene::resourceInitialized);
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
@@ -133,11 +164,6 @@ void BasicScene::initialise()
         node->setPosition(QVector3D(-5, 0, 2));
         oildrum_->attach(node);
 
-        /*node = platf->createSceneNodeChild();
-
-        node->setPosition(QVector3D(2, -2, 0));
-        node->attachEntity(oildrum_.get());*/
-
         hkNode_ = platf->createSceneNodeChild();
 
         hkNode_->setPosition(QVector3D(-1, 0, -2));
@@ -158,14 +184,6 @@ void BasicScene::initialise()
         sphere_->attach(sphereNode_);
         sphereNode_->setShadowCaster(false);
         sphereNode_->attachEntity(lights_[0].get());
-
-        // Platform spot light
-        Graph::SceneNode* node = root->createSceneNodeChild();
-        node->setPosition(2*QVector3D(-6.0f, 7/2, 6.0f));
-        node->setScale(0.1f);
-        //node->attachEntity(sphere_.get());
-        node->setShadowCaster(false);
-        node->attachEntity(spotLight.get());
     }
 
     // platform

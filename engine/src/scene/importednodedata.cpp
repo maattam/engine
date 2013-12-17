@@ -43,7 +43,7 @@ bool ImportedNodeData::load(const QString& fileName)
     // Import entities from scene
     try
     {
-        indexMeshes_ = NodeImport::importMeshes(scene->mMeshes, scene->mNumMeshes);
+        NodeImport::importMeshes(indexMeshes_, scene->mMeshes, scene->mNumMeshes);
         materials_ = NodeImport::importMaterials(scene->mMaterials, scene->mNumMaterials, despatcher(), dir);
 
         for(auto& entity : NodeImport::importCameras(scene->mCameras, scene->mNumCameras))

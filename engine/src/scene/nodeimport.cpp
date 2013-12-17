@@ -26,17 +26,15 @@ namespace {
 // Imports index meshes from the scene.
 // precondition: meshes != nullptr, count is the mesh count
 // throws: ImportException
-QVector<IndexMesh> NodeImport::importMeshes(aiMesh** meshes, unsigned int count)
+void NodeImport::importMeshes(QVector<IndexMesh>& indexMeshes, aiMesh** meshes, unsigned int count)
 {
-    QVector<IndexMesh> indexMeshes;
+    indexMeshes.clear();
     indexMeshes.resize(count);
 
     for(unsigned int i = 0; i < count; ++i)
     {
         importMesh(meshes[i], indexMeshes[i]);
     }
-
-    return indexMeshes;
 }
 
 // Imports materials
