@@ -1,6 +1,7 @@
-#include "resourcedespatcher.h"
+#include "weakresourcedespatcher.h"
 
 #include "resource.h"
+#include "resourceloader.h"
 
 #include <QFileSystemWatcher>
 #include <QFile>
@@ -8,25 +9,25 @@
 
 using namespace Engine;
 
-ResourceDespatcher::ResourceDespatcher(QObject* parent)
-    : QObject(parent), loader_(nullptr), watcher_(nullptr)
+WeakResourceDespatcher::WeakResourceDespatcher(QObject* parent)
+    : ResourceDespatcher(parent), loader_(nullptr), watcher_(nullptr)
 {
     loader_ = new ResourceLoader();
     loader_->moveToThread(&loadThread_);
 
-    connect(this, &ResourceDespatcher::loadResources, loader_, &ResourceLoader::run);
-    connect(loader_, &ResourceLoader::resourceLoaded, this, &ResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
+    connect(this, &WeakResourceDespatcher::loadResources, loader_, &ResourceLoader::run);
+    connect(loader_, &ResourceLoader::resourceLoaded, this, &WeakResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
     loadThread_.start();
 
     emit loadResources();
 
 #ifdef _DEBUG
     watcher_ = new QFileSystemWatcher(this);
-    connect(watcher_, &QFileSystemWatcher::fileChanged, this, &ResourceDespatcher::fileChanged);
+    connect(watcher_, &QFileSystemWatcher::fileChanged, this, &WeakResourceDespatcher::fileChanged);
 #endif
 }
 
-ResourceDespatcher::~ResourceDespatcher()
+WeakResourceDespatcher::~WeakResourceDespatcher()
 {
     clear();
 
@@ -34,7 +35,7 @@ ResourceDespatcher::~ResourceDespatcher()
     loader_ = nullptr;
 }
 
-void ResourceDespatcher::clear()
+void WeakResourceDespatcher::clear()
 {
     loader_->stop();
     loadThread_.quit();
@@ -43,7 +44,7 @@ void ResourceDespatcher::clear()
     resources_.clear();
 }
 
-int ResourceDespatcher::numManaged() const
+int WeakResourceDespatcher::numManaged() const
 {
     int count = 0;
 
@@ -56,7 +57,7 @@ int ResourceDespatcher::numManaged() const
     return count;
 }
 
-void ResourceDespatcher::fileChanged(const QString& path)
+void WeakResourceDespatcher::fileChanged(const QString& path)
 {
     qDebug() << __FUNCTION__ << path;
 
@@ -80,7 +81,7 @@ void ResourceDespatcher::fileChanged(const QString& path)
     }
 }
 
-void ResourceDespatcher::watchResource(const std::shared_ptr<ResourceBase>& resource)
+void WeakResourceDespatcher::watchResource(const ResourcePtr& resource)
 {
     if(watcher_ != nullptr && resource != nullptr)
     {
@@ -99,12 +100,36 @@ void ResourceDespatcher::watchResource(const std::shared_ptr<ResourceBase>& reso
     }
 }
 
-void ResourceDespatcher::resourceLoaded(const QString& id)
+void WeakResourceDespatcher::resourceLoaded(const QString& id)
 {
-    auto result = resources_.find(id);
-    if(result != resources_.end() && !result->expired())
+    WeakResourcePtr result = findResource(id);
+    
+    auto handle = result.lock();
+    if(handle != nullptr)
     {
-        auto handle = result->lock();
         handle->ready();
     }
+}
+
+WeakResourceDespatcher::WeakResourcePtr WeakResourceDespatcher::findResource(const QString& fileName)
+{
+    WeakResourcePtr weakPtr;
+
+    auto result = resources_.find(fileName);
+    if(result != resources_.end())
+    {
+        weakPtr = result.value();
+    }
+
+    return weakPtr;
+}
+
+void WeakResourceDespatcher::insertResource(const QString& fileName, const ResourcePtr& resource)
+{
+    resources_.insert(fileName, resource);
+
+    resource->setDespatcher(this);
+    watchResource(resource);
+
+    loader_->pushResource(resource);
 }

@@ -4,6 +4,7 @@
 #define SHADER_H
 
 #include "resource.h"
+#include "resourcedata.h"
 
 #include <QOpenGLShader>
 
@@ -12,7 +13,7 @@ namespace Engine {
 class ShaderData : public ResourceData
 {
 public:
-    ShaderData(ResourceDespatcher* despatcher);
+    ShaderData();
 
     virtual bool load(const QString& fileName);
 

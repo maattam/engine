@@ -1,24 +1,9 @@
-#include "resource.h"
-
-#include <cassert>
+#include "resourcebase.h"
+#include "resourcedata.h"
 
 #include <QDebug>
 
 using namespace Engine;
-
-ResourceData::ResourceData(ResourceDespatcher* despatcher)
-    : despatcher_(despatcher)
-{
-}
-
-ResourceDespatcher* ResourceData::despatcher()
-{
-    return despatcher_;
-}
-
-//
-// ResourceBase
-//
 
 ResourceBase::ResourceBase()
     : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
@@ -49,6 +34,8 @@ ResourceData* ResourceBase::createNewData()
         delete data_;
 
     data_ = createData();
+    data_->setDespatcher(despatcher_);
+
     return data_;
 }
 
@@ -93,7 +80,7 @@ bool ResourceBase::ready()
     // If the data has been read from file, we can initialise it
     else if(dataReady_)
     {
-        assert(data_);
+        Q_ASSERT(data_);
         initialized_ = initialise(data_);
 
         if(initialized_)
@@ -127,6 +114,11 @@ bool ResourceBase::managed() const
 ResourceDespatcher* ResourceBase::despatcher()
 {
     return despatcher_;
+}
+
+void ResourceBase::setDespatcher(ResourceDespatcher* despatcher)
+{
+    despatcher_ = despatcher;
 }
 
 const QString& ResourceBase::name() const

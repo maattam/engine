@@ -4,6 +4,7 @@
 #include "cubemaptexture.h"
 #include "resource.h"
 #include "textureloader.h"
+#include "resourcedata.h"
 
 #include <QList>
 #include <QPair>
@@ -15,8 +16,8 @@ class CubemapData : public ResourceData
 public:
     enum { Faces = 6 };
 
-    explicit CubemapData(ResourceDespatcher* despatcher);
-    ~CubemapData();
+    explicit CubemapData();
+    virtual ~CubemapData();
 
     // precondition: fileName has to be in format /path/to/file*.png where file0..5
     //               corresponds to cubemap faces
@@ -47,12 +48,12 @@ public:
 
     virtual bool bind();
 
+    virtual void queryFilesDebug(QStringList& files) const;
+
 protected:
     virtual ResourceData* createData();
     virtual bool initialiseData(const DataType& data);
     virtual void releaseData();
-
-    virtual void queryFilesDebug(QStringList& files) const;
 
 private:
     TextureConversion conversion_;

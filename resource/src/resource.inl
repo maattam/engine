@@ -12,14 +12,14 @@ Resource<Type, ResourceDataType>::Resource(const QString& name, InitialisePolicy
 template<typename Type, typename ResourceDataType>
 ResourceData* Resource<Type, ResourceDataType>::createData()
 {
-    return new ResourceDataType(despatcher());
+    return new ResourceDataType();
 }
 
 template<typename Type, typename ResourceDataType>
 bool Resource<Type, ResourceDataType>::initialise(ResourceData* data)
 {
     ResourceDataType* rdata = dynamic_cast<ResourceDataType*>(data);
-    assert(rdata != nullptr);
+    Q_ASSERT(rdata != nullptr);
 
     return initialiseData(*rdata);
 }

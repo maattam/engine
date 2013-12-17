@@ -62,6 +62,9 @@
     <ClInclude Include="src\cubemapresource.h">
       <Filter>Header Files\texture</Filter>
     </ClInclude>
+    <ClInclude Include="src\resourcedata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\cubemaptexture.cpp">
@@ -88,12 +91,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_resourceloader.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_resource.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_resource.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_resourcedespatcher.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -101,12 +98,6 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="src\resourceloader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resourcedespatcher.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\resource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\material.cpp">
@@ -120,6 +111,27 @@
     </ClCompile>
     <ClCompile Include="src\cubemapresource.cpp">
       <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_resourcebase.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_resourcebase.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resourcebase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resourcedata.cpp">
+      <Filter>Source Files\texture</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_weakresourcedespatcher.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_weakresourcedespatcher.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\weakresourcedespatcher.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +156,12 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="src\resourcedespatcher.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\resourcebase.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\weakresourcedespatcher.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

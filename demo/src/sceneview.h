@@ -8,7 +8,7 @@
 #include <QElapsedTimer>
 #include <QDebug>
 
-#include "resourcedespatcher.h"
+#include "weakresourcedespatcher.h"
 #include "scene/scene.h"
 
 class QOpenGLDebugLogger;
@@ -64,7 +64,7 @@ private:
 
     Engine::Renderer* renderer_;
     Engine::DebugRenderer* debugRenderer_;
-    Engine::ResourceDespatcher despatcher_;
+    Engine::WeakResourceDespatcher despatcher_;
     Engine::GBuffer* gbuffer_;
 
     Engine::Scene model_;

@@ -57,8 +57,8 @@ QOpenGLShader* Shader::get() const
 // ShaderData
 //
 
-ShaderData::ShaderData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher)
+ShaderData::ShaderData()
+    : ResourceData()
 {
 }
 

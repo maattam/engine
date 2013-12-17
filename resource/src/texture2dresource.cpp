@@ -142,7 +142,7 @@ void Texture2DResource::releaseData()
 
 ResourceData* Texture2DResource::createData()
 {
-    TextureData* data = new TextureData(despatcher());
+    TextureData* data = new TextureData();
     data->setConversion(conversion_);
 
     return data;
@@ -152,8 +152,8 @@ ResourceData* Texture2DResource::createData()
 // TextureData definitions
 //
 
-TextureData::TextureData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher), data_(nullptr), conversion_(TC_RGBA)
+TextureData::TextureData()
+    : data_(nullptr), conversion_(TC_RGBA)
 {
 }
 

@@ -1,6 +1,7 @@
 #include "resourceloader.h"
 
 #include "resource.h"
+#include "resourcedata.h"
 
 #include <QDebug>
 #include <QThread>

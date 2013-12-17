@@ -20,8 +20,8 @@ namespace {
     QMatrix4x4 aiMatrixToQMatrix(const aiMatrix4x4& mat);
 }
 
-ImportedNodeData::ImportedNodeData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher)
+ImportedNodeData::ImportedNodeData()
+    : ResourceData()
 {
 }
 

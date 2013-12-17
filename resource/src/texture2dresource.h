@@ -4,6 +4,7 @@
 #include "texture2d.h"
 #include "resource.h"
 #include "textureloader.h"
+#include "resourcedata.h"
 
 #include <QList>
 #include <QPair>
@@ -13,7 +14,7 @@ namespace Engine {
 class TextureData : public ResourceData
 {
 public:
-    explicit TextureData(ResourceDespatcher* despatcher);
+    explicit TextureData();
     ~TextureData();
 
     virtual bool load(const QString& fileName);

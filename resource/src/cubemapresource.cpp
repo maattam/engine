@@ -128,7 +128,7 @@ void CubemapResource::queryFilesDebug(QStringList& files) const
 
 ResourceData* CubemapResource::createData()
 {
-    CubemapData* data = new CubemapData(despatcher());
+    CubemapData* data = new CubemapData();
     data->setConversion(conversion_);
 
     return data;
@@ -138,8 +138,8 @@ ResourceData* CubemapResource::createData()
 // CubemapData
 //
 
-CubemapData::CubemapData(ResourceDespatcher* despatcher)
-    : ResourceData(despatcher), conversion_(TC_RGBA)
+CubemapData::CubemapData()
+    : ResourceData(), conversion_(TC_RGBA)
 {
     for(int i = 0; i < CubemapData::Faces; ++i)
         textures_[i] = nullptr;

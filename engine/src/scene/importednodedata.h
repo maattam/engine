@@ -3,6 +3,7 @@
 
 #include "resource.h"
 #include "nodeimport.h"
+#include "resourcedata.h"
 
 #include <QMap>
 #include <QList>
@@ -33,7 +34,7 @@ public:
     typedef std::shared_ptr<Entity::Entity> EntityPtr;
     typedef std::pair<MeshPtr, std::vector<unsigned int>> MeshIndex;
 
-    ImportedNodeData(ResourceDespatcher* despatcher);
+    ImportedNodeData();
 
     bool load(const QString& fileName);
 

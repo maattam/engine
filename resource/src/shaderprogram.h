@@ -5,6 +5,7 @@
 #define SHADERPROGRAM_H
 
 #include "shader.h"
+#include "resourcedata.h"
 
 #include <vector>
 
