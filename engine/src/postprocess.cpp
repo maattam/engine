@@ -8,7 +8,7 @@
 using namespace Engine;
 
 PostProcess::PostProcess(Renderer* renderer)
-    : RenderStage(renderer), effect_(nullptr), proxy_(0), out_(0)
+    : RenderStage(renderer), proxy_(0), out_(0)
 {
     format_.setAttachment(QOpenGLFramebufferObject::NoAttachment);
     format_.setInternalTextureFormat(GL_RGBA16F);
@@ -18,7 +18,7 @@ PostProcess::PostProcess(Renderer* renderer)
 }
 
 PostProcess::PostProcess(Renderer* renderer, const QOpenGLFramebufferObjectFormat& format)
-    : RenderStage(renderer), effect_(nullptr), proxy_(0), out_(0), format_(format)
+    : RenderStage(renderer), proxy_(0), out_(0), format_(format)
 {
     texture_ = depth_ = 0;
 }
@@ -87,7 +87,7 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
         return false;
     }
 
-    setEffect(effect_);
+    initialiseEffect();
     RenderStage::setOutputFBO(proxy_);
 
     return true;
@@ -109,9 +109,14 @@ void PostProcess::setOutputFBO(GLuint fbo)
     effect_->setOutputFbo(out_);
 }
 
-bool PostProcess::setEffect(Effect::Postfx* effect)
+bool PostProcess::setEffect(const PostfxPtr& effect)
 {
     effect_ = effect;
+    return initialiseEffect();
+}
+
+bool PostProcess::initialiseEffect()
+{
     if(effect_ == nullptr)
     {
         return false;

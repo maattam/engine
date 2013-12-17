@@ -25,6 +25,16 @@ CubemapResource::CubemapResource(const QString& name, TextureConversion conversi
 {
 }
 
+void CubemapResource::texParameteri(GLenum pname, GLint target)
+{
+    parametersi_.push_back(qMakePair(pname, target));
+
+    if(ready())
+    {
+        CubemapTexture::texParameteri(pname, target);
+    }
+}
+
 bool CubemapResource::bind()
 {
     return ready() && CubemapTexture::bind();
@@ -72,6 +82,12 @@ bool CubemapResource::initialiseData(const DataType& data)
     gl->glTexParameteri(Target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     gl->glTexParameteri(Target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     gl->glTexParameteri(Target, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    // Set cached parameters
+    for(const auto& pair : parametersi_)
+    {
+        CubemapTexture::texParameteri(pair.first, pair.second);
+    }
 
     return true;
 }

@@ -44,8 +44,8 @@ void FreeLookScene::setModel(Engine::SceneModel* model)
 
     if(scene_ != nullptr)
     {
-        scene_->setDirectionalLight(&dirLight_);
         initialise();
+        scene_->setDirectionalLight(&dirLight_);
     }
 }
 

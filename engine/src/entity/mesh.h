@@ -6,68 +6,17 @@
 
 #include "entity.h"
 #include "subentity.h"
-#include "resource.h"
 
 #include <vector>
 
-struct aiScene;
-struct aiMesh;
-
 namespace Engine { namespace Entity {
 
-class MeshData : public ResourceData
-{
-public:
-    typedef std::vector<Material::Ptr> MaterialVec;
-
-    struct SubMeshData
-    {
-        std::vector<QVector3D> vertices;
-        std::vector<QVector3D> normals;
-        std::vector<QVector3D> tangents;
-        std::vector<QVector2D> uvs;
-        std::vector<unsigned int> indices;
-        MaterialVec::size_type materialIndex;
-        AABB aabb;
-    };
-
-    typedef std::vector<SubMeshData> SubMeshVec;
-
-    MeshData(ResourceDespatcher* despatcher);
-    MeshData(ResourceDespatcher* despatcher,
-        const SubMeshVec& subMeshes, const MaterialVec& materials);
-
-    virtual bool load(const QString& fileName);
-
-    // Initialises the MeshData from aiScene
-    // precondition: scene != nullptr
-    bool initFromScene(const aiScene* scene, const QString& fileName);
-
-    SubMeshVec::size_type numSubMeshes() const;
-
-    // precondition: index < numSubMeshes
-    const SubMeshData& subMesh(SubMeshVec::size_type index) const;
-
-    MaterialVec::size_type numMaterials() const;
-
-    // precondition: index < numMaterials
-    const Material::Ptr& material(MaterialVec::size_type index) const;
-
-private:
-    void initSubMesh(const aiMesh* mesh, SubMeshData& data);
-    void initMaterials(const aiScene* scene, const QString& fileName);
-
-    MaterialVec materials_;
-    SubMeshVec meshData_;
-};
-
-class Mesh : public Entity, public Resource<Mesh, MeshData>
+class Mesh : public Entity
 {
     typedef std::vector<SubEntity::Ptr> SubEntityVec;
 
 public:
     Mesh();
-    Mesh(const QString& name);
     virtual ~Mesh();
 
     virtual void updateRenderList(RenderQueue& list);
@@ -80,10 +29,6 @@ public:
 
     // precondition: index < numSubEntities
     const SubEntity::Ptr& subEntity(SubEntityVec::size_type index);
-     
-protected:
-    virtual bool initialiseData(const DataType& data);
-    virtual void releaseData();
 
 private:
     SubEntityVec entries_;

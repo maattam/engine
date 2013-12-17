@@ -26,7 +26,7 @@ public:
     {
         float constant;
         float linear;
-        float exp;
+        float quadratic;
     };
 
     LightType type() const;
@@ -48,12 +48,13 @@ public:
 
     void setAttenuationConstant(float attn);
     void setAttenuationLinear(float attn);
-    void setAttenuationExp(float attn);
+    void setAttenuationQuadratic(float attn);
 
     const Attenuation& Light::attenuation() const;
 
-    // Returns the light's world position derived from parentNode, or (0, 0, 0)
+    // Returns the light's world position derived from parentNode, or local position
     const QVector3D& position() const;
+    void setPosition(const QVector3D& position);
 
     virtual void updateRenderList(RenderQueue& list) {}
 

@@ -144,7 +144,7 @@ void BasicLightning::setSpotLight(const Entity::Light* light, int index)
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               light->position());
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.constant").c_str(),   light->attenuation().constant);
-    setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation().exp);
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation().quadratic);
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.linear").c_str(),     light->attenuation().linear);
 
     setUniformValue(formatUniformTableName("gSpotLights", index, "direction").c_str(),               light->direction());
@@ -158,7 +158,7 @@ void BasicLightning::setPointLight(const Entity::Light* light, int index)
     setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               light->position());
     setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.constant").c_str(),   light->attenuation().constant);
-    setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation().exp);
+    setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation().quadratic);
     setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.linear").c_str(),     light->attenuation().linear);
 }
 

@@ -106,9 +106,6 @@
     <ClCompile Include="src\scene\scene.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\colladanode.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderable\submesh.cpp">
       <Filter>Source Files\renderable</Filter>
     </ClCompile>
@@ -202,6 +199,15 @@
     <ClCompile Include="src\technique\hdrtonemap.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
+    <ClCompile Include="src\scene\nodeimport.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\importednodedata.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\importednode.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -286,9 +292,6 @@
     </ClInclude>
     <ClInclude Include="src\technique\shadowmap.h">
       <Filter>Header Files\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\colladanode.h">
-      <Filter>Header Files\scene</Filter>
     </ClInclude>
     <ClInclude Include="src\scene\scene.h">
       <Filter>Header Files\scene</Filter>
@@ -406,6 +409,15 @@
     </ClInclude>
     <ClInclude Include="src\technique\hdrtonemap.h">
       <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\nodeimport.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\importednodedata.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\importednode.h">
+      <Filter>Header Files\scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

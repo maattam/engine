@@ -12,7 +12,7 @@ public:
     virtual ~CubemapTexture();
 
     // Creates a cubemap face using glTexImage2D.
-    // The texture is generated on the first call of this function. If the texture needs to be removed to
+    // The texture is generated during the first call to this function. If the texture needs to be removed to
     // create a new texture, remove() has to be called before calling this function.
     virtual bool create(GLenum face, GLint level, GLint internalFormat, GLsizei width, GLsizei height,
         GLint border, GLenum format, GLenum type, const GLvoid* data = nullptr);

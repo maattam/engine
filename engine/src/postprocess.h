@@ -5,6 +5,8 @@
 
 #include "renderstage.h"
 
+#include <memory>
+
 #include <QOpenGLFramebufferObjectFormat>
 
 namespace Engine {
@@ -28,8 +30,11 @@ public:
 
     virtual void setOutputFBO(GLuint fbo);
 
-    // Precondition: Viewport has been set
-    bool setEffect(Effect::Postfx* effect);
+    typedef std::shared_ptr<Effect::Postfx> PostfxPtr;
+
+    // Precondition: Viewport has been set.
+    // Postcondition: effect ownership is maintained.
+    bool setEffect(const PostfxPtr& effect);
 
 private:
     QRect viewport_;
@@ -40,9 +45,10 @@ private:
     GLuint depth_;
 
     GLuint out_;
-    Effect::Postfx* effect_;
+    PostfxPtr effect_;
 
     void deleteBuffers();
+    bool initialiseEffect();
 };
 
 }

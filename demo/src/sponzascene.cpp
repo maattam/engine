@@ -109,23 +109,23 @@ void SponzaScene::initialise()
     setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
     // Load meshes
-    sceneMesh_ = despatcher()->get<ColladaNode>("assets/sponza_scene.dae");
-    sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
+    sceneMesh_ = despatcher()->get<ImportedNode>("assets/sponza_scene.dae");
+    sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
 
     // Set up lights
     setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 4.5f);
 
     spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_.setDirection(spotNode_->direction);
-    spotLight_.setDiffuseIntensity(20.0f);
-    spotLight_.setAttenuationExp(0.005f);
+    spotLight_.setDiffuseIntensity(80.0f);
+    spotLight_.setAttenuationQuadratic(0.005f);
     spotLight_.setAttenuationConstant(1.0f);
     spotLight_.setAttenuationLinear(0.1f);
     spotLight_.setCutoff(30.0f);
 
     flashLight_.setColor(QVector3D(1, 1, 1));
     flashLight_.setDiffuseIntensity(25.0f);
-    spotLight_.setAttenuationExp(0.005f);
+    flashLight_.setAttenuationQuadratic(0.2f);
     flashLight_.setCutoff(30.0f);
 
     // Position entities
@@ -134,7 +134,8 @@ void SponzaScene::initialise()
     sceneMesh_->attach(node);
 
     sphereNode_ = rootNode()->createSceneNodeChild();
-    sphereNode_->attachEntity(sphere_.get());
+    sphere_->attach(sphereNode_);
+
     sphereNode_->setShadowCaster(false);
     sphereNode_->setScale(0.5f);
     sphereNode_->attachEntity(&spotLight_);

@@ -80,7 +80,7 @@ gli::texture2D* loadQImage(const QString& fileName, TextureConversion conversion
         return nullptr;
     }
 
-    // Not very efficient, but make sure that the input is in expected byte order.
+    // Not very efficient, but make sure the input is in expected byte order.
     QImage argbData = image.convertToFormat(QImage::Format_ARGB32);
     if(argbData.isNull())
     {

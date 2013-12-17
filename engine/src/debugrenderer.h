@@ -50,7 +50,7 @@ public:
     virtual bool beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
 
     // Visualize GBuffer for debugging. The GBuffer is not modified.
-    // precondition: Viewport and camera has to be the same as the debuggee's, gbuffer != nullptr
+    // precondition: Viewport and camera has to be the same as the debuggee's
     void setGBuffer(GBuffer const* gbuffer);
 
     // Renders the scene to a render target instead of the default surface.

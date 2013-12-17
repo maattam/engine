@@ -1,6 +1,6 @@
 template<GLenum Type>
 Texture<Type>::Texture()
-    : textureId_(0), mipmap_(false), width_(0), height_(0)
+    : textureId_(0), width_(0), height_(0)
 {
 }
 
@@ -23,12 +23,7 @@ void Texture<Type>::remove()
 template<GLenum Type>
 void Texture<Type>::texParameteri(GLenum pname, GLint target)
 {
-    if(bind())
-    {
-        gl->glTexParameteri(Type, pname, target);
-    }
-
-    parametersi_.push_back(qMakePair(pname, target));
+    gl->glTexParameteri(Type, pname, target);
 }
 
 template<GLenum Type>
@@ -46,15 +41,9 @@ void Texture<Type>::setWrap(GLenum wrap_s, GLenum wrap_t)
 }
 
 template<GLenum Type>
-void Texture<Type>::setMipmap(bool enable)
+void Texture<Type>::generateMipmap()
 {
-    mipmap_ = enable;
-}
-
-template<GLenum Type>
-bool Texture<Type>::mipmap() const
-{
-    return mipmap_;
+    gl->glGenerateMipmap(Type);
 }
 
 template<GLenum Type>
@@ -78,20 +67,6 @@ template<GLenum Type>
 GLuint Texture<Type>::textureId() const
 {
     return textureId_;
-}
-
-template<GLenum Type>
-void Texture<Type>::setParameters()
-{
-    for(auto it = parametersi_.begin(); it != parametersi_.end(); ++it)
-    {
-        gl->glTexParameteri(Type, it->first, it->second);
-    }
-
-    if(mipmap_)
-    {
-        gl->glGenerateMipmap(Type);
-    }
 }
 
 template<GLenum Type>

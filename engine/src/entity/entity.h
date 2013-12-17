@@ -6,6 +6,8 @@
 #include "aabb.h"
 #include "visitable.h"
 
+#include <QString>
+
 namespace Engine {
 
 namespace Graph {
@@ -40,10 +42,14 @@ public:
     // Returns nullptr if the entity isn't attached to a node
     Graph::SceneNode* parentNode() const;
 
+    void setName(const QString& name);
+    const QString& name() const;
+
 protected:
     void updateAABB(const AABB& aabb);
 
 private:
+    QString name_;
     AABB aabb_;
     Graph::SceneNode* node_;
 

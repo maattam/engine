@@ -5,9 +5,6 @@
 
 #include "common.h"
 
-#include <QList>
-#include <QPair>
-
 namespace Engine {
 
 template<GLenum Type>
@@ -23,18 +20,22 @@ public:
     // postcondition: textureId == 0
     void remove();
 
-    // Queues a texture parameter, calls glTexParameteri
+    // Calls glTexParameteri
+    // precondition: texture is bound.
     virtual void texParameteri(GLenum pname, GLint target);
 
     // Sets the mag and min filtering to use
+    // precondition: texture is bound.
     void setFiltering(GLenum magFilter, GLenum minFilter);
 
     // Sets texture wrapping
+    // precondition: texture is bound.
     void setWrap(GLenum wrap_s, GLenum wrap_t);
 
-    // Generates mipmaps when the texture is loaded
-    virtual void setMipmap(bool enable);
-    bool mipmap() const;
+    // Generates mipmaps when the texture is bound.
+    // Needs to be called again when the texture changes.
+    // precondition: texture is bound.
+    virtual void generateMipmap();
 
     // Attempts to bind the texture, returns false on failure
     virtual bool bind();
@@ -50,17 +51,11 @@ public:
     GLsizei height() const;
 
 protected:
-    // Sets the cached texture parameters and mipmaps
-    void setParameters();
     void setDimensions(GLsizei width, GLsizei height);
 
     GLuint textureId_;
 
 private:
-    typedef QPair<GLenum, GLint> Parameteri;
-    QList<Parameteri> parametersi_;
-
-    bool mipmap_;
     GLsizei width_;
     GLsizei height_;
 

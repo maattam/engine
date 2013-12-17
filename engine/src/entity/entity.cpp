@@ -38,3 +38,13 @@ SceneNode* Entity::parentNode() const
 {
     return node_;
 }
+
+void Entity::setName(const QString& name)
+{
+    name_ = name;
+}
+
+const QString& Entity::name() const
+{
+    return name_;
+}

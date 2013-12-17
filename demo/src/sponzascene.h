@@ -4,7 +4,7 @@
 #include "freelookscene.h"
 
 #include "entity/mesh.h"
-#include "scene/colladanode.h"
+#include "scene/importednode.h"
 
 #include <memory>
 
@@ -26,9 +26,9 @@ protected:
     virtual void initialise();
 
 private:
-    Engine::ColladaNode::Ptr sceneMesh_;
+    Engine::ImportedNode::Ptr sceneMesh_;
+    Engine::ImportedNode::Ptr sphere_;
 
-    Engine::Entity::Mesh::Ptr sphere_;
     Engine::Graph::SceneNode* sphereNode_;
     Engine::Graph::SceneNode* cameraNode_;
 

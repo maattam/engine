@@ -17,7 +17,7 @@ Light::Light(LightType type) : Entity(), type_(type)
 
     attenuation_.constant = 0.0f;
     attenuation_.linear = 0.0f;
-    attenuation_.exp = 1.0f;
+    attenuation_.quadratic = 1.0f;
 
     cutoff_ = 30.0f;
     direction_ = UNIT_X;
@@ -104,9 +104,9 @@ void Light::setAttenuationLinear(float attn)
     calculateAABB();
 }
 
-void Light::setAttenuationExp(float attn)
+void Light::setAttenuationQuadratic(float attn)
 {
-    attenuation_.exp = attn;
+    attenuation_.quadratic = attn;
     calculateAABB();
 }
 
@@ -178,9 +178,9 @@ float Light::maxSpotDistance() const
     maxC = qMax(maxC, color_.z());
 
     float root = attenuation_.linear * attenuation_.linear
-        - 4 * attenuation_.exp * (attenuation_.constant - maxrgb * maxC * diffuseIntensity_);
+        - 4 * attenuation_.quadratic * (attenuation_.constant - maxrgb * maxC * diffuseIntensity_);
 
-    return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.exp);
+    return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.quadratic);
 }
 
 const QVector3D& Light::position() const
@@ -193,4 +193,9 @@ const QVector3D& Light::position() const
 
     // Fallback
     return basePosition_;
+}
+
+void Light::setPosition(const QVector3D& position)
+{
+    basePosition_ = position;
 }

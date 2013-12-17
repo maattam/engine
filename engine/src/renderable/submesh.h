@@ -5,8 +5,7 @@
 
 #include "renderable.h"
 
-#include <string>
-#include <vector>
+#include <QVector>
 #include <memory>
 
 #include <QVector3D>
@@ -20,15 +19,15 @@ public:
     typedef std::shared_ptr<SubMesh> Ptr;
 
     SubMesh();
-    ~SubMesh();
+    virtual ~SubMesh();
 
     virtual void render() const;
 
-    bool initMesh(const std::vector<QVector3D>& vertices,
-                  const std::vector<QVector3D>& normals,
-                  const std::vector<QVector3D>& tangents,
-                  const std::vector<QVector2D>& uvs,
-                  const std::vector<unsigned int>& indices);
+    bool initMesh(const QVector<QVector3D>& vertices,
+                  const QVector<QVector3D>& normals,
+                  const QVector<QVector3D>& tangents,
+                  const QVector<QVector2D>& uvs,
+                  const QVector<unsigned int>& indices);
 
 private:
     void destroy();

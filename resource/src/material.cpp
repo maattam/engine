@@ -107,7 +107,7 @@ void Material::setTextureOptions(const TexturePtr& texture) const
 {
     texture->setFiltering(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture->setWrap(GL_REPEAT, GL_REPEAT);
-    texture->setMipmap(true);
+    texture->generateMipmap();
 
     // Set 16x anisotropy... TODO!
     texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);

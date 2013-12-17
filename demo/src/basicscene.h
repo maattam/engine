@@ -6,7 +6,7 @@
 #include "material.h"
 #include "entity/mesh.h"
 #include "entity/boxprimitive.h"
-#include "scene/colladanode.h"
+#include "scene/importednode.h"
 
 #include <vector>
 #include <memory>
@@ -29,11 +29,11 @@ protected:
     virtual void initialise();
 
 private:
-    Engine::Entity::Mesh::Ptr torus_;
-    Engine::Entity::Mesh::Ptr oildrum_;
-    Engine::Entity::Mesh::Ptr sphere_;
-    Engine::ColladaNode::Ptr platform_;
-    Engine::Entity::Mesh::Ptr hellknight_;
+    Engine::ImportedNode::Ptr torus_;
+    Engine::ImportedNode::Ptr oildrum_;
+    Engine::ImportedNode::Ptr sphere_;
+    Engine::ImportedNode::Ptr platform_;
+    Engine::ImportedNode::Ptr hellknight_;
 
     std::shared_ptr<Engine::Entity::BoxPrimitive> cube_[2];
 

@@ -7,18 +7,38 @@
 using namespace Engine;
 
 Texture2DResource::Texture2DResource()
-    : Texture2D(), Resource(), conversion_(TC_RGBA)
+    : Texture2D(), Resource(), conversion_(TC_RGBA), mipmap_(false)
 {
 }
 
 Texture2DResource::Texture2DResource(const QString& name, TextureConversion conversion)
-    : Texture2D(), Resource(name), conversion_(conversion)
+    : Texture2D(), Resource(name), conversion_(conversion), mipmap_(false)
 {
 }
 
 bool Texture2DResource::bind()
 {
     return ready() && Texture2D::bind();
+}
+
+void Texture2DResource::texParameteri(GLenum pname, GLint target)
+{
+    parametersi_.push_back(qMakePair(pname, target));
+
+    if(ready())
+    {
+        Texture2D::texParameteri(pname, target);
+    }
+}
+
+void Texture2DResource::generateMipmap()
+{
+    mipmap_ = true;
+
+    if(ready())
+    {
+        Texture2D::generateMipmap();
+    }
 }
 
 bool Texture2DResource::create(GLint level, GLint internalFormat, GLsizei width, GLsizei height,
@@ -51,19 +71,43 @@ bool Texture2DResource::initialiseData(const DataType& data)
     // If we are dealing with a non-compressed texture, just call the default initialiser.
     if(!gli::is_compressed(texture.format()))
     {
-        return Texture2D::create(0,
+        if(!Texture2D::create(0,
             gli::internal_format(data->format()),
             data->dimensions().x,
             data->dimensions().y, 0,
             gli::external_format(data->format()),
             gli::type_format(data->format()),
-            data->data());
+            data->data()))
+        {
+            return false;
+        }
     }
 
+    else if(!uploadCompressed(texture))
+    {
+        return false;
+    }
+
+    // Set cached parameters
+    for(const auto& pair : parametersi_)
+    {
+        Texture2D::texParameteri(pair.first, pair.second);
+    }
+
+    if(mipmap_)
+    {
+        Texture2D::generateMipmap();
+    }
+
+    return true;
+}
+
+bool Texture2DResource::uploadCompressed(const gli::texture2D& texture)
+{
     // Don't generate mipmaps again since we are going to upload them
     if(texture.levels() > 1)
     {
-        setMipmap(false);
+        mipmap_ = false;
     }
 
     if(!Texture2D::createTexStorage(static_cast<GLint>(texture.levels()),

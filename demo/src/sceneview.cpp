@@ -10,6 +10,8 @@
 #include <QTimer> // singleShot
 
 #include "input.h"
+#include "basicscene.h"
+#include "sponzascene.h"
 
 #include "entity/camera.h"
 #include "deferredrenderer.h"
@@ -26,15 +28,12 @@
 #include "technique/hdrtonemap.h"
 #include "technique/blurfilter.h"
 
-#include "basicscene.h"
-#include "sponzascene.h"
-
 #ifdef _DEBUG
 #include <QOpenGLDebugLogger>
 #endif
 
 SceneView::SceneView(const QSurfaceFormat& format, QWindow* parent) : QWindow(parent),
-    deferred_(true), renderer_(nullptr), debugRenderer_(nullptr), hdrPostfx_(nullptr), frame_(0), context_(nullptr),
+    deferred_(true), renderer_(nullptr), debugRenderer_(nullptr), frame_(0), context_(nullptr),
     funcs_(nullptr), controller_(nullptr), debugLogger_(nullptr), gbuffer_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
@@ -57,9 +56,6 @@ SceneView::~SceneView()
 
     if(debugRenderer_ != nullptr)
         delete debugRenderer_;
-
-    if(hdrPostfx_ != nullptr)
-        delete hdrPostfx_;
 
     if(gbuffer_ != nullptr)
         delete gbuffer_;
@@ -174,30 +170,24 @@ void SceneView::swapRenderer()
             gbuffer_ = nullptr;
             debugRenderer_->setGBuffer(nullptr);
         }
-
-        if(hdrPostfx_ != nullptr)
-        {
-            delete hdrPostfx_;
-            hdrPostfx_ = nullptr;
-        }
     }
 
     // HDR tonemapping
-    hdrPostfx_ = new Engine::Effect::Hdr(&despatcher_, 4);
-    hdrPostfx_->setExposureFunction(std::make_shared<Engine::Effect::LumaExposure>());
-    hdrPostfx_->setBrightThreshold(1.5f);
+    std::shared_ptr<Engine::Effect::Hdr> hdrPostfx(new Engine::Effect::Hdr(&despatcher_, 4));
+    hdrPostfx->setExposureFunction(std::make_shared<Engine::Effect::LumaExposure>());
+    hdrPostfx->setBrightThreshold(1.5f);
 
     // 5x5 Gaussian blur filter
     Engine::Effect::Hdr::BlurFilterPtr filter(new Engine::Technique::BlurFilter);
     filter->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Engine::Shader::Type::Vertex));
     filter->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Engine::Shader::Type::Fragment));
-    hdrPostfx_->setBlurFilter(filter);
+    hdrPostfx->setBlurFilter(filter);
 
     // Tonemap shader
     Engine::Effect::Hdr::HDRTonemapPtr tonemap(new Engine::Technique::HDRTonemap);
     tonemap->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Engine::Shader::Type::Vertex));
     tonemap->addShader(despatcher_.get<Engine::Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Engine::Shader::Type::Fragment));
-    hdrPostfx_->setHDRTonemapShader(tonemap);
+    hdrPostfx->setHDRTonemapShader(tonemap);
 
     tonemap->setBloomFactor(0.25f);
     tonemap->setBrightLevel(5.0f);
@@ -253,7 +243,7 @@ void SceneView::swapRenderer()
         exit(-1);
     }
 
-    fxRenderer->setEffect(hdrPostfx_);
+    fxRenderer->setEffect(hdrPostfx);
     renderer_->setScene(&model_);
 
     model_.setView(renderer_);
@@ -391,12 +381,12 @@ void SceneView::swapScene(FreeLookScene* scene)
         delete controller_;
     }
 
-    qDebug() << "Managed objects: " << despatcher_.numManaged();
-
     scene->setModel(&model_);
     scene->setInput(input_);
     scene->setAspectRatio(static_cast<float>(width()) / height());
     scene->setFov(75.0f);
+
+    qDebug() << "Managed objects: " << despatcher_.numManaged();
 
     controller_ = scene;
 }

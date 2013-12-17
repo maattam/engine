@@ -69,12 +69,12 @@ void BasicScene::initialise()
     // Set up point lights
     Entity::Light::Ptr pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
     pointLight->setDiffuseIntensity(10.0f);
-    pointLight->setAttenuationExp(0.1f);
+    pointLight->setAttenuationQuadratic(0.1f);
     lights_.push_back(pointLight);
 
     pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
     pointLight->setColor(QVector3D(0.0f, 0.0f, 1.0f));
-    pointLight->setAttenuationExp(0.5f);
+    pointLight->setAttenuationQuadratic(0.5f);
     pointLight->setDiffuseIntensity(100.0f);
     lights_.push_back(pointLight);
 
@@ -86,16 +86,16 @@ void BasicScene::initialise()
     spotLight->setColor(QVector3D(1.0f, 0.0f, 1.0f));
     spotLight->setDirection(QVector3D(4.0f, -4.0f, -6.0f));
     spotLight->setDiffuseIntensity(20.0f);
-    spotLight->setAttenuationExp(0.05f);
+    spotLight->setAttenuationQuadratic(0.05f);
     spotLight->setCutoff(20.0f);
     lights_.push_back(spotLight);
 
     // Load models
-    oildrum_ = despatcher()->get<Entity::Mesh>("assets/oildrum.dae");
-    hellknight_ = despatcher()->get<Entity::Mesh>("assets/hellknight/hellknight.md5mesh");
-    platform_ = despatcher()->get<ColladaNode>("assets/blocks.dae");
-    sphere_ = despatcher()->get<Entity::Mesh>("assets/sphere.obj");
-    torus_ = despatcher()->get<Entity::Mesh>("assets/torus.obj");
+    oildrum_ = despatcher()->get<ImportedNode>("assets/oildrum.dae");
+    hellknight_ = despatcher()->get<ImportedNode>("assets/hellknight/hellknight.md5mesh");
+    platform_ = despatcher()->get<ImportedNode>("assets/blocks.dae");
+    sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
+    torus_ = despatcher()->get<ImportedNode>("assets/torus.obj");
 
     // Load cubes
     for(int i = 0; i < 2; ++i)
@@ -127,36 +127,35 @@ void BasicScene::initialise()
     {
         // Create rotation relation
         Graph::SceneNode* platf = platformNode_->createSceneNodeChild();
-        platf->rotate(-90.0f, UNIT_X);
 
         Graph::SceneNode* node = platf->createSceneNodeChild();
+        node->rotate(90.0f, UNIT_X);
+        node->setPosition(QVector3D(-5, 0, 2));
+        oildrum_->attach(node);
 
-        node->setPosition(QVector3D(-5, -2, 0));
-        node->attachEntity(oildrum_.get());
-
-        node = platf->createSceneNodeChild();
+        /*node = platf->createSceneNodeChild();
 
         node->setPosition(QVector3D(2, -2, 0));
-        node->attachEntity(oildrum_.get());
+        node->attachEntity(oildrum_.get());*/
 
         hkNode_ = platf->createSceneNodeChild();
 
-        hkNode_->setPosition(QVector3D(-2, 2, 0));
+        hkNode_->setPosition(QVector3D(-1, 0, -2));
         hkNode_->setScale(0.025f);
-        hkNode_->attachEntity(hellknight_.get());
+        hellknight_->attach(hkNode_);
     }
 
     // Torus
     {
         torusNode_->setScale(180.0f);
-        torusNode_->attachEntity(torus_.get());
+        torus_->attach(torusNode_);
         torusNode_->setShadowCaster(false);
     }
 
     // Sphere
     {
         sphereNode_->setScale(0.2f);
-        sphereNode_->attachEntity(sphere_.get());
+        sphere_->attach(sphereNode_);
         sphereNode_->setShadowCaster(false);
         sphereNode_->attachEntity(lights_[0].get());
 
@@ -164,7 +163,7 @@ void BasicScene::initialise()
         Graph::SceneNode* node = root->createSceneNodeChild();
         node->setPosition(2*QVector3D(-6.0f, 7/2, 6.0f));
         node->setScale(0.1f);
-        node->attachEntity(sphere_.get());
+        //node->attachEntity(sphere_.get());
         node->setShadowCaster(false);
         node->attachEntity(spotLight.get());
     }

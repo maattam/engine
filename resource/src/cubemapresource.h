@@ -5,6 +5,9 @@
 #include "resource.h"
 #include "textureloader.h"
 
+#include <QList>
+#include <QPair>
+
 namespace Engine {
 
 class CubemapData : public ResourceData
@@ -36,6 +39,8 @@ public:
     CubemapResource();
     explicit CubemapResource(const QString& name, TextureConversion conversion = TC_RGBA);
 
+    virtual void texParameteri(GLenum pname, GLint target);
+
     // Fails if the resource is managed
     virtual bool create(GLenum face, GLint level, GLint internalFormat, GLsizei width, GLsizei height,
         GLint border, GLenum format, GLenum type, const GLvoid* data = nullptr);
@@ -51,6 +56,9 @@ protected:
 
 private:
     TextureConversion conversion_;
+
+    typedef QPair<GLenum, GLint> Parameteri;
+    QList<Parameteri> parametersi_;
 
     void uploadCompressed(const DataType& data);
 };

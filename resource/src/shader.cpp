@@ -100,11 +100,6 @@ namespace {
                 QString fileRel = rxFileName.cap().remove('\"');
                 QString dir = QFileInfo(fileName).dir().path();
 
-                if(!dir.isEmpty())
-                {
-                    dir += QDir::separator();
-                }
-
                 if(!parseShader(dir + fileRel, result))
                 {
                     return false;

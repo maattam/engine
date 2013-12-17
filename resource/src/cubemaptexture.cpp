@@ -28,7 +28,5 @@ bool CubemapTexture::create(GLenum face, GLint level, GLint internalFormat, GLsi
     gl->glTexImage2D(face, level, internalFormat, width, height, border, format, type, data);
 
     setDimensions(width, height);
-    setParameters();
-
     return true;
 }

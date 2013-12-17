@@ -194,7 +194,9 @@
     <ClCompile Include="src\renderable\submesh.cpp" />
     <ClCompile Include="src\renderqueue.cpp" />
     <ClCompile Include="src\renderstage.cpp" />
-    <ClCompile Include="src\scene\colladanode.cpp" />
+    <ClCompile Include="src\scene\importednode.cpp" />
+    <ClCompile Include="src\scene\importednodedata.cpp" />
+    <ClCompile Include="src\scene\nodeimport.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
@@ -262,7 +264,9 @@
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\renderqueue.h" />
     <ClInclude Include="src\renderstage.h" />
-    <ClInclude Include="src\scene\colladanode.h" />
+    <ClInclude Include="src\scene\importednode.h" />
+    <ClInclude Include="src\scene\importednodedata.h" />
+    <ClInclude Include="src\scene\nodeimport.h" />
     <ClInclude Include="src\scene\scene.h" />
     <ClInclude Include="src\scene\scenecontroller.h" />
     <ClInclude Include="src\scene\scenemodel.h" />

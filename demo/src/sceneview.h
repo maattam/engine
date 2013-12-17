@@ -11,19 +11,14 @@
 #include "resourcedespatcher.h"
 #include "scene/scene.h"
 
-#include "sponzascene.h"
-#include "basicscene.h"
-
 class QOpenGLDebugLogger;
+class FreeLookScene;
+class Input;
 
 namespace Engine {
     class Renderer;
     class DebugRenderer;
     class GBuffer;
-
-    namespace Effect {
-        class Hdr;
-    }
 }
 
 class SceneView : public QWindow
@@ -70,7 +65,6 @@ private:
     Engine::Renderer* renderer_;
     Engine::DebugRenderer* debugRenderer_;
     Engine::ResourceDespatcher despatcher_;
-    Engine::Effect::Hdr* hdrPostfx_;
     Engine::GBuffer* gbuffer_;
 
     Engine::Scene model_;
