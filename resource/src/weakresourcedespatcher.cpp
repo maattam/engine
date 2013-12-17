@@ -9,17 +9,14 @@
 
 using namespace Engine;
 
-WeakResourceDespatcher::WeakResourceDespatcher(QObject* parent)
-    : ResourceDespatcher(parent), loader_(nullptr), watcher_(nullptr)
+WeakResourceDespatcher::WeakResourceDespatcher(unsigned int threadCount, QObject* parent)
+    : ResourceDespatcher(parent), watcher_(nullptr)
 {
-    loader_ = new ResourceLoader();
-    loader_->moveToThread(&loadThread_);
+    qRegisterMetaType<ResourcePtr>("ResourcePtr");
+    qRegisterMetaType<ResourceDataPtr>("ResourceDataPtr");
 
-    connect(this, &WeakResourceDespatcher::loadResources, loader_, &ResourceLoader::run);
-    connect(loader_, &ResourceLoader::resourceLoaded, this, &WeakResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
-    loadThread_.start();
-
-    emit loadResources();
+    threadPool_.setMaxThreadCount(threadCount);
+    qDebug() << "Despatcher thread pool size:" << threadCount;
 
 #ifdef _DEBUG
     watcher_ = new QFileSystemWatcher(this);
@@ -30,16 +27,12 @@ WeakResourceDespatcher::WeakResourceDespatcher(QObject* parent)
 WeakResourceDespatcher::~WeakResourceDespatcher()
 {
     clear();
-
-    delete loader_;
-    loader_ = nullptr;
 }
 
 void WeakResourceDespatcher::clear()
 {
-    loader_->stop();
-    loadThread_.quit();
-    loadThread_.wait();
+    // Wait for threads to finish.
+    threadPool_.waitForDone();
 
     resources_.clear();
 }
@@ -71,7 +64,8 @@ void WeakResourceDespatcher::fileChanged(const QString& path)
         {
             auto handle = result->lock();
             handle->release();
-            loader_->pushResource(handle);
+
+            pushResource(handle->name(), handle);
         }
     }
 
@@ -100,15 +94,17 @@ void WeakResourceDespatcher::watchResource(const ResourcePtr& resource)
     }
 }
 
-void WeakResourceDespatcher::resourceLoaded(const QString& id)
+void WeakResourceDespatcher::resourceLoaded(QString id, ResourceDataPtr data)
 {
-    WeakResourcePtr result = findResource(id);
-    
-    auto handle = result.lock();
-    if(handle != nullptr)
+    auto handle = findResource(id).lock();
+    if(handle == nullptr)
     {
-        handle->ready();
+        qWarning() << __FUNCTION__ << "Resource loaded but handle is missing:" << id;
+        return;
     }
+
+    // If the resource should be initialised on next frame, signal despatcher
+    handle->initialiseFromData(data);
 }
 
 WeakResourceDespatcher::WeakResourcePtr WeakResourceDespatcher::findResource(const QString& fileName)
@@ -131,5 +127,20 @@ void WeakResourceDespatcher::insertResource(const QString& fileName, const Resou
     resource->setDespatcher(this);
     watchResource(resource);
 
-    loader_->pushResource(resource);
+    pushResource(fileName, resource);
+}
+
+void WeakResourceDespatcher::loadResource(ResourcePtr resource)
+{
+    insertResource(resource->name(), resource);
+}
+
+void WeakResourceDespatcher::pushResource(const QString& fileName, const ResourcePtr& resource)
+{
+    ResourceLoader* loader = new ResourceLoader(*resource, fileName, *this);
+
+    connect(loader, &ResourceLoader::resourceLoaded, this, &WeakResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
+    loader->setAutoDelete(true);
+
+    threadPool_.start(loader);
 }

@@ -11,13 +11,14 @@
 namespace Engine {
 
 class ResourceBase;
+class ResourceData;
 
 class ResourceDespatcher : public QObject
 {
     Q_OBJECT
 
 public:
-    ResourceDespatcher(QObject* parent = nullptr) : QObject(parent) {}
+    explicit ResourceDespatcher(QObject* parent = nullptr) : QObject(parent) {}
     virtual ~ResourceDespatcher() {};
 
     // Clears the record; doesn't delete managed objects
@@ -32,14 +33,15 @@ public:
     template<typename ResourceType, typename... Args>
     std::shared_ptr<ResourceType> get(const QString& fileName, Args&&... args);
 
+    typedef std::shared_ptr<ResourceBase> ResourcePtr;
+
 public slots:
-    // Called when the resource needs to be initialised
-    // postcondition: if exists; attempted to initialise
-    virtual void resourceLoaded(const QString& id) = 0;
+    // Can be used to move resources between despatchers.
+    // The resource is loaded by the target despatcher and ownership is copied.
+    virtual void loadResource(ResourcePtr resource) = 0;
 
 protected:
     typedef std::weak_ptr<ResourceBase> WeakResourcePtr;
-    typedef std::shared_ptr<ResourceBase> ResourcePtr;
 
     virtual WeakResourcePtr findResource(const QString& fileName) = 0;
     virtual void insertResource(const QString& fileName, const ResourcePtr& resource) = 0;

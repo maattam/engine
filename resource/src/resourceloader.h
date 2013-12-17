@@ -1,52 +1,42 @@
-// ResourceLoader implements a consumer object that loads data from storage asynchronously.
+#ifndef RESOURCELOADER_H
+#define RESOURCELOADER_H
 
-#ifndef RESOURCEDELOADER_H
-#define RESOURCEDELOADER_H
-
+#include <QRunnable>
 #include <QObject>
-#include <QQueue>
-#include <QMutex>
-#include <QWaitCondition>
-#include <atomic>
+#include <QString>
+
 #include <memory>
+
+#include "resourcedata.h"
+#include "proxydespatcher.h"
 
 namespace Engine {
 
+class ResourceData;
 class ResourceBase;
 
-class ResourceLoader : public QObject
+class ResourceLoader : public QObject, public QRunnable
 {
     Q_OBJECT
 
 public:
-    typedef std::shared_ptr<ResourceBase> ResourcePtr;
+    typedef std::shared_ptr<ResourceData> ResourceDataPtr;
 
-    ResourceLoader(QObject* parent = nullptr);
-    ~ResourceLoader();
+    explicit ResourceLoader(ResourceBase& resource, const QString& fileName, ResourceDespatcher& despatcher,
+        QObject* parent = nullptr);
 
-    // Interrupts the consumer loop
-    void stop();
-
-    // Enqueues a resource which's data will be loaded later
-    // precondition: resource != nullptr
-    void pushResource(const ResourcePtr& resource);
-
-public slots:
-    // Starts the consumer process for loading data
-    void run();
+    virtual void run();
 
 signals:
-    // Signaled when a resource's data has been loaded from disk
-    // precondition: InitialisePolicy == QUEUED
-    void resourceLoaded(const QString& id);
+    void resourceLoaded(QString name, ResourceDataPtr data);
 
 private:
-    QQueue<ResourcePtr> loadQueue_;
-    QMutex mutex_;
-    QWaitCondition notEmpty_;
-    std::atomic<bool> running_;
+    ProxyDespatcher proxy_;
+    ResourceDataPtr data_;
+    ResourceDespatcher& target_;
+    QString fileName_;
 };
 
 }
 
-#endif  // RESOURCEDELOADER_H
+#endif // RESOURCELOADER_H

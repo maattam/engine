@@ -135,14 +135,14 @@ bool Texture2DResource::uploadCompressed(const gli::texture2D& texture)
     return true;
 }
 
-void Texture2DResource::releaseData()
+void Texture2DResource::releaseResource()
 {
-    Texture2D::remove();
+    remove();
 }
 
-ResourceData* Texture2DResource::createData()
+Texture2DResource::ResourceDataPtr Texture2DResource::createData()
 {
-    TextureData* data = new TextureData();
+    std::shared_ptr<TextureData> data(new TextureData());
     data->setConversion(conversion_);
 
     return data;

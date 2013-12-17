@@ -6,37 +6,60 @@
 using namespace Engine;
 
 ResourceBase::ResourceBase()
-    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
-    released_(false)
+    : despatcher_(nullptr), initialized_(false), released_(true)
 {
 }
 
 ResourceBase::ResourceBase(const QString& name, InitialisePolicy policy)
-    : data_(nullptr), despatcher_(nullptr), dataReady_(false), initialized_(false),
-    released_(false), name_(name), policy_(policy)
+    : despatcher_(nullptr), initialized_(false), released_(true), name_(name), policy_(policy)
 {
 }
 
 ResourceBase::~ResourceBase()
 {
-    if(data_ != nullptr)
-    {
-        delete data_;
-        data_ = nullptr;
-    }
 }
 
-ResourceData* ResourceBase::createNewData()
+bool ResourceBase::initialiseFromData(const ResourceDataPtr& data)
 {
-    dataReady_ = false;
+    data_ = data;
 
-    if(data_ != nullptr)
-        delete data_;
+    if(!managed())
+    {
+        return initialiseResource();
+    }
 
-    data_ = createData();
-    data_->setDespatcher(despatcher_);
+    if(policy_ == QUEUED)
+    {
+        return ready();
+    }
 
-    return data_;
+    return true;
+}
+
+bool ResourceBase::initialiseResource()
+{
+    if(!data_)
+    {
+        return false;
+    }
+
+    release();
+
+    initialized_ = initialise(data_.get());
+    if(!initialized_)
+    {
+        qWarning() << "Failed to initialise resource:" << name_;
+        releaseResource();
+    }
+
+    else
+    {
+        emit initialized(name_);
+        released_ = false;
+    }
+
+    data_.reset();
+    return initialized_;
 }
 
 bool ResourceBase::load(const QString& fileName)
@@ -48,62 +71,53 @@ bool ResourceBase::load(const QString& fileName)
         return false;
     }
 
-    data_ = createNewData();
+    data_ = createData();
     if(!data_->load(fileName))
     {
-        initialized_ = false;
+        qWarning() << "Failed to load" << fileName;
+
+        data_.reset();
+        return false;
     }
 
-    else
-    {
-        if(!(initialized_ = initialise(data_)))
-        {
-            qDebug() << "Failed to initialise resource:" << name_;
-            releaseData();
-        }
-    }
-
-    delete data_;
-    data_ = nullptr;
-
-    return initialized_;
+    return initialiseResource();
 }
 
 bool ResourceBase::ready()
 {
-    // Non-managed resource state is considered ready
-    if(!managed() || initialized_)
+    if(initialized_)
     {
         return true;
     }
 
     // If the data has been read from file, we can initialise it
-    else if(dataReady_)
+    else if(data_ != nullptr)
     {
-        Q_ASSERT(data_);
-        initialized_ = initialise(data_);
-
-        if(initialized_)
-        {
-            emit initialized(name_);
-        }
-
-        else
-        {
-            qDebug() << "Failed to initialise resource:" << name_;
-            releaseData();
-        }
-
-        dataReady_ = false;     // Mark data as invalid
-
-        // Delete cached data
-        delete data_;
-        data_ = nullptr;
-
-        released_ = false;
+        return initialiseResource();
     }
 
-    return initialized_;
+    return false;
+}
+
+void ResourceBase::release()
+{
+    if(released_)
+    {
+        return;
+    }
+
+    if(!name_.isEmpty())
+    {
+        qDebug() << __FUNCTION__ << "Releasing resource:" << name_;
+    }
+
+    initialized_ = false;
+    released_ = true;
+
+    emit released(name_);
+
+    // Call implementation
+    releaseResource();
 }
 
 bool ResourceBase::managed() const
@@ -129,27 +143,6 @@ const QString& ResourceBase::name() const
 ResourceBase::InitialisePolicy ResourceBase::initialisePolicy() const
 {
     return policy_;
-}
-
-void ResourceBase::release()
-{
-    if(released_)
-    {
-        return;
-    }
-
-    if(!name_.isEmpty())
-    {
-        qDebug() << __FUNCTION__ << "Releasing resource:" << name_;
-    }
-
-    initialized_ = false;
-    released_ = true;
-
-    emit released(name_);
-
-    // Call implementation
-    releaseData();
 }
 
 void ResourceBase::queryFilesDebug(QStringList& files) const

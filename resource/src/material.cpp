@@ -41,7 +41,7 @@ const Material::TexturePtr& Material::getTexture(TextureType type)
     auto iter = textures_.find(type);
     if(iter == textures_.end())
     {
-        qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
+        //qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
 
         TexturePtr& tex = textures_[type];
         tex = defaultTexture(type);

@@ -1,82 +1,34 @@
 #include "resourceloader.h"
 
-#include "resource.h"
 #include "resourcedata.h"
+#include "resourcebase.h"
 
 #include <QDebug>
 #include <QThread>
 
 using namespace Engine;
 
-ResourceLoader::ResourceLoader(QObject* parent)
-    : QObject(parent), running_(false)
+ResourceLoader::ResourceLoader(ResourceBase& resource, const QString& fileName, ResourceDespatcher& despatcher, QObject* parent)
+    : QObject(parent), QRunnable(), target_(despatcher), fileName_(fileName)
 {
-}
-
-ResourceLoader::~ResourceLoader()
-{
+    data_ = resource.createData();
 }
 
 void ResourceLoader::run()
 {
-    qDebug() << __FUNCTION__ << "Thread:" << thread()->currentThreadId();
-    running_ = true;
+    proxy_.setTarget(&target_);
+    data_->setDespatcher(&proxy_);
 
-    while(running_)
+    qDebug() << "Loading:" << fileName_;
+
+    if(data_->load(fileName_))
     {
-        // Acquire the queue mutex and process the topmost resource
-        mutex_.lock();
-        if(loadQueue_.empty())
-        {
-            // If the queue is empty, we suspend the thread and wait for the producer
-            // thread to push more resources
-            notEmpty_.wait(&mutex_);
-        }
-
-        if(!running_)
-        {
-            break;
-        }
-
-        // We copy the resource so we don't have to block the producer thread
-        // while loading the data from storage
-        ResourcePtr resource = loadQueue_.dequeue();
-        mutex_.unlock();
-
-        qDebug() << __FUNCTION__ << "Loading:" << resource->name();
-
-        ResourceData* data = resource->createNewData();
-        if(!data->load(resource->name()))
-        {
-            qWarning() << __FUNCTION__ << "Failed to load:" << resource->name();
-        }
-
-        else
-        {
-            resource->dataReady_ = true;
-
-            // If the resource should be initialised on next frame, signal despatcher
-            if(resource->initialisePolicy() == ResourceBase::QUEUED)
-            {
-                emit resourceLoaded(resource->name());
-            }
-        }
+        emit resourceLoaded(fileName_, data_);
     }
-}
 
-void ResourceLoader::pushResource(const ResourcePtr& resource)
-{
-    // Acquire mutex and enqueue the new resource
-    mutex_.lock();
-    loadQueue_.enqueue(resource);
-
-    // Wake the consumer thread if it's suspended
-    notEmpty_.wakeAll();
-    mutex_.unlock();
-}
-
-void ResourceLoader::stop()
-{
-    running_ = false;
-    notEmpty_.wakeAll();
+    else
+    {
+        qWarning() << "Failed to load:" << fileName_;
+        data_.reset();
+    }
 }

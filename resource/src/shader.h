@@ -38,7 +38,7 @@ public:
 
 protected:
     virtual bool initialiseData(const DataType& data);
-    virtual void releaseData();
+    virtual void releaseResource();
 
 private:
     QOpenGLShader* shader_;

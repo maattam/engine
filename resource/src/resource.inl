@@ -10,9 +10,9 @@ Resource<Type, ResourceDataType>::Resource(const QString& name, InitialisePolicy
 }
 
 template<typename Type, typename ResourceDataType>
-ResourceData* Resource<Type, ResourceDataType>::createData()
+ResourceBase::ResourceDataPtr Resource<Type, ResourceDataType>::createData()
 {
-    return new ResourceDataType();
+    return std::make_shared<ResourceDataType>();
 }
 
 template<typename Type, typename ResourceDataType>
@@ -22,24 +22,4 @@ bool Resource<Type, ResourceDataType>::initialise(ResourceData* data)
     Q_ASSERT(rdata != nullptr);
 
     return initialiseData(*rdata);
-}
-
-template<typename ResourceDataType>
-bool ResourceBase::fromData(const ResourceDataType& data)
-{
-    if(managed())
-        return false;
-
-    if(initialized_)
-    {
-        release();
-    }
-
-    initialized_ = initialise(&data);
-    if(initialized_)
-    {
-        releaseData();
-    }
-
-    return initialized_;
 }

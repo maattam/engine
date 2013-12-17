@@ -125,7 +125,7 @@ void importMesh(aiMesh* mesh, IndexMesh& indexMesh)
     for(size_t i = 0; i < mesh->mNumFaces; ++i)
     {
         const aiFace& face = mesh->mFaces[i];
-        assert(face.mNumIndices == 3);
+        Q_ASSERT(face.mNumIndices == 3);
 
         indexMesh.indices.push_back(face.mIndices[0]);
         indexMesh.indices.push_back(face.mIndices[1]);

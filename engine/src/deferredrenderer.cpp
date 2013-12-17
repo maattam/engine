@@ -100,7 +100,7 @@ void DeferredRenderer::geometryPass()
 
         geometryShader_.setMaterialAttributes(material->attributes());
         geometryShader_.setHasTangentsAndNormals(renderable->hasTangents()
-            && it->material->hasTexture(Material::TEXTURE_NORMALS));
+            && material->hasTexture(Material::TEXTURE_NORMALS));
 
         renderable->render();
     }

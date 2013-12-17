@@ -112,7 +112,7 @@ void CubemapResource::uploadCompressed(const DataType& data)
     }
 }
 
-void CubemapResource::releaseData()
+void CubemapResource::releaseResource()
 {
     remove();
 }
@@ -126,9 +126,9 @@ void CubemapResource::queryFilesDebug(QStringList& files) const
     }
 }
 
-ResourceData* CubemapResource::createData()
+CubemapResource::ResourceDataPtr CubemapResource::createData()
 {
-    CubemapData* data = new CubemapData();
+    std::shared_ptr<CubemapData> data(new CubemapData());
     data->setConversion(conversion_);
 
     return data;

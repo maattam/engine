@@ -24,7 +24,7 @@ Shader::Shader(const QString& name, QOpenGLShader::ShaderTypeBit type)
 
 Shader::~Shader()
 {
-    Shader::releaseData();
+    Shader::releaseResource();
 }
 
 bool Shader::initialiseData(const DataType& data)
@@ -39,7 +39,7 @@ bool Shader::initialiseData(const DataType& data)
     return true;
 }
 
-void Shader::releaseData()
+void Shader::releaseResource()
 {
     if(shader_ != nullptr)
     {
@@ -99,6 +99,11 @@ namespace {
             {
                 QString fileRel = rxFileName.cap().remove('\"');
                 QString dir = QFileInfo(fileName).dir().path();
+
+                if(!dir.isEmpty())
+                {
+                    dir += QDir::separator();
+                }
 
                 if(!parseShader(dir + fileRel, result))
                 {

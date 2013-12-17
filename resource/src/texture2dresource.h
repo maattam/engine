@@ -51,9 +51,9 @@ public:
     virtual bool bind();
 
 protected:
-    virtual ResourceData* createData();
+    virtual ResourceDataPtr createData();
     virtual bool initialiseData(const DataType& data);
-    virtual void releaseData();
+    virtual void releaseResource();
 
 private:
     TextureConversion conversion_;

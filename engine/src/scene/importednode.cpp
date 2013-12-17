@@ -20,7 +20,7 @@ ImportedNode::ImportedNode(const QString& name)
 
 ImportedNode::~ImportedNode()
 {
-    ImportedNode::releaseData();
+    ImportedNode::releaseResource();
 }
 
 void ImportedNode::attach(Graph::SceneNode* parent)
@@ -108,7 +108,7 @@ bool ImportedNode::initialiseData(const DataType& data)
     return true;
 }
 
-void ImportedNode::releaseData()
+void ImportedNode::releaseResource()
 {
     if(parentNode_ != nullptr)
     {

@@ -10,22 +10,21 @@
 #include "resourcedespatcher.h"
 
 #include <QHash>
-#include <cassert>
-#include <QThread>
+#include <QThreadPool>
 
 class QFileSystemWatcher;
 
 namespace Engine {
 
 class ResourceBase;
-class ResourceLoader;
+class ResourceData;
 
 class WeakResourceDespatcher : public ResourceDespatcher
 {
     Q_OBJECT
 
 public:
-    WeakResourceDespatcher(QObject* parent = nullptr);
+    explicit WeakResourceDespatcher(unsigned int threadCount = 2, QObject* parent = nullptr);
     virtual ~WeakResourceDespatcher();
 
     // Clears the record; doesn't delete managed objects
@@ -34,16 +33,19 @@ public:
     // Counts managed objects; expensive
     virtual int numManaged() const;
 
-signals:
-    // Invokes the ResourceLoaders consume procedure
-    void loadResources();
+    typedef std::shared_ptr<ResourceData> ResourceDataPtr;
 
 public slots:
     void fileChanged(const QString& path);
 
     // Called when the resource needs to be initialised
     // postcondition: if exists; attempted to initialise
-    virtual void resourceLoaded(const QString& id);
+    void resourceLoaded(QString id, ResourceDataPtr data);
+
+    // Can be used to move resources between despatchers.
+    // The resource is loaded by the target despatcher and ownership is copied.
+    // Precondition: Resource name must be the file name, otherwise loading will fail.
+    virtual void loadResource(ResourcePtr resource);
 
 protected:
     virtual WeakResourcePtr findResource(const QString& fileName);
@@ -51,12 +53,12 @@ protected:
 
 private:
     QHash<QString, WeakResourcePtr> resources_;
-    QThread loadThread_;
-    ResourceLoader* loader_;
+    QThreadPool threadPool_;
 
     QFileSystemWatcher* watcher_;
 
     void watchResource(const ResourcePtr& resource);
+    void pushResource(const QString& fileName, const ResourcePtr& resource);
 
     WeakResourceDespatcher(const WeakResourceDespatcher&);
     WeakResourceDespatcher& operator=(const WeakResourceDespatcher&);

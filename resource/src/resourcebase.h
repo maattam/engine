@@ -5,13 +5,12 @@
 #include <QString>
 #include <QStringList>
 
-#include <atomic>
+#include <memory>
 
 namespace Engine {
 
 class ResourceDespatcher;
 class ResourceData;
-class ResourceLoader;
 
 class ResourceBase : public QObject
 {
@@ -26,11 +25,6 @@ public:
 
     // Synchronous data loading, returns false if the object is managed
     virtual bool load(const QString& fileName);
-
-    // Initialises the resource from data.
-    // Fails if the resource is managed.
-    template<typename ResourceDataType>
-    bool fromData(const ResourceDataType& data);
 
     // Attemps to initialise the resource from data, or return true if
     // the resource has already been initialised. Returns always true if the resource is not
@@ -58,6 +52,18 @@ public:
     // ON_DEMAND means lazy loading, and QUEUED immediate loading when the resource's data is ready.
     InitialisePolicy initialisePolicy() const;
 
+    typedef std::shared_ptr<ResourceData> ResourceDataPtr;
+
+    // Called upon resource initialisation
+    // precondition: old data has been deleted
+    // postcondition: new data has been returned, data != nullptr
+    virtual ResourceDataPtr createData() = 0;
+
+    // Initialises resource from data. Previous data is deleted and resource is released.
+    // If InitialisePolicy is QUEUED, the resource is initialised immediately.
+    // Precondition: data is loaded.
+    bool initialiseFromData(const ResourceDataPtr& data);
+
     // Reimplement to provide additional triggers for file watching
     virtual void queryFilesDebug(QStringList& files) const;
 
@@ -73,35 +79,26 @@ signals:
     void initialized(const QString& name);
 
 protected:
-    // Called upon resource initialisation
-    // precondition: old data has been deleted
-    // postcondition: new data has been returned, data != nullptr
-    virtual ResourceData* createData() = 0;
-
     // Initialises the resource from data
     // precondition: data != nullptr
     // postcondition: true if initialisation was successful
     virtual bool initialise(ResourceData* data) = 0;
 
-    // Called when data needs to be released and memory freed
-    // precondition: data present
-    // postcondition: data released
-    virtual void releaseData() = 0;
+    // Called when the resource needs to be released and memory freed
+    virtual void releaseResource() = 0;
 
 private:
-    friend class ResourceLoader;
-
-    // Constructs a new ResourceData and deletes the old one
-    ResourceData* createNewData();
-
-    ResourceData* data_;
+    ResourceDataPtr data_;
     ResourceDespatcher* despatcher_;
 
-    std::atomic<bool> dataReady_;
-    bool initialized_;
-    bool released_;     // To prevent reloading
     QString name_;
     InitialisePolicy policy_;
+
+    bool initialized_;
+    bool released_;     // To prevent reloading
+
+    // precondition: data has been set
+    bool initialiseResource();
 
     ResourceBase(const ResourceBase&);
     ResourceBase& operator=(const ResourceBase&);

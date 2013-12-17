@@ -21,12 +21,11 @@ public:
     typedef ResourceDataType DataType;
     typedef std::shared_ptr<Type> Ptr;
 
-protected:
     // Called upon resource initialisation
-    // precondition: old data has been deleted
     // postcondition: new data has been returned, data != nullptr
-    virtual ResourceData* createData();
+    virtual ResourceDataPtr createData();
 
+protected:
     // Initialises the resource from data
     // precondition: data != nullptr
     // postcondition: true if initialisation was successful
