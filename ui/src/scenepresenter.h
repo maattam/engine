@@ -1,3 +1,5 @@
+// ScenePresenter manages scene drawing in the rendering thread.
+
 #ifndef SCENEPRESENTER_H
 #define SCENEPRESENTER_H
 

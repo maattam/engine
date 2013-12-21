@@ -17,12 +17,6 @@ Application::Application(const QSurfaceFormat& format)
 
 Application::~Application()
 {
-    if(thread_ != nullptr)
-    {
-        thread_->quit();
-        thread_->wait();
-    }
-
     if(presenter_ != nullptr)
     {
         delete presenter_;
@@ -92,9 +86,6 @@ void Application::viewInvalidated()
     {
         thread_->quit();
         thread_->wait();
-
-        delete thread_;
-        thread_ = nullptr;
     }
 
     // Clean up resources

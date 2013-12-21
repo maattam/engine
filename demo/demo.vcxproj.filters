@@ -49,6 +49,9 @@
     <CustomBuild Include="src\inputstate.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\uicontroller.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_scene.cpp">
@@ -105,6 +108,15 @@
     <ClCompile Include="src\inputstate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_uicontroller.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_uicontroller.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\uicontroller.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\freelookscene.h">
@@ -116,10 +128,5 @@
     <ClInclude Include="src\rendererfactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\main.qml">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

@@ -123,9 +123,8 @@ void Hdr::render()
 void Hdr::renderHighpass()
 {
     fbo_->bind();
-    gl->glClear(GL_COLOR_BUFFER_BIT);
-
     highpass_->bind();
+
     gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
     gl->glActiveTexture(GL_TEXTURE0);
@@ -152,7 +151,6 @@ void Hdr::renderHighpass()
 void Hdr::renderTonemap()
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, outputFbo());
-    gl->glClear(GL_COLOR_BUFFER_BIT);
 
     gl->glViewport(0, 0, width_, height_);
 

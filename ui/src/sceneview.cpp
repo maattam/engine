@@ -15,6 +15,9 @@ SceneView::SceneView(QWindow* parent)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setPersistentOpenGLContext(true);
     setPersistentSceneGraph(true);
+
+    // Register custom QML classes
+    qmlRegisterType<RenderTargetItem>("Engine", 1, 0, "RenderTarget");
 }
 
 SceneView::~SceneView()

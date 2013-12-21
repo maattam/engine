@@ -12,6 +12,10 @@
 #include <QOpenGLFRamebufferObject>
 #include <QDebug>
 
+namespace {
+    unsigned int toggleRenderFlag(unsigned int current, unsigned int bits);
+}
+
 DemoPresenter::DemoPresenter(QObject* parent)
     : ScenePresenter(parent), context_(nullptr)
 {
@@ -78,7 +82,6 @@ void DemoPresenter::initialize()
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
     debugRenderer_->setScene(sceneModel_.get());
     debugRenderer_->setObservable(sceneModel_.get());
-    //debugRenderer_->setFlags(Engine::DebugRenderer::DEBUG_GBUFFER);
 }
 
 void DemoPresenter::render()
@@ -111,4 +114,22 @@ void DemoPresenter::update()
 {
     sceneController_->update(frameTimer_.restart());
     sceneModel_->update();
+
+    if(input_->keyDown(Qt::Key_G))
+    {
+        input_->setKey(Qt::Key_G, false);
+        debugRenderer_->setFlags(toggleRenderFlag(debugRenderer_->flags(), Engine::DebugRenderer::DEBUG_GBUFFER));
+    }
+}
+
+namespace {
+    unsigned int toggleRenderFlag(unsigned int flags, unsigned int bits)
+    {
+        if(flags & bits)
+        {
+            return flags & ~bits;
+        }
+
+        return flags | bits;
+    }
 }

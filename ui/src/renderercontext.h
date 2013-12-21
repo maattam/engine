@@ -1,3 +1,5 @@
+// RendererContext manages the threaded renderer OpenGL context and synchronizes frames with the main thread.
+
 #ifndef RENDERERCONTEXT_H
 #define RENDERERCONTEXT_H
 

@@ -83,6 +83,8 @@ void DeferredRenderer::geometryPass()
     gbuffer_->bindFbo();
 
     gl->glEnable(GL_DEPTH_TEST);
+
+    gl->glClearColor(0, 0, 0, 0);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     QMatrix4x4 view = camera_->view();

@@ -1,3 +1,7 @@
+// Application is the entry point of Engine apps.
+// Application creates the rendering OpenGL context and thread when the main
+// OpenGL context is created.
+
 #ifndef APPLICATION_H
 #define APPLICATION_H
 

@@ -1,19 +1,15 @@
 #include <QGuiApplication>
 #include <QSurfaceFormat>
+#include <QQuickItem>
 #include <QScreen>
 
-#include "rendertargetitem.h"
 #include "sceneview.h"
 #include "demoapplication.h"
-
-using namespace Engine::Ui;
+#include "uicontroller.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-
-    // Register custom QML classes
-    qmlRegisterType<RenderTargetItem>("Engine", 1, 0, "RenderTarget");
 
     // Create OpenGL context
     QSurfaceFormat format;
@@ -29,10 +25,14 @@ int main(int argc, char *argv[])
     // Create application
     DemoApplication demo(format);
 
-    SceneView view;
-    view.setSource(QUrl("qrc:/main.qml"));
+    Engine::Ui::SceneView view;
+    view.setSource(QUrl("qrc:/demoui/main.qml"));
 
     demo.setView(&view);
+
+    UiController ui;
+    ui.setRootObject(view.rootObject());
+    ui.setView(&view);
 
 #ifdef _DEBUG
     // Move the window to second monitor for debugging convenience
