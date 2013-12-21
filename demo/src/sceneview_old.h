@@ -65,7 +65,7 @@ private:
     Engine::Renderer* renderer_;
     Engine::DebugRenderer* debugRenderer_;
     Engine::WeakResourceDespatcher despatcher_;
-    Engine::GBuffer* gbuffer_;
+    std::shared_ptr<Engine::GBuffer> gbuffer_;
 
     Engine::Scene model_;
     FreeLookScene* controller_;

@@ -109,7 +109,7 @@ QList<Entity::Entity*> SceneNode::findEntities(const QString& name) const
     // Follow child nodes
     for(ChildNodes::size_type i = 0; i < numChildren(); ++i)
     {
-        matches += dynamic_cast<SceneNode*>(getChild(i))->findEntities(name);
+        matches += static_cast<SceneNode*>(getChild(i))->findEntities(name);
     }
 
     return matches;

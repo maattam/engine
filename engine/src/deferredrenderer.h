@@ -17,7 +17,10 @@ class GBuffer;
 class DeferredRenderer : public Renderer
 {
 public:
-    DeferredRenderer(GBuffer& gbuffer, ResourceDespatcher& despatcher);
+    typedef std::shared_ptr<GBuffer> GBufferPtr;
+
+    // GBuffer ownership is maintained
+    DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher);
     virtual ~DeferredRenderer();
 
     // Sets OpenGL viewport parameters and initialises buffers
@@ -34,10 +37,10 @@ public:
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.
-    virtual void setOutputFBO(GLuint fbo);
+    virtual void setRenderTarget(GLuint fbo);
 
 private:
-    GBuffer& gbuffer_;
+    GBufferPtr gbuffer_;
     QRect viewport_;
 
     VisibleScene* scene_;

@@ -51,7 +51,7 @@ void ForwardRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void ForwardRenderer::setOutputFBO(GLuint fbo)
+void ForwardRenderer::setRenderTarget(GLuint fbo)
 {
     fbo_ = fbo;
 }

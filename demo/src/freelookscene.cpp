@@ -1,13 +1,15 @@
 #include "freelookscene.h"
 
-#include "input.h"
+#include "inputstate.h"
 #include "graph/scenenode.h"
 #include "cubemapresource.h"
+
+#include <QCursor>
 
 using namespace Engine;
 
 FreeLookScene::FreeLookScene(Engine::ResourceDespatcher* despatcher)
-    : despatcher_(despatcher), scene_(nullptr), speed_(15.0f),
+    : despatcher_(despatcher), scene_(nullptr), speed_(15.0f), input_(nullptr),
     dirLight_(Entity::Light::LIGHT_DIRECTIONAL), camera_(Entity::Camera::PERSPECTIVE)
 {
     camera_.setDirection(QVector3D(1, 0, 0));
@@ -46,14 +48,7 @@ void FreeLookScene::setModel(Engine::SceneModel* model)
     {
         initialise();
         scene_->setDirectionalLight(&dirLight_);
-    }
-}
-
-void FreeLookScene::renderScene()
-{
-    if(scene_ != nullptr)
-    {
-        scene_->renderScene(&camera_);
+        scene_->setCamera(&camera_);
     }
 }
 
@@ -96,18 +91,20 @@ void FreeLookScene::update(unsigned int elapsed)
         camera_.move(direction.normalized() * distance);
     }
 
-    if(input_->keyDown(Input::KEY_MOUSE_RIGHT))
-    {
-        QPoint delta = input_->mouseDelta();
+    QPoint delta = lastMouse_ - input_->mousePos();
+    lastMouse_ = input_->mousePos();
 
+    if(input_->keyDown(InputState::KEY_MOUSE_RIGHT))
+    {
         camera_.yaw(mouseSpeed * elapsedMs * delta.x());
         camera_.pitch(mouseSpeed * elapsedMs * delta.y());
     }
 
     // Mouse wheel moves the camera up and down
-    if(input_->wheelDelta() != 0)
+    int wheel = input_->wheelDelta();
+    if(wheel != 0)
     {
-        camera_.move(QVector3D(0, speed_ * input_->wheelDelta() / 1200.0f, 0));
+        camera_.move(QVector3D(0, speed_ * wheel / 1200.0f, 0));
     }
 
     camera_.update();
@@ -155,12 +152,12 @@ const QVector3D& FreeLookScene::playerPosition() const
     return camera_.position();
 }
 
-void FreeLookScene::setInput(Input* input)
+void FreeLookScene::setInput(InputState* input)
 {
     input_ = input;
 }
 
-Input* FreeLookScene::input()
+InputState* FreeLookScene::input()
 {
     return input_;
 }

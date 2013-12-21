@@ -13,7 +13,7 @@
 
 using namespace Engine;
 
-DeferredRenderer::DeferredRenderer(GBuffer& gbuffer, ResourceDespatcher& despatcher)
+DeferredRenderer::DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher)
     : gbuffer_(gbuffer), scene_(nullptr), camera_(nullptr)
 {
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
@@ -30,9 +30,13 @@ DeferredRenderer::~DeferredRenderer()
 
 bool DeferredRenderer::setViewport(const QRect& viewport, unsigned int samples)
 {
-    viewport_ = viewport;
+    if(gbuffer_ == nullptr)
+    {
+        return false;
+    }
 
-    return gbuffer_.initialise(viewport.width(), viewport.height(), samples);
+    viewport_ = viewport;
+    return gbuffer_->initialise(viewport.width(), viewport.height(), samples);
 }
 
 void DeferredRenderer::setScene(VisibleScene* scene)
@@ -40,14 +44,14 @@ void DeferredRenderer::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void DeferredRenderer::setOutputFBO(GLuint /*fbo*/)
+void DeferredRenderer::setRenderTarget(GLuint /*fbo*/)
 {
     // Geometry pass doesn't output anything to screen
 }
 
 void DeferredRenderer::render(Entity::Camera* camera)
 {
-    if(!gbuffer_.isInitialised())
+    if(!gbuffer_->isInitialised())
     {
         return;
     }
@@ -76,7 +80,7 @@ void DeferredRenderer::geometryPass()
         return;
     }
 
-    gbuffer_.bindFbo();
+    gbuffer_->bindFbo();
 
     gl->glEnable(GL_DEPTH_TEST);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

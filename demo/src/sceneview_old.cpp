@@ -34,7 +34,7 @@
 
 SceneView::SceneView(const QSurfaceFormat& format, QWindow* parent) : QWindow(parent),
     deferred_(true), renderer_(nullptr), debugRenderer_(nullptr), frame_(0), context_(nullptr),
-    funcs_(nullptr), controller_(nullptr), debugLogger_(nullptr), gbuffer_(nullptr)
+    funcs_(nullptr), controller_(nullptr), debugLogger_(nullptr)
 {
     setSurfaceType(QSurface::OpenGLSurface);
     setFormat(format);
@@ -56,9 +56,6 @@ SceneView::~SceneView()
 
     if(debugRenderer_ != nullptr)
         delete debugRenderer_;
-
-    if(gbuffer_ != nullptr)
-        delete gbuffer_;
 }
 
 void SceneView::update()
@@ -102,13 +99,10 @@ void SceneView::render()
     {
         if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
         {
-            model_.setView(renderer_);
-            controller_->renderScene();
+            renderer_->render(model_.camera());
         }
         
-        model_.setView(debugRenderer_);
-        controller_->renderScene();
-
+        debugRenderer_->render(model_.camera());
         ++frame_;
     }
 
@@ -166,8 +160,7 @@ void SceneView::swapRenderer()
 
         if(gbuffer_ != nullptr)
         {
-            delete gbuffer_;
-            gbuffer_ = nullptr;
+            gbuffer_.reset();
             debugRenderer_->setGBuffer(nullptr);
         }
     }
@@ -206,14 +199,14 @@ void SceneView::swapRenderer()
 
     if(deferred_)
     {
-        gbuffer_ = new Engine::CompactGBuffer();
-        debugRenderer_->setGBuffer(gbuffer_);
+        gbuffer_ = std::make_shared<Engine::CompactGBuffer>();
+        debugRenderer_->setGBuffer(gbuffer_.get());
 
-        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(*gbuffer_, despatcher_);
-        Engine::QuadLighting* lighting = new Engine::QuadLighting(renderer, *gbuffer_, despatcher_);
+        Engine::DeferredRenderer* renderer = new Engine::DeferredRenderer(gbuffer_, despatcher_);
+        Engine::QuadLighting* lighting = new Engine::QuadLighting(renderer, *gbuffer_.get(), despatcher_);
 
         Engine::SkyboxStage* skybox = new Engine::SkyboxStage(lighting);
-        skybox->setGBuffer(gbuffer_);
+        skybox->setGBuffer(gbuffer_.get());
         skybox->setSkyboxMesh(std::make_shared<Engine::Renderable::Cube>());
         skybox->setSkyboxTechnique(sky);
 
@@ -245,8 +238,6 @@ void SceneView::swapRenderer()
 
     fxRenderer->setEffect(hdrPostfx);
     renderer_->setScene(&model_);
-
-    model_.setView(renderer_);
 }
 
 void SceneView::handleInput()

@@ -28,24 +28,25 @@ public:
     virtual void addVisitor(BaseVisitor* visitor);
     virtual void removeVisitor(BaseVisitor* visitor);
 
+    virtual Entity::Camera* camera() const;
+
     // Implemented methods from SceneModel
     virtual void setDirectionalLight(Entity::Light* light);
     virtual void setSkybox(const std::shared_ptr<CubemapTexture>& texture);
 
     virtual Graph::SceneNode* rootNode();
 
-    virtual void setView(Renderer* view);
-    virtual void renderScene(Entity::Camera* camera);
+    virtual void setCamera(Entity::Camera* camera);
+    virtual void update();
 
 private:
-    Renderer* renderer_;
-
     QSet<BaseVisitor*> visitors_;
 
     Graph::SceneNode rootNode_;
     std::shared_ptr<CubemapTexture> skybox_;
 
     Entity::Light* directionalLight_;
+    Entity::Camera* camera_;
 
     void findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
         RenderQueue& queue, bool shadowCasters);

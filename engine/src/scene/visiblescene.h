@@ -12,6 +12,7 @@ namespace Engine {
 
 namespace Entity {
     class Light;
+    class Camera;
 }
 
 class CubemapTexture;
@@ -40,6 +41,8 @@ public:
 
     // Skybox can be null
     virtual CubemapTexture* skybox() const = 0;
+
+    virtual Entity::Camera* camera() const = 0;
 };
 
 }

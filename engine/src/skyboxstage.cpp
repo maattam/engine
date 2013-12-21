@@ -78,9 +78,9 @@ void SkyboxStage::render(Entity::Camera* camera)
     }
 }
 
-void SkyboxStage::setOutputFBO(GLuint fbo)
+void SkyboxStage::setRenderTarget(GLuint fbo)
 {
-    RenderStage::setOutputFBO(fbo);
+    RenderStage::setRenderTarget(fbo);
     fbo_ = fbo;
 }
 

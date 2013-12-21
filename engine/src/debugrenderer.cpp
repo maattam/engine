@@ -42,7 +42,7 @@ bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
     return true;
 }
 
-void DebugRenderer::setOutputFBO(GLuint fbo)
+void DebugRenderer::setRenderTarget(GLuint fbo)
 {
     fbo_ = fbo;
 }

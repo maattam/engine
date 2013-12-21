@@ -28,7 +28,7 @@ public:
 
     virtual void render(Entity::Camera* camera);
 
-    virtual void setOutputFBO(GLuint fbo);
+    virtual void setRenderTarget(GLuint fbo);
 
     typedef std::shared_ptr<Effect::Postfx> PostfxPtr;
 

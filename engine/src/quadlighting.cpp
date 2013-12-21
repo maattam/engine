@@ -28,9 +28,9 @@ bool QuadLighting::setViewport(const QRect& viewport, unsigned int samples)
     return LightingStage::setViewport(viewport, samples);
 }
 
-void QuadLighting::setOutputFBO(GLuint fbo)
+void QuadLighting::setRenderTarget(GLuint fbo)
 {
-    LightingStage::setOutputFBO(fbo);
+    LightingStage::setRenderTarget(fbo);
     fbo_ = fbo;
 }
 

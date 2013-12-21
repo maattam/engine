@@ -88,7 +88,7 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
     }
 
     initialiseEffect();
-    RenderStage::setOutputFBO(proxy_);
+    RenderStage::setRenderTarget(proxy_);
 
     return true;
 }
@@ -103,7 +103,7 @@ void PostProcess::render(Entity::Camera* camera)
     }
 }
 
-void PostProcess::setOutputFBO(GLuint fbo)
+void PostProcess::setRenderTarget(GLuint fbo)
 {
     out_ = fbo;
     effect_->setOutputFbo(out_);

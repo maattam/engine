@@ -13,7 +13,6 @@ public:
     virtual ~SceneController() {};
 
     virtual void setModel(SceneModel* model) = 0;
-    virtual void renderScene() = 0;
     virtual void update(unsigned int elapsed) = 0;
 };
 

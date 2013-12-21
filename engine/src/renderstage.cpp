@@ -27,7 +27,7 @@ void RenderStage::render(Entity::Camera* camera)
     renderer_->render(camera);
 }
 
-void RenderStage::setOutputFBO(GLuint fbo)
+void RenderStage::setRenderTarget(GLuint fbo)
 {
-    renderer_->setOutputFBO(fbo);
+    renderer_->setRenderTarget(fbo);
 }

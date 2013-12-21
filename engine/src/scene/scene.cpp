@@ -12,17 +12,12 @@
 
 using namespace Engine;
 
-Scene::Scene() : renderer_(nullptr), directionalLight_(nullptr)
+Scene::Scene() : camera_(nullptr), directionalLight_(nullptr)
 {
 }
 
 Scene::~Scene()
 {
-}
-
-void Scene::setView(Renderer* view)
-{
-    renderer_ = view;
 }
 
 void Scene::addVisitor(BaseVisitor* visitor)
@@ -35,16 +30,19 @@ void Scene::removeVisitor(BaseVisitor* visitor)
     visitors_.remove(visitor);
 }
 
-void Scene::renderScene(Entity::Camera* camera)
+void Scene::setCamera(Entity::Camera* camera)
 {
-    if(renderer_ != nullptr)
-    {
-        // Update scene transformations
-        rootNode_.update();
-        camera->update();
+    camera_ = camera;
+}
 
-        renderer_->render(camera);
-    }
+Entity::Camera* Scene::camera() const
+{
+    return camera_;
+}
+
+void Scene::update()
+{
+    rootNode_.update();
 }
 
 void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, bool shadowCasters)
@@ -127,7 +125,7 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
     // Recursively walk through child nodes
     for(size_t i = 0; i < node->numChildren(); ++i)
     {
-        Graph::SceneNode* inode = dynamic_cast<Graph::SceneNode*>(node->getChild(i));
+        Graph::SceneNode* inode = static_cast<Graph::SceneNode*>(node->getChild(i));
         findVisibles(viewProj, inode, queue, shadowCasters);
     }
 }

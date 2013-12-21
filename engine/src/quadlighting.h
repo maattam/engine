@@ -31,7 +31,7 @@ public:
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is nullptr, the default framebuffer (0) is used.
-    virtual void setOutputFBO(GLuint fbo);
+    virtual void setRenderTarget(GLuint fbo);
 
     virtual void visit(Entity::Light& light);
 

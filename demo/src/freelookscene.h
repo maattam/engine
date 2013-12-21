@@ -10,7 +10,9 @@
 #include "entity/camera.h"
 #include "resourcedespatcher.h"
 
-class Input;
+#include <QPoint>
+
+class InputState;
 
 class FreeLookScene : public Engine::SceneController
 {
@@ -18,7 +20,7 @@ public:
     explicit FreeLookScene(Engine::ResourceDespatcher* despatcher);
     virtual ~FreeLookScene();
 
-    void setInput(Input* input);
+    void setInput(InputState* input);
 
     // Camera parameters
     void setAspectRatio(float ratio);
@@ -28,7 +30,6 @@ public:
 
     // Implemented methods from SceneController
     virtual void setModel(Engine::SceneModel* model);
-    virtual void renderScene();
     virtual void update(unsigned int elapsed);
 
 protected:
@@ -43,7 +44,7 @@ protected:
     Engine::Graph::SceneNode* rootNode();
     Engine::ResourceDespatcher* despatcher();
 
-    Input* input();
+    InputState* input();
     Engine::Entity::Camera* camera();
     Engine::Entity::Light* directionalLight();
 
@@ -53,8 +54,9 @@ protected:
 private:
     Engine::ResourceDespatcher* despatcher_;
     Engine::SceneModel* scene_;
-    Input* input_;
+    InputState* input_;
     float speed_;
+    QPoint lastMouse_;
 
     Engine::Entity::Light dirLight_;
     std::shared_ptr<Engine::CubemapTexture> skybox_;

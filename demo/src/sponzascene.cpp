@@ -2,7 +2,7 @@
 
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
-#include "input.h"
+#include "inputstate.h"
 
 #include <QDebug>
 #include <qmath.h>
@@ -80,7 +80,7 @@ void SponzaScene::update(unsigned int elapsed)
 
     if(input()->keyDown(Qt::Key::Key_F))
     {
-        input()->keyEvent(Qt::Key::Key_F, false);
+        input()->setKey(Qt::Key::Key_F, false);
         flashLightToggle_ = !flashLightToggle_;
 
         if(flashLightToggle_)
