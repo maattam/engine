@@ -5,9 +5,9 @@
 
 #include <QQuickItem>
 
-class QSGTexture;
-
 namespace Engine { namespace Ui {
+
+class RenderTargetTexture;
 
 class RenderTargetItem : public QQuickItem
 {
@@ -23,13 +23,14 @@ signals:
 public slots:
     // Maps the render target texture to this fbo.
     void setTexture(int textureId, QSize size);
+    void updateTexture(void* sync);
 
 protected:
     virtual QSGNode* updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData* updatePaintNodeData);
     virtual void geometryChanged(const QRectF& newGeometry, const QRectF& oldGeometry);
 
 private:
-    QSGTexture* texture_;
+    RenderTargetTexture* texture_;
     bool textureChanged_;
 };
 

@@ -45,7 +45,7 @@ public:
     const QSurfaceFormat& format() const;
 
 signals:
-    void renderTargetUpdated();
+    void renderTargetUpdated(void* sync);
     void renderTargetChanged(int textureId, QSize size);
 
 private:
@@ -55,6 +55,7 @@ private:
 
     QOpenGLFramebufferObject* fbo_;
     QOpenGLDebugLogger* logger_;
+    GLsync sync_;
 };
 
 }}

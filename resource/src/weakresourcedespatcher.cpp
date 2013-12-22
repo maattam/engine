@@ -139,7 +139,7 @@ void WeakResourceDespatcher::pushResource(const QString& fileName, const Resourc
 {
     ResourceLoader* loader = new ResourceLoader(*resource, fileName, *this);
 
-    connect(loader, &ResourceLoader::resourceLoaded, this, &WeakResourceDespatcher::resourceLoaded, Qt::QueuedConnection);
+    connect(loader, &ResourceLoader::resourceLoaded, this, &WeakResourceDespatcher::resourceLoaded);
     loader->setAutoDelete(true);
 
     threadPool_.start(loader);

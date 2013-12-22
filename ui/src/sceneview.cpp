@@ -77,7 +77,7 @@ bool SceneView::setRendererContext(RendererContext* context)
     }
 
     connect(context, &RendererContext::renderTargetChanged, renderTarget, &RenderTargetItem::setTexture);
-    connect(context, &RendererContext::renderTargetUpdated, renderTarget, &RenderTargetItem::update);
+    connect(context, &RendererContext::renderTargetUpdated, renderTarget, &RenderTargetItem::updateTexture);
 
     return true;
 }

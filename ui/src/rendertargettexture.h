@@ -5,6 +5,8 @@
 
 #include <QSGTexture>
 
+#include "common.h"
+
 namespace Engine { namespace Ui {
 
 class RenderTargetTexture : public QSGTexture
@@ -20,9 +22,13 @@ public:
     virtual int textureId() const;
     virtual QSize textureSize() const;
 
+    void setSyncObject(GLsync sync);
+
 private:
     int textureId_;
     QSize size_;
+
+    GLsync sync_;
 };
 
 }}

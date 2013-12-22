@@ -33,6 +33,17 @@ void RenderTargetItem::setTexture(int textureId, QSize size)
     textureChanged_ = true;
 }
 
+void RenderTargetItem::updateTexture(void* sync)
+{
+    if(texture_ == nullptr)
+    {
+        return;
+    }
+
+    texture_->setSyncObject(static_cast<GLsync>(sync));
+    update();
+}
+
 QSGNode* RenderTargetItem::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData* updatePaintNodeData)
 {
     if(texture_ == nullptr)

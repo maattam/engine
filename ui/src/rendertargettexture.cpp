@@ -5,7 +5,7 @@
 using namespace Engine::Ui;
 
 RenderTargetTexture::RenderTargetTexture(int textureId, const QSize& size)
-    : QSGTexture(), textureId_(textureId), size_(size)
+    : QSGTexture(), textureId_(textureId), size_(size), sync_(0)
 {
 }
 
@@ -15,6 +15,12 @@ RenderTargetTexture::~RenderTargetTexture()
 
 void RenderTargetTexture::bind()
 {
+    // Wait for renderer thread to finish, otherwise we are going to end up with a broken texture.
+    if(sync_ != 0)
+    {
+        gl->glClientWaitSync(sync_, GL_SYNC_GPU_COMMANDS_COMPLETE, GL_TIMEOUT_IGNORED);
+    }
+
     glBindTexture(GL_TEXTURE_2D, textureId_);
 }
 
@@ -36,4 +42,9 @@ int RenderTargetTexture::textureId() const
 QSize RenderTargetTexture::textureSize() const
 {
     return size_;
+}
+
+void RenderTargetTexture::setSyncObject(GLsync sync)
+{
+    sync_ = sync;
 }

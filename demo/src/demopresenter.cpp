@@ -69,7 +69,7 @@ void DemoPresenter::initialize()
         return;
     }
 
-    despatcher_.reset(new Engine::WeakResourceDespatcher());
+    despatcher_.reset(new Engine::WeakResourceDespatcher(2));
     factory_.reset(new RendererFactory(*despatcher_));
     sceneModel_.reset(new Engine::Scene());
 

@@ -16,7 +16,7 @@
 
 #include QOPENGL_HEADER
 
-// Exposes the global opengl function object. This should only be accessed from the rendering context.
+// Exposes the global opengl function object. This should only be accessed from the rendering or shared context.
 extern QOPENGL_FUNCTIONS* gl;
 
 #endif // COMMON_H
