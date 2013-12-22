@@ -43,9 +43,14 @@ public:
     void setShadowCaster(bool shadows);
 
     // Returns a list of entities matching the given name.
+    // Multiple entities of different type can share the same name when they belong to the same node.
     // The search is done recursively downwards the tree, so this function should
     // be called from the root node.
     QList<Entity::Entity*> findEntities(const QString& name) const;
+
+    // Convenienve funtions that filters findEntities to match the template parameter.
+    template<typename EntityType>
+    EntityType* findEntity(const QString& name) const;
 
     // Utility method for creating SceneNode children
     SceneNode* createSceneNodeChild();
@@ -57,6 +62,8 @@ private:
     Entities entities_;
     bool castShadows_;
 };
+
+#include "scenenode.inl"
 
 }}
 

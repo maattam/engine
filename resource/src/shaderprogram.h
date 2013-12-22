@@ -31,24 +31,22 @@ public:
     // Binds the shader, enabling draw calls
     bool bind();
 
-    // Returns true if all the added shaders have been compiled.
-    // Returns false if no shaders have been added.
-    bool shadersLoaded() const;
-
     // Returns the encapsulated QOpenGLShaderProgram object.
     QOpenGLShaderProgram* operator->();
     QOpenGLShaderProgram& get();
 
 public slots:
     void shaderReleased(const QString& name);
-    void shaderCompiled(const QString& name);
 
 private:
     std::vector<Shader::Ptr> shaders_;
 
     QOpenGLShaderProgram program_;
-    unsigned int compiledCount_;
     bool needsLink_;
+
+    // Returns true if all the added shaders have been compiled.
+    // Returns false if no shaders have been added.
+    bool shadersLoaded();
 };
 
 }

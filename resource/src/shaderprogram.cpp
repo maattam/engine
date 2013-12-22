@@ -6,7 +6,7 @@
 using namespace Engine;
 
 ShaderProgram::ShaderProgram(QObject* parent)
-    : QObject(parent), program_(nullptr), compiledCount_(0), needsLink_(false)
+    : QObject(parent), program_(nullptr), needsLink_(false)
 {
 }
 
@@ -24,12 +24,7 @@ bool ShaderProgram::addShader(const Shader::Ptr& shader)
     // If the shader is already compiled, we don't need to wait for signal
     if(shader->ready() && shader->get()->isCompiled())
     {
-        if(program_.addShader(shader->get()))
-        {
-            compiledCount_++;
-        }
-
-        else
+        if(!program_.addShader(shader->get()))
         {
             qDebug() << __FUNCTION__ << "Failed to add shader:" << shader->name();
             return false;
@@ -38,9 +33,7 @@ bool ShaderProgram::addShader(const Shader::Ptr& shader)
 
     shaders_.push_back(shader);
     needsLink_ = true;
-
     connect(shader.get(), &ResourceBase::released, this, &ShaderProgram::shaderReleased);
-    connect(shader.get(), &ResourceBase::initialized, this, &ShaderProgram::shaderCompiled);
 
     return true;
 }
@@ -67,9 +60,8 @@ void ShaderProgram::shaderReleased(const QString& name)
     if(linked.count((*iter)->get()) > 0)
     {
         program_.removeShader((*iter)->get());
-        compiledCount_--;
-
         program_.release();
+
         needsLink_ = true;
     }
 }
@@ -97,26 +89,25 @@ bool ShaderProgram::bind()
     return ready() && program_.bind();
 }
 
-bool ShaderProgram::shadersLoaded() const
+bool ShaderProgram::shadersLoaded()
 {
-    return !shaders_.empty() && compiledCount_ == shaders_.size();
-}
-
-void ShaderProgram::shaderCompiled(const QString& name)
-{
-    // Find shader
-    auto iter = std::find_if(shaders_.begin(), shaders_.end(),
-        [&name](const Shader::Ptr& shader) { return shader->name() == name; });
-
-    Q_ASSERT(iter != shaders_.end());
-
-    if(program_.addShader((*iter)->get()))
+    if(shaders_.empty())
     {
-        compiledCount_++;
+        return false;
     }
 
-    else
+    QList<QOpenGLShader*> linked = program_.shaders();
+    for(const Shader::Ptr& shader : shaders_)
     {
-        qDebug() << __FUNCTION__ << "Failed to add shader:" << name;
+        if(shader->ready() && linked.count(shader->get()) < 1)
+        {
+            if(!program_.addShader(shader->get()))
+            {
+                qDebug() << "Failed to link shader:" << shader->name();
+                return false;
+            }
+        }
     }
+
+    return shaders_.size() == program_.shaders().count();
 }

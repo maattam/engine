@@ -90,7 +90,7 @@ void SceneNode::setShadowCaster(bool shadows)
 
 SceneNode* SceneNode::createSceneNodeChild()
 {
-    return dynamic_cast<SceneNode*>(createChild());
+    return static_cast<SceneNode*>(createChild());
 }
 
 QList<Entity::Entity*> SceneNode::findEntities(const QString& name) const

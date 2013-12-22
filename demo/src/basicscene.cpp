@@ -60,26 +60,26 @@ void BasicScene::resourceInitialized(const QString& name)
 {
     if(name == "assets/oildrum.dae")
     {
-        QList<Entity::Entity*> result = platformNode_->findEntities("Oildrum-ref");
-        if(result.count() > 0)
+        Entity::Mesh* result = platformNode_->findEntity<Entity::Mesh>("Oildrum-ref");
+        if(result != nullptr)
         {
-            Graph::SceneNode* node = result.first()->parentNode()->createSceneNodeChild();
+            Graph::SceneNode* node = result->parentNode()->createSceneNodeChild();
 
             node->setPosition(QVector3D(6, -2, 0));
-            node->attachEntity(result.first());
+            node->attachEntity(result);
         }
     }
 
     else if(name == "assets/sphere.obj")
     {
-        QList<Entity::Entity*> result = sphereNode_->findEntities("Sphere");
-        if(result.count() > 0)
+        Entity::Mesh* result = sphereNode_->findEntity<Entity::Mesh>("Sphere");
+        if(result != nullptr)
         {
             // Platform spot light
             Graph::SceneNode* node = rootNode()->createSceneNodeChild();
             node->setPosition(2*QVector3D(-6.0f, 7/2, 6.0f));
             node->setScale(0.1f);
-            node->attachEntity(result.first());
+            node->attachEntity(result);
             node->setShadowCaster(false);
             node->attachEntity(lights_[2].get());
         }

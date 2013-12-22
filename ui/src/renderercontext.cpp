@@ -15,6 +15,7 @@ RendererContext::RendererContext(const QSurfaceFormat& format, QObject* parent)
 {
     screen_ = new QOffscreenSurface;
     screen_->setFormat(format);
+    screen_->setParent(this);
     screen_->create();
 }
 
@@ -25,7 +26,10 @@ RendererContext::~RendererContext()
         gl->glDeleteSync(sync_);
     }
 
-    delete screen_;
+    if(fbo_ != nullptr)
+    {
+        delete fbo_;
+    }
 }
 
 bool RendererContext::createContext(QOpenGLContext* shareContext)
