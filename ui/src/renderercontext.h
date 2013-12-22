@@ -55,7 +55,6 @@ private:
 
     QOpenGLFramebufferObject* fbo_;
     QOpenGLDebugLogger* logger_;
-    GLsync sync_;
 };
 
 }}

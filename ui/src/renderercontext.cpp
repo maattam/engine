@@ -11,7 +11,7 @@
 using namespace Engine::Ui;
 
 RendererContext::RendererContext(const QSurfaceFormat& format, QObject* parent)
-    : QObject(parent), format_(format), context_(nullptr), screen_(nullptr), fbo_(nullptr), logger_(nullptr), sync_(0)
+    : QObject(parent), format_(format), context_(nullptr), screen_(nullptr), fbo_(nullptr), logger_(nullptr)
 {
     screen_ = new QOffscreenSurface;
     screen_->setFormat(format);
@@ -21,11 +21,6 @@ RendererContext::RendererContext(const QSurfaceFormat& format, QObject* parent)
 
 RendererContext::~RendererContext()
 {
-    if(sync_ != 0)
-    {
-        gl->glDeleteSync(sync_);
-    }
-
     if(fbo_ != nullptr)
     {
         delete fbo_;
@@ -112,16 +107,11 @@ void RendererContext::endFrame()
         }
     }
 
-    if(sync_ != 0)
-    {
-        gl->glDeleteSync(sync_);
-    }
-
     // Synchronize the render target texture between the two renderers
-    sync_ = gl->glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    GLsync sync = gl->glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     gl->glFlush();
 
-    emit renderTargetUpdated(sync_);
+    emit renderTargetUpdated(sync);
 }
 
 QOpenGLContext* RendererContext::context() const

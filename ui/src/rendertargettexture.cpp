@@ -1,6 +1,7 @@
 #include "rendertargettexture.h"
 
 #include <QOpenGLFramebufferObject>
+#include <QDebug>
 
 using namespace Engine::Ui;
 
@@ -18,7 +19,13 @@ void RenderTargetTexture::bind()
     // Wait for renderer thread to finish, otherwise we are going to end up with a broken texture.
     if(sync_ != 0)
     {
-        gl->glClientWaitSync(sync_, GL_SYNC_GPU_COMMANDS_COMPLETE, GL_TIMEOUT_IGNORED);
+        if(gl->glClientWaitSync(sync_, 0, GL_TIMEOUT_IGNORED) == GL_WAIT_FAILED)
+        {
+            qWarning() << "glClientWaitSync failed";
+        }
+
+        gl->glDeleteSync(sync_);
+        sync_ = 0;
     }
 
     glBindTexture(GL_TEXTURE_2D, textureId_);

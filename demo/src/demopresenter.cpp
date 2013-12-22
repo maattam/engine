@@ -11,6 +11,7 @@
 
 #include <QOpenGLFRamebufferObject>
 #include <QDebug>
+#include <QThread>
 
 namespace {
     unsigned int toggleRenderFlag(unsigned int current, unsigned int bits);
@@ -63,6 +64,8 @@ void DemoPresenter::viewSizeChanged(QSize size)
 
 void DemoPresenter::initialize()
 {
+    qDebug() << "Render thread:" << QThread::currentThreadId();
+
     if(!context_->beginRendering())
     {
         qDebug() << "Context not ready";
