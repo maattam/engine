@@ -12,12 +12,33 @@
 #include "technique/blurfilter.h"
 #include "resourcedespatcher.h"
 #include "renderable/cube.h"
+#include "forwardrenderer.h"
 
 using namespace Engine;
 
-RendererFactory::RendererFactory(ResourceDespatcher& despatcher)
-    : despatcher_(despatcher)
+RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType type)
+    : despatcher_(despatcher), type_(type)
 {
+    // HDR tonemapping
+    hdrPostfx_.reset(new Effect::Hdr(&despatcher_, 4));
+    hdrPostfx_->setBrightThreshold(1.5f);
+    setAutoExposure(true);
+
+    // 5x5 Gaussian blur filter
+    Effect::Hdr::BlurFilterPtr filter(new Technique::BlurFilter);
+    filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Shader::Type::Fragment));
+    hdrPostfx_->setBlurFilter(filter);
+
+    // Tonemap shader
+    tonemap_.reset(new Technique::HDRTonemap);
+    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment));
+    hdrPostfx_->setHDRTonemapShader(tonemap_);
+
+    tonemap_->setBloomFactor(0.25f);
+    tonemap_->setBrightLevel(5.0f);
+    tonemap_->setGamma(2.2f);
 }
 
 Engine::GBuffer* RendererFactory::gbuffer() const
@@ -25,53 +46,76 @@ Engine::GBuffer* RendererFactory::gbuffer() const
     return gbuffer_.get();
 }
 
-Renderer* RendererFactory::create()
+Renderer* RendererFactory::create(int samples)
 {
-    // HDR tonemapping
-    std::shared_ptr<Effect::Hdr> hdrPostfx(new Effect::Hdr(&despatcher_, 4));
-    hdrPostfx->setExposureFunction(std::make_shared<Effect::LumaExposure>());
-    hdrPostfx->setBrightThreshold(1.5f);
-
-    // 5x5 Gaussian blur filter
-    Effect::Hdr::BlurFilterPtr filter(new Technique::BlurFilter);
-    filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Shader::Type::Fragment));
-    hdrPostfx->setBlurFilter(filter);
-
-    // Tonemap shader
-    Effect::Hdr::HDRTonemapPtr tonemap(new Technique::HDRTonemap);
-    tonemap->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    tonemap->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment));
-    hdrPostfx->setHDRTonemapShader(tonemap);
-
-    tonemap->setBloomFactor(0.25f);
-    tonemap->setBrightLevel(5.0f);
-    tonemap->setGamma(2.2f);
-
     // Skybox technique
     SkyboxStage::SkyboxPtr sky(new Technique::Skybox);
     sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
     sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
     sky->setBrightness(5.0f);
 
-    // GBuffer
-    gbuffer_.reset(new CompactGBuffer);
+    gbuffer_.reset();
 
     QOpenGLFramebufferObjectFormat fboFormat;
     fboFormat.setInternalTextureFormat(GL_RGBA16F);
-    fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
-    fboFormat.setSamples(1);
 
-    DeferredRenderer* renderer = new Engine::DeferredRenderer(gbuffer_, despatcher_);
-    QuadLighting* lighting = new Engine::QuadLighting(renderer, *gbuffer_.get(), despatcher_);
+    Engine::Renderer* renderer = nullptr;
 
-    SkyboxStage* skybox = new Engine::SkyboxStage(lighting);
+    if(type_ == DEFERRED)
+    {
+        // GBuffer
+        gbuffer_.reset(new CompactGBuffer);
+
+        fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
+        fboFormat.setSamples(1);
+
+        DeferredRenderer* deferred = new DeferredRenderer(gbuffer_, despatcher_);
+        renderer = new QuadLighting(deferred, *gbuffer_.get(), despatcher_);
+    }
+
+    else
+    {
+        fboFormat.setAttachment(QOpenGLFramebufferObject::Depth);
+        fboFormat.setSamples(samples);
+
+        renderer = new ForwardRenderer(despatcher_);
+    }
+
+    SkyboxStage* skybox = new Engine::SkyboxStage(renderer);
     skybox->setGBuffer(gbuffer_.get());
     skybox->setSkyboxMesh(std::make_shared<Renderable::Cube>());
     skybox->setSkyboxTechnique(sky);
 
     PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
-    fxRenderer->setEffect(hdrPostfx);
+    fxRenderer->setEffect(hdrPostfx_);
 
     return fxRenderer;
+}
+
+Engine::Effect::Hdr* RendererFactory::hdr() const
+{
+    return hdrPostfx_.get();
+}
+
+Engine::Technique::HDRTonemap* RendererFactory::tonemap() const
+{
+    return tonemap_.get();
+}
+
+void RendererFactory::setAutoExposure(bool value)
+{
+    if(value)
+    {
+        hdrPostfx_->setExposureFunction(std::make_shared<Effect::LumaExposure>());
+    }
+
+    else
+    {
+        hdrPostfx_->setExposureFunction(nullptr);
+    }
+}
+
+void RendererFactory::setRendererType(RendererType type)
+{
+    type_ = type;
 }

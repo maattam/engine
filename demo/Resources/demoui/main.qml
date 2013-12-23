@@ -2,45 +2,52 @@ import QtQuick 2.0
 import Engine 1.0
 
 RenderTarget {
+//Rectangle {
     width: 1280
     height: 720
 
     Item {
-        objectName: "stats"
-        width: 200
-        height: 58
-        anchors.right: parent.right
-        anchors.top: parent.top
+        id: ui
+        focus: true
+        anchors.fill: parent
 
-        Text {
-            id: textFps
-            text: "FPS: 0"
-            anchors.left: parent.left
-            anchors.leftMargin: 8
+        Column {
+            anchors.right: parent.right
             anchors.top: parent.top
-            anchors.topMargin: 8
-            transformOrigin: Item.Center
-            font.family: "Helvetica"
-            font.pointSize: 12
-            color: "red"
+            anchors.margins: 12
+            spacing: 5
+
+            Text { font.family: "Consolas"; font.pointSize: 11; color: "white"
+                   text: "Toggle UI: Esc" }
         }
 
-        Text {
-            id: textFrameTime
-            text: "Frame time: 0 ms"
+        Fpspanel {
+            objectName: "stats"
             anchors.left: parent.left
-            anchors.leftMargin: 8
             anchors.top: parent.top
-            anchors.topMargin: 32
-            transformOrigin: Item.Center
-            font.family: "Helvetica"
-            font.pointSize: 12
-            color: "red"
+            anchors.margins: 12
         }
 
-        function updateFrametime(frametime) {
-            textFrameTime.text = "Frame time: %1 ms".arg(frametime)
-            textFps.text = "FPS: %1".arg((1000 / frametime).toFixed(1))
+        Column {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: 12
+
+            spacing: 12
+
+            General {
+                objectName: "general"
+            }
+
+            Tonemap {
+                objectName: "tonemap"
+            }
+        }
+    }
+
+    Keys.onPressed: {
+        if(event.key === Qt.Key_Escape) {
+            ui.visible = !ui.visible
         }
     }
 }

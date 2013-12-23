@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>demoui/main.qml</file>
+        <file>demoui/Fpspanel.qml</file>
+        <file>demoui/Tonemap.qml</file>
+        <file>demoui/CheckBoxAttribute.qml</file>
+        <file>demoui/SliderAttribute.qml</file>
+        <file>demoui/ComboBoxAttribute.qml</file>
+        <file>demoui/General.qml</file>
     </qresource>
 </RCC>

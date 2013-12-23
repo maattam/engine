@@ -178,6 +178,11 @@ void Hdr::renderTonemap()
 void Hdr::setExposureFunction(const ExposureFuncPtr& function)
 {
     exposureFunc_ = function;
+
+    if(fbo_ != nullptr && exposureFunc_ != nullptr)
+    {
+        exposureFunc_->setInputTexture(fbo_->texture(), 1, 1, sampleLevel_);
+    }
 }
 
 void Hdr::setHDRTonemapShader(const HDRTonemapPtr& shader)

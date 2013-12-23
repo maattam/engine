@@ -13,6 +13,8 @@ public:
     HDRTonemap();
     virtual ~HDRTonemap();
 
+    virtual bool enable();
+
     void setInputTexture(int textureId, int samples);
     void setBloomTexture(int textureId, int bloomLevels);
 
@@ -36,6 +38,8 @@ private:
     float exposure_;
     float gamma_;
     float bright_;
+
+    bool attributeChanged_;
 };
 
 }}

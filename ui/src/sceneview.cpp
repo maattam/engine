@@ -15,6 +15,7 @@ SceneView::SceneView(QWindow* parent)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setPersistentOpenGLContext(true);
     setPersistentSceneGraph(true);
+    setColor(QColor(0, 0, 0));
 
     // Register custom QML classes
     qmlRegisterType<RenderTargetItem>("Engine", 1, 0, "RenderTarget");

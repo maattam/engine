@@ -11,7 +11,6 @@ UiController::UiController(QObject* parent)
 void UiController::setRootObject(QQuickItem* root)
 {
     QQuickItem* stats = root->findChild<QQuickItem*>("stats");
-
     connect(this, SIGNAL(updateFrametime(QVariant)), stats, SLOT(updateFrametime(QVariant)));
 }
 

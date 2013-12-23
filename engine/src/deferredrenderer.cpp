@@ -56,8 +56,6 @@ void DeferredRenderer::render(Entity::Camera* camera)
         return;
     }
 
-    gl->glEnable(GL_CULL_FACE);
-
     camera_ = camera;
 
     // Cull visibles
@@ -65,12 +63,15 @@ void DeferredRenderer::render(Entity::Camera* camera)
     scene_->queryVisibles(camera->worldView(), renderQueue_);
 
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
-    gl->glClearColor(0.0063f, 0.0063f, 0.0063f, 0);
+
+    gl->glEnable(GL_DEPTH_TEST);
+    gl->glEnable(GL_CULL_FACE);
 
     // Render scene geometry to GBuffer
     geometryPass();
 
     gl->glDisable(GL_CULL_FACE);
+    gl->glDisable(GL_DEPTH_TEST);
 }
 
 void DeferredRenderer::geometryPass()
@@ -81,8 +82,6 @@ void DeferredRenderer::geometryPass()
     }
 
     gbuffer_->bindFbo();
-
-    gl->glEnable(GL_DEPTH_TEST);
 
     gl->glClearColor(0, 0, 0, 0);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -110,6 +109,4 @@ void DeferredRenderer::geometryPass()
 
         renderable->render();
     }
-
-    gl->glDisable(GL_DEPTH_TEST);
 }

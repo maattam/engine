@@ -3,11 +3,15 @@
 #include "weakresourcedespatcher.h"
 #include "scene/scene.h"
 #include "rendererfactory.h"
+#include "scenefactory.h"
 #include "renderercontext.h"
 #include "renderer.h"
-#include "sponzascene.h"
 #include "debugrenderer.h"
 #include "inputstate.h"
+#include "freelookscene.h"
+
+#include "technique/hdrtonemap.h"
+#include "effect/hdr.h"
 
 #include <QOpenGLFRamebufferObject>
 #include <QDebug>
@@ -18,7 +22,7 @@ namespace {
 }
 
 DemoPresenter::DemoPresenter(QObject* parent)
-    : ScenePresenter(parent), context_(nullptr)
+    : ScenePresenter(parent), context_(nullptr), scene_("Sponza")
 {
     input_.reset(new InputState);
 }
@@ -43,12 +47,26 @@ void DemoPresenter::renderScene()
 
     if(renderer_ == nullptr)
     {
-        renderer_.reset(factory_->create());
+        renderer_.reset(rendererFactory_->create(context_->format().samples()));
         renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples());
         renderer_->setRenderTarget(context_->renderTarget());
         renderer_->setScene(sceneModel_.get());
 
-        debugRenderer_->setGBuffer(factory_->gbuffer());
+        debugRenderer_->setGBuffer(rendererFactory_->gbuffer());
+    }
+
+    if(sceneController_ == nullptr)
+    {
+        sceneController_.reset(sceneFactory_->create(scene_));
+        if(!sceneController_)
+        {
+            return;
+        }
+
+        sceneController_->setModel(sceneModel_.get());
+        sceneController_->setFov(75.0f);
+        sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
+        sceneController_->setInput(input_.get());
     }
 
     render();
@@ -73,14 +91,9 @@ void DemoPresenter::initialize()
     }
 
     despatcher_.reset(new Engine::WeakResourceDespatcher(2));
-    factory_.reset(new RendererFactory(*despatcher_));
+    rendererFactory_.reset(new RendererFactory(*despatcher_));
+    sceneFactory_.reset(new SceneFactory(*despatcher_));
     sceneModel_.reset(new Engine::Scene());
-
-    sceneController_.reset(new SponzaScene(despatcher_.get()));
-    sceneController_->setModel(sceneModel_.get());
-    sceneController_->setFov(75.0f);
-    sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
-    sceneController_->setInput(input_.get());
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
     debugRenderer_->setScene(sceneModel_.get());
@@ -89,7 +102,11 @@ void DemoPresenter::initialize()
 
 void DemoPresenter::render()
 {
-    renderer_->render(sceneModel_->camera());
+    if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
+    {
+        renderer_->render(sceneModel_->camera());
+    }
+
     debugRenderer_->render(sceneModel_->camera());
 }
 
@@ -109,7 +126,10 @@ void DemoPresenter::updateView()
         debugRenderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples());
         debugRenderer_->setRenderTarget(context_->renderTarget());
 
-        sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
+        if(sceneController_ != nullptr)
+        {
+            sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
+        }
     }
 }
 
@@ -117,11 +137,92 @@ void DemoPresenter::update()
 {
     sceneController_->update(frameTimer_.restart());
     sceneModel_->update();
+}
 
-    if(input_->keyDown(Qt::Key_G))
+void DemoPresenter::tonemapAttributeChanged(QString name, QVariant value)
+{
+    if(rendererFactory_ == nullptr)
     {
-        input_->setKey(Qt::Key_G, false);
+        return;
+    }
+
+    if(name == "bloom threshold")
+    {
+        rendererFactory_->hdr()->setBrightThreshold(value.toFloat());
+    }
+
+    else if(name == "bloom factor")
+    {
+        rendererFactory_->tonemap()->setBloomFactor(value.toFloat());
+    }
+
+    else if(name == "bright level")
+    {
+        rendererFactory_->tonemap()->setBrightLevel(value.toFloat());
+    }
+
+    else if(name == "gamma")
+    {
+        rendererFactory_->tonemap()->setGamma(value.toFloat());
+    }
+
+    else if(name == "exposure")
+    {
+        float exposure = value.toFloat();
+        if(exposure > -0.5)
+        {
+            rendererFactory_->setAutoExposure(false);
+            rendererFactory_->tonemap()->setExposure(value.toFloat());
+        }
+
+        else
+        {
+            rendererFactory_->setAutoExposure(true);
+        }
+    }
+}
+
+void DemoPresenter::generalAttributeChanged(QString name, QVariant value)
+{
+    if(!rendererFactory_ || !sceneController_)
+    {
+        return;
+    }
+
+    if(name == "deferred rendering")
+    {
+        if(value.toBool())
+        {
+            rendererFactory_->setRendererType(RendererFactory::DEFERRED);
+        }
+
+        else
+        {
+            rendererFactory_->setRendererType(RendererFactory::FORWARD);
+        }
+
+        renderer_.reset();
+    }
+
+    else if(name == "scene")
+    {
+        sceneController_.reset();
+        scene_ = value.toString();
+    }
+
+    else if(name == "show gbuffer")
+    {
         debugRenderer_->setFlags(toggleRenderFlag(debugRenderer_->flags(), Engine::DebugRenderer::DEBUG_GBUFFER));
+    }
+
+    else if(name == "show bounding boxes")
+    {
+        debugRenderer_->setFlags(toggleRenderFlag(debugRenderer_->flags(), Engine::DebugRenderer::DEBUG_AABB));
+    }
+
+    else if(name == "show wireframe")
+    {
+        debugRenderer_->setFlags(toggleRenderFlag(debugRenderer_->flags(), Engine::DebugRenderer::DEBUG_WIREFRAME));
     }
 }
 

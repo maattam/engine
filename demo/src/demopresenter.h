@@ -6,9 +6,12 @@
 #include <memory>
 
 #include <QElapsedTimer>
+#include <QVariant>
+#include <QString>
 
 class FreeLookScene;
 class RendererFactory;
+class SceneFactory;
 class InputState;
 
 namespace Engine {
@@ -45,10 +48,15 @@ public slots:
     // Called after OpenGL context has been created and OpenGL calls are safe to be done.
     virtual void initialize();
 
+    // Ui slots
+    void tonemapAttributeChanged(QString name, QVariant value);
+    void generalAttributeChanged(QString name, QVariant value);
+
 private:
     Engine::Ui::RendererContext* context_;
 
-    std::shared_ptr<RendererFactory> factory_;
+    std::shared_ptr<RendererFactory> rendererFactory_;
+    std::shared_ptr<SceneFactory> sceneFactory_;
     std::shared_ptr<Engine::ResourceDespatcher> despatcher_;
     std::shared_ptr<Engine::Renderer> renderer_;
     std::shared_ptr<Engine::DebugRenderer> debugRenderer_;
@@ -58,6 +66,7 @@ private:
 
     QSize viewSize_;
     QSize oldSize_;
+    QString scene_;
 
     QElapsedTimer frameTimer_;
 
