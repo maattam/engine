@@ -26,7 +26,7 @@ bool Texture2D::create(GLint level, GLint internalFormat, GLsizei width, GLsizei
     gl->glTexImage2D(Target, level, internalFormat, width, height, border, format, type, data);
 
     setDimensions(width, height);
-    return true;
+    return gl->glGetError() == GL_NO_ERROR;
 }
 
 bool Texture2D::createTexStorage(GLint levels, GLint internalFormat, GLsizei width, GLsizei height)
@@ -43,5 +43,5 @@ bool Texture2D::createTexStorage(GLint levels, GLint internalFormat, GLsizei wid
     gl->glTexStorage2D(Target, levels, internalFormat, width, height);
 
     setDimensions(width, height);
-    return true;
+    return gl->glGetError() == GL_NO_ERROR;
 }

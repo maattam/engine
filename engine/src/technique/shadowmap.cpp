@@ -71,10 +71,11 @@ bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
         return false;
     }
 
-    light.texture->texParameteri(GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    light.texture->texParameteri(GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    light.texture->texParameteri(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    light.texture->texParameteri(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    light.texture->setFiltering(GL_LINEAR, GL_LINEAR);
+    light.texture->setWrap(GL_CLAMP_TO_BORDER, GL_CLAMP_TO_BORDER);
+
+    const float color[4] = { 1.0f };
+    gl->glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 
     // Initialize framebuffer
     gl->glGenFramebuffers(1, &light.fbo);
@@ -105,16 +106,15 @@ size_t ShadowMap::numSpotLights() const
 
 void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles)
 {
-    // Calculate light frustrum
     const auto& texture = spotLights_.at(index).texture;
-    QMatrix4x4& vp = spotLights_.at(index).worldView;
 
-    vp.setToIdentity();
-    vp.perspective(50.0f, static_cast<float>(texture->width()) / texture->height(), 1.0f, 150.0f);
+    // Calculate light frustrum
+    QMatrix4x4 view;
+    view.perspective(light->cutoff() * 2, 1.0f, 1.0f, light->cutoffDistance());
+    view.lookAt(light->position(), light->position() + light->direction(), UNIT_Y);
 
-    QMatrix4x4 look;
-    look.lookAt(light->position(), light->position() + light->direction(), QVector3D(0, 1, 0));
-    vp *= look;
+    // Update view
+    spotLights_.at(index).worldView = view;
 
     gl->glViewport(0, 0, texture->width(), texture->height());
 

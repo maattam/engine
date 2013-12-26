@@ -125,7 +125,7 @@ void Light::calculateAABB()
     else if(type_ == LIGHT_POINT)
     {
         // Point light spreads equally in all directions
-        const float dist = maxSpotDistance();
+        const float dist = cutoffDistance();
 
         aabb.reset(QVector3D(-dist, -dist, -dist), QVector3D(dist, dist, dist));
     }
@@ -133,7 +133,7 @@ void Light::calculateAABB()
     // Spot light, inefficient brute force method
     else
     {
-        const float dist = maxSpotDistance();
+        const float dist = cutoffDistance();
         const float height = qTan(qDegreesToRadians(cutoff_)) * dist;
 
         // Point light cone points, default orientation is facing +X
@@ -169,7 +169,7 @@ void Light::calculateAABB()
     updateAABB(aabb);
 }
 
-float Light::maxSpotDistance() const
+float Light::cutoffDistance() const
 {
     const float maxrgb = 256.0f;
 

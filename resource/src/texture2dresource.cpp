@@ -104,35 +104,47 @@ bool Texture2DResource::initialiseData(const DataType& data)
 
 bool Texture2DResource::uploadCompressed(const gli::texture2D& texture)
 {
-    // Don't generate mipmaps again since we are going to upload them
+    // If the texture has pre-baked mipmaps, upload them using glTexStorage.
+    // NOTE: glTexStorage seems to ignore srgb flag using AMD drivers 13.x
     if(texture.levels() > 1)
     {
         mipmap_ = false;
-    }
 
-    if(!Texture2D::createTexStorage(static_cast<GLint>(texture.levels()),
-        gli::internal_format(texture.format()),
-        static_cast<GLsizei>(texture.dimensions().x),
-        static_cast<GLsizei>(texture.dimensions().y)))
-    {
-        return false;
-    }
-
-    gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
-
-    // Upload mipmaps
-    for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
-    {
-        gl->glCompressedTexSubImage2D(Target,
-            level, 0, 0,
-            texture[level].dimensions().x,
-            texture[level].dimensions().y,
+        if(!Texture2D::createTexStorage(static_cast<GLint>(texture.levels()),
             gli::internal_format(texture.format()),
-            static_cast<GLsizei>(texture[level].size()),
-            texture[level].data());
+            static_cast<GLsizei>(texture.dimensions().x),
+            static_cast<GLsizei>(texture.dimensions().y)))
+        {
+            return false;
+        }
+
+        gl->glTexParameteri(Target, GL_TEXTURE_MAX_LEVEL, texture.levels() - 1);
+
+        // Upload mipmaps
+        for(gli::texture2D::size_type level = 0; level < texture.levels(); ++level)
+        {
+            gl->glCompressedTexSubImage2D(Target,
+                level, 0, 0,
+                texture[level].dimensions().x,
+                texture[level].dimensions().y,
+                gli::internal_format(texture.format()),
+                static_cast<GLsizei>(texture[level].size()),
+                texture[level].data());
+        }
     }
 
-    return true;
+    else
+    {
+        gl->glCompressedTexImage2D(Target, 0,
+            gli::internal_format(texture.format()),
+            texture.dimensions().x,
+            texture.dimensions().y,
+            0,
+            static_cast<GLsizei>(texture.size()),
+            texture.data());
+    }
+
+    return gl->glGetError() == GL_NO_ERROR;
 }
 
 void Texture2DResource::releaseResource()

@@ -58,9 +58,10 @@ public:
 
     virtual void updateRenderList(RenderQueue& list) {}
 
+    float cutoffDistance() const;
+
 private:
     void calculateAABB();
-    float maxSpotDistance() const;
 
     LightType type_;
 
