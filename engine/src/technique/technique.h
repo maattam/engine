@@ -8,6 +8,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QMap>
 
 namespace Engine { 
     
@@ -67,6 +68,8 @@ protected:
 
 private:
     ShaderProgram program_;
+    QMap<GLenum, GLuint> boundSubroutines_;
+
     QHash<QString, int> uniforms_;
     QHash<QString, GLuint> subroutines_;
 

@@ -59,7 +59,7 @@ void DeferredRenderer::render(Entity::Camera* camera)
     camera_ = camera;
 
     // Cull visibles
-    renderQueue_.reset();
+    renderQueue_.clear();
     scene_->queryVisibles(camera->worldView(), renderQueue_);
 
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
@@ -86,9 +86,16 @@ void DeferredRenderer::geometryPass()
     gl->glClearColor(0, 0, 0, 0);
     gl->glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    QMatrix4x4 view = camera_->view();
+    const QMatrix4x4 view = camera_->view();
+
     for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
     {
+        // Render only opaque materials to gbuffer
+        if(it.key() >= RenderQueue::RENDER_EMISSIVE)
+        {
+            break;
+        }
+
         Material* material = it->material;
         Renderable::Renderable* renderable = it->renderable;
 

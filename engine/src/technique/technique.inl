@@ -16,6 +16,6 @@ bool Technique::setUniformValue(const QString& name, T&& value)
         return false;
     }
 
-    program()->setUniformValue(location, value);
+    program()->setUniformValue(location, std::forward<T>(value));
     return true;
 }

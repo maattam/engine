@@ -22,7 +22,7 @@ RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType ty
     // HDR tonemapping
     hdrPostfx_.reset(new Effect::Hdr(&despatcher_, 4));
     hdrPostfx_->setBrightThreshold(1.5f);
-    setAutoExposure(true);
+    //setAutoExposure(true);
 
     // 5x5 Gaussian blur filter
     Effect::Hdr::BlurFilterPtr filter(new Technique::BlurFilter);

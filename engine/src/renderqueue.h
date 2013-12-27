@@ -2,7 +2,7 @@
 #define RENDERQUEUE_H
 
 #include <QMatrix4x4>
-#include <QVector>
+#include <QMap>
 
 namespace Engine {
 
@@ -24,6 +24,8 @@ public:
         Renderable::Renderable* renderable;
     };
 
+    enum RenderOrder { RENDER_OPAQUE = 0, RENDER_EMISSIVE = 500, RENDER_TRANSPARENT = 1000 };
+
     // Sets transformation matrix for future addNode calls
     // precondition: modelView != nullptr
     void setModelView(const QMatrix4x4* modelView);
@@ -32,14 +34,12 @@ public:
     // precondition: model view matrix set, material != nullptr, renderable != nullptr
     void addNode(Material* material, Renderable::Renderable* renderable);
 
-    // Resets the queue's pointer but doesn't deallocate existing RenderItems.
-    void reset();
-
     // Clears the RenderList.
     void clear();
 
-    typedef QVector<RenderItem> RenderList;
+    typedef QMap<int, RenderItem> RenderList;
 
+    const RenderList& queue() const;
     RenderList::const_iterator begin() const;
     RenderList::const_iterator end() const;
 
@@ -47,7 +47,6 @@ private:
     const QMatrix4x4* modelView_;
 
     RenderList queue_;
-    RenderList::iterator current_;
 };
 
 }

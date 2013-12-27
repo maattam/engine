@@ -1,11 +1,13 @@
 #include "renderqueue.h"
 
+#include "material.h"
+#include "renderable/renderable.h"
+
 using namespace Engine;
 
 RenderQueue::RenderQueue()
     : modelView_(nullptr)
 {
-    current_ = queue_.begin();
 }
 
 void RenderQueue::setModelView(const QMatrix4x4* modelView)
@@ -16,30 +18,30 @@ void RenderQueue::setModelView(const QMatrix4x4* modelView)
 void RenderQueue::addNode(Material* material, Renderable::Renderable* renderable)
 {
     RenderItem item = { modelView_, material, renderable };
+    int order = RENDER_OPAQUE;
 
-    // TODO: Sort by material
-
-    if(current_ == queue_.end())
+    if(material->attributes().ambientColor != QVector3D(0, 0, 0))
     {
-        queue_.push_back(item);
-        current_ = queue_.end();
+        order = RENDER_EMISSIVE;
     }
 
-    else
+    if(material->hasTexture(Material::TEXTURE_NORMALS) && renderable->hasTangents())
     {
-        *current_++ = item;
+        order++;
     }
-}
 
-void RenderQueue::reset()
-{
-    current_ = queue_.begin();
+    queue_.insertMulti(order, item);
 }
 
 void RenderQueue::clear()
 {
     queue_.clear();
-    current_ = queue_.begin();
+    modelView_ = nullptr;
+}
+
+const RenderQueue::RenderList& RenderQueue::queue() const
+{
+    return queue_;
 }
 
 RenderQueue::RenderList::const_iterator RenderQueue::begin() const
@@ -49,5 +51,5 @@ RenderQueue::RenderList::const_iterator RenderQueue::begin() const
 
 RenderQueue::RenderList::const_iterator RenderQueue::end() const
 {
-    return current_;
+    return queue_.end();
 }

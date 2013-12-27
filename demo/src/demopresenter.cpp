@@ -48,7 +48,12 @@ void DemoPresenter::renderScene()
     if(renderer_ == nullptr)
     {
         renderer_.reset(rendererFactory_->create(context_->format().samples()));
-        renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples());
+        if(!renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples()))
+        {
+            qWarning() << "setViewport failed:" << viewSize_;
+            return;
+        }
+
         renderer_->setRenderTarget(context_->renderTarget());
         renderer_->setScene(sceneModel_.get());
 

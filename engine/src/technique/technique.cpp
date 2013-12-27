@@ -98,14 +98,24 @@ bool Technique::useSubroutine(const QString& name, GLenum shaderType)
     GLenum location = cachedSubroutineLocation(name);
     if(location == GL_INVALID_INDEX)
     {
-        location = resolveSubroutineLocation(name, shaderType);
+        if((location = resolveSubroutineLocation(name, shaderType)) == GL_INVALID_INDEX)
+        {
+            return false;
+        }
     }
 
-    if(location == GL_INVALID_INDEX)
+    // Avoid unnecessary subroutine swaps
+    auto iter = boundSubroutines_.find(shaderType);
+    if(iter == boundSubroutines_.end())
     {
-        return false;
+        iter = boundSubroutines_.insert(shaderType, GL_INVALID_INDEX);
     }
 
-    gl->glUniformSubroutinesuiv(shaderType, 1, &location);
+    if(location != *iter)
+    {
+        gl->glUniformSubroutinesuiv(shaderType, 1, &location);
+        *iter = location;
+    }
+
     return true;
 }

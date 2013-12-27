@@ -48,7 +48,7 @@ Rectangle {
 
         CheckBoxAttribute {
             name: "Automatic exposure"
-            checked: true
+            checked: false
         }
 
         SliderAttribute {
@@ -57,7 +57,6 @@ Rectangle {
             minimumValue: 0
             maximumValue: 5
             value: 1
-            visible: false
         }
 
         function onValueChange(name, value) {
