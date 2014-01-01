@@ -58,6 +58,12 @@ bool RendererContext::createContext(QOpenGLContext* shareContext)
     {
         logger_ = new QOpenGLDebugLogger(this);
         logger_->initialize();
+
+        connect(logger_, &QOpenGLDebugLogger::messageLogged, [=] (const QOpenGLDebugMessage& msg) {
+            qDebug() << msg;
+        });
+
+        logger_->startLogging(QOpenGLDebugLogger::SynchronousLogging);
     }
 
     context_->doneCurrent();
@@ -99,18 +105,18 @@ bool RendererContext::beginRendering()
 
 void RendererContext::endFrame()
 {
-    if(logger_ != nullptr)
+    /*if(logger_ != nullptr)
     {
         for(auto message : logger_->loggedMessages())
         {
             qDebug() << message;
         }
-    }
+    }*/
 
     // Synchronize the render target texture between the two renderers
     GLsync sync = gl->glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     gl->glFlush();
-    //gl->glFinish();
+    gl->glFinish();
 
     emit renderTargetUpdated(sync);
 }

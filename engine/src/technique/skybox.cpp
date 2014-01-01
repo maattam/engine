@@ -30,12 +30,6 @@ void Skybox::setTextureUnit(int unit)
 void Skybox::setDepthTextureUnit(int unit)
 {
     depthUnit_ = unit;
-
-    if(program()->isLinked())
-    {
-        setUniformValue("depth", depthUnit_);
-        useSubroutine("sampleDepthTest", GL_FRAGMENT_SHADER);
-    }
 }
 
 void Skybox::setMVP(const QMatrix4x4& mvp)

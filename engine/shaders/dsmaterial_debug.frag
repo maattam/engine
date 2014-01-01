@@ -5,7 +5,7 @@
 subroutine(CalculateLightType)
 vec4 outputPositions(in VertexInfo vertex, in MaterialInfo material)
 {
-    return vec4(vertex.position.xyz / 15, 0);
+    return vec4(vertex.position.xyz / 15.0, 0);
 }
 
 subroutine(CalculateLightType)

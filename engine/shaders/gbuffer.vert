@@ -15,7 +15,7 @@ uniform mat4 MVP;
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
 
-subroutine vec3 TangentPassType();
+subroutine void TangentPassType();
 subroutine uniform TangentPassType tangentPass;
 
 subroutine(TangentPassType)

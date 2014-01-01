@@ -80,7 +80,7 @@ uniform vec3 gEyeWorldPos;
 uniform bool gHasTangents;
 uniform bool gShadowsEnabled;
 
-float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, unsigned int size)
+float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, float size)
 {
     if(!gShadowsEnabled)
     {
