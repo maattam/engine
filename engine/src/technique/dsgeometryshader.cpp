@@ -33,14 +33,14 @@ void DSGeometryShader::setHasTangentsAndNormals(bool value)
 {
     if(value)
     {
-        useSubroutine("calculateTangent", GL_VERTEX_SHADER);
-        useSubroutine("calculateBumpedNormal", GL_FRAGMENT_SHADER);
+        useSubroutine("tangentPass", "calculateTangent", GL_VERTEX_SHADER);
+        useSubroutine("calculateNormal", "calculateBumpedNormal", GL_FRAGMENT_SHADER);
     }
 
     else
     {
-        useSubroutine("skipTangent", GL_VERTEX_SHADER);
-        useSubroutine("calculateInterpolatedNormal", GL_FRAGMENT_SHADER);
+        useSubroutine("tangentPass", "skipTangent", GL_VERTEX_SHADER);
+        useSubroutine("calculateNormal", "calculateInterpolatedNormal", GL_FRAGMENT_SHADER);
     }
 }
 

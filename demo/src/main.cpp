@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     format.setProfile(QSurfaceFormat::CoreProfile);
 
 #ifdef _DEBUG
-    //format.setOption(QSurfaceFormat::DebugContext);
+    format.setOption(QSurfaceFormat::DebugContext);
 #endif
 
     // Create application

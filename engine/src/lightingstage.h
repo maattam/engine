@@ -27,7 +27,7 @@ public:
     // preconditions: scene has been set, viewport has been set, camera != nullptr
     virtual void render(Entity::Camera* camera);
 
-private:
+protected:
     VisibleScene* scene_;
 };
 

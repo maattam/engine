@@ -217,8 +217,8 @@ void importLight(aiLight* light, LightPtr& entity)
     entity->setAttenuationLinear(light->mAttenuationLinear);
     entity->setAttenuationQuadratic(light->mAttenuationQuadratic);
 
-    // TODO: Inner cone
-    entity->setCutoff(light->mAngleOuterCone);
+    entity->setAngleOuterCone(light->mAngleOuterCone);
+    entity->setAngleInnerCone(light->mAngleInnerCone);
     entity->setPosition(QVector3D(light->mPosition.x, light->mPosition.y, light->mPosition.z));
 }
 

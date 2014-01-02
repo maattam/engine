@@ -20,8 +20,6 @@ uniform vec2 depthRange;
 // The perspective projection matrix
 uniform mat4 persProj;
 
-uniform vec3 lightDirection;
-
 // Input quad uv
 in vec2 texCoord;
 
@@ -45,9 +43,9 @@ struct MaterialInfo
     float specularIntensity;
 };
 
-// Subroutine used to implement lightning functions
-subroutine vec4 CalculateLightType(in VertexInfo vertex, in MaterialInfo material);
-subroutine uniform CalculateLightType calculateLight;
+// Subroutine used to implement different shading functions
+subroutine vec4 CalculateOutputType(in VertexInfo vertex, in MaterialInfo material);
+subroutine uniform CalculateOutputType calculateOutput;
 
 // Returns the nth sample from a multisampled texture
 vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
@@ -88,27 +86,6 @@ void unpackDiffuseSpec(inout MaterialInfo material, int n)
     material.shininess = data.a;
 }
 
-subroutine(CalculateLightType)
-vec4 nullLight(in VertexInfo vertex, in MaterialInfo material)
-{
-    vec3 lightColor = pow(vec3(1, 1, 251.0 / 255), vec3(2.2)) * 5;
-    float ambientFac = 0.05;
-
-    vec3 ambient = lightColor * ambientFac;
-    float sDotN = max(dot(-lightDirection, vertex.normal), 0.0);
-    vec3 diffuse = lightColor * sDotN;
-
-    vec3 specular = vec3(0.0);
-    if(sDotN > 0)
-    {
-        vec3 r = reflect(-lightDirection, vertex.normal);
-        float power = pow(max(dot(r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
-        specular = lightColor * material.specularIntensity * power;
-    }
-	
-	return vec4(material.diffuseColor * (ambient + diffuse + specular), 0);
-}
-
 void main()
 {
     VertexInfo vertex;
@@ -122,7 +99,7 @@ void main()
         unpackNormalSpec(material, vertex, i);
         unpackDiffuseSpec(material, i);
 
-        color += calculateLight(vertex, material);
+        color += calculateOutput(vertex, material);
     }
 
     fragColor = color / samples;

@@ -22,5 +22,7 @@
         <file>shaders/dsmaterial.frag</file>
         <file>shaders/dsmaterial.vert</file>
         <file>shaders/dsmaterial_debug.frag</file>
+        <file>shaders/dsillumination.frag</file>
+        <file>shaders/blinn-phong.frag</file>
     </qresource>
 </RCC>

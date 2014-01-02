@@ -114,7 +114,7 @@ void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, Visibl
 
     // Calculate light frustrum
     QMatrix4x4 view;
-    view.perspective(light->cutoff() * 2, 1.0f, 1.0f, light->cutoffDistance());
+    view.perspective(light->angleOuterCone() * 2, 1.0f, 1.0f, light->cutoffDistance());
     view.lookAt(light->position(), light->position() + light->direction(), UNIT_Y);
 
     // Update view

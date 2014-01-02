@@ -6,7 +6,7 @@
 #include "lightingstage.h"
 
 #include "renderable/quad.h"
-#include "technique/dsmaterialshader.h"
+#include "technique/illuminationmodel.h"
 
 #include <QVector>
 
@@ -39,9 +39,10 @@ private:
     GLuint fbo_;
     GBuffer& gbuffer_;
 
-    QVector<Entity::Light*> lights_;
+    QVector<Entity::Light*> spotLights_;
+    QVector<Entity::Light*> pointLights_;
 
-    Technique::DSMaterialShader materialShader_;
+    Technique::IlluminationModel lightningTech_;
     Renderable::Quad quad_;
 };
 

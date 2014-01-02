@@ -79,10 +79,5 @@ bool DSMaterialShader::init()
         return false;
     }
 
-    if(!useSubroutine("nullLight", GL_FRAGMENT_SHADER))
-    {
-        return false;
-    }
-
     return resolveUniformLocation("persProj") != -1;
 }

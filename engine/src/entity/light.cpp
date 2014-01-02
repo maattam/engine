@@ -19,7 +19,7 @@ Light::Light(LightType type) : Entity(), type_(type)
     attenuation_.linear = 0.0f;
     attenuation_.quadratic = 1.0f;
 
-    cutoff_ = 30.0f;
+    angleInnerCone_ = angleOuterCone_ = 30.0f;
     direction_ = UNIT_X;
 
     calculateAABB();
@@ -76,15 +76,35 @@ float Light::diffuseIntensity() const
     return diffuseIntensity_;
 }
 
-void Light::setCutoff(float cutoff)
+void Light::setAngleOuterCone(float angle)
 {
-    cutoff_ = cutoff;
+    angleOuterCone_ = angle;
+    if(angleInnerCone_ < angleInnerCone_)
+    {
+        angleInnerCone_ = angle;
+    }
+
     calculateAABB();
 }
 
-float Light::cutoff() const
+float Light::angleOuterCone() const
 {
-    return cutoff_;
+    return angleOuterCone_;
+}
+
+void Light::setAngleInnerCone(float angle)
+{
+    angleInnerCone_ = angle;
+    if(angleInnerCone_ > angleOuterCone_)
+    {
+        angleOuterCone_ = angle;
+        calculateAABB();
+    }
+}
+
+float Light::angleInnerCone() const
+{
+    return angleInnerCone_;
 }
 
 const Light::Attenuation& Light::attenuation() const
@@ -134,7 +154,7 @@ void Light::calculateAABB()
     else
     {
         const float dist = cutoffDistance();
-        const float height = qTan(qDegreesToRadians(cutoff_)) * dist;
+        const float height = qTan(qDegreesToRadians(angleOuterCone_)) * dist;
 
         // Point light cone points, default orientation is facing +X
         const QVector3D conePoints[5] = { QVector3D(0, 0, 0),    // Cone origin

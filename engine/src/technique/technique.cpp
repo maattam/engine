@@ -22,7 +22,13 @@ bool Technique::enable()
         return program_.bind() && init();
     }
 
-    return program_->bind();
+    if(!program_->bind())
+    {
+        return false;
+    }
+
+    activateUniformSubroutines();
+    return true;
 }
 
 QOpenGLShaderProgram* Technique::program()
@@ -93,29 +99,58 @@ GLuint Technique::cachedSubroutineLocation(const QString& name) const
     return location;
 }
 
-bool Technique::useSubroutine(const QString& name, GLenum shaderType)
+bool Technique::useSubroutine(const QString& name, const QString& index, GLenum shaderType)
 {
-    GLenum location = cachedSubroutineLocation(name);
-    if(location == GL_INVALID_INDEX)
+    GLint uniform = -1;
+    GLenum subroutineIndex = GL_INVALID_INDEX;
+
+    // Resolve subroutine uniform location
+    auto result = subroutineUniforms_.find(name);
+    if(result != subroutineUniforms_.end())
     {
-        if((location = resolveSubroutineLocation(name, shaderType)) == GL_INVALID_INDEX)
+        uniform = result.value();
+    }
+
+    else
+    {
+        uniform = gl->glGetSubroutineUniformLocation(program()->programId(), shaderType, name.toLatin1());
+        subroutineUniforms_[name] = uniform;
+    }
+
+    if(uniform == -1)
+    {
+        qDebug() << "Failed to resolve uniform subroutine location:" << name;
+        return false;
+    }
+
+    // Resolve subroutine index
+    subroutineIndex = cachedSubroutineLocation(index);
+    if(subroutineIndex == GL_INVALID_INDEX)
+    {
+        if((subroutineIndex = resolveSubroutineLocation(index, shaderType)) == GL_INVALID_INDEX)
         {
             return false;
         }
     }
 
     // Avoid unnecessary subroutine swaps
-    auto iter = boundSubroutines_.find(shaderType);
-    if(iter == boundSubroutines_.end())
+    QVector<GLuint>& bindings = boundSubroutines_[shaderType];
+
+    if(bindings.size() < uniform + 1)
     {
-        iter = boundSubroutines_.insert(shaderType, GL_INVALID_INDEX);
+        bindings.resize(uniform + 1);
     }
 
-    if(location != *iter)
-    {
-        gl->glUniformSubroutinesuiv(shaderType, 1, &location);
-        *iter = location;
-    }
+    bindings[uniform] = subroutineIndex;
+    activateUniformSubroutines();
 
     return true;
+}
+
+void Technique::activateUniformSubroutines()
+{
+    for(auto it = boundSubroutines_.begin(); it != boundSubroutines_.end(); ++it)
+    {
+        gl->glUniformSubroutinesuiv(it.key(), it.value().size(), it.value().data());
+    }
 }

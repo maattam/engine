@@ -4,17 +4,19 @@
 #include "entity/camera.h"
 #include "entity/light.h"
 #include "gbuffer.h"
+#include "scene/visiblescene.h"
 
 using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher)
     : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0)
 {
-    materialShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
-    materialShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.frag"), Shader::Type::Fragment));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/blinn-phong.frag"), Shader::Type::Fragment));
 
-    materialShader_.setGBuffer(&gbuffer);
-    materialShader_.setDepthRange(0, 1);
+    lightningTech_.setGBuffer(&gbuffer);
+    lightningTech_.setDepthRange(0, 1);
+    lightningTech_.setLightningModel("blinnPhongModel");
 }
 
 QuadLighting::~QuadLighting()
@@ -23,7 +25,7 @@ QuadLighting::~QuadLighting()
 
 bool QuadLighting::setViewport(const QRect& viewport, unsigned int samples)
 {
-    materialShader_.setSampleCount(samples);
+    lightningTech_.setSampleCount(samples);
 
     return LightingStage::setViewport(viewport, samples);
 }
@@ -38,28 +40,57 @@ void QuadLighting::render(Entity::Camera* camera)
 {
     LightingStage::render(camera);
 
-    // For each visited light, render..
-
     gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl->glClear(GL_COLOR_BUFFER_BIT);
 
-    // Output each GBuffer component to screen for now
-    if(!materialShader_.enable())
+    if(!lightningTech_.enable())
     {
         return;
     }
 
-    materialShader_.setProjMatrix(camera->projection());
-    materialShader_.setLightDirection(camera->view().mapVector(QVector3D(0.0f, -1.0f, -0.09f)));
-
+    lightningTech_.setProjMatrix(camera->projection());
+    lightningTech_.setViewMatrix(camera->view());
     gbuffer_.bindTextures();
 
-    quad_.render();
+    // Render directional light
+    if(scene_->directionalLight() != nullptr)
+    {
+        lightningTech_.enableDirectionalLight(*scene_->directionalLight());
+        quad_.render();
+    }
 
-    lights_.clear();
+    gl->glEnable(GL_BLEND);
+    gl->glBlendFunc(GL_ONE, GL_ONE);
+
+    // Blend point lights
+    for(Entity::Light* light : pointLights_)
+    {
+        lightningTech_.enablePointLight(*light);
+        quad_.render();
+    }
+
+    // Blend spotlights
+    for(Entity::Light* light : spotLights_)
+    {
+        lightningTech_.enableSpotLight(*light);
+        quad_.render();
+    }
+
+    gl->glDisable(GL_BLEND);
+
+    spotLights_.clear();
+    pointLights_.clear();
 }
 
 void QuadLighting::visit(Entity::Light& light)
 {
-    lights_.push_back(&light);
+    if(light.type() == Entity::Light::LIGHT_POINT)
+    {
+        pointLights_.push_back(&light);
+    }
+
+    else if(light.type() == Entity::Light::LIGHT_SPOT)
+    {
+        spotLights_.push_back(&light);
+    }
 }

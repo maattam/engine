@@ -10,18 +10,18 @@ uniform int bloomLevels;
 
 uniform float bloomFactor;
 uniform float exposure;
-uniform float bright;
+uniform float bright;   // Linear white point value
 uniform float gamma;
 
 in vec2 uv;
 
-// Magic
-float A = 0.30;
-float B = 0.50;
-float C = 0.10;
-float D = 0.20;
-float E = 0.02;
-float F = 0.30;
+// Filmic tonemapper curve parameters
+float A = 0.30; // Shoulder strength
+float B = 0.50; // Linear strength
+float C = 0.10; // Linear angle
+float D = 0.20; // Toe strength
+float E = 0.02; // Toe numerator
+float F = 0.30; // Toe Denominator
 
 vec3 tonemap(in vec3 x)
 {

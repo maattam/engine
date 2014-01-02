@@ -63,7 +63,7 @@ bool Skybox::init()
     if(depthUnit_ != -1)
     {
         setUniformValue("depth", depthUnit_);
-        useSubroutine("sampleDepthTest", GL_FRAGMENT_SHADER);
+        useSubroutine("depthTest", "sampleDepthTest", GL_FRAGMENT_SHADER);
     }
 
     else
@@ -71,7 +71,7 @@ bool Skybox::init()
         // Kinda hacky since two samplers can't point to the same unit or be invalid (-1).
         // TODO: Implement some sort of #define -switch for shaders.
         setUniformValue("depth", textureUnit_ + 1);
-        useSubroutine("skipDepthTest", GL_FRAGMENT_SHADER);
+        useSubroutine("depthTest", "skipDepthTest", GL_FRAGMENT_SHADER);
     }
 
     return true;

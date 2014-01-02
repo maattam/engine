@@ -208,6 +208,9 @@
     <ClCompile Include="src\scene\importednode.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\technique\illuminationmodel.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -278,6 +281,12 @@
     </None>
     <None Include="src\graph\scenenode.inl">
       <Filter>Source Files\graph</Filter>
+    </None>
+    <None Include="shaders\dsillumination.frag">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\blinn-phong.frag">
+      <Filter>Shaders\technique</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +430,9 @@
     </ClInclude>
     <ClInclude Include="src\scene\importednode.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\illuminationmodel.h">
+      <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

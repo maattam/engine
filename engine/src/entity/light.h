@@ -43,8 +43,13 @@ public:
     void setDiffuseIntensity(float intensity);
     float diffuseIntensity() const;
 
-    void setCutoff(float cutoff);
-    float cutoff() const;
+    // Angle is in degrees
+    // Precondition: Angle is between [0, 180]
+    void setAngleOuterCone(float angle);
+    float angleOuterCone() const;
+
+    void setAngleInnerCone(float angle);
+    float angleInnerCone() const;
 
     void setAttenuationConstant(float attn);
     void setAttenuationLinear(float attn);
@@ -71,7 +76,9 @@ private:
 
     float ambientIntensity_;
     float diffuseIntensity_;
-    float cutoff_;
+
+    float angleOuterCone_;
+    float angleInnerCone_;
 
     Attenuation attenuation_;
 };

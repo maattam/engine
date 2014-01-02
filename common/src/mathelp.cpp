@@ -87,3 +87,8 @@ QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot)
     quat.setVector(quatv[0], quatv[1], quatv[2]);
     return quat;
 }
+
+QVector3D linearColor(const QVector3D& color, float gamma)
+{
+    return QVector3D(qPow(color.x(), gamma), qPow(color.y(), gamma), qPow(color.z(), gamma));
+}

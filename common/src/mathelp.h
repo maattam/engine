@@ -22,4 +22,6 @@ QQuaternion orientationFromAxes(const QVector3D& x, const QVector3D& y, const QV
 // Precondition: matrix is orthogonal
 QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot);
 
+QVector3D linearColor(const QVector3D& color, float gamma = 2.2f);
+
 #endif // MATHELP_H

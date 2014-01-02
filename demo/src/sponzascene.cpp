@@ -121,12 +121,12 @@ void SponzaScene::initialise()
     spotLight_.setAttenuationQuadratic(0.005f);
     spotLight_.setAttenuationConstant(1.0f);
     spotLight_.setAttenuationLinear(0.1f);
-    spotLight_.setCutoff(30.0f);
+    spotLight_.setAngleOuterCone(30.0f);
 
     flashLight_.setColor(QVector3D(1, 1, 1));
     flashLight_.setDiffuseIntensity(25.0f);
     flashLight_.setAttenuationQuadratic(0.2f);
-    flashLight_.setCutoff(30.0f);
+    flashLight_.setAngleOuterCone(30.0f);
 
     // Position entities
     Graph::SceneNode* node = rootNode()->createSceneNodeChild();

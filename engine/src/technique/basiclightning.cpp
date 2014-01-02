@@ -3,18 +3,14 @@
 #include "entity/light.h"
 
 #include <QDebug>
-#include <qmath.h>
+#include "mathelp.h"
 
+#include <qmath.h>
 #include <sstream>
 #include <cassert>
 
 using namespace Engine;
 using namespace Engine::Technique;
-
-namespace {
-    // Maps colors from srgb space with gamma of 2.2 to linear space
-    QVector3D linear(const QVector3D& color);
-}
 
 BasicLightning::BasicLightning()
     : Technique()
@@ -52,8 +48,8 @@ void BasicLightning::setHasTangents(bool tangents)
 
 void BasicLightning::setMaterialAttributes(const Material::Attributes& attributes)
 {
-    setUniformValue("gMaterial.ambientColor", linear(attributes.ambientColor));
-    setUniformValue("gMaterial.diffuseColor", linear(attributes.diffuseColor));
+    setUniformValue("gMaterial.ambientColor", linearColor(attributes.ambientColor));
+    setUniformValue("gMaterial.diffuseColor", linearColor(attributes.diffuseColor));
     setUniformValue("gMaterial.specularIntensity", attributes.specularIntensity);
     setUniformValue("gMaterial.shininess", attributes.shininess);
 }
@@ -75,7 +71,7 @@ void BasicLightning::setDirectionalLight(Entity::Light* light)
     }
 
     setUniformValue("gDirectionalLight.ambientIntensity", ambientFactor);
-    setUniformValue("gDirectionalLight.base.color", linear(light->color()) * light->diffuseIntensity());
+    setUniformValue("gDirectionalLight.base.color", linearColor(light->color()) * light->diffuseIntensity());
     setUniformValue("gDirectionalLight.direction", light->direction());
 }
 
@@ -141,7 +137,7 @@ void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
 
 void BasicLightning::setSpotLight(const Entity::Light* light, int index)
 {
-    setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
+    setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linearColor(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               light->position());
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.constant").c_str(),   light->attenuation().constant);
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.attenuation.exp").c_str(),        light->attenuation().quadratic);
@@ -150,12 +146,12 @@ void BasicLightning::setSpotLight(const Entity::Light* light, int index)
     setUniformValue(formatUniformTableName("gSpotLights", index, "direction").c_str(),               light->direction());
 
     // Convert cutoff to radians
-    setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),                  cosf(qDegreesToRadians(light->cutoff())));
+    setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),                  cosf(qDegreesToRadians(light->angleOuterCone())));
 }
 
 void BasicLightning::setPointLight(const Entity::Light* light, int index)
 {
-    setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linear(light->color()) * light->diffuseIntensity());
+    setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linearColor(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               light->position());
     setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.constant").c_str(),   light->attenuation().constant);
     setUniformValue(formatUniformTableName("gPointLights", index, "attenuation.exp").c_str(),        light->attenuation().quadratic);
@@ -177,15 +173,4 @@ std::string BasicLightning::formatUniformTableName(const std::string& table,
         ss << '.' << members;
 
     return ss.str();
-}
-
-namespace {
-
-    QVector3D linear(const QVector3D& color)
-    {
-        const float gamma = 2.2f;
-
-        return QVector3D(qPow(color.x(), gamma), qPow(color.y(), gamma), qPow(color.z(), gamma));
-    }
-
 }

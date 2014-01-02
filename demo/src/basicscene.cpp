@@ -115,7 +115,7 @@ void BasicScene::initialise()
     spotLight->setDirection(QVector3D(4.0f, -4.0f, -6.0f));
     spotLight->setDiffuseIntensity(20.0f);
     spotLight->setAttenuationQuadratic(0.05f);
-    spotLight->setCutoff(20.0f);
+    spotLight->setAngleOuterCone(20.0f);
     lights_.push_back(spotLight);
 
     // Load models

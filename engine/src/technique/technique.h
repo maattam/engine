@@ -9,6 +9,7 @@
 #include <QString>
 #include <QHash>
 #include <QMap>
+#include <QVector>
 
 namespace Engine { 
     
@@ -42,7 +43,7 @@ public:
     // A convenience function which binds the cached subroutine name or resolves it
     // before setting the subroutine uniform.
     // precondition: Technique is enabled
-    bool useSubroutine(const QString& name, GLenum shaderType);
+    bool useSubroutine(const QString& name, const QString& index, GLenum shaderType);
 
     // Returns the current QOpenGLShaderProgram encapsulated by the ShaderProgram
     // precondition: shaders added
@@ -68,10 +69,15 @@ protected:
 
 private:
     ShaderProgram program_;
-    QMap<GLenum, GLuint> boundSubroutines_;
+    QMap<GLenum, QVector<GLuint>> boundSubroutines_;
 
     QHash<QString, int> uniforms_;
     QHash<QString, GLuint> subroutines_;
+    QHash<QString, GLint> subroutineUniforms_;
+
+    // Enables uniform subroutines that have been previously added by useSubroutine.
+    // Must be called after each enable call.
+    void activateUniformSubroutines();
 
     Technique(const Technique&);
     Technique& operator=(const Technique&);

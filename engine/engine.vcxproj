@@ -205,6 +205,7 @@
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
     <ClCompile Include="src\technique\hdrtonemap.cpp" />
+    <ClCompile Include="src\technique\illuminationmodel.cpp" />
     <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skybox.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
@@ -214,6 +215,8 @@
     <None Include="shaders\aabb.vert" />
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
+    <None Include="shaders\blinn-phong.frag" />
+    <None Include="shaders\dsillumination.frag" />
     <None Include="shaders\gauss5x5.frag" />
     <None Include="shaders\dsmaterial.frag" />
     <None Include="shaders\dsmaterial.vert" />
@@ -280,6 +283,7 @@
     <ClInclude Include="src\technique\dsmaterialshader.h" />
     <ClInclude Include="src\technique\gbuffervisualizer.h" />
     <ClInclude Include="src\technique\hdrtonemap.h" />
+    <ClInclude Include="src\technique\illuminationmodel.h" />
     <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skybox.h" />
     <CustomBuild Include="src\technique\technique.h">

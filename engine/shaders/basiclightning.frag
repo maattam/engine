@@ -100,15 +100,9 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2DShadow shadowMap, floa
         for(int x = -1; x <= 1; ++x)
         {
             vec2 offsets = vec2(x * offset, y * offset);
-            vec3 uvc = projCoords + vec3(offsets, SHADOW_BIAS);
+            vec3 uvc = projCoords + vec3(offsets, 0);
 
-            /*float depth = texture(shadowMap, projCoords.xy + offsets).r;
-            if(depth >= projCoords.z - SHADOW_BIAS)
-            {
-                sum += 1.0;
-            }*/
-
-            factor += texture(shadowMap, uvc);
+            factor += texture(shadowMap, uvc, SHADOW_BIAS);
         }
     }
 
