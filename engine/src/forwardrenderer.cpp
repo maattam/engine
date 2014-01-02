@@ -66,7 +66,7 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
     if(!shadowTech_.initSpotLights(1024, 1024, Technique::BasicLightning::MAX_SPOT_LIGHTS))
         return false;
 
-    if(!shadowTech_.initDirectionalLight(4096, 4096))
+    if(!shadowTech_.initDirectionalLight(2048, 2048))
         return false;
 
     return true;
@@ -123,6 +123,8 @@ void ForwardRenderer::shadowMapPass()
         shadowTech_.renderSpotLight(spotLightIndex++, light, scene_);
     }
 
+    gl->glCullFace(GL_BACK);
+
     // Render depth for directional light
     auto directionalLight = scene_->directionalLight();
     if(directionalLight == nullptr)
@@ -131,7 +133,6 @@ void ForwardRenderer::shadowMapPass()
     }
 
     shadowTech_.renderDirectinalLight(directionalLight, scene_);
-    gl->glCullFace(GL_BACK);
 }
 
 void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queue)

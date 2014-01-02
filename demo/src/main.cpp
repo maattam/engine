@@ -13,13 +13,12 @@ int main(int argc, char *argv[])
 
     // Create OpenGL context
     QSurfaceFormat format;
-    format.setMajorVersion(4);
-    format.setMinorVersion(2);
+    format.setVersion(4, 2);
     format.setSamples(4);
     format.setProfile(QSurfaceFormat::CoreProfile);
 
 #ifdef _DEBUG
-    format.setOption(QSurfaceFormat::DebugContext);
+    //format.setOption(QSurfaceFormat::DebugContext);
 #endif
 
     // Create application

@@ -77,6 +77,10 @@ bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
     const float color[4] = { 1.0f };
     gl->glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
 
+    // Nvidia PCF shadow2DProj
+    gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+    gl->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
     // Initialize framebuffer
     gl->glGenFramebuffers(1, &light.fbo);
     gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
@@ -130,7 +134,7 @@ void ShadowMap::renderDirectinalLight(Entity::Light* light, VisibleScene* visibl
     // Calculate light frustrum
     Entity::Camera view(QRectF(-95, -65, 190, 130), light->direction());
     view.setNearPlane(-80.0f);
-    view.setFarPlane(400.0f);
+    view.setFarPlane(1000.0f);
     view.update();
 
     directionalLight_.worldView = view.worldView();

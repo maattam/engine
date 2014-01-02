@@ -6,7 +6,7 @@
 #define MAX_SPOT_LIGHTS 4
 
 #define SHADOW_BIAS 0.0002
-#define SHADOWMAP_DIR_SIZE 4096
+#define SHADOWMAP_DIR_SIZE 2048
 #define SHADOWMAP_SIZE 1024
 
 in vec2 texCoord0;
@@ -72,15 +72,15 @@ uniform sampler2D gNormalSampler;
 uniform sampler2D gSpecularSampler;
 uniform sampler2D gMaskSampler;
 
-uniform sampler2D gSpotLightShadowMap[MAX_SPOT_LIGHTS];
-uniform sampler2D gDirectionalLightShadowMap;
+uniform sampler2DShadow gSpotLightShadowMap[MAX_SPOT_LIGHTS];
+uniform sampler2DShadow gDirectionalLightShadowMap;
 
 uniform Material gMaterial;
 uniform vec3 gEyeWorldPos;
 uniform bool gHasTangents;
 uniform bool gShadowsEnabled;
 
-float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, float size)
+float calcShadowFactor(in vec4 lightSpacePos, in sampler2DShadow shadowMap, float size)
 {
     if(!gShadowsEnabled)
     {
@@ -92,24 +92,27 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2D shadowMap, float size
 	projCoords = 0.5 * projCoords + 0.5;
 
     float offset = 1.0 / size;
-    float sum = 0;
+    float factor = 0;
 
-    // 2x2 PCF kernel
-    for(float y = -1; y <= 1; y += 2)
+    // PCF kernel
+    for(int y = -1; y <= 1; ++y)
     {
-        for(float x = -1; x <= 1; x += 2)
+        for(int x = -1; x <= 1; ++x)
         {
             vec2 offsets = vec2(x * offset, y * offset);
+            vec3 uvc = projCoords + vec3(offsets, SHADOW_BIAS);
 
-            float depth = texture(shadowMap, projCoords.xy + offsets).r;
+            /*float depth = texture(shadowMap, projCoords.xy + offsets).r;
             if(depth >= projCoords.z - SHADOW_BIAS)
             {
                 sum += 1.0;
-            }
+            }*/
+
+            factor += texture(shadowMap, uvc);
         }
     }
 
-    return sum * 0.25;
+    return factor / 9;
 }
 
 // Encapsules common stuff between the different light types
