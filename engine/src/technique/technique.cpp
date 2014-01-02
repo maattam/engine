@@ -141,8 +141,11 @@ bool Technique::useSubroutine(const QString& name, const QString& index, GLenum 
         bindings.resize(uniform + 1);
     }
 
-    bindings[uniform] = subroutineIndex;
-    activateUniformSubroutines();
+    if(bindings[uniform] != subroutineIndex)
+    {
+        bindings[uniform] = subroutineIndex;
+        activateUniformSubroutines();
+    }
 
     return true;
 }

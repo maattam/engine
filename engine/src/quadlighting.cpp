@@ -12,11 +12,11 @@ QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatc
     : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0)
 {
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
-    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/blinn-phong.frag"), Shader::Type::Fragment));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
 
     lightningTech_.setGBuffer(&gbuffer);
     lightningTech_.setDepthRange(0, 1);
-    lightningTech_.setLightningModel("blinnPhongModel");
+    //lightningTech_.setLightningModel("blinnPhongModel");
 }
 
 QuadLighting::~QuadLighting()

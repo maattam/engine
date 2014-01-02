@@ -25,25 +25,25 @@ void IlluminationModel::setViewMatrix(const QMatrix4x4& mat)
 
 void IlluminationModel::enableSpotLight(const Entity::Light& light)
 {
-    useSubroutine("lightPass", "spotLightPass", GL_FRAGMENT_SHADER);
-    setPointUniforms(light);
-}
-
-void IlluminationModel::enablePointLight(const Entity::Light& light)
-{
-    useSubroutine("lightPass", "pointLightPass", GL_FRAGMENT_SHADER);
+    useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
 
     setPointUniforms(light);
     setUniformValue("light.direction", view_.mapVector(light.direction()));
 
     // Convert cutoff angles to radians and precalculate cosine
     setUniformValue("light.outerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleOuterCone()))));
-    setUniformValue("light.innerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
+    //setUniformValue("light.innerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
+}
+
+void IlluminationModel::enablePointLight(const Entity::Light& light)
+{
+    useSubroutine("calculateOutput", "pointLightPass", GL_FRAGMENT_SHADER);
+    setPointUniforms(light);
 }
 
 void IlluminationModel::enableDirectionalLight(const Entity::Light& light)
 {
-    useSubroutine("lightPass", "directionalLightPass", GL_FRAGMENT_SHADER);
+    useSubroutine("calculateOutput", "directionalLightPass", GL_FRAGMENT_SHADER);
 
     float ambientFactor = 0.0f;
     if(light.diffuseIntensity() > 0.0f)
@@ -82,11 +82,6 @@ bool IlluminationModel::init()
 
     if(resolveSubroutineLocation("directionalLightPass", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
         return false;
-
-    if(!useSubroutine("calculateOutput", "illumination", GL_FRAGMENT_SHADER))
-    {
-        return false;
-    }
 
     if(!lightningModel_.isEmpty())
     {

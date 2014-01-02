@@ -2,6 +2,10 @@
 
 #include "dsmaterial.frag"
 
+// Subroutine used to implement different light response models.
+/*subroutine vec3 LightningModelType(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material);
+subroutine uniform LightningModelType lightningModel;*/
+
 struct Attenuation
 {
 	float constant;
@@ -30,15 +34,24 @@ struct Light
 
 uniform Light light;
 
-// Subroutine used to implement different lightning response models.
-subroutine vec3 LightningModelType(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material);
-subroutine uniform LightningModelType lightningModel;
+vec3 lightningModel(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material)
+{
+    float sDotN = max(dot(-lightDirection, vertex.normal), 0.0);
+    vec3 diffuse = light.color * sDotN;
 
-subroutine vec3 LightPassType(in VertexInfo vertex, in MaterialInfo material);
-subroutine uniform LightPassType lightPass;
+    vec3 specular = vec3(0.0);
+    if(sDotN > 0)
+    {
+        vec3 r = reflect(-lightDirection, vertex.normal);
+        float power = pow(max(dot(r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
+        specular = light.color * material.specularIntensity * power;
+    }
+	
+	return diffuse + specular;
+}
 
-subroutine(LightPassType)
-vec3 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
+subroutine(CalculateOutputType)
+vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     // Light ray to fragment
     vec3 lightToFragment = vertex.position.xyz - light.position;
@@ -51,35 +64,31 @@ vec3 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
                         light.attenuation.linear * dist +
                         light.attenuation.quadratic * dist * dist;
 
-    return color / attenuation;
+    return vec4(material.diffuseColor * color / attenuation, 1.0);
 }
 
-subroutine(LightPassType)
-vec3 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
+subroutine(CalculateOutputType)
+vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     vec3 lightToFragment = normalize(vertex.position.xyz - light.position);
     float spotFactor = dot(lightToFragment, light.direction);
+    vec4 color = vec4(0, 0, 0, 1.0);
 
     // TODO: Interpolate between inner and outer cutoff
     if(spotFactor > light.outerAngle)
     {
-        vec3 color = pointLightPass(vertex, material);
-        return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.outerAngle));
+        color = pointLightPass(vertex, material);
+        color = color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.outerAngle));
     }
 
-    return vec3(0);
-}
-
-subroutine(LightPassType)
-vec3 directionalLightPass(in VertexInfo vertex, in MaterialInfo material)
-{
-    vec3 ambient = light.color * light.ambientIntensity;
-    return lightningModel(light.direction, vertex, material) + ambient;
+    return vec4(material.diffuseColor, 1.0) * color;
 }
 
 subroutine(CalculateOutputType)
-vec4 illumination(in VertexInfo vertex, in MaterialInfo material)
+vec4 directionalLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
-    vec3 lightColor = lightPass(vertex, material);
-    return vec4(material.diffuseColor * lightColor, 1.0);
+    vec3 ambient = light.color * light.ambientIntensity;
+    vec3 color = lightningModel(light.direction, vertex, material) + ambient;
+
+    return vec4(material.diffuseColor * color, 1.0);
 }

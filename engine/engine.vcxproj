@@ -215,7 +215,6 @@
     <None Include="shaders\aabb.vert" />
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
-    <None Include="shaders\blinn-phong.frag" />
     <None Include="shaders\dsillumination.frag" />
     <None Include="shaders\gauss5x5.frag" />
     <None Include="shaders\dsmaterial.frag" />

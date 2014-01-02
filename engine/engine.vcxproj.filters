@@ -285,9 +285,6 @@
     <None Include="shaders\dsillumination.frag">
       <Filter>Shaders\technique</Filter>
     </None>
-    <None Include="shaders\blinn-phong.frag">
-      <Filter>Shaders\technique</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\effect\downsampler.h">

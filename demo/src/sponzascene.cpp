@@ -113,7 +113,7 @@ void SponzaScene::initialise()
     sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
 
     // Set up lights
-    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 4.5f);
+    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 1.0f);
 
     spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_.setDirection(spotNode_->direction);
