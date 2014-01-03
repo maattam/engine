@@ -17,7 +17,7 @@ public:
     IlluminationModel();
     virtual ~IlluminationModel();
 
-    // Sets the camera's view matrix used for mapping light input vectors to eye space coordinates.
+    // Sets the camera's view matrix used for mapping light input vectors to view space coordinates.
     void setViewMatrix(const QMatrix4x4& mat);
 
     // Prepares the technique for rendering spot lights.

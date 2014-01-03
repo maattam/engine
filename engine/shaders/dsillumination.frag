@@ -32,14 +32,15 @@ uniform Light light;
 
 vec3 lightningModel(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material)
 {
+    // Lambertian + blinn-phong
     float sDotN = max(dot(lightDirection, vertex.normal), 0.0);
     vec3 diffuse = light.color * sDotN;
 
     vec3 specular = vec3(0.0);
     if(sDotN > 0)
     {
-        vec3 r = reflect(-lightDirection, vertex.normal);
-        float power = pow(max(dot(r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
+        vec3 r = normalize(reflect(lightDirection, vertex.normal));
+        float power = pow(max(dot(-r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
         specular = light.color * material.specularIntensity * power;
     }
 	
@@ -67,14 +68,14 @@ subroutine(CalculateOutputType)
 vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     vec3 lightToFragment = normalize(light.position - vertex.position.xyz);
-    float spotFactor = dot(lightToFragment, -light.direction);
+    float spotFactor = dot(-lightToFragment, light.direction);
     vec4 color = vec4(0, 0, 0, 1.0);
 
     // TODO: Interpolate between inner and outer cutoff
     if(spotFactor > light.outerAngle)
     {
         color = pointLightPass(vertex, material);
-        color = color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.outerAngle));
+        color = color * (1.0 - (1.0 - spotFactor) / (1.0 - light.outerAngle));
     }
 
     return vec4(material.diffuseColor, 1.0) * color;

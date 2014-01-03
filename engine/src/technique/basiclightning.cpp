@@ -64,6 +64,16 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
 
 void BasicLightning::setDirectionalLight(Entity::Light* light)
 {
+    if(light == nullptr)
+    {
+        // Dummy directional light since we can't be arsed to conditionally select lightning function..
+        setUniformValue("gDirectionalLight.ambientIntensity", 0.0f);
+        setUniformValue("gDirectionalLight.base.color", QVector3D(0, 0, 0));
+        setUniformValue("gDirectionalLight.direction", UNIT_Z);
+
+        return;
+    }
+
     float ambientFactor = 0.0f;
     if(light->diffuseIntensity() > 0.0f)
     {

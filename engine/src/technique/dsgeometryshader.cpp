@@ -1,5 +1,7 @@
 #include "dsgeometryshader.h"
 
+#include "mathelp.h"
+
 using namespace Engine;
 using namespace Engine::Technique;
 
@@ -24,7 +26,7 @@ void DSGeometryShader::setMVP(const QMatrix4x4& mvp)
 
 void DSGeometryShader::setMaterialAttributes(const Material::Attributes& attrib)
 {
-    setUniformValue("material.diffuseColor", attrib.diffuseColor);
+    setUniformValue("material.diffuseColor", linearColor(attrib.diffuseColor));
     setUniformValue("material.shininess", attrib.shininess);
     setUniformValue("material.specularIntensity", attrib.specularIntensity);
 }

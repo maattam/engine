@@ -32,11 +32,11 @@ bool CompactGBuffer::initialise(unsigned int width, unsigned int height, unsigne
     // Generate textures
     gl->glGenTextures(TEXTURE_COUNT, textures_);
 
-    // R10G10B10A2 -> Normal.X, Normal.Y, Specular intensity, Reserved
+    // R10G10B10A2 -> Normal.X, Normal.Y, Specular data, Reserved
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[TEXTURE_NORMALS]);
     gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB10_A2, width, height, GL_TRUE);
 
-    // R8G8B8A8 -> Diffuse.R, Diffuse.G, Diffuse.B, Specular power
+    // R8G8B8A8 -> Diffuse.R, Diffuse.G, Diffuse.B, Specular data
     gl->glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, textures_[TEXTURE_DIFFUSE]);
     gl->glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA8, width, height, GL_TRUE);
 

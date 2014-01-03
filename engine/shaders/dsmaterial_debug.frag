@@ -11,7 +11,7 @@ vec4 outputPositions(in VertexInfo vertex, in MaterialInfo material)
 subroutine(CalculateOutputType)
 vec4 outputNormals(in VertexInfo vertex, in MaterialInfo material)
 {
-    return vec4(vertex.normal, 0);
+    return vec4(vertex.normal * material.diffuseColor, 0);
 }
 
 subroutine(CalculateOutputType)

@@ -6,10 +6,10 @@ in vec2 texCoord0;
 in vec3 normal0;
 in mat3 TBN;
 
-// R10G10B10A2 -> Normal.X, Normal.Y, Specular intensity, Reserved
+// R10G10B10A2 -> Normal.X, Normal.Y, Shininess, Reserved
 layout (location = 0) out vec4 normalSpecData;
 
-// R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Shininess
+// R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Specular intensity
 layout (location = 1) out vec4 diffuseSpecData;
 
 struct Material
@@ -58,13 +58,13 @@ void packNormalSpecData()
     float p = sqrt(normal.z * 8 + 8);
     normalSpecData.rg = normal.xy / p + 0.5;
 
-    normalSpecData.b = material.specularIntensity * texture(material.specularSampler, texCoord0).r;
+    normalSpecData.b = material.shininess / 1023;
 }
 
 void packDiffuseSpecData()
 {
     diffuseSpecData.rgb = texture(material.diffuseSampler, texCoord0).rgb * material.diffuseColor;
-    diffuseSpecData.a = material.shininess;
+    diffuseSpecData.a = material.specularIntensity * texture(material.specularSampler, texCoord0).r / 255;
 }
 
 void main()

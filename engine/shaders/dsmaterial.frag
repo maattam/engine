@@ -5,16 +5,16 @@
 // R32F        -> Depth attachment
 uniform sampler2DMS depthData;
 
-// R10G10B10A2 -> Normal.X, Normal.Y, Specular intensity, Reserved
+// R10G10B10A2 -> Normal.X, Normal.Y, Shininess, Reserved
 uniform sampler2DMS normalSpecData;
 
-// R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Shininess
+// R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Specular intensity
 uniform sampler2DMS diffuseSpecData;
 
 // Sample count used when rendering gbuffer
 uniform int samples;
 
-// The perspective projection matrix
+// Inverse of perspective projection matrix used to accumulate gbuffer
 uniform mat4 invPersProj;
 
 // Input quad uv
@@ -77,7 +77,7 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int 
     vertex.normal.xy = fenc * g;
     vertex.normal.z = 1 - f/2;
 
-    material.specularIntensity = data.b;
+    material.shininess = data.b * 1023;
 }
 
 void unpackDiffuseSpec(inout MaterialInfo material, int n)
@@ -85,7 +85,7 @@ void unpackDiffuseSpec(inout MaterialInfo material, int n)
     vec4 data = sampleTexture(diffuseSpecData, texCoord, n);
 
     material.diffuseColor = data.rgb;
-    material.shininess = data.a;
+    material.specularIntensity = data.a * 255;
 }
 
 void main()
