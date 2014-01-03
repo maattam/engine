@@ -54,6 +54,7 @@ vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
 void unpackPosition(inout VertexInfo vertex, int n)
 {
     float z = sampleTexture(depthData, texCoord, n).r;
+    z = 2.0 * z - 1.0;
 
     // Construct ndc position from interpolated quad vertices
     vec4 clipPos = vec4(eyeDirection.xy, z, 1.0);
