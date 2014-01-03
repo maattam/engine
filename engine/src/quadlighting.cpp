@@ -15,8 +15,6 @@ QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatc
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
 
     lightningTech_.setGBuffer(&gbuffer);
-    lightningTech_.setDepthRange(0, 1);
-    //lightningTech_.setLightningModel("blinnPhongModel");
 }
 
 QuadLighting::~QuadLighting()

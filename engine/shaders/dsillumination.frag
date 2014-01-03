@@ -2,10 +2,6 @@
 
 #include "dsmaterial.frag"
 
-// Subroutine used to implement different light response models.
-/*subroutine vec3 LightningModelType(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material);
-subroutine uniform LightningModelType lightningModel;*/
-
 struct Attenuation
 {
 	float constant;
@@ -36,7 +32,7 @@ uniform Light light;
 
 vec3 lightningModel(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material)
 {
-    float sDotN = max(dot(-lightDirection, vertex.normal), 0.0);
+    float sDotN = max(dot(lightDirection, vertex.normal), 0.0);
     vec3 diffuse = light.color * sDotN;
 
     vec3 specular = vec3(0.0);
@@ -54,7 +50,7 @@ subroutine(CalculateOutputType)
 vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     // Light ray to fragment
-    vec3 lightToFragment = vertex.position.xyz - light.position;
+    vec3 lightToFragment = light.position - vertex.position.xyz;
     float dist = length(lightToFragment);
 
     vec3 color = lightningModel(normalize(lightToFragment), vertex, material);
@@ -70,8 +66,8 @@ vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
 subroutine(CalculateOutputType)
 vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
-    vec3 lightToFragment = normalize(vertex.position.xyz - light.position);
-    float spotFactor = dot(lightToFragment, light.direction);
+    vec3 lightToFragment = normalize(light.position - vertex.position.xyz);
+    float spotFactor = dot(lightToFragment, -light.direction);
     vec4 color = vec4(0, 0, 0, 1.0);
 
     // TODO: Interpolate between inner and outer cutoff

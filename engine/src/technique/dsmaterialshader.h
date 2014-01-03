@@ -30,15 +30,9 @@ public:
     // Set sample count according to used MSAA level
     void setSampleCount(unsigned int count);
 
-    // Sets the near and far clip spaces used to render the scene
-    // precondition: technique is enabled
-    void setDepthRange(float rnear, float rfar);
-
     // Sets the projection matrix used to calculate eye-space coordinate from window space.
     // precondition: technique is enabled
     void setProjMatrix(const QMatrix4x4& proj);
-
-    void setLightDirection(const QVector3D& dir);
 
 protected:
     virtual bool init();
@@ -48,7 +42,6 @@ private:
 
     int samples_;
     QVector4D viewport_;
-    QVector2D depthRange_;
 };
 
 }}

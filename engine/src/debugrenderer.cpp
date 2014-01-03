@@ -37,8 +37,6 @@ bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
     viewport_ = viewport;
 
     gbufferMS_.setSampleCount(samples);
-    gbufferMS_.setDepthRange(0, 1);
-
     return true;
 }
 

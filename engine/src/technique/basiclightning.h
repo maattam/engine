@@ -20,7 +20,7 @@ namespace Technique {
 class BasicLightning : public Technique
 {
 public:
-    enum { MAX_POINT_LIGHTS = 4, MAX_SPOT_LIGHTS = 4 };
+    enum { MAX_POINT_LIGHTS = 10, MAX_SPOT_LIGHTS = 4 };
 
     BasicLightning();
     virtual ~BasicLightning();

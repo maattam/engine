@@ -14,11 +14,8 @@ uniform sampler2DMS diffuseSpecData;
 // Sample count used when rendering gbuffer
 uniform int samples;
 
-// Near and far values used to produce clip space
-uniform vec2 depthRange;
-
 // The perspective projection matrix
-uniform mat4 persProj;
+uniform mat4 invPersProj;
 
 // Input quad uv
 in vec2 texCoord;
@@ -56,12 +53,16 @@ vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
 
 void unpackPosition(inout VertexInfo vertex, int n)
 {
-    float z = sampleTexture(depthData, texCoord, n).z;
+    float z = sampleTexture(depthData, texCoord, n).r;
 
-	// z/w to ndc z
-    float ndcZ = (2.0 * z - depthRange.x - depthRange.y) / (depthRange.y - depthRange.x);
-    float eyeZ = persProj[3][2] / ((persProj[2][3] * ndcZ) - persProj[2][2]);
-    vertex.position = vec4(eyeDirection * eyeZ, 1);
+    // Construct ndc position from interpolated quad vertices
+    vec4 clipPos = vec4(eyeDirection.xy, z, 1.0);
+
+    // Unproject perspective projection
+    vec4 viewPos = invPersProj * clipPos;
+
+    // Get view-space position
+    vertex.position = vec4(viewPos.xyz / viewPos.w, 1.0);
 }
 
 void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int n)

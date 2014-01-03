@@ -47,7 +47,7 @@ void FreeLookScene::setModel(Engine::SceneModel* model)
     if(scene_ != nullptr)
     {
         initialise();
-        scene_->setDirectionalLight(&dirLight_);
+        //scene_->setDirectionalLight(&dirLight_);
         scene_->setCamera(&camera_);
     }
 }
@@ -125,6 +125,7 @@ void FreeLookScene::setDirectionalLight(const QVector3D& color, const QVector3D&
     dirLight_.setDirection(direction);
     dirLight_.setAmbientIntensity(ambientIntensity);
     dirLight_.setDiffuseIntensity(diffuseIntensity);
+    scene_->setDirectionalLight(&dirLight_);
 }
 
 Graph::SceneNode* FreeLookScene::rootNode()

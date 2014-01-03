@@ -7,7 +7,7 @@ using namespace Engine;
 using namespace Engine::Technique;
 
 DSMaterialShader::DSMaterialShader()
-    : Technique(), gbuffer_(nullptr), samples_(1), depthRange_(0, 1)
+    : Technique(), gbuffer_(nullptr), samples_(1)
 {
 }
 
@@ -30,25 +30,9 @@ void DSMaterialShader::setSampleCount(unsigned int count)
     }
 }
 
-void DSMaterialShader::setDepthRange(float rnear, float rfar)
-{
-    depthRange_.setX(rnear);
-    depthRange_.setY(rfar);
-
-    if(program()->isLinked())
-    {
-        setUniformValue("depthRange", depthRange_);
-    }
-}
-
 void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
 {
-    setUniformValue("persProj", proj);
-}
-
-void DSMaterialShader::setLightDirection(const QVector3D& dir)
-{
-    setUniformValue("lightDirection", dir.normalized());
+    setUniformValue("invPersProj", proj.inverted());
 }
 
 bool DSMaterialShader::init()
@@ -74,10 +58,5 @@ bool DSMaterialShader::init()
         return false;
     }
 
-    if(!setUniformValue("depthRange", depthRange_))
-    {
-        return false;
-    }
-
-    return resolveUniformLocation("persProj") != -1;
+    return resolveUniformLocation("invPersProj") != -1;
 }

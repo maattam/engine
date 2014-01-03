@@ -32,9 +32,6 @@ public:
     // Precondition: Technique is enabled, view matrix is set.
     void enableDirectionalLight(const Entity::Light& light);
 
-    // Sets the lightning model subroutine name.
-    virtual bool setLightningModel(const QString& name);
-
 protected:
     virtual bool init();
 

@@ -49,6 +49,8 @@ private:
     float spotVelocity_;
     bool flashLightToggle_;
 
+    QVector<Engine::Entity::Light::Ptr> lights_;
+
     double elapsed_;
 };
 

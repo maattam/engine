@@ -133,13 +133,20 @@ bool Technique::useSubroutine(const QString& name, const QString& index, GLenum 
         }
     }
 
-    // Avoid unnecessary subroutine swaps
-    QVector<GLuint>& bindings = boundSubroutines_[shaderType];
-
-    if(bindings.size() < uniform + 1)
+    // Get number of active subroutine uniforms for each shader type
+    auto iter = boundSubroutines_.find(shaderType);
+    if(iter == boundSubroutines_.end())
     {
-        bindings.resize(uniform + 1);
+        GLint uniformCount = -1;
+        gl->glGetProgramStageiv(program()->programId(), shaderType, GL_ACTIVE_SUBROUTINE_UNIFORMS, &uniformCount);
+
+        Q_ASSERT(uniformCount != -1);
+        iter = boundSubroutines_.insert(shaderType, QVector<GLuint>(uniformCount, GL_INVALID_INDEX));
     }
+
+    // Avoid unnecessary subroutine swaps
+    QVector<GLuint>& bindings = iter.value();
+    Q_ASSERT(bindings.size() >= uniform);
 
     if(bindings[uniform] != subroutineIndex)
     {

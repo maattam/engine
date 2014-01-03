@@ -2,7 +2,7 @@
 
 #version 420
 
-#define MAX_POINT_LIGHTS 4
+#define MAX_POINT_LIGHTS 10
 #define MAX_SPOT_LIGHTS 4
 
 #define SHADOW_BIAS 0.0002

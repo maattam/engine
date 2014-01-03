@@ -5,6 +5,7 @@
 #include "inputstate.h"
 
 #include <QDebug>
+#include <QTime>
 #include <qmath.h>
 
 using namespace Engine;
@@ -48,6 +49,8 @@ SponzaScene::SponzaScene(ResourceDespatcher* despatcher) : FreeLookScene(despatc
     spotNode_ = &spotPath_[0];
 
     spotDirection_ = spotNode_->next->endpoint - spotNode_->endpoint;
+
+    qsrand(QTime::currentTime().msec());
 }
 
 SponzaScene::~SponzaScene()
@@ -113,7 +116,7 @@ void SponzaScene::initialise()
     sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
 
     // Set up lights
-    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 1.0f);
+    setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 0.02f);
 
     spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_.setDirection(spotNode_->direction);
@@ -143,6 +146,21 @@ void SponzaScene::initialise()
 
     cameraNode_ = rootNode()->createSceneNodeChild();
     attachCamera(cameraNode_);
+
+    // Add bunch of lights
+    for(int i = 0; i < 10; ++i)
+    {
+        Graph::SceneNode* lightNode = rootNode()->createSceneNodeChild();
+        lightNode->setPosition(QVector3D(-50 + i * 10, 3, 0));
+
+        Entity::Light::Ptr light(new Entity::Light(Entity::Light::LIGHT_POINT));
+        light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
+        light->setDiffuseIntensity(25.0f);
+        light->setAttenuationQuadratic(0.4f);
+
+        lights_.push_back(light);
+        lightNode->attachEntity(lights_.back().get());
+    }
 
     //setFlySpeed(200.0f);
 }

@@ -56,17 +56,6 @@ void IlluminationModel::enableDirectionalLight(const Entity::Light& light)
     setUniformValue("light.direction", view_.mapVector(light.direction()));
 }
 
-bool IlluminationModel::setLightningModel(const QString& name)
-{
-    lightningModel_ = name;
-    if(!program()->isLinked())
-    {
-        return true;
-    }
-
-    return useSubroutine("lightningModel", name, GL_FRAGMENT_SHADER);
-}
-
 bool IlluminationModel::init()
 {
     if(!DSMaterialShader::init())
@@ -83,18 +72,13 @@ bool IlluminationModel::init()
     if(resolveSubroutineLocation("directionalLightPass", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
         return false;
 
-    if(!lightningModel_.isEmpty())
-    {
-        useSubroutine("lightningModel", lightningModel_, GL_FRAGMENT_SHADER);
-    }
-
     return true;
 }
 
 void IlluminationModel::setPointUniforms(const Entity::Light& spot)
 {
     setUniformValue("light.color", linearColor(spot.color()) * spot.diffuseIntensity());
-    setUniformValue("light.position", view_.mapVector(spot.position()));
+    setUniformValue("light.position", view_ * spot.position());
 
     setUniformValue("light.attenuation.constant", spot.attenuation().constant);
     setUniformValue("light.attenuation.linear", spot.attenuation().linear);
