@@ -125,6 +125,7 @@
     <ClCompile Include="src\demopresenter.cpp" />
     <ClCompile Include="src\freelookscene.cpp" />
     <ClCompile Include="src\inputstate.cpp" />
+    <ClCompile Include="src\lightscene.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\rendererfactory.cpp" />
     <ClCompile Include="src\scenefactory.cpp" />
@@ -223,6 +224,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DWIN64 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_OPENGL_LIB -DQT_QUICK_LIB -DQT_QML_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtQuick" "-I$(QTDIR)\include\QtQml"</Command>
     </CustomBuild>
+    <ClInclude Include="src\lightscene.h" />
     <ClInclude Include="src\rendererfactory.h" />
     <ClInclude Include="src\scenefactory.h" />
     <ClInclude Include="src\sponzascene.h" />
@@ -286,7 +288,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>..\ui\src;..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
+    <IncludePath>D:\lib\assimp--3.0.1270-sdk\include;..\ui\src;..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
     <LibraryPath>D:\lib\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -294,7 +296,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>..\ui\src;..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
+    <IncludePath>D:\lib\assimp--3.0.1270-sdk\include;..\ui\src;..\engine\src;..\resource\src;..\common\src;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtCore;D:\Qt\Qt5.2.0\5.2.0\msvc2012_64_opengl\include\QtGui;$(IncludePath)</IncludePath>
     <LibraryPath>D:\lib\assimp--3.0.1270-sdk\lib\assimp_release-dll_x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

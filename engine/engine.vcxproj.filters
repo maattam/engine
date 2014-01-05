@@ -261,9 +261,6 @@
     <None Include="shaders\passthrough.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\dsmaterial_debug.frag">
-      <Filter>Shaders\technique</Filter>
-    </None>
     <None Include="shaders\gauss5x5.frag">
       <Filter>Shaders\postfx</Filter>
     </None>
@@ -284,6 +281,9 @@
     </None>
     <None Include="shaders\dsillumination.frag">
       <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\dsmaterial_debug.frag">
+      <Filter>Shaders\debugging</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -66,6 +66,7 @@ void unpackPosition(inout VertexInfo vertex, int n)
     vertex.position = vec4(viewPos.xyz / viewPos.w, 1.0);
 }
 
+// Returns false if texel is part of skybox
 void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int n)
 {
     vec4 data = sampleTexture(normalSpecData, texCoord, n);
@@ -97,8 +98,8 @@ void main()
 
     for(int i = 0; i < samples; ++i)
     {
-        unpackPosition(vertex, i);
         unpackNormalSpec(material, vertex, i);
+        unpackPosition(vertex, i);
         unpackDiffuseSpec(material, i);
 
         color += calculateOutput(vertex, material);

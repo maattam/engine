@@ -3,6 +3,7 @@
 #include "resourcedespatcher.h"
 #include "sponzascene.h"
 #include "basicscene.h"
+#include "lightscene.h"
 
 #include <QDebug>
 
@@ -24,6 +25,11 @@ FreeLookScene* SceneFactory::create(const QString& name)
     else if(name == "Shittyboxes")
     {
         return new BasicScene(&despatcher_);
+    }
+
+    else if(name == "Lights")
+    {
+        return new LightScene(&despatcher_);
     }
 
     return nullptr;

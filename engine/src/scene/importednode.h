@@ -11,14 +11,15 @@ class ImportedNode : public Resource<ImportedNode, ImportedNodeData>
 {
 public:
     ImportedNode();
-    ImportedNode(const QString& name);
+
+    // Postprocess flags must be OR'ed aiProcess_* values.
+    ImportedNode(const QString& name, unsigned int postprocessFlags = 0);
     virtual ~ImportedNode();
 
     // Attaches the loaded hierarchy to given parent
     void attach(Graph::SceneNode* parent);
 
-    // Finds node by name. Returns nullptr if not found.
-    Graph::SceneNode* findNode(const QString& name) const;
+    virtual ResourceDataPtr createData();
 
 protected:
     virtual bool initialiseData(const DataType& data);
@@ -27,6 +28,8 @@ protected:
 private:
     Graph::SceneNode* parentNode_;
     Graph::SceneNode* rootNode_;
+
+    unsigned int pFlags_;
 
     QVector<ImportedNodeData::EntityPtr> entities_;
 };

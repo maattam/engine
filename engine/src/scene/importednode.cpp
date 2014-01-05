@@ -13,8 +13,8 @@ ImportedNode::ImportedNode()
 {
 }
 
-ImportedNode::ImportedNode(const QString& name)
-    : Resource(name, ResourceBase::QUEUED), rootNode_(nullptr), parentNode_(nullptr)
+ImportedNode::ImportedNode(const QString& name, unsigned int postprocessFlags)
+    : Resource(name, ResourceBase::QUEUED), rootNode_(nullptr), parentNode_(nullptr), pFlags_(postprocessFlags)
 {
 }
 
@@ -45,11 +45,6 @@ void ImportedNode::attach(Graph::SceneNode* parent)
     {
         parentNode_ = parent;
     }
-}
-
-Graph::SceneNode* ImportedNode::findNode(const QString& name) const
-{
-    return nullptr; // TODO
 }
 
 bool ImportedNode::initialiseData(const DataType& data)
@@ -119,4 +114,12 @@ void ImportedNode::releaseResource()
     rootNode_ = nullptr;
 
     entities_.clear();
+}
+
+ImportedNode::ResourceDataPtr ImportedNode::createData()
+{
+    std::shared_ptr<ImportedNodeData> data(new ImportedNodeData);
+    data->setPostprocessFlags(pFlags_);
+
+    return data;
 }

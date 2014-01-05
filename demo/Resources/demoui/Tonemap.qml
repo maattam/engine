@@ -22,7 +22,7 @@ Rectangle {
             name: "Bloom threshold"
             minimumValue: 0
             maximumValue: 5
-            value: 1.2
+            value: 1.0
         }
 
         SliderAttribute {
@@ -36,7 +36,7 @@ Rectangle {
             name: "Bright level"
             minimumValue: 0
             maximumValue: 10
-            value: 5
+            value: 1
         }
 
         SliderAttribute {

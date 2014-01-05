@@ -41,7 +41,7 @@ Rectangle {
 
         ComboBoxAttribute {
             name: "Scene"
-            model: [ "Sponza", "Shittyboxes" ]
+            model: [ "Sponza", "Shittyboxes", "Lights" ]
         }
 
         function onValueChange(name, value) {

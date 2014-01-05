@@ -21,7 +21,7 @@ RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType ty
 {
     // HDR tonemapping
     hdrPostfx_.reset(new Effect::Hdr(&despatcher_, 4));
-    hdrPostfx_->setBrightThreshold(1.5f);
+    hdrPostfx_->setBrightThreshold(1.0f);
     //setAutoExposure(true);
 
     // 5x5 Gaussian blur filter
@@ -37,7 +37,7 @@ RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType ty
     hdrPostfx_->setHDRTonemapShader(tonemap_);
 
     tonemap_->setBloomFactor(0.25f);
-    tonemap_->setBrightLevel(5.0f);
+    tonemap_->setBrightLevel(1.0f);
     tonemap_->setGamma(2.2f);
 }
 
@@ -52,7 +52,7 @@ Renderer* RendererFactory::create(int samples)
     SkyboxStage::SkyboxPtr sky(new Technique::Skybox);
     sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
     sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
-    sky->setBrightness(5.0f);
+    sky->setBrightness(2.0f);
 
     gbuffer_.reset();
 

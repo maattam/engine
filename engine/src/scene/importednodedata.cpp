@@ -21,7 +21,7 @@ namespace {
 }
 
 ImportedNodeData::ImportedNodeData()
-    : ResourceData()
+    : ResourceData(), pFlags_(aiProcessPreset_TargetRealtime_Fast)
 {
 }
 
@@ -29,8 +29,7 @@ bool ImportedNodeData::load(const QString& fileName)
 {
     Assimp::Importer importer;
 
-    const aiScene* scene = importer.ReadFile(fileName.toStdString(),
-        aiProcess_FlipUVs | aiProcessPreset_TargetRealtime_MaxQuality);
+    const aiScene* scene = importer.ReadFile(fileName.toStdString(), aiProcess_FlipUVs | pFlags_);
 
     if(scene == nullptr)
     {
@@ -138,6 +137,14 @@ QList<Entity::Entity*> ImportedNodeData::findEntities(const QString& name)
     }
 
     return entities;
+}
+
+void ImportedNodeData::setPostprocessFlags(unsigned int flags)
+{
+    if(flags != 0)
+    {
+        pFlags_ = flags;
+    }
 }
 
 Graph::SceneNode* ImportedNodeData::rootNode() const

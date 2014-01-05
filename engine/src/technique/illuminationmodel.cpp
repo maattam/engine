@@ -80,7 +80,10 @@ void IlluminationModel::setPointUniforms(const Entity::Light& spot)
     setUniformValue("light.color", linearColor(spot.color()) * spot.diffuseIntensity());
     setUniformValue("light.position", view_ * spot.position());
 
-    setUniformValue("light.attenuation.constant", spot.attenuation().constant);
-    setUniformValue("light.attenuation.linear", spot.attenuation().linear);
-    setUniformValue("light.attenuation.quadratic", spot.attenuation().quadratic);
+    QVector3D attn;
+    attn.setX(spot.attenuation().constant);
+    attn.setY(spot.attenuation().linear);
+    attn.setZ(spot.attenuation().quadratic);
+
+    setUniformValue("light.attenuation", attn);
 }

@@ -2,13 +2,6 @@
 
 #include "dsmaterial.frag"
 
-struct Attenuation
-{
-	float constant;
-	float linear;
-	float quadratic;
-};
-
 struct Light
 {
     // Color is expected to be linear
@@ -25,7 +18,8 @@ struct Light
 	float outerAngle;
     float innerAngle;
 
-    Attenuation attenuation;
+    // Attenuation vector: (constant, linear, quadratic)
+    vec3 attenuation;
 };
 
 uniform Light light;
@@ -57,9 +51,9 @@ vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
     vec3 color = lightningModel(normalize(lightToFragment), vertex, material);
 
     // Spot light attenuation
-    float attenuation = light.attenuation.constant +
-                        light.attenuation.linear * dist +
-                        light.attenuation.quadratic * dist * dist;
+    float attenuation = light.attenuation.x +
+                        light.attenuation.y * dist +
+                        light.attenuation.z * dist * dist;
 
     return vec4(material.diffuseColor * color / attenuation, 1.0);
 }

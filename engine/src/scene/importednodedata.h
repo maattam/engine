@@ -48,12 +48,16 @@ public:
     // Returns imported entities such as lights and cameras
     const QVector<EntityPtr>& entities() const;
 
+    // OR's flags with aiProcess_* flags before loading data.
+    void setPostprocessFlags(unsigned int flags);
+
 private:
     QVector<MeshIndex> meshIndices_;
     QVector<EntityPtr> entities_;
     QVector<NodeImport::MaterialPtr> materials_;
     QVector<NodeImport::IndexMesh> indexMeshes_;
 
+    unsigned int pFlags_;
     Graph::SceneNode* rootNode_;
 
     void buildSceneNode(Graph::SceneNode* parent, aiNode* node, aiMatrix4x4t<float>* transform);

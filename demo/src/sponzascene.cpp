@@ -4,6 +4,8 @@
 #include "resourcedespatcher.h"
 #include "inputstate.h"
 
+#include <assimp/postprocess.h>
+
 #include <QDebug>
 #include <QTime>
 #include <qmath.h>
@@ -112,7 +114,7 @@ void SponzaScene::initialise()
     setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
     // Load meshes
-    sceneMesh_ = despatcher()->get<ImportedNode>("assets/sponza_scene.dae");
+    sceneMesh_ = despatcher()->get<ImportedNode>("assets/sponza_scene.dae", aiProcessPreset_TargetRealtime_MaxQuality);
     sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
 
     // Set up lights
@@ -148,17 +150,20 @@ void SponzaScene::initialise()
     attachCamera(cameraNode_);
 
     // Add bunch of lights
-    for(int i = 0; i < 10; ++i)
+    for(int j = 0; j < 3; ++j)
     {
-        Graph::SceneNode* lightNode = rootNode()->createSceneNodeChild();
-        lightNode->setPosition(QVector3D(-50 + i * 10, 3, 0));
+        for(int i = 0; i < 10; ++i)
+        {
+            Graph::SceneNode* lightNode = rootNode()->createSceneNodeChild();
+            lightNode->setPosition(QVector3D(-50 + i * 10, 3, -20 + j * 20));
 
-        Entity::Light::Ptr light(new Entity::Light(Entity::Light::LIGHT_POINT));
-        light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-        light->setDiffuseIntensity(25.0f);
+            Entity::Light::Ptr light(new Entity::Light(Entity::Light::LIGHT_POINT));
+            light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
+            light->setDiffuseIntensity(25.0f);
 
-        lights_.push_back(light);
-        lightNode->attachEntity(lights_.back().get());
+            lights_.push_back(light);
+            lightNode->attachEntity(lights_.back().get());
+        }
     }
 
     //setFlySpeed(200.0f);
