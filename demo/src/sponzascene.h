@@ -3,7 +3,6 @@
 
 #include "freelookscene.h"
 
-#include "entity/mesh.h"
 #include "scene/importednode.h"
 
 #include <memory>

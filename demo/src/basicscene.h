@@ -4,7 +4,6 @@
 #include "freelookscene.h"
 
 #include "material.h"
-#include "entity/mesh.h"
 #include "entity/subentity.h"
 #include "scene/importednode.h"
 

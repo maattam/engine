@@ -13,6 +13,8 @@ namespace Engine { namespace Renderable {
 class Renderable
 {
 public:
+    enum AttributeLocation { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS, ATTRIB_TANGENTS };
+
     typedef std::shared_ptr<Renderable> Ptr;
 
     Renderable();
@@ -23,8 +25,6 @@ public:
     virtual bool hasTangents() const;
 
 protected:
-    enum { ATTRIB_VERTICES, ATTRIB_TEXCOORDS, ATTRIB_NORMALS, ATTRIB_TANGENTS };
-
     bool bindVertexArray() const;
     void setTangents(bool tangents);
 

@@ -124,9 +124,6 @@
     <ClCompile Include="src\graph\node.cpp">
       <Filter>Source Files\graph</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\mesh.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\subentity.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
@@ -330,9 +327,6 @@
       <Filter>Header Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\light.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
-    <ClInclude Include="src\entity\mesh.h">
       <Filter>Header Files\entity</Filter>
     </ClInclude>
     <ClInclude Include="src\entity\subentity.h">

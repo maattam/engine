@@ -2,7 +2,6 @@
 
 #include "graph/scenenode.h"
 #include "entity/subentity.h"
-#include "entity/mesh.h"
 #include "renderable/submesh.h"
 
 #include <QVector>
@@ -80,8 +79,7 @@ bool ImportedNode::initialiseData(const DataType& data)
     // Group submesh data to meshes
     for(const auto& meshIndices : data.meshIndices())
     {
-        const ImportedNodeData::MeshPtr& mesh = meshIndices.first;
-        const DataType::MeshIndex::second_type& indexVec = meshIndices.second;
+        const std::vector<unsigned int>& indexVec = meshIndices.meshIndices;
 
         // Sanity checks
         Q_ASSERT(!indexVec.empty());
@@ -89,10 +87,14 @@ bool ImportedNode::initialiseData(const DataType& data)
         for(auto it = indexVec.begin(); it != indexVec.end(); ++it)
         {
             Q_ASSERT(*it < data.indexMeshes().count());
-            mesh->addSubEntity(subMeshes.at(*it));
-        }
 
-        entities_.push_back(mesh);
+            // Attach SubEntity to the assigned to form the complete mesh.
+            Entity::SubEntity::Ptr& entity = subMeshes[*it];
+            entity->setName(meshIndices.name);
+
+            meshIndices.node->attachEntity(entity.get());
+            entities_.push_back(entity);
+        }
     }
 
     // Attach to parent if set

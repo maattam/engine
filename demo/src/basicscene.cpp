@@ -62,7 +62,7 @@ void BasicScene::resourceInitialized(const QString& name)
 {
     if(name == "assets/oildrum.dae")
     {
-        Entity::Mesh* result = platformNode_->findEntity<Entity::Mesh>("Oildrum-ref");
+        Entity::SubEntity* result = platformNode_->findEntity<Entity::SubEntity>("Oildrum-ref");
         if(result != nullptr)
         {
             Graph::SceneNode* node = result->parentNode()->createSceneNodeChild();
@@ -74,7 +74,7 @@ void BasicScene::resourceInitialized(const QString& name)
 
     else if(name == "assets/sphere.obj")
     {
-        Entity::Mesh* result = sphereNode_->findEntity<Entity::Mesh>("Sphere");
+        Entity::SubEntity* result = sphereNode_->findEntity<Entity::SubEntity>("Sphere");
         if(result != nullptr)
         {
             // Platform spot light

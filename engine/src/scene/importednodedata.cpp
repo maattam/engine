@@ -7,7 +7,6 @@
 #include <assimp/postprocess.h>
 
 #include "graph/scenenode.h"
-#include "entity/mesh.h"
 #include "entity/camera.h"
 #include "entity/light.h"
 
@@ -100,10 +99,8 @@ void ImportedNodeData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, ai
     // If node has meshes, create new scenenode and attach Mesh to it
     if(node->mNumMeshes > 0)
     {
-        MeshIndex meshIndex = createMesh(node->mMeshes, node->mNumMeshes, node->mName.C_Str());
+        MeshIndex meshIndex = createMesh(newParent, node->mMeshes, node->mNumMeshes, node->mName.C_Str());
         meshIndices_.push_back(meshIndex);
-
-        newParent->attachEntity(meshIndex.first.get());
     }
 
     // Build all child nodes
@@ -113,15 +110,17 @@ void ImportedNodeData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, ai
     }
 }
 
-ImportedNodeData::MeshIndex ImportedNodeData::createMesh(unsigned int* subMeshIndex,
+ImportedNodeData::MeshIndex ImportedNodeData::createMesh(Graph::SceneNode* node, unsigned int* subMeshIndex,
                                                unsigned int numMeshes, const QString& name) const
 {
-    // Copy mesh indices
-    MeshIndex::second_type indices(subMeshIndex, subMeshIndex + numMeshes);
-    MeshPtr mesh(new Entity::Mesh);
-    mesh->setName(name);
+    MeshIndex index;
+    index.node = node;
+    index.name = name;
 
-    return std::make_pair(mesh, indices);
+    // Copy mesh indices
+    index.meshIndices.assign(subMeshIndex, subMeshIndex + numMeshes);
+
+    return index;
 }
 
 QList<Entity::Entity*> ImportedNodeData::findEntities(const QString& name)

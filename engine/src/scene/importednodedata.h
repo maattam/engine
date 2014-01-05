@@ -23,16 +23,20 @@ namespace Graph {
 }
 
 namespace Entity {
-    class Mesh;
     class Entity;
 }
 
 class ImportedNodeData : public ResourceData
 {
 public:
-    typedef std::shared_ptr<Entity::Mesh> MeshPtr;
+    struct MeshIndex
+    {
+        Graph::SceneNode* node;
+        QString name;
+        std::vector<unsigned int> meshIndices;
+    };
+
     typedef std::shared_ptr<Entity::Entity> EntityPtr;
-    typedef std::pair<MeshPtr, std::vector<unsigned int>> MeshIndex;
 
     ImportedNodeData();
 
@@ -63,7 +67,7 @@ private:
     void buildSceneNode(Graph::SceneNode* parent, aiNode* node, aiMatrix4x4t<float>* transform);
 
     // Creates new Mesh and MeshData pairing from mesh indices
-    MeshIndex createMesh(unsigned int* subMeshIndex, unsigned int numMeshes, const QString& name) const;
+    MeshIndex createMesh(Graph::SceneNode* node, unsigned int* subMeshIndex, unsigned int numMeshes, const QString& name) const;
 
     QList<Entity::Entity*> findEntities(const QString& name);
 };
