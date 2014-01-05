@@ -10,19 +10,17 @@
 
 namespace Engine {
 
-namespace Graph {
-    class SceneNode;
-}
-
 class RenderQueue;
 
-namespace Entity {
+namespace Graph {
 
-class Entity : public BaseVisitable
+class SceneNode;
+
+class SceneLeaf : public BaseVisitable
 {
 public:
-    Entity();
-    virtual ~Entity();
+    SceneLeaf();
+    virtual ~SceneLeaf();
 
     // Called by renderer; entity must add its renderables to the list
     virtual void updateRenderList(RenderQueue& list) = 0;
@@ -53,8 +51,8 @@ private:
     AABB aabb_;
     Graph::SceneNode* node_;
 
-    Entity(const Entity&);
-    Entity& operator=(const Entity&);
+    SceneLeaf(const SceneLeaf&);
+    SceneLeaf& operator=(const SceneLeaf&);
 };
 
 }}

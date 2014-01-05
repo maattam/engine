@@ -1,7 +1,7 @@
 #include "skybox.h"
 
 #include "cubemaptexture.h"
-#include "entity/camera.h"
+#include "graph/camera.h"
 
 #include "common.h"
 

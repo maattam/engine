@@ -6,8 +6,8 @@
 #include "scene/scenecontroller.h"
 
 #include "cubemaptexture.h"
-#include "entity/light.h"
-#include "entity/camera.h"
+#include "graph/light.h"
+#include "graph/camera.h"
 #include "resourcedespatcher.h"
 
 #include <QPoint>
@@ -45,8 +45,8 @@ protected:
     Engine::ResourceDespatcher* despatcher();
 
     InputState* input();
-    Engine::Entity::Camera* camera();
-    Engine::Entity::Light* directionalLight();
+    Engine::Graph::Camera* camera();
+    Engine::Graph::Light* directionalLight();
 
     // Called after scene model has been set and scenegraph can be populated.
     virtual void initialise() = 0;
@@ -58,9 +58,9 @@ private:
     float speed_;
     QPoint lastMouse_;
 
-    Engine::Entity::Light dirLight_;
+    Engine::Graph::Light dirLight_;
     std::shared_ptr<Engine::CubemapTexture> skybox_;
-    Engine::Entity::Camera camera_;
+    Engine::Graph::Camera camera_;
 };
 
 #endif // FREELOOKSCENE_H

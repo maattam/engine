@@ -29,7 +29,7 @@ private:
 
     struct PointLight
     {
-        Engine::Entity::Light::Ptr light;
+        Engine::Graph::Light::Ptr light;
 
         float radius;
         float freq;

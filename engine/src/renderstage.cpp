@@ -22,7 +22,7 @@ void RenderStage::setScene(VisibleScene* scene)
     renderer_->setScene(scene);
 }
 
-void RenderStage::render(Entity::Camera* camera)
+void RenderStage::render(Graph::Camera* camera)
 {
     renderer_->render(camera);
 }

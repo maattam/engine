@@ -62,7 +62,7 @@ void BasicScene::resourceInitialized(const QString& name)
 {
     if(name == "assets/oildrum.dae")
     {
-        Entity::SubEntity* result = platformNode_->findEntity<Entity::SubEntity>("Oildrum-ref");
+        Graph::Geometry* result = platformNode_->findEntity<Graph::Geometry>("Oildrum-ref");
         if(result != nullptr)
         {
             Graph::SceneNode* node = result->parentNode()->createSceneNodeChild();
@@ -74,7 +74,7 @@ void BasicScene::resourceInitialized(const QString& name)
 
     else if(name == "assets/sphere.obj")
     {
-        Entity::SubEntity* result = sphereNode_->findEntity<Entity::SubEntity>("Sphere");
+        Graph::Geometry* result = sphereNode_->findEntity<Graph::Geometry>("Sphere");
         if(result != nullptr)
         {
             // Platform spot light
@@ -97,12 +97,12 @@ void BasicScene::initialise()
     setDirectionalLight(QVector3D(1, 1, 1), QVector3D(1.0f, -1.0f, -1.0f), 0.0f, 0.1f);
 
     // Set up point lights
-    Entity::Light::Ptr pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
+    Graph::Light::Ptr pointLight = std::make_shared<Graph::Light>(Graph::Light::LIGHT_POINT);
     pointLight->setDiffuseIntensity(10.0f);
     pointLight->setAttenuationQuadratic(0.1f);
     lights_.push_back(pointLight);
 
-    pointLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
+    pointLight = std::make_shared<Graph::Light>(Graph::Light::LIGHT_POINT);
     pointLight->setColor(QVector3D(0.0f, 0.0f, 1.0f));
     pointLight->setAttenuationQuadratic(0.025f);
     pointLight->setDiffuseIntensity(100.0f);
@@ -112,7 +112,7 @@ void BasicScene::initialise()
     blueLightNode_->attachEntity(pointLight.get());
 
     // Set up spot lights
-    Entity::Light::Ptr spotLight = std::make_shared<Entity::Light>(Entity::Light::LIGHT_SPOT);
+    Graph::Light::Ptr spotLight = std::make_shared<Graph::Light>(Graph::Light::LIGHT_SPOT);
     spotLight->setColor(QVector3D(1.0f, 0.0f, 1.0f));
     spotLight->setDirection(QVector3D(4.0f, -4.0f, -6.0f));
     spotLight->setDiffuseIntensity(20.0f);
@@ -141,8 +141,8 @@ void BasicScene::initialise()
             Engine::Material::Ptr mat(new Engine::Material);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
-            cube_[i] = std::make_shared<Entity::SubEntity>(Renderable::Primitive<Renderable::Cube>::instance(),
-                mat, Entity::AABB(QVector3D(-1, -1, -1), QVector3D(1, 1, 1)));
+            cube_[i] = std::make_shared<Graph::Geometry>(Renderable::Primitive<Renderable::Cube>::instance(),
+                mat, AABB(QVector3D(-1, -1, -1), QVector3D(1, 1, 1)));
         }
     }
 

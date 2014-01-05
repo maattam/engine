@@ -16,14 +16,14 @@
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Light;
 }
 
 class ResourceDespatcher;
 
 class ForwardRenderer : public Renderer,
-    public BaseVisitor, public Visitor<Entity::Light>
+    public BaseVisitor, public Visitor<Graph::Light>
 {
 public:
     explicit ForwardRenderer(ResourceDespatcher& despatcher);
@@ -35,13 +35,13 @@ public:
     virtual void setScene(VisibleScene* scene);
 
     // Renders the scene through the camera's viewport.
-    virtual void render(Entity::Camera* camera);
+    virtual void render(Graph::Camera* camera);
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.
     virtual void setRenderTarget(GLuint fbo);
 
-    virtual void visit(Entity::Light& light);
+    virtual void visit(Graph::Light& light);
 
 private:
     VisibleScene* scene_;
@@ -56,10 +56,10 @@ private:
 
     GLuint fbo_;
 
-    QList<Entity::Light*> lights_;
+    QList<Graph::Light*> lights_;
 
     void shadowMapPass();
-    void renderPass(Entity::Camera* camera, const RenderQueue& queue);
+    void renderPass(Graph::Camera* camera, const RenderQueue& queue);
     void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);

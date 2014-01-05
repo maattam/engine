@@ -11,7 +11,7 @@
 
 namespace Engine { 
 
-namespace Entity {
+namespace Graph {
     class Light;
 }
 
@@ -38,8 +38,8 @@ public:
     void setDirectionalLightMVP(const QMatrix4x4& mvp);
     void setDirectionalLightShadowUnit(GLuint shadow);
 
-    void setDirectionalLight(Entity::Light* light);
-    void setPointAndSpotLights(const QList<Entity::Light*>& lights);
+    void setDirectionalLight(Graph::Light* light);
+    void setPointAndSpotLights(const QList<Graph::Light*>& lights);
 
     void setShadowEnabled(bool value);
 
@@ -50,8 +50,8 @@ private:
     std::string formatUniformTableName(const std::string& table,
         unsigned int index, const std::string& members = "") const;
 
-    void setSpotLight(const Entity::Light* light, int index);
-    void setPointLight(const Entity::Light* light, int index);
+    void setSpotLight(const Graph::Light* light, int index);
+    void setPointLight(const Graph::Light* light, int index);
 };
 
 }}

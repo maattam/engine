@@ -1,10 +1,10 @@
 #include "debugrenderer.h"
 
-#include "entity/camera.h"
+#include "graph/camera.h"
 #include "resourcedespatcher.h"
 #include "graph/scenenode.h"
-#include "entity/entity.h"
-#include "entity/light.h"
+#include "graph/sceneleaf.h"
+#include "graph/light.h"
 #include "material.h"
 #include "gbuffer.h"
 #include "renderqueue.h"
@@ -59,7 +59,7 @@ void DebugRenderer::setGBuffer(GBuffer const* gbuffer)
     gbufferMS_.setGBuffer(gbuffer_);
 }
 
-void DebugRenderer::render(Entity::Camera* camera)
+void DebugRenderer::render(Graph::Camera* camera)
 {
     camera_ = camera;
 
@@ -166,14 +166,14 @@ void DebugRenderer::setObservable(ObservableType* obs)
     observable_ = obs;
 }
 
-bool DebugRenderer::beforeRendering(Entity::Entity* entity, Graph::SceneNode* node)
+bool DebugRenderer::beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node)
 {
     if(flags_ & DEBUG_AABB)
     {
         QVector3D color(0, 0, 1);   // Mesh color is blue
 
         // Light volumes are green
-        Entity::Light* light = dynamic_cast<Entity::Light*>(entity);
+        Graph::Light* light = dynamic_cast<Graph::Light*>(entity);
         if(light != nullptr)
         {
             color = QVector3D(0, 1, 0);
@@ -218,7 +218,7 @@ void DebugRenderer::renderGBuffer()
     }
 }
 
-void DebugRenderer::addAABB(const QMatrix4x4& trans, const Entity::AABB& aabb, const QVector3D& color)
+void DebugRenderer::addAABB(const QMatrix4x4& trans, const AABB& aabb, const QVector3D& color)
 {
     if(aabb.width() <= 0)
         return;

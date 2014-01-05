@@ -10,33 +10,31 @@
 
 namespace Engine {
     
-namespace Entity {
-    class Entity;
-}
-    
 namespace Graph {
+
+class SceneLeaf;
 
 class SceneNode : public Node
 {
 public:
-    typedef std::vector<Entity::Entity*> Entities;
+    typedef std::vector<SceneLeaf*> Entities;
 
     SceneNode();
     virtual ~SceneNode();
 
     // Attached entity to the node
     // precondition: entity != nullptr
-    virtual void attachEntity(Entity::Entity* entity);
+    virtual void attachEntity(SceneLeaf* entity);
 
     // postcondition: entity detached if found, entity is not deleted
-    virtual Entity::Entity* detachEntity(Entity::Entity* entity);
-    virtual Entity::Entity* detachEntity(Entities::size_type index);
+    virtual SceneLeaf* detachEntity(SceneLeaf* entity);
+    virtual SceneLeaf* detachEntity(Entities::size_type index);
     virtual void detachAllEntities();
 
     Entities::size_type numEntities() const;
 
     // precondition: index < numEntities
-    Entity::Entity* getEntity(Entities::size_type index);
+    SceneLeaf* getEntity(Entities::size_type index);
 
     // Tells if the node's entities should cast shadows
     bool isShadowCaster() const;
@@ -46,7 +44,7 @@ public:
     // Multiple entities of different type can share the same name when they belong to the same node.
     // The search is done recursively downwards the tree, so this function should
     // be called from the root node.
-    QList<Entity::Entity*> findEntities(const QString& name) const;
+    QList<SceneLeaf*> findEntities(const QString& name) const;
 
     // Convenienve funtions that filters findEntities to match the template parameter.
     template<typename EntityType>

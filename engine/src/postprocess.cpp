@@ -93,7 +93,7 @@ bool PostProcess::setViewport(const QRect& viewport, unsigned int samples)
     return true;
 }
 
-void PostProcess::render(Entity::Camera* camera)
+void PostProcess::render(Graph::Camera* camera)
 {
     RenderStage::render(camera);
 

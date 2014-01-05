@@ -5,7 +5,7 @@
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Light;
 }
 
@@ -22,15 +22,15 @@ public:
 
     // Prepares the technique for rendering spot lights.
     // Precondition: Technique is enabled, view matrix is set.
-    void enableSpotLight(const Entity::Light& light);
+    void enableSpotLight(const Graph::Light& light);
 
     // Prepares the technique for rendering point lights.
     // Precondition: Technique is enabled, view matrix is set.
-    void enablePointLight(const Entity::Light& light);
+    void enablePointLight(const Graph::Light& light);
 
     // Prepares the technique for rendering directional lights.
     // Precondition: Technique is enabled, view matrix is set.
-    void enableDirectionalLight(const Entity::Light& light);
+    void enableDirectionalLight(const Graph::Light& light);
 
 protected:
     virtual bool init();
@@ -39,7 +39,7 @@ private:
     QMatrix4x4 view_;
     QString lightningModel_;
 
-    void setPointUniforms(const Entity::Light& spot);
+    void setPointUniforms(const Graph::Light& spot);
 };
 
 }}

@@ -2,8 +2,8 @@
 
 #include "resourcedespatcher.h"
 #include "material.h"
-#include "entity/camera.h"
-#include "entity/light.h"
+#include "graph/camera.h"
+#include "graph/light.h"
 #include "textureloader.h"
 #include "texture2dresource.h"
 #include "mathelp.h"
@@ -172,7 +172,7 @@ void importMaterial(aiMaterial* aiMat, Material& material, const QString& rootDi
 void importCamera(aiCamera* aiCam, CameraPtr& entity)
 {
     // aiCamera only supports perspective projection
-    entity.reset(new Entity::Camera(Entity::Camera::PERSPECTIVE));
+    entity.reset(new Graph::Camera(Graph::Camera::PERSPECTIVE));
 
     entity->setName(aiCam->mName.data);
     entity->setPosition(QVector3D(aiCam->mPosition.x, aiCam->mPosition.y, aiCam->mPosition.z));
@@ -191,18 +191,18 @@ void importCamera(aiCamera* aiCam, CameraPtr& entity)
 
 void importLight(aiLight* light, LightPtr& entity)
 {
-    Entity::Light::LightType lightType;
+    Graph::Light::LightType lightType;
 
     switch(light->mType)
     {
-    case aiLightSource_DIRECTIONAL: lightType = Entity::Light::LIGHT_DIRECTIONAL; break;
-    case aiLightSource_POINT: lightType = Entity::Light::LIGHT_POINT; break;
-    case aiLightSource_SPOT: lightType = Entity::Light::LIGHT_SPOT;  break;
+    case aiLightSource_DIRECTIONAL: lightType = Graph::Light::LIGHT_DIRECTIONAL; break;
+    case aiLightSource_POINT: lightType = Graph::Light::LIGHT_POINT; break;
+    case aiLightSource_SPOT: lightType = Graph::Light::LIGHT_SPOT;  break;
 
     default: qDebug() << "Import light: undefined light type, ignored."; return;
     }
 
-    entity.reset(new Entity::Light(lightType));
+    entity.reset(new Graph::Light(lightType));
     entity->setName(light->mName.data);
 
     // Set colors

@@ -1,6 +1,6 @@
 #include "basiclightning.h"
 
-#include "entity/light.h"
+#include "graph/light.h"
 
 #include <QDebug>
 #include "mathelp.h"
@@ -62,7 +62,7 @@ void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specu
     setUniformValue("gMaskSampler", mask);
 }
 
-void BasicLightning::setDirectionalLight(Entity::Light* light)
+void BasicLightning::setDirectionalLight(Graph::Light* light)
 {
     if(light == nullptr)
     {
@@ -107,14 +107,14 @@ void BasicLightning::setDirectionalLightShadowUnit(GLuint shadow)
     setUniformValue("gDirectionalLightShadowMap", shadow);
 }
 
-void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
+void BasicLightning::setPointAndSpotLights(const QList<Graph::Light*>& lights)
 {
     int numSpotLights = 0;
     int numPointLights = 0;
 
-    for(const Entity::Light* light : lights)
+    for(const Graph::Light* light : lights)
     {
-        if(light->type() == Entity::Light::LIGHT_POINT)
+        if(light->type() == Graph::Light::LIGHT_POINT)
         {
             if(numPointLights >= MAX_POINT_LIGHTS)
             {
@@ -127,7 +127,7 @@ void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
             }
         }
 
-        else if(light->type() == Entity::Light::LIGHT_SPOT)
+        else if(light->type() == Graph::Light::LIGHT_SPOT)
         {
             if(numSpotLights >= MAX_SPOT_LIGHTS)
             {
@@ -145,7 +145,7 @@ void BasicLightning::setPointAndSpotLights(const QList<Entity::Light*>& lights)
     setUniformValue("gNumSpotLights", numSpotLights);
 }
 
-void BasicLightning::setSpotLight(const Entity::Light* light, int index)
+void BasicLightning::setSpotLight(const Graph::Light* light, int index)
 {
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.base.color").c_str(),             linearColor(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gSpotLights", index, "base.position").c_str(),               light->position());
@@ -159,7 +159,7 @@ void BasicLightning::setSpotLight(const Entity::Light* light, int index)
     setUniformValue(formatUniformTableName("gSpotLights", index, "cutoff").c_str(),                  cosf(qDegreesToRadians(light->angleOuterCone())));
 }
 
-void BasicLightning::setPointLight(const Entity::Light* light, int index)
+void BasicLightning::setPointLight(const Graph::Light* light, int index)
 {
     setUniformValue(formatUniformTableName("gPointLights", index, "base.color").c_str(),             linearColor(light->color()) * light->diffuseIntensity());
     setUniformValue(formatUniformTableName("gPointLights", index, "position").c_str(),               light->position());

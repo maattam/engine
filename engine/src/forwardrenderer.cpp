@@ -3,8 +3,8 @@
 #include <QMatrix4x4>
 #include <QDebug>
 
-#include "entity/camera.h"
-#include "entity/light.h"
+#include "graph/camera.h"
+#include "graph/light.h"
 #include "graph/scenenode.h"
 #include "renderable/renderable.h"
 #include "scene/visiblescene.h"
@@ -56,7 +56,7 @@ void ForwardRenderer::setRenderTarget(GLuint fbo)
     fbo_ = fbo;
 }
 
-void ForwardRenderer::visit(Entity::Light& light)
+void ForwardRenderer::visit(Graph::Light& light)
 {
     lights_.push_back(&light);
 }
@@ -72,7 +72,7 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
     return true;
 }
 
-void ForwardRenderer::render(Entity::Camera* camera)
+void ForwardRenderer::render(Graph::Camera* camera)
 {
     // Gather visible lights
     scene_->addVisitor(this);
@@ -112,10 +112,10 @@ void ForwardRenderer::shadowMapPass()
 
     // Render depth for each spot light
     int spotLightIndex = 0;
-    for(Entity::Light* light : lights_)
+    for(Graph::Light* light : lights_)
     {
         // Ignore other lights for now
-        if(light->type() != Entity::Light::LIGHT_SPOT)
+        if(light->type() != Graph::Light::LIGHT_SPOT)
         {
             continue;
         }
@@ -135,7 +135,7 @@ void ForwardRenderer::shadowMapPass()
     shadowTech_.renderDirectinalLight(directionalLight, scene_);
 }
 
-void ForwardRenderer::renderPass(Entity::Camera* camera, const RenderQueue& queue)
+void ForwardRenderer::renderPass(Graph::Camera* camera, const RenderQueue& queue)
 {
     // Prepare OpenGL state for render pass
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());

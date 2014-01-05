@@ -6,7 +6,7 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 
-namespace Engine { namespace Entity {
+namespace Engine {
 
 class AABB
 {
@@ -32,6 +32,6 @@ private:
     bool first_;
 };
 
-}}
+}
 
 #endif // AABB_H

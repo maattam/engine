@@ -4,7 +4,7 @@
 #include "freelookscene.h"
 
 #include "material.h"
-#include "entity/subentity.h"
+#include "graph/geometry.h"
 #include "scene/importednode.h"
 
 #include <QObject>
@@ -41,7 +41,7 @@ private:
     Engine::ImportedNode::Ptr platform_;
     Engine::ImportedNode::Ptr hellknight_;
 
-    std::shared_ptr<Engine::Entity::SubEntity> cube_[2];
+    std::shared_ptr<Engine::Graph::Geometry> cube_[2];
 
     Engine::Graph::SceneNode* cubeNode_;
     Engine::Graph::SceneNode* platformNode_;
@@ -51,7 +51,7 @@ private:
     Engine::Graph::SceneNode* blueLightNode_;
 
     std::vector<Engine::Graph::SceneNode*> cubes_;
-    std::vector<Engine::Entity::Light::Ptr> lights_;
+    std::vector<Engine::Graph::Light::Ptr> lights_;
 
     unsigned int time_;
 };

@@ -20,7 +20,7 @@ void LightingStage::setScene(VisibleScene* scene)
     scene_ = scene;
 }
 
-void LightingStage::render(Entity::Camera* camera)
+void LightingStage::render(Graph::Camera* camera)
 {
     // Query visible lights during the first rendering stage
     scene_->addVisitor(this);

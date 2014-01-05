@@ -1,6 +1,6 @@
 #include "scenenode.h"
 
-#include "entity/entity.h"
+#include "sceneleaf.h"
 
 #include <algorithm>
 
@@ -17,7 +17,7 @@ SceneNode::~SceneNode()
     detachAllEntities();
 }
 
-void SceneNode::attachEntity(Entity::Entity* entity)
+void SceneNode::attachEntity(SceneLeaf* entity)
 {
     if(entity != nullptr)
     {
@@ -26,7 +26,7 @@ void SceneNode::attachEntity(Entity::Entity* entity)
     }
 }
 
-Entity::Entity* SceneNode::detachEntity(Entity::Entity* entity)
+SceneLeaf* SceneNode::detachEntity(SceneLeaf* entity)
 {
     if(entity == nullptr)
         return nullptr;
@@ -36,7 +36,7 @@ Entity::Entity* SceneNode::detachEntity(Entity::Entity* entity)
     if(iter == entities_.end())
         return nullptr;
 
-    Entity::Entity* child = *iter;
+    SceneLeaf* child = *iter;
     child->detach();
 
     entities_.erase(iter);
@@ -44,15 +44,15 @@ Entity::Entity* SceneNode::detachEntity(Entity::Entity* entity)
     return child;
 }
 
-Entity::Entity* SceneNode::detachEntity(Entities::size_type index)
+SceneLeaf* SceneNode::detachEntity(Entities::size_type index)
 {
-    Entity::Entity* child = getEntity(index);
+    SceneLeaf* child = getEntity(index);
     return detachEntity(child);
 }
 
 void SceneNode::detachAllEntities()
 {
-    for(Entity::Entity* ent : entities_)
+    for(SceneLeaf* ent : entities_)
     {
         ent->detach();
     }
@@ -65,7 +65,7 @@ SceneNode::Entities::size_type SceneNode::numEntities() const
     return entities_.size();
 }
 
-Entity::Entity* SceneNode::getEntity(Entities::size_type index)
+SceneLeaf* SceneNode::getEntity(Entities::size_type index)
 {
     if(index >= entities_.size())
         return nullptr;
@@ -93,12 +93,12 @@ SceneNode* SceneNode::createSceneNodeChild()
     return static_cast<SceneNode*>(createChild());
 }
 
-QList<Entity::Entity*> SceneNode::findEntities(const QString& name) const
+QList<SceneLeaf*> SceneNode::findEntities(const QString& name) const
 {
-    QList<Entity::Entity*> matches;
+    QList<SceneLeaf*> matches;
 
     // Find matches from this node
-    for(Entity::Entity* entity : entities_)
+    for(SceneLeaf* entity : entities_)
     {
         if(entity->name() == name)
         {

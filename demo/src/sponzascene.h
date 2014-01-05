@@ -43,12 +43,12 @@ private:
     std::vector<PathNode> spotPath_;
     QVector3D spotDirection_;
     PathNode* spotNode_;
-    Engine::Entity::Light spotLight_;
-    Engine::Entity::Light flashLight_;
+    Engine::Graph::Light spotLight_;
+    Engine::Graph::Light flashLight_;
     float spotVelocity_;
     bool flashLightToggle_;
 
-    QVector<Engine::Entity::Light::Ptr> lights_;
+    QVector<Engine::Graph::Light::Ptr> lights_;
 
     double elapsed_;
 };

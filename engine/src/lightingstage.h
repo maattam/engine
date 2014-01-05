@@ -8,12 +8,12 @@
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Light;
 }
 
 class LightingStage : public RenderStage,
-    public BaseVisitor, public Visitor<Entity::Light>
+    public BaseVisitor, public Visitor<Graph::Light>
 {
 public:
     explicit LightingStage(Renderer* renderer);
@@ -25,7 +25,7 @@ public:
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
-    virtual void render(Entity::Camera* camera);
+    virtual void render(Graph::Camera* camera);
 
 protected:
     VisibleScene* scene_;

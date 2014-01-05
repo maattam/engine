@@ -4,11 +4,12 @@
 #include <qmath.h>
 
 #include "mathelp.h"
-#include "graph/scenenode.h"
+#include "scenenode.h"
 
-using namespace Engine::Entity;
+using namespace Engine::Graph;
 
-Light::Light(LightType type) : Entity(), type_(type)
+Light::Light(LightType type)
+    : SceneLeaf(), type_(type)
 {
     color_ = QVector3D(1.0f, 1.0f, 1.0f);
 

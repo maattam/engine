@@ -3,14 +3,14 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "entity.h"
+#include "sceneleaf.h"
 
 #include <QVector3D>
 #include <memory>
 
-namespace Engine { namespace Entity {
+namespace Engine { namespace Graph {
 
-class Light : public Entity
+class Light : public SceneLeaf
 {
     VISITABLE
 

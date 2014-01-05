@@ -13,7 +13,7 @@
 using namespace Engine;
 
 SponzaScene::SponzaScene(ResourceDespatcher* despatcher) : FreeLookScene(despatcher),
-    spotLight_(Entity::Light::LIGHT_SPOT), flashLight_(Entity::Light::LIGHT_SPOT),
+    spotLight_(Graph::Light::LIGHT_SPOT), flashLight_(Graph::Light::LIGHT_SPOT),
     velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0), flashLightToggle_(false)
 {
     const int NUM_NODES = 4;
@@ -157,7 +157,7 @@ void SponzaScene::initialise()
             Graph::SceneNode* lightNode = rootNode()->createSceneNodeChild();
             lightNode->setPosition(QVector3D(-50 + i * 10, 3, -20 + j * 20));
 
-            Entity::Light::Ptr light(new Entity::Light(Entity::Light::LIGHT_POINT));
+            Graph::Light::Ptr light(new Graph::Light(Graph::Light::LIGHT_POINT));
             light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
             light->setDiffuseIntensity(25.0f);
 

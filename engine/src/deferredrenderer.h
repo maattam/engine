@@ -33,7 +33,7 @@ public:
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
-    virtual void render(Entity::Camera* camera);
+    virtual void render(Graph::Camera* camera);
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.
@@ -44,7 +44,7 @@ private:
     QRect viewport_;
 
     VisibleScene* scene_;
-    Entity::Camera* camera_;
+    Graph::Camera* camera_;
 
     RenderQueue renderQueue_;
     Technique::DSGeometryShader geometryShader_;

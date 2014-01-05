@@ -1,6 +1,6 @@
 #include "illuminationmodel.h"
 
-#include "entity/light.h"
+#include "graph/light.h"
 #include "mathelp.h"
 
 #include <qmath.h>
@@ -23,7 +23,7 @@ void IlluminationModel::setViewMatrix(const QMatrix4x4& mat)
     view_ = mat;
 }
 
-void IlluminationModel::enableSpotLight(const Entity::Light& light)
+void IlluminationModel::enableSpotLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
 
@@ -35,13 +35,13 @@ void IlluminationModel::enableSpotLight(const Entity::Light& light)
     //setUniformValue("light.innerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
 }
 
-void IlluminationModel::enablePointLight(const Entity::Light& light)
+void IlluminationModel::enablePointLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "pointLightPass", GL_FRAGMENT_SHADER);
     setPointUniforms(light);
 }
 
-void IlluminationModel::enableDirectionalLight(const Entity::Light& light)
+void IlluminationModel::enableDirectionalLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "directionalLightPass", GL_FRAGMENT_SHADER);
 
@@ -75,7 +75,7 @@ bool IlluminationModel::init()
     return true;
 }
 
-void IlluminationModel::setPointUniforms(const Entity::Light& spot)
+void IlluminationModel::setPointUniforms(const Graph::Light& spot)
 {
     setUniformValue("light.color", linearColor(spot.color()) * spot.diffuseIntensity());
     setUniformValue("light.position", view_ * spot.position());

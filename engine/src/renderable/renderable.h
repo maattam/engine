@@ -4,7 +4,7 @@
 #define RENDERABLE_H
 
 #include "common.h"
-#include "entity/aabb.h"
+#include "aabb.h"
 
 #include <memory>
 

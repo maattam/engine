@@ -3,18 +3,19 @@
 #ifndef SUBENTITY_H
 #define SUBENTITY_H
 
-#include "entity.h"
+#include "sceneleaf.h"
+
 #include "renderable/renderable.h"
 #include "material.h"
 
-namespace Engine { namespace Entity {
+namespace Engine { namespace Graph {
 
-class SubEntity : public Entity
+class Geometry : public SceneLeaf
 {
 public:
-    typedef std::shared_ptr<SubEntity> Ptr;
+    typedef std::shared_ptr<Geometry> Ptr;
 
-    SubEntity(const Renderable::Renderable::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb);
+    Geometry(const Renderable::Renderable::Ptr& mesh, const Material::Ptr& material, const AABB& aabb);
 
     virtual void updateRenderList(RenderQueue& list);
 
@@ -26,7 +27,7 @@ public:
     void setMaterial(const Material::Ptr& material);
 
 private:
-    Renderable::Renderable::Ptr subMesh_;
+    Renderable::Renderable::Ptr mesh_;
     Material::Ptr material_;
 };
 

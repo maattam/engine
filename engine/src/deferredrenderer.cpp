@@ -5,8 +5,8 @@
 #include "resourcedespatcher.h"
 #include "scene/visiblescene.h"
 #include "renderable/renderable.h"
-#include "entity/camera.h"
-#include "entity/light.h"
+#include "graph/camera.h"
+#include "graph/light.h"
 #include "graph/scenenode.h"
 #include "renderqueue.h"
 #include "texture2dresource.h"
@@ -49,7 +49,7 @@ void DeferredRenderer::setRenderTarget(GLuint /*fbo*/)
     // Geometry pass doesn't output anything to screen
 }
 
-void DeferredRenderer::render(Entity::Camera* camera)
+void DeferredRenderer::render(Graph::Camera* camera)
 {
     if(!gbuffer_->isInitialised())
     {

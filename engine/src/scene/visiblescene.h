@@ -10,7 +10,7 @@ class BaseVisitor;
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Light;
     class Camera;
 }
@@ -37,12 +37,12 @@ public:
     virtual void removeVisitor(BaseVisitor* visitor) = 0;
 
     // Directional light can be null
-    virtual Entity::Light* directionalLight() const = 0;
+    virtual Graph::Light* directionalLight() const = 0;
 
     // Skybox can be null
     virtual CubemapTexture* skybox() const = 0;
 
-    virtual Entity::Camera* camera() const = 0;
+    virtual Graph::Camera* camera() const = 0;
 };
 
 }

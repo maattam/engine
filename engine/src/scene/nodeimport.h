@@ -8,7 +8,7 @@
 #include <QVector2D>
 #include <QString>
 
-#include "entity/aabb.h"
+#include "aabb.h"
 
 #include <memory>
 
@@ -19,7 +19,7 @@ struct aiLight;
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Camera;
     class Light;
 }
@@ -29,8 +29,8 @@ class ResourceDespatcher;
 
 namespace NodeImport {
 
-typedef std::shared_ptr<Entity::Camera> CameraPtr;
-typedef std::shared_ptr<Entity::Light> LightPtr;
+typedef std::shared_ptr<Graph::Camera> CameraPtr;
+typedef std::shared_ptr<Graph::Light> LightPtr;
 typedef std::shared_ptr<Material> MaterialPtr;
 
 struct ImportException
@@ -49,7 +49,7 @@ struct IndexMesh
     QVector<unsigned int> indices;
 
     unsigned int materialIndex;
-    Entity::AABB aabb;
+    AABB aabb;
 };
 
 // Imports index meshes from the scene.

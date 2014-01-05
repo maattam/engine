@@ -2,10 +2,10 @@
 
 #include <cassert>
 
-#include "entity/light.h"
-#include "entity/camera.h"
-#include "entity/frustum.h"
+#include "graph/light.h"
+#include "graph/camera.h"
 
+#include "frustum.h"
 #include "renderer.h"
 #include "visitor.h"
 #include "renderqueue.h"
@@ -30,12 +30,12 @@ void Scene::removeVisitor(BaseVisitor* visitor)
     visitors_.remove(visitor);
 }
 
-void Scene::setCamera(Entity::Camera* camera)
+void Scene::setCamera(Graph::Camera* camera)
 {
     camera_ = camera;
 }
 
-Entity::Camera* Scene::camera() const
+Graph::Camera* Scene::camera() const
 {
     return camera_;
 }
@@ -50,14 +50,14 @@ void Scene::queryVisibles(const QMatrix4x4& viewProj, RenderQueue& renderQueue, 
     findVisibles(viewProj, &rootNode_, renderQueue, shadowCasters);
 }
 
-Entity::Light* Scene::directionalLight() const
+Graph::Light* Scene::directionalLight() const
 {
     return directionalLight_;
 }
 
-void Scene::setDirectionalLight(Entity::Light* light)
+void Scene::setDirectionalLight(Graph::Light* light)
 {
-    if(light != nullptr && light->type() != Entity::Light::LIGHT_DIRECTIONAL)
+    if(light != nullptr && light->type() != Graph::Light::LIGHT_DIRECTIONAL)
     {
         return;
     }
@@ -102,7 +102,7 @@ void Scene::findVisibles(const QMatrix4x4& viewProj, Graph::SceneNode* node,
                 continue;
             }
 
-            Entity::Entity* entity = node->getEntity(i);
+            Graph::SceneLeaf* entity = node->getEntity(i);
 
             // Check whether the entity's bounding volume is inside our view frustrum
             if(isInsideFrustum(entity->boundingBox(), viewProj * nodeView))

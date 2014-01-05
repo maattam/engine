@@ -58,7 +58,7 @@ void LightScene::insertLight(Engine::Graph::SceneNode* node)
     Graph::SceneNode* lightNode = node->createSceneNodeChild();
     PointLight light;
 
-    light.light = std::make_shared<Entity::Light>(Entity::Light::LIGHT_POINT);
+    light.light = std::make_shared<Graph::Light>(Graph::Light::LIGHT_POINT);
     light.light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
     light.light->setDiffuseIntensity(25.0f);
 

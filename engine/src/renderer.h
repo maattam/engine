@@ -10,7 +10,7 @@ namespace Engine {
 
 class VisibleScene;
 
-namespace Entity {
+namespace Graph {
     class Camera;
 }
 
@@ -29,7 +29,7 @@ public:
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
-    virtual void render(Entity::Camera* camera) = 0;
+    virtual void render(Graph::Camera* camera) = 0;
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.

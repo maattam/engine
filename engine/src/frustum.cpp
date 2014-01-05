@@ -2,7 +2,7 @@
 
 using namespace Engine;
 
-bool Engine::isInsideFrustum(const Entity::AABB& aabb, const QMatrix4x4& mvp)
+bool Engine::isInsideFrustum(const AABB& aabb, const QMatrix4x4& mvp)
 {
     const QVector4D rowX = mvp.row(0);
     const QVector4D rowY = mvp.row(1);

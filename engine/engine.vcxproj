@@ -167,6 +167,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\aabb.cpp" />
     <ClCompile Include="src\compactgbuffer.cpp" />
     <ClCompile Include="src\debugrenderer.cpp" />
     <ClCompile Include="src\deferredrenderer.cpp" />
@@ -174,13 +175,12 @@
     <ClCompile Include="src\effect\hdr.cpp" />
     <ClCompile Include="src\effect\lumaexposure.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
-    <ClCompile Include="src\entity\aabb.cpp" />
-    <ClCompile Include="src\entity\camera.cpp" />
-    <ClCompile Include="src\entity\entity.cpp" />
-    <ClCompile Include="src\entity\frustum.cpp" />
-    <ClCompile Include="src\entity\light.cpp" />
-    <ClCompile Include="src\entity\subentity.cpp" />
     <ClCompile Include="src\forwardrenderer.cpp" />
+    <ClCompile Include="src\frustum.cpp" />
+    <ClCompile Include="src\graph\camera.cpp" />
+    <ClCompile Include="src\graph\geometry.cpp" />
+    <ClCompile Include="src\graph\sceneleaf.cpp" />
+    <ClCompile Include="src\graph\light.cpp" />
     <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
     <ClCompile Include="src\lightingstage.cpp" />
@@ -235,6 +235,7 @@
     <None Include="src\technique\technique.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\aabb.h" />
     <ClInclude Include="src\compactgbuffer.h" />
     <ClInclude Include="src\debugrenderer.h" />
     <ClInclude Include="src\deferredrenderer.h" />
@@ -243,14 +244,13 @@
     <ClInclude Include="src\effect\hdr.h" />
     <ClInclude Include="src\effect\postfx.h" />
     <ClInclude Include="src\effect\samplerfunction.h" />
-    <ClInclude Include="src\entity\aabb.h" />
-    <ClInclude Include="src\entity\camera.h" />
-    <ClInclude Include="src\entity\entity.h" />
-    <ClInclude Include="src\entity\frustum.h" />
-    <ClInclude Include="src\entity\light.h" />
-    <ClInclude Include="src\entity\subentity.h" />
     <ClInclude Include="src\forwardrenderer.h" />
+    <ClInclude Include="src\frustum.h" />
     <ClInclude Include="src\gbuffer.h" />
+    <ClInclude Include="src\graph\camera.h" />
+    <ClInclude Include="src\graph\geometry.h" />
+    <ClInclude Include="src\graph\sceneleaf.h" />
+    <ClInclude Include="src\graph\light.h" />
     <ClInclude Include="src\graph\node.h" />
     <ClInclude Include="src\graph\scenenode.h" />
     <ClInclude Include="src\lightingstage.h" />

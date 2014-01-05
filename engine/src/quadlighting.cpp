@@ -1,8 +1,8 @@
 #include "quadlighting.h"
 
 #include "resourcedespatcher.h"
-#include "entity/camera.h"
-#include "entity/light.h"
+#include "graph/camera.h"
+#include "graph/light.h"
 #include "gbuffer.h"
 #include "scene/visiblescene.h"
 #include "renderable/primitive.h"
@@ -35,7 +35,7 @@ void QuadLighting::setRenderTarget(GLuint fbo)
     fbo_ = fbo;
 }
 
-void QuadLighting::render(Entity::Camera* camera)
+void QuadLighting::render(Graph::Camera* camera)
 {
     LightingStage::render(camera);
 
@@ -62,14 +62,14 @@ void QuadLighting::render(Entity::Camera* camera)
     gl->glBlendFunc(GL_ONE, GL_ONE);
 
     // Blend point lights
-    for(Entity::Light* light : pointLights_)
+    for(Graph::Light* light : pointLights_)
     {
         lightningTech_.enablePointLight(*light);
         quad_->render();
     }
 
     // Blend spotlights
-    for(Entity::Light* light : spotLights_)
+    for(Graph::Light* light : spotLights_)
     {
         lightningTech_.enableSpotLight(*light);
         quad_->render();
@@ -81,14 +81,14 @@ void QuadLighting::render(Entity::Camera* camera)
     pointLights_.clear();
 }
 
-void QuadLighting::visit(Entity::Light& light)
+void QuadLighting::visit(Graph::Light& light)
 {
-    if(light.type() == Entity::Light::LIGHT_POINT)
+    if(light.type() == Graph::Light::LIGHT_POINT)
     {
         pointLights_.push_back(&light);
     }
 
-    else if(light.type() == Entity::Light::LIGHT_SPOT)
+    else if(light.type() == Graph::Light::LIGHT_SPOT)
     {
         spotLights_.push_back(&light);
     }

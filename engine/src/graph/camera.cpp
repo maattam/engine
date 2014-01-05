@@ -6,10 +6,10 @@
 #include <qmath.h>
 
 using namespace Engine;
-using namespace Engine::Entity;
+using namespace Engine::Graph;
 
 Camera::Camera(CameraType type, const QVector3D& dir)
-    : Entity(), type_(type)
+    : SceneLeaf(), type_(type)
 {
     far_ = 500.0f;
     near_ = 0.1f;
@@ -22,7 +22,7 @@ Camera::Camera(CameraType type, const QVector3D& dir)
 }
 
 Camera::Camera(float aspectRatio, float fov, const QVector3D& dir)
-    : Entity(), type_(PERSPECTIVE), aspect_(aspectRatio), fov_(fov)
+    : SceneLeaf(), type_(PERSPECTIVE), aspect_(aspectRatio), fov_(fov)
 {
     far_ = 500.0f;
     near_ = 0.1f;
@@ -33,7 +33,7 @@ Camera::Camera(float aspectRatio, float fov, const QVector3D& dir)
 }
 
 Camera::Camera(const QRectF& window, const QVector3D& dir)
-    : Entity(), type_(ORTHOGRAPHIC), bounds_(window)
+    : SceneLeaf(), type_(ORTHOGRAPHIC), bounds_(window)
 {
     far_ = 500.0f;
     near_ = 0.1f;

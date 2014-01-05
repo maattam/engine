@@ -28,20 +28,20 @@ public:
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
-    virtual void render(Entity::Camera* camera);
+    virtual void render(Graph::Camera* camera);
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is nullptr, the default framebuffer (0) is used.
     virtual void setRenderTarget(GLuint fbo);
 
-    virtual void visit(Entity::Light& light);
+    virtual void visit(Graph::Light& light);
 
 private:
     GLuint fbo_;
     GBuffer& gbuffer_;
 
-    QVector<Entity::Light*> spotLights_;
-    QVector<Entity::Light*> pointLights_;
+    QVector<Graph::Light*> spotLights_;
+    QVector<Graph::Light*> pointLights_;
 
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;

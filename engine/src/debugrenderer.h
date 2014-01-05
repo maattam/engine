@@ -9,7 +9,7 @@
 #include "observable.h"
 #include "renderable/cube.h"
 #include "renderable/quad.h"
-#include "entity/aabb.h"
+#include "aabb.h"
 #include "shaderprogram.h"
 #include "technique/gbuffervisualizer.h"
 
@@ -36,7 +36,7 @@ public:
     virtual void setScene(VisibleScene* scene);
 
     // Renders the scene through the camera's viewport.
-    virtual void render(Entity::Camera* camera);
+    virtual void render(Graph::Camera* camera);
 
     // Sets debugging flags
     void setFlags(unsigned int flags);
@@ -47,7 +47,7 @@ public:
     void setObservable(ObservableType* obs);
 
     // SceneObserver definitions
-    virtual bool beforeRendering(Entity::Entity* entity, Graph::SceneNode* node);
+    virtual bool beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node);
 
     // Visualize GBuffer for debugging. The GBuffer is not modified.
     // precondition: Viewport and camera has to be the same as the debuggee's
@@ -62,7 +62,7 @@ private:
     ObservableType* observable_;
     VisibleScene* scene_;
     GLuint fbo_;
-    Entity::Camera* camera_;
+    Graph::Camera* camera_;
     GBuffer const* gbuffer_;
     unsigned int flags_;
 
@@ -80,7 +80,7 @@ private:
     void renderAABBs();
     void renderGBuffer();
 
-    void addAABB(const QMatrix4x4& trans, const Entity::AABB& aabb, const QVector3D& color);
+    void addAABB(const QMatrix4x4& trans, const AABB& aabb, const QVector3D& color);
 
     DebugRenderer(const DebugRenderer&);
     DebugRenderer& operator=(const DebugRenderer&);

@@ -20,10 +20,7 @@ class ResourceDespatcher;
 
 namespace Graph {
     class SceneNode;
-}
-
-namespace Entity {
-    class Entity;
+    class SceneLeaf;
 }
 
 class ImportedNodeData : public ResourceData
@@ -36,7 +33,7 @@ public:
         std::vector<unsigned int> meshIndices;
     };
 
-    typedef std::shared_ptr<Entity::Entity> EntityPtr;
+    typedef std::shared_ptr<Graph::SceneLeaf> EntityPtr;
 
     ImportedNodeData();
 
@@ -69,7 +66,7 @@ private:
     // Creates new Mesh and MeshData pairing from mesh indices
     MeshIndex createMesh(Graph::SceneNode* node, unsigned int* subMeshIndex, unsigned int numMeshes, const QString& name) const;
 
-    QList<Entity::Entity*> findEntities(const QString& name);
+    QList<Graph::SceneLeaf*> findEntities(const QString& name);
 };
 
 }

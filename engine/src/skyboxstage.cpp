@@ -4,7 +4,7 @@
 #include "technique/skybox.h"
 #include "scene/visiblescene.h"
 #include "cubemaptexture.h"
-#include "entity/camera.h"
+#include "graph/camera.h"
 #include "gbuffer.h"
 
 using namespace Engine;
@@ -30,7 +30,7 @@ void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
     initTechnique();
 }
 
-void SkyboxStage::render(Entity::Camera* camera)
+void SkyboxStage::render(Graph::Camera* camera)
 {
     RenderStage::render(camera);
 

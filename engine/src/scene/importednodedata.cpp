@@ -7,8 +7,8 @@
 #include <assimp/postprocess.h>
 
 #include "graph/scenenode.h"
-#include "entity/camera.h"
-#include "entity/light.h"
+#include "graph/camera.h"
+#include "graph/light.h"
 
 #include <QDebug>
 #include <QDir>
@@ -90,7 +90,7 @@ void ImportedNodeData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, ai
 
     if(node->mName.length > 0)
     {
-        for(Entity::Entity* entity : findEntities(node->mName.data))
+        for(Graph::SceneLeaf* entity : findEntities(node->mName.data))
         {
             newParent->attachEntity(entity);
         }
@@ -123,9 +123,9 @@ ImportedNodeData::MeshIndex ImportedNodeData::createMesh(Graph::SceneNode* node,
     return index;
 }
 
-QList<Entity::Entity*> ImportedNodeData::findEntities(const QString& name)
+QList<Graph::SceneLeaf*> ImportedNodeData::findEntities(const QString& name)
 {
-    QList<Entity::Entity*> entities;
+    QList<Graph::SceneLeaf*> entities;
 
     for(const EntityPtr& entity : entities_)
     {

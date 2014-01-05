@@ -5,11 +5,8 @@
 
 namespace Engine {
 
-namespace Entity {
-    class Entity;
-}
-
 namespace Graph {
+    class SceneLeaf;
     class SceneNode;
 }
 
@@ -21,7 +18,7 @@ public:
 
     // Called before the visible entity is pushed down the render queue.
     // If this function returns false, the entity is not pushed to the default render queue.
-    virtual bool beforeRendering(Entity::Entity* entity, Graph::SceneNode* node) = 0;
+    virtual bool beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node) = 0;
 };
 
 }

@@ -11,12 +11,9 @@
 
 namespace Engine {
 
-namespace Entity {
+namespace Graph {
     class Camera;
     class Light;
-}
-
-namespace Graph {
     class SceneNode;
 }
 
@@ -25,9 +22,9 @@ class SceneModel : public Observable<SceneObserver>
 public:
     virtual ~SceneModel() {};
 
-    virtual void setCamera(Entity::Camera* camera) = 0;
+    virtual void setCamera(Graph::Camera* camera) = 0;
 
-    virtual void setDirectionalLight(Entity::Light* light) = 0;
+    virtual void setDirectionalLight(Graph::Light* light) = 0;
     virtual void setSkybox(const std::shared_ptr<CubemapTexture>& texture) = 0;
 
     virtual void update() = 0;

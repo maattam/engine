@@ -1,7 +1,7 @@
 #include "importednode.h"
 
 #include "graph/scenenode.h"
-#include "entity/subentity.h"
+#include "graph/geometry.h"
 #include "renderable/submesh.h"
 
 #include <QVector>
@@ -58,7 +58,7 @@ bool ImportedNode::initialiseData(const DataType& data)
     entities_ = data.entities();
 
     // Make IndexMeshes into SubMeshes
-    QVector<Entity::SubEntity::Ptr> subMeshes;
+    QVector<Graph::Geometry::Ptr> subMeshes;
     subMeshes.resize(data.indexMeshes().count());
 
     for(int i = 0; i < data.indexMeshes().count(); ++i)
@@ -72,7 +72,7 @@ bool ImportedNode::initialiseData(const DataType& data)
             return false;
         }
 
-        subMeshes[i] = std::make_shared<Entity::SubEntity>(subMesh,
+        subMeshes[i] = std::make_shared<Graph::Geometry>(subMesh,
             data.materials().at(mesh.materialIndex), mesh.aabb);
     }
 
@@ -89,7 +89,7 @@ bool ImportedNode::initialiseData(const DataType& data)
             Q_ASSERT(*it < data.indexMeshes().count());
 
             // Attach SubEntity to the assigned to form the complete mesh.
-            Entity::SubEntity::Ptr& entity = subMeshes[*it];
+            Graph::Geometry::Ptr& entity = subMeshes[*it];
             entity->setName(meshIndices.name);
 
             meshIndices.node->attachEntity(entity.get());

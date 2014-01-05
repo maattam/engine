@@ -8,11 +8,11 @@
 
 #include "mathelp.h"
 
-#include "entity.h"
+#include "sceneleaf.h"
 
-namespace Engine { namespace Entity {
+namespace Engine { namespace Graph {
 
-class Camera : public Entity
+class Camera : public SceneLeaf
 {
     VISITABLE
 

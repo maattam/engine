@@ -3,7 +3,6 @@
 #include <qmath.h>
 
 using namespace Engine;
-using namespace Engine::Entity;
 
 AABB::AABB() : first_(false)
 {

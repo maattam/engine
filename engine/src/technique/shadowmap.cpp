@@ -3,7 +3,7 @@
 
 #include <QDebug>
 
-#include "entity/camera.h"
+#include "graph/camera.h"
 #include "renderable/renderable.h"
 #include "material.h"
 #include "renderqueue.h"
@@ -108,7 +108,7 @@ size_t ShadowMap::numSpotLights() const
 // Render methods
 //
 
-void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, VisibleScene* visibles)
+void ShadowMap::renderSpotLight(size_t index, const Graph::Light* light, VisibleScene* visibles)
 {
     const auto& texture = spotLights_.at(index).texture;
 
@@ -126,13 +126,13 @@ void ShadowMap::renderSpotLight(size_t index, const Entity::Light* light, Visibl
     renderLight(spotLights_.at(index), visibles);
 }
 
-void ShadowMap::renderDirectinalLight(Entity::Light* light, VisibleScene* visibles)
+void ShadowMap::renderDirectinalLight(Graph::Light* light, VisibleScene* visibles)
 {
     if(light == nullptr)
         return;
 
     // Calculate light frustrum
-    Entity::Camera view(QRectF(-95, -65, 190, 130), light->direction());
+    Graph::Camera view(QRectF(-95, -65, 190, 130), light->direction());
     view.setNearPlane(-80.0f);
     view.setFarPlane(1000.0f);
     view.update();

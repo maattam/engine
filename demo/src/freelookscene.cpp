@@ -10,7 +10,7 @@ using namespace Engine;
 
 FreeLookScene::FreeLookScene(Engine::ResourceDespatcher* despatcher)
     : despatcher_(despatcher), scene_(nullptr), speed_(15.0f), input_(nullptr),
-    dirLight_(Entity::Light::LIGHT_DIRECTIONAL), camera_(Entity::Camera::PERSPECTIVE)
+    dirLight_(Graph::Light::LIGHT_DIRECTIONAL), camera_(Graph::Camera::PERSPECTIVE)
 {
     camera_.setDirection(QVector3D(1, 0, 0));
     camera_.setPosition(QVector3D(0, 10, 0));
@@ -171,12 +171,12 @@ void FreeLookScene::attachCamera(Engine::Graph::SceneNode* node)
     }
 }
 
-Engine::Entity::Camera* FreeLookScene::camera()
+Engine::Graph::Camera* FreeLookScene::camera()
 {
     return &camera_;
 }
 
-Engine::Entity::Light* FreeLookScene::directionalLight()
+Engine::Graph::Light* FreeLookScene::directionalLight()
 {
     return &dirLight_;
 }
