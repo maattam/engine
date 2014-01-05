@@ -175,7 +175,6 @@
     <ClCompile Include="src\effect\lumaexposure.cpp" />
     <ClCompile Include="src\effect\postfx.cpp" />
     <ClCompile Include="src\entity\aabb.cpp" />
-    <ClCompile Include="src\entity\boxprimitive.cpp" />
     <ClCompile Include="src\entity\camera.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
     <ClCompile Include="src\entity\frustum.cpp" />
@@ -246,7 +245,6 @@
     <ClInclude Include="src\effect\postfx.h" />
     <ClInclude Include="src\effect\samplerfunction.h" />
     <ClInclude Include="src\entity\aabb.h" />
-    <ClInclude Include="src\entity\boxprimitive.h" />
     <ClInclude Include="src\entity\camera.h" />
     <ClInclude Include="src\entity\entity.h" />
     <ClInclude Include="src\entity\frustum.h" />
@@ -261,6 +259,8 @@
     <ClInclude Include="src\postprocess.h" />
     <ClInclude Include="src\quadlighting.h" />
     <ClInclude Include="src\renderable\cube.h" />
+    <ClInclude Include="src\renderable\primitive.h" />
+    <ClInclude Include="src\renderable\primitive.inl" />
     <ClInclude Include="src\renderable\quad.h" />
     <ClInclude Include="src\renderable\renderable.h" />
     <ClInclude Include="src\renderable\submesh.h" />

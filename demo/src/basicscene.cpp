@@ -3,6 +3,8 @@
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
 #include "texture2dresource.h"
+#include "renderable/primitive.h"
+#include "renderable/cube.h"
 
 #include <qmath.h>
 #include <QDebug>
@@ -139,8 +141,8 @@ void BasicScene::initialise()
             Engine::Material::Ptr mat(new Engine::Material);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
 
-            cube_[i] = std::make_shared<Entity::BoxPrimitive>();
-            cube_[i]->setMaterial(mat);
+            cube_[i] = std::make_shared<Entity::SubEntity>(Renderable::Primitive<Renderable::Cube>::instance(),
+                mat, Entity::AABB(QVector3D(-1, -1, -1), QVector3D(1, 1, 1)));
         }
     }
 

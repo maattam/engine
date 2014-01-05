@@ -66,8 +66,8 @@ private:
     GBuffer const* gbuffer_;
     unsigned int flags_;
 
-    Renderable::Cube boundingMesh_;
-    Renderable::Quad quad_;
+    std::shared_ptr<Renderable::Cube> boundingMesh_;
+    std::shared_ptr<Renderable::Quad> quad_;
 
     ShaderProgram aabbTech_;
     ShaderProgram wireframeTech_;

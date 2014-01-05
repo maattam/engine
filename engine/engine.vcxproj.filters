@@ -133,9 +133,6 @@
     <ClCompile Include="src\entity\aabb.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
-    <ClCompile Include="src\entity\boxprimitive.cpp">
-      <Filter>Source Files\entity</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity\camera.cpp">
       <Filter>Source Files\entity</Filter>
     </ClCompile>
@@ -326,9 +323,6 @@
     <ClInclude Include="src\entity\aabb.h">
       <Filter>Header Files\entity</Filter>
     </ClInclude>
-    <ClInclude Include="src\entity\boxprimitive.h">
-      <Filter>Header Files\entity</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity\camera.h">
       <Filter>Header Files\entity</Filter>
     </ClInclude>
@@ -430,6 +424,12 @@
     </ClInclude>
     <ClInclude Include="src\technique\illuminationmodel.h">
       <Filter>Header Files\technique</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\primitive.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\primitive.inl">
+      <Filter>Source Files\renderable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

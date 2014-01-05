@@ -1,11 +1,10 @@
-// SubEntity holds reference to a material and submesh.
-// Mesh is a collection of SubEntities.
+// SubEntity holds reference to a material and renderable -pair.
 
 #ifndef SUBENTITY_H
 #define SUBENTITY_H
 
 #include "entity.h"
-#include "../renderable/submesh.h"
+#include "renderable/renderable.h"
 #include "material.h"
 
 namespace Engine { namespace Entity {
@@ -15,7 +14,7 @@ class SubEntity : public Entity
 public:
     typedef std::shared_ptr<SubEntity> Ptr;
 
-    SubEntity(const Renderable::SubMesh::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb);
+    SubEntity(const Renderable::Renderable::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb);
 
     virtual void updateRenderList(RenderQueue& list);
 
@@ -27,7 +26,7 @@ public:
     void setMaterial(const Material::Ptr& material);
 
 private:
-    Renderable::SubMesh::Ptr subMesh_;
+    Renderable::Renderable::Ptr subMesh_;
     Material::Ptr material_;
 };
 

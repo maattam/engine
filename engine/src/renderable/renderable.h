@@ -6,11 +6,15 @@
 #include "common.h"
 #include "entity/aabb.h"
 
+#include <memory>
+
 namespace Engine { namespace Renderable {
 
 class Renderable
 {
 public:
+    typedef std::shared_ptr<Renderable> Ptr;
+
     Renderable();
     virtual ~Renderable();
 

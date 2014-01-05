@@ -5,7 +5,7 @@
 
 #include "material.h"
 #include "entity/mesh.h"
-#include "entity/boxprimitive.h"
+#include "entity/subentity.h"
 #include "scene/importednode.h"
 
 #include <QObject>
@@ -42,7 +42,7 @@ private:
     Engine::ImportedNode::Ptr platform_;
     Engine::ImportedNode::Ptr hellknight_;
 
-    std::shared_ptr<Engine::Entity::BoxPrimitive> cube_[2];
+    std::shared_ptr<Engine::Entity::SubEntity> cube_[2];
 
     Engine::Graph::SceneNode* cubeNode_;
     Engine::Graph::SceneNode* platformNode_;

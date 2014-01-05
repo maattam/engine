@@ -5,7 +5,7 @@
 using namespace Engine;
 using namespace Engine::Entity;
 
-SubEntity::SubEntity(const Renderable::SubMesh::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb)
+SubEntity::SubEntity(const Renderable::Renderable::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb)
     : Entity(), subMesh_(subMesh), material_(material)
 {
     updateAABB(aabb);

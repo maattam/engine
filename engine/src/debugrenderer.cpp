@@ -9,11 +9,14 @@
 #include "gbuffer.h"
 #include "renderqueue.h"
 #include "texture2d.h"
+#include "renderable/primitive.h"
 
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), scene_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr)
+    : observable_(nullptr), scene_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr),
+    quad_(Renderable::Primitive<Renderable::Quad>::instance()),
+    boundingMesh_(Renderable::Primitive<Renderable::Cube>::instance())
 {
     // AABB debugging tech
     aabbTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/aabb.vert"), Shader::Type::Vertex));
@@ -139,7 +142,7 @@ void DebugRenderer::renderAABBs()
     {
         aabbTech_->setUniformValue("gColor", it->second);
         aabbTech_->setUniformValue("gMVP", camera_->worldView() * it->first);
-        boundingMesh_.render();
+        boundingMesh_->render();
     }
 
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -209,7 +212,7 @@ void DebugRenderer::renderGBuffer()
 
         // Render gbuffer texture
         gbufferMS_.outputTexture(static_cast<Technique::GBufferVisualizer::TextureType>(i));
-        quad_.render();
+        quad_->render();
 
         viewY += height + gap;
     }

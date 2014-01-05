@@ -79,7 +79,7 @@ subroutine(CalculateOutputType)
 vec4 directionalLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     vec3 ambient = light.color * light.ambientIntensity;
-    vec3 color = lightningModel(light.direction, vertex, material) + ambient;
+    vec3 color = lightningModel(-light.direction, vertex, material) + ambient;
 
     return vec4(material.diffuseColor * color, 1.0);
 }

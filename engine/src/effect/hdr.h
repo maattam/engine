@@ -66,7 +66,7 @@ private:
     float threshold_;
 
     DownSampler downSampler_;
-    Renderable::Quad quad_;
+    std::shared_ptr<Renderable::Quad> quad_;
     QOpenGLFramebufferObject* fbo_;
 
     ShaderProgram highpass_;

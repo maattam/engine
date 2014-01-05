@@ -4,6 +4,7 @@
 #include "technique/blurfilter.h"
 #include "samplerfunction.h"
 #include "technique/hdrtonemap.h"
+#include "renderable/primitive.h"
 
 #include <QOpenGLFramebufferObject>
 
@@ -12,7 +13,8 @@ using namespace Engine::Effect;
 
 Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     : fbo_(nullptr), downSampler_(despatcher), threshold_(1.0f),
-    width_(0), height_(0), bloomLevels_(bloomLevels), sampleLevel_(0)
+    width_(0), height_(0), bloomLevels_(bloomLevels), sampleLevel_(0),
+    quad_(Renderable::Primitive<Renderable::Quad>::instance())
 {
     // Highpass program
     highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
@@ -103,7 +105,7 @@ void Hdr::render()
     else if(tonemap_ == nullptr || !highpass_.ready())
         return;
 
-    quad_.bindVaoDirect();
+    quad_->bindVaoDirect();
 
     // Pass 1
     // Highpass filter
@@ -111,7 +113,7 @@ void Hdr::render()
 
     // Pass 2
     // Downsample and blur input
-    downSampler_.downSample(fbo_->texture(), quad_);
+    downSampler_.downSample(fbo_->texture(), *quad_);
 
     // Pass 3
     // Render tonemap to output
@@ -133,7 +135,7 @@ void Hdr::renderHighpass()
     highpass_->setUniformValue("renderedTexture", 0);
     highpass_->setUniformValue("threshold", threshold_);
 
-    quad_.renderDirect();
+    quad_->renderDirect();
 
     gl->glBindTexture(inputType(), 0);
 
@@ -170,7 +172,7 @@ void Hdr::renderTonemap()
     gl->glActiveTexture(GL_TEXTURE1);
     gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
 
-    quad_.renderDirect();
+    quad_->renderDirect();
 
     gl->glBindTexture(inputType(), 0);
 }

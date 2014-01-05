@@ -3,6 +3,7 @@
 #include "graph/scenenode.h"
 #include "entity/subentity.h"
 #include "entity/mesh.h"
+#include "renderable/submesh.h"
 
 #include <QVector>
 

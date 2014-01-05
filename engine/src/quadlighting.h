@@ -9,6 +9,7 @@
 #include "technique/illuminationmodel.h"
 
 #include <QVector>
+#include <memory>
 
 namespace Engine {
 
@@ -43,7 +44,7 @@ private:
     QVector<Entity::Light*> pointLights_;
 
     Technique::IlluminationModel lightningTech_;
-    Renderable::Quad quad_;
+    std::shared_ptr<Renderable::Quad> quad_;
 };
 
 }

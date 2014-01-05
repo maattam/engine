@@ -5,11 +5,12 @@
 #include "entity/light.h"
 #include "gbuffer.h"
 #include "scene/visiblescene.h"
+#include "renderable/primitive.h"
 
 using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher)
-    : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0)
+    : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0), quad_(Renderable::Primitive<Renderable::Quad>::instance())
 {
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
@@ -54,7 +55,7 @@ void QuadLighting::render(Entity::Camera* camera)
     if(scene_->directionalLight() != nullptr)
     {
         lightningTech_.enableDirectionalLight(*scene_->directionalLight());
-        quad_.render();
+        quad_->render();
     }
 
     gl->glEnable(GL_BLEND);
@@ -64,14 +65,14 @@ void QuadLighting::render(Entity::Camera* camera)
     for(Entity::Light* light : pointLights_)
     {
         lightningTech_.enablePointLight(*light);
-        quad_.render();
+        quad_->render();
     }
 
     // Blend spotlights
     for(Entity::Light* light : spotLights_)
     {
         lightningTech_.enableSpotLight(*light);
-        quad_.render();
+        quad_->render();
     }
 
     gl->glDisable(GL_BLEND);
