@@ -54,7 +54,8 @@ const GLfloat VERTEX_DATA[] = {
      1.0f, 1.0f, 1.0f,   0.0f, 1.0f,   1.0f, 0.0f, 0.0f
 };
 
-Cube::Cube() : Renderable(), vertexBuffer_(0)
+Cube::Cube()
+    : Renderable(), vertexBuffer_(0)
 {
     bindVertexArray();
 
@@ -76,6 +77,9 @@ Cube::Cube() : Renderable(), vertexBuffer_(0)
     gl->glVertexAttribPointer(ATTRIB_NORMALS, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (const GLvoid*)(5 * sizeof(GLfloat)));
 
     gl->glBindVertexArray(0);
+
+    // Set AABB
+    setAABB(AABB(QVector3D(-1, -1, -1), QVector3D(1, 1, 1)));
 }
 
 Cube::~Cube()

@@ -5,10 +5,10 @@
 using namespace Engine;
 using namespace Engine::Graph;
 
-Geometry::Geometry(const Renderable::Renderable::Ptr& subMesh, const Material::Ptr& material, const AABB& aabb)
+Geometry::Geometry(const Renderable::Renderable::Ptr& subMesh, const Material::Ptr& material)
     : SceneLeaf(), mesh_(subMesh), material_(material)
 {
-    updateAABB(aabb);
+    updateAABB(subMesh->boundingBox());
 }
 
 void Geometry::updateRenderList(RenderQueue& list)
@@ -27,4 +27,9 @@ const Material::Ptr& Geometry::material() const
 void Geometry::setMaterial(const Material::Ptr& material)
 {
     material_ = material;
+}
+
+std::shared_ptr<SceneLeaf> Geometry::clone() const
+{
+    return std::make_shared<Geometry>(*this);
 }

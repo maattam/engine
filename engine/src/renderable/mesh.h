@@ -1,4 +1,4 @@
-// SubMesh is a vertex array object which holds indexed vertices, normals, tanges and uvs.
+// Mesh is a vertex array object which holds indexed vertices, normals, tanges and uvs.
 
 #ifndef SUBMESH_H
 #define SUBMESH_H
@@ -13,13 +13,13 @@
 
 namespace Engine { namespace Renderable {
 
-class SubMesh : public Renderable
+class Mesh : public Renderable
 {
 public:
-    typedef std::shared_ptr<SubMesh> Ptr;
+    typedef std::shared_ptr<Mesh> Ptr;
 
-    SubMesh();
-    virtual ~SubMesh();
+    Mesh();
+    virtual ~Mesh();
 
     virtual void render() const;
 

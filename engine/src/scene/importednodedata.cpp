@@ -81,7 +81,7 @@ void ImportedNodeData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, ai
         QMatrix4x4 nodeTransf = aiMatrixToQMatrix(transform);
 
         // Create new node
-        newParent = parent->createSceneNodeChild();
+        newParent = parent->createChild();
         newParent->applyTransformation(nodeTransf);
 
         // Don't carry transformation over to child nodes
@@ -92,7 +92,7 @@ void ImportedNodeData::buildSceneNode(Graph::SceneNode* parent, aiNode* node, ai
     {
         for(Graph::SceneLeaf* entity : findEntities(node->mName.data))
         {
-            newParent->attachEntity(entity);
+            entity->attach(newParent);
         }
     }
 

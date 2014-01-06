@@ -3,18 +3,15 @@
 #include "common.h"
 #include "gbuffer.h"
 #include "resourcedespatcher.h"
-#include "scene/visiblescene.h"
 #include "renderable/renderable.h"
 #include "graph/camera.h"
-#include "graph/light.h"
-#include "graph/scenenode.h"
 #include "renderqueue.h"
 #include "texture2dresource.h"
 
 using namespace Engine;
 
 DeferredRenderer::DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher)
-    : gbuffer_(gbuffer), scene_(nullptr), camera_(nullptr)
+    : gbuffer_(gbuffer), renderQueue_(nullptr), camera_(nullptr)
 {
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
     geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), Shader::Type::Fragment));
@@ -39,14 +36,23 @@ bool DeferredRenderer::setViewport(const QRect& viewport, unsigned int samples)
     return gbuffer_->initialise(viewport.width(), viewport.height(), samples);
 }
 
-void DeferredRenderer::setScene(VisibleScene* scene)
+void DeferredRenderer::setGeometryBatch(RenderQueue* batch)
 {
-    scene_ = scene;
+    renderQueue_ = batch;
 }
 
 void DeferredRenderer::setRenderTarget(GLuint /*fbo*/)
 {
     // Geometry pass doesn't output anything to screen
+}
+
+void DeferredRenderer::setLights(const QVector<LightData>& /*lights*/)
+{
+    // Lightning is accumulated in another RenderStage
+}
+
+void DeferredRenderer::setSkyboxTexture(CubemapTexture* /*skybox*/)
+{
 }
 
 void DeferredRenderer::render(Graph::Camera* camera)
@@ -59,9 +65,6 @@ void DeferredRenderer::render(Graph::Camera* camera)
     camera_ = camera;
 
     // Cull visibles
-    renderQueue_.clear();
-    scene_->queryVisibles(camera->worldView(), renderQueue_);
-
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
 
     gl->glEnable(GL_DEPTH_TEST);
@@ -88,7 +91,7 @@ void DeferredRenderer::geometryPass()
 
     const QMatrix4x4 view = camera_->view();
 
-    for(auto it = renderQueue_.begin(); it != renderQueue_.end(); ++it)
+    for(auto it = renderQueue_->begin(); it != renderQueue_->end(); ++it)
     {
         // Render only opaque materials to gbuffer
         if(it.key() >= RenderQueue::RENDER_EMISSIVE)

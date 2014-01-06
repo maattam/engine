@@ -71,17 +71,23 @@
     <Filter Include="Shaders\postfx">
       <UniqueIdentifier>{4f707cba-86f3-4df3-9f1b-be20eed93805}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\renderstage">
-      <UniqueIdentifier>{aa8fa2c6-21fd-49b9-ad99-a2ddde6715f1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\renderstage">
-      <UniqueIdentifier>{57dda25a-8bb2-40a4-9dbb-ec2772d10e02}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\graph\leaf">
       <UniqueIdentifier>{c089e030-4a08-416e-b9cc-2b0b9888d4be}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\graph\leaf">
       <UniqueIdentifier>{898cafc3-144f-4a54-852e-d9f3b2a97983}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\renderer">
+      <UniqueIdentifier>{c77831d4-d690-4b80-9c2b-a9f347ad1b26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\renderer\renderstage">
+      <UniqueIdentifier>{aa8fa2c6-21fd-49b9-ad99-a2ddde6715f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\renderer">
+      <UniqueIdentifier>{cd30a972-39e2-491a-846c-f6606579b8a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\renderer\renderstage">
+      <UniqueIdentifier>{57dda25a-8bb2-40a4-9dbb-ec2772d10e02}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -103,12 +109,6 @@
     <ClCompile Include="src\technique\technique.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene\scene.cpp">
-      <Filter>Source Files\scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderable\submesh.cpp">
-      <Filter>Source Files\renderable</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderable\cube.cpp">
       <Filter>Source Files\renderable</Filter>
     </ClCompile>
@@ -118,26 +118,8 @@
     <ClCompile Include="src\renderable\renderable.cpp">
       <Filter>Source Files\renderable</Filter>
     </ClCompile>
-    <ClCompile Include="src\graph\scenenode.cpp">
-      <Filter>Source Files\graph</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graph\node.cpp">
-      <Filter>Source Files\graph</Filter>
-    </ClCompile>
-    <ClCompile Include="src\forwardrenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\debugrenderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderqueue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\technique\dsgeometryshader.cpp">
       <Filter>Source Files\technique</Filter>
-    </ClCompile>
-    <ClCompile Include="src\deferredrenderer.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\technique\dsmaterialshader.cpp">
       <Filter>Source Files\technique</Filter>
@@ -149,22 +131,19 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderstage.cpp">
-      <Filter>Source Files\renderstage</Filter>
+      <Filter>Source Files\renderer\renderstage</Filter>
     </ClCompile>
     <ClCompile Include="src\postprocess.cpp">
-      <Filter>Source Files\renderstage</Filter>
-    </ClCompile>
-    <ClCompile Include="src\lightingstage.cpp">
-      <Filter>Source Files\renderstage</Filter>
+      <Filter>Source Files\renderer\renderstage</Filter>
     </ClCompile>
     <ClCompile Include="src\quadlighting.cpp">
-      <Filter>Source Files\renderstage</Filter>
+      <Filter>Source Files\renderer\renderstage</Filter>
     </ClCompile>
     <ClCompile Include="src\technique\skybox.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
     <ClCompile Include="src\skyboxstage.cpp">
-      <Filter>Source Files\renderstage</Filter>
+      <Filter>Source Files\renderer\renderstage</Filter>
     </ClCompile>
     <ClCompile Include="src\technique\blurfilter.cpp">
       <Filter>Source Files\technique</Filter>
@@ -204,6 +183,27 @@
     </ClCompile>
     <ClCompile Include="src\graph\sceneleaf.cpp">
       <Filter>Source Files\graph\leaf</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderable\mesh.cpp">
+      <Filter>Source Files\renderable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\debugrenderer.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\deferredrenderer.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forwardrenderer.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderqueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\basicscenemanager.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graph\scenenode.cpp">
+      <Filter>Source Files\graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -270,14 +270,14 @@
     <None Include="shaders\testquad.frag">
       <Filter>Shaders\debugging</Filter>
     </None>
-    <None Include="src\graph\scenenode.inl">
-      <Filter>Source Files\graph</Filter>
-    </None>
     <None Include="shaders\dsillumination.frag">
       <Filter>Shaders\technique</Filter>
     </None>
     <None Include="shaders\dsmaterial_debug.frag">
       <Filter>Shaders\debugging</Filter>
+    </None>
+    <None Include="src\scene\importednode.inl">
+      <Filter>Source Files\scene</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -296,12 +296,6 @@
     <ClInclude Include="src\technique\shadowmap.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\scene.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderable\submesh.h">
-      <Filter>Header Files\renderable</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderable\cube.h">
       <Filter>Header Files\renderable</Filter>
     </ClInclude>
@@ -311,44 +305,14 @@
     <ClInclude Include="src\renderable\renderable.h">
       <Filter>Header Files\renderable</Filter>
     </ClInclude>
-    <ClInclude Include="src\graph\node.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graph\scenenode.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
-    <ClInclude Include="src\forwardrenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\visiblescene.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\scenemodel.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\scene\scenecontroller.h">
-      <Filter>Header Files\scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\scene\sceneobserver.h">
       <Filter>Header Files\scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\debugrenderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderqueue.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\dsgeometryshader.h">
       <Filter>Header Files\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\deferredrenderer.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\dsmaterialshader.h">
       <Filter>Header Files\technique</Filter>
@@ -360,22 +324,19 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderstage.h">
-      <Filter>Header Files\renderstage</Filter>
+      <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\postprocess.h">
-      <Filter>Header Files\renderstage</Filter>
-    </ClInclude>
-    <ClInclude Include="src\lightingstage.h">
-      <Filter>Header Files\renderstage</Filter>
+      <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\quadlighting.h">
-      <Filter>Header Files\renderstage</Filter>
+      <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\skybox.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\skyboxstage.h">
-      <Filter>Header Files\renderstage</Filter>
+      <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\blurfilter.h">
       <Filter>Header Files\technique</Filter>
@@ -424,6 +385,33 @@
     </ClInclude>
     <ClInclude Include="src\graph\sceneleaf.h">
       <Filter>Header Files\graph\leaf</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderable\mesh.h">
+      <Filter>Header Files\renderable</Filter>
+    </ClInclude>
+    <ClInclude Include="src\debugrenderer.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\deferredrenderer.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forwardrenderer.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderqueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scenemanager.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\basicscenemanager.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graph\scenenode.h">
+      <Filter>Header Files\graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

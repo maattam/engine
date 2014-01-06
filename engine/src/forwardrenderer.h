@@ -6,13 +6,11 @@
 #include "renderer.h"
 
 #include <QRect>
-#include <QList>
 
 #include "technique/basiclightning.h"
 #include "technique/shadowmap.h"
 #include "renderqueue.h"
 #include "material.h"
-#include "visitor.h"
 
 namespace Engine {
 
@@ -22,8 +20,7 @@ namespace Graph {
 
 class ResourceDespatcher;
 
-class ForwardRenderer : public Renderer,
-    public BaseVisitor, public Visitor<Graph::Light>
+class ForwardRenderer : public Renderer
 {
 public:
     explicit ForwardRenderer(ResourceDespatcher& despatcher);
@@ -32,7 +29,14 @@ public:
     // Sets OpenGL viewport parameters.
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
-    virtual void setScene(VisibleScene* scene);
+    // Sets the render queue which contains the visible geometry of the scene.
+    virtual void setGeometryBatch(RenderQueue* batch);
+
+    // Sets lights for the current render batch.
+    virtual void setLights(const QVector<LightData>& lights);
+
+    // Sets skybox texture for the current render batch.
+    virtual void setSkyboxTexture(CubemapTexture* skybox);
 
     // Renders the scene through the camera's viewport.
     virtual void render(Graph::Camera* camera);
@@ -41,10 +45,8 @@ public:
     // If fbo is 0, the default framebuffer is used.
     virtual void setRenderTarget(GLuint fbo);
 
-    virtual void visit(Graph::Light& light);
-
 private:
-    VisibleScene* scene_;
+    RenderQueue* renderQueue_;
     QRect viewport_;
     unsigned int samples_;
 
@@ -56,10 +58,11 @@ private:
 
     GLuint fbo_;
 
-    QList<Graph::Light*> lights_;
+    LightData directionalLight_;
+    QList<LightData> lights_;
 
     void shadowMapPass();
-    void renderPass(Graph::Camera* camera, const RenderQueue& queue);
+    void renderPass(Graph::Camera* camera);
     void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);

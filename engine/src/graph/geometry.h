@@ -1,4 +1,4 @@
-// SubEntity holds reference to a material and renderable -pair.
+// Geometry holds reference to a material and renderable -pair.
 
 #ifndef SUBENTITY_H
 #define SUBENTITY_H
@@ -15,7 +15,7 @@ class Geometry : public SceneLeaf
 public:
     typedef std::shared_ptr<Geometry> Ptr;
 
-    Geometry(const Renderable::Renderable::Ptr& mesh, const Material::Ptr& material, const AABB& aabb);
+    Geometry(const Renderable::Renderable::Ptr& mesh, const Material::Ptr& material);
 
     virtual void updateRenderList(RenderQueue& list);
 
@@ -25,6 +25,8 @@ public:
     // precondition: material != nullptr
     // postcondition: material ownership is copied
     void setMaterial(const Material::Ptr& material);
+
+    virtual std::shared_ptr<SceneLeaf> clone() const;
 
 private:
     Renderable::Renderable::Ptr mesh_;

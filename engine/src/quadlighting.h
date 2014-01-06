@@ -3,7 +3,7 @@
 #ifndef QUADLIGHTING_H
 #define QUADLIGHTING_H
 
-#include "lightingstage.h"
+#include "renderstage.h"
 
 #include "renderable/quad.h"
 #include "technique/illuminationmodel.h"
@@ -16,7 +16,7 @@ namespace Engine {
 class ResourceDespatcher;
 class GBuffer;
 
-class QuadLighting : public LightingStage
+class QuadLighting : public RenderStage
 {
 public:
     QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher);
@@ -26,6 +26,9 @@ public:
     // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
+    // Sets lights for the current render batch.
+    virtual void setLights(const QVector<LightData>& lights);
+
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
     virtual void render(Graph::Camera* camera);
@@ -34,14 +37,13 @@ public:
     // If fbo is nullptr, the default framebuffer (0) is used.
     virtual void setRenderTarget(GLuint fbo);
 
-    virtual void visit(Graph::Light& light);
-
 private:
     GLuint fbo_;
     GBuffer& gbuffer_;
 
     QVector<Graph::Light*> spotLights_;
     QVector<Graph::Light*> pointLights_;
+    Graph::Light* directionalLight_;
 
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;

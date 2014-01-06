@@ -34,3 +34,13 @@ bool Renderable::bindVertexArray() const
     gl->glBindVertexArray(vertexArray_);
     return true;
 }
+
+const Engine::AABB& Renderable::boundingBox() const
+{
+    return aabb_;
+}
+
+void Renderable::setAABB(const Engine::AABB& aabb)
+{
+    aabb_ = aabb;
+}

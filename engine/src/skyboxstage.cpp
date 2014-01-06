@@ -2,7 +2,6 @@
 
 #include "renderable/renderable.h"
 #include "technique/skybox.h"
-#include "scene/visiblescene.h"
 #include "cubemaptexture.h"
 #include "graph/camera.h"
 #include "gbuffer.h"
@@ -10,18 +9,12 @@
 using namespace Engine;
 
 SkyboxStage::SkyboxStage(Renderer* renderer)
-    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), scene_(nullptr), cubemapUnit_(0)
+    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), cubemap_(nullptr), cubemapUnit_(0)
 {
 }
 
 SkyboxStage::~SkyboxStage()
 {
-}
-
-void SkyboxStage::setScene(VisibleScene* scene)
-{
-    RenderStage::setScene(scene);
-    scene_ = scene;
 }
 
 void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
@@ -34,12 +27,12 @@ void SkyboxStage::render(Graph::Camera* camera)
 {
     RenderStage::render(camera);
 
-    if(scene_->skybox() == nullptr)
+    if(cubemap_ == nullptr || mesh_ == nullptr)
     {
-        return; // Skybox now set
+        return; // Skybox not set
     }
 
-    if(mesh_ == nullptr || skybox_ == nullptr || !skybox_->enable())
+    if(skybox_ == nullptr || !skybox_->enable())
     {
         return;
     }
@@ -51,7 +44,7 @@ void SkyboxStage::render(Graph::Camera* camera)
     trans.translate(camera->position());
     skybox_->setMVP(camera->worldView() * trans);
 
-    if(scene_->skybox()->bindActive(GL_TEXTURE0 + cubemapUnit_))
+    if(cubemap_->bindActive(GL_TEXTURE0 + cubemapUnit_))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);
@@ -93,6 +86,11 @@ void SkyboxStage::setSkyboxTechnique(const SkyboxPtr& skybox)
 void SkyboxStage::setSkyboxMesh(const MeshPtr& mesh)
 {
     mesh_ = mesh;
+}
+
+void SkyboxStage::setSkyboxTexture(CubemapTexture* skybox)
+{
+    cubemap_ = skybox;
 }
 
 void SkyboxStage::initTechnique()

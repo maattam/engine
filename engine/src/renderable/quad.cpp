@@ -27,6 +27,8 @@ Quad::Quad()
     gl->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     gl->glBindVertexArray(0);
+
+    setAABB(AABB(QVector3D(-1, -1, 0), QVector3D(1, 1, 0)));
 }
 
 Quad::~Quad()

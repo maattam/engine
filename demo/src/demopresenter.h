@@ -16,7 +16,7 @@ class InputState;
 
 namespace Engine {
     class ResourceDespatcher;
-    class Scene;
+    class BasicSceneManager;
     class Renderer;
     class DebugRenderer;
 
@@ -60,7 +60,7 @@ private:
     std::shared_ptr<Engine::ResourceDespatcher> despatcher_;
     std::shared_ptr<Engine::Renderer> renderer_;
     std::shared_ptr<Engine::DebugRenderer> debugRenderer_;
-    std::shared_ptr<Engine::Scene> sceneModel_;
+    std::shared_ptr<Engine::BasicSceneManager> sceneManager_;
     std::shared_ptr<FreeLookScene> sceneController_;
     std::shared_ptr<InputState> input_;
 

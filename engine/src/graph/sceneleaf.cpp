@@ -34,7 +34,7 @@ void SceneLeaf::detach()
     node_ = nullptr;
 }
 
-SceneNode* SceneLeaf::parentNode() const
+Graph::SceneNode* SceneLeaf::parentNode() const
 {
     return node_;
 }

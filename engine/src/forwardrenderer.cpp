@@ -7,14 +7,13 @@
 #include "graph/light.h"
 #include "graph/scenenode.h"
 #include "renderable/renderable.h"
-#include "scene/visiblescene.h"
 #include "resourcedespatcher.h"
 #include "texture2dresource.h"
 
 using namespace Engine;
 
 ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
-    : scene_(nullptr), samples_(1), fbo_(0)
+    : renderQueue_(nullptr), samples_(1), fbo_(0)
 {
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,
@@ -27,6 +26,9 @@ ForwardRenderer::ForwardRenderer(ResourceDespatcher& despatcher)
     // BasicLightning shaders
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/basiclightning.vert"), Shader::Type::Vertex));
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/basiclightning.frag"), Shader::Type::Fragment));
+
+    directionalLight_.light = nullptr;
+    directionalLight_.occluders = nullptr;
 }
 
 ForwardRenderer::~ForwardRenderer()
@@ -46,19 +48,35 @@ bool ForwardRenderer::setViewport(const QRect& viewport, unsigned int samples)
     return true;
 }
 
-void ForwardRenderer::setScene(VisibleScene* scene)
+
+void ForwardRenderer::setGeometryBatch(RenderQueue* batch)
 {
-    scene_ = scene;
+    renderQueue_ = batch;
+}
+
+void ForwardRenderer::setLights(const QVector<LightData>& lights)
+{
+    for(const LightData& lightData : lights)
+    {
+        if(lightData.light->type() == Graph::Light::LIGHT_DIRECTIONAL)
+        {
+            directionalLight_ = lightData;
+        }
+
+        else
+        {
+            lights_.push_back(lightData);
+        }
+    }
+}
+
+void ForwardRenderer::setSkyboxTexture(CubemapTexture* /*skybox*/)
+{
 }
 
 void ForwardRenderer::setRenderTarget(GLuint fbo)
 {
     fbo_ = fbo;
-}
-
-void ForwardRenderer::visit(Graph::Light& light)
-{
-    lights_.push_back(&light);
 }
 
 bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples)
@@ -74,14 +92,6 @@ bool ForwardRenderer::initialiseBuffers(unsigned int width, unsigned int height,
 
 void ForwardRenderer::render(Graph::Camera* camera)
 {
-    // Gather visible lights
-    scene_->addVisitor(this);
-
-    // Cull visibles
-    RenderQueue renderQueue;
-    scene_->queryVisibles(camera->worldView(), renderQueue);
-    scene_->removeVisitor(this);
-
     gl->glEnable(GL_CULL_FACE);
     gl->glEnable(GL_DEPTH_TEST);
 
@@ -93,12 +103,15 @@ void ForwardRenderer::render(Graph::Camera* camera)
     // Render geometry and lightning
     gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
 
-    renderPass(camera, renderQueue);
+    renderPass(camera);
 
     gl->glDisable(GL_DEPTH_TEST);
     gl->glDisable(GL_CULL_FACE);
 
     lights_.clear();
+
+    directionalLight_.light = nullptr;
+    directionalLight_.occluders = nullptr;
 }
 
 void ForwardRenderer::shadowMapPass()
@@ -112,30 +125,34 @@ void ForwardRenderer::shadowMapPass()
 
     // Render depth for each spot light
     int spotLightIndex = 0;
-    for(Graph::Light* light : lights_)
+    for(LightData& lightData : lights_)
     {
-        // Ignore other lights for now
-        if(light->type() != Graph::Light::LIGHT_SPOT)
+        if(lightData.occluders == nullptr)
         {
             continue;
         }
 
-        shadowTech_.renderSpotLight(spotLightIndex++, light, scene_);
+        // Ignore other lights for now
+        if(lightData.light->type() != Graph::Light::LIGHT_SPOT)
+        {
+            continue;
+        }
+
+        shadowTech_.renderSpotLight(spotLightIndex++, lightData.light, lightData.occluders);
     }
 
     gl->glCullFace(GL_BACK);
 
     // Render depth for directional light
-    auto directionalLight = scene_->directionalLight();
-    if(directionalLight == nullptr)
+    if(directionalLight_.occluders == nullptr)
     {
         return;
     }
 
-    shadowTech_.renderDirectinalLight(directionalLight, scene_);
+    shadowTech_.renderDirectinalLight(directionalLight_.light, directionalLight_.occluders);
 }
 
-void ForwardRenderer::renderPass(Graph::Camera* camera, const RenderQueue& queue)
+void ForwardRenderer::renderPass(Graph::Camera* camera)
 {
     // Prepare OpenGL state for render pass
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());
@@ -149,8 +166,15 @@ void ForwardRenderer::renderPass(Graph::Camera* camera, const RenderQueue& queue
 
     lightningTech_.setEyeWorldPos(camera->position());
     lightningTech_.setTextureUnits(0, 1, 2, 3);
-    lightningTech_.setDirectionalLight(scene_->directionalLight());
-    lightningTech_.setPointAndSpotLights(lights_);
+    lightningTech_.setDirectionalLight(directionalLight_.light);
+
+    QList<Graph::Light*> lights;
+    for(LightData& light : lights_)
+    {
+        lights << light.light;
+    }
+
+    lightningTech_.setPointAndSpotLights(lights);
     lightningTech_.setShadowEnabled(true);
 
     // Bind directional light shadow map
@@ -167,7 +191,7 @@ void ForwardRenderer::renderPass(Graph::Camera* camera, const RenderQueue& queue
     }
 
     // Render visibles
-    for(auto it = queue.begin(); it != queue.end(); ++it)
+    for(auto it = renderQueue_->begin(); it != renderQueue_->end(); ++it)
     {
         lightningTech_.setWorldView(*it->modelView);
         lightningTech_.setMVP(camera->worldView() * *it->modelView);

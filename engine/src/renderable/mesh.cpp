@@ -1,23 +1,23 @@
-#include "submesh.h"
+#include "mesh.h"
 
 #include <QDebug>
 
 using namespace Engine;
 using namespace Renderable;
 
-SubMesh::SubMesh()
+Mesh::Mesh()
     : Renderable(), numIndices_(0)
 {
     for(int i = 0; i < NUM_BUFFERS; ++i)
         buffers_[i] = 0;
 }
 
-SubMesh::~SubMesh()
+Mesh::~Mesh()
 {
     destroy();
 }
 
-void SubMesh::destroy()
+void Mesh::destroy()
 {
     gl->glDeleteBuffers(NUM_BUFFERS, buffers_);
 
@@ -27,7 +27,7 @@ void SubMesh::destroy()
     numIndices_ = 0;
 }
 
-void SubMesh::render() const
+void Mesh::render() const
 {
     if(!bindVertexArray() || numIndices_ == 0)
         return;
@@ -37,7 +37,7 @@ void SubMesh::render() const
     gl->glBindVertexArray(0);
 }
 
-bool SubMesh::initMesh( const QVector<QVector3D>& vertices,
+bool Mesh::initMesh( const QVector<QVector3D>& vertices,
                         const QVector<QVector3D>& normals,
                         const QVector<QVector3D>& tangents,
                         const QVector<QVector2D>& uvs,

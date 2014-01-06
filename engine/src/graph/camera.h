@@ -19,6 +19,8 @@ class Camera : public SceneLeaf
 public:
     enum CameraType { PERSPECTIVE, ORTHOGRAPHIC };
 
+    typedef std::shared_ptr<Camera> Ptr;
+
     // The camera points towards positive z by default. The up is (0, 1, 0).
     Camera(CameraType type, const QVector3D& direction = UNIT_Z);
 
@@ -97,6 +99,8 @@ public:
     void update();
 
     virtual void updateRenderList(RenderQueue& list) {}
+
+    virtual std::shared_ptr<SceneLeaf> clone() const;
 
 private:
     CameraType type_;

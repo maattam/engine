@@ -10,6 +10,8 @@ namespace Graph {
     class SceneNode;
 }
 
+class CubemapTexture;
+
 class SceneObserver
 {
 public:

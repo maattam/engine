@@ -2,13 +2,14 @@
 
 #include "resourcedespatcher.h"
 #include "graph/scenenode.h"
+#include "scene/scenemanager.h"
 
 #include <QTime>
 #include <qmath.h>
 
 using namespace Engine;
 
-LightScene::LightScene(ResourceDespatcher* despatcher)
+LightScene::LightScene(ResourceDespatcher& despatcher)
     : FreeLookScene(despatcher), elapsed_(0)
 {
     qsrand(QTime::currentTime().msec());
@@ -44,21 +45,21 @@ void LightScene::initialise()
     setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
     // Load meshes
-    dragon_ = despatcher()->get<ImportedNode>("assets/dragon.dae");
-    dragon_->attach(rootNode());
+    dragon_ = despatcher().get<ImportedNode>("assets/dragon.dae", scene());
+    dragon_->attach(&rootNode());
 
     for(int i = 0; i < 50; ++i)
     {
-        insertLight(rootNode());
+        insertLight(&rootNode());
     }
 }
 
 void LightScene::insertLight(Engine::Graph::SceneNode* node)
 {
-    Graph::SceneNode* lightNode = node->createSceneNodeChild();
+    Graph::SceneNode* lightNode = node->createChild();
     PointLight light;
 
-    light.light = std::make_shared<Graph::Light>(Graph::Light::LIGHT_POINT);
+    light.light = createLight(Graph::Light::LIGHT_POINT);
     light.light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
     light.light->setDiffuseIntensity(25.0f);
 
@@ -69,5 +70,5 @@ void LightScene::insertLight(Engine::Graph::SceneNode* node)
     light.hphi = qDegreesToRadians(static_cast<float>(qrand() % 360));
 
     lights_.push_back(light);
-    lightNode->attachEntity(light.light.get());
+    light.light->attach(lightNode);
 }

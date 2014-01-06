@@ -24,6 +24,11 @@ public:
 
     virtual bool hasTangents() const;
 
+    // Returns the minimum bounding box that covers vertex extremes
+    virtual const AABB& boundingBox() const;
+
+    void setAABB(const AABB& aabb);
+
 protected:
     bool bindVertexArray() const;
     void setTangents(bool tangents);
@@ -31,6 +36,7 @@ protected:
 private:
     GLuint vertexArray_;
     bool hasTangents_;
+    AABB aabb_;
 
     Renderable(const Renderable&);
     Renderable& operator=(const Renderable&);

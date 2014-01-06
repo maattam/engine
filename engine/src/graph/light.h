@@ -16,6 +16,7 @@ class Light : public SceneLeaf
 
 public:
     enum LightType { LIGHT_POINT, LIGHT_SPOT, LIGHT_DIRECTIONAL };
+    enum LightMask { MASK_CAST_SHADOWS = 0x1 };
 
     typedef std::shared_ptr<Light> Ptr;
 
@@ -30,6 +31,14 @@ public:
     };
 
     LightType type() const;
+
+    // Default light mask is 0
+    unsigned int lightMask() const;
+    void setLightMask(unsigned int mask);
+
+    // Calculates the light's frustum for culling occluders.
+    // TODO: Move to separate class.
+    QMatrix4x4 frustum() const;
 
     void setColor(const QVector3D& color);
     const QVector3D& color() const;
@@ -65,6 +74,8 @@ public:
 
     float cutoffDistance() const;
 
+    virtual std::shared_ptr<SceneLeaf> clone() const;
+
 private:
     void calculateAABB();
 
@@ -79,6 +90,8 @@ private:
 
     float angleOuterCone_;
     float angleInnerCone_;
+
+    unsigned int lightMask_;
 
     Attenuation attenuation_;
 };

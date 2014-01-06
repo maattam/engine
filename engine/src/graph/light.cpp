@@ -1,15 +1,17 @@
 #include "light.h"
 
+#include <QDebug>
 #include <limits>
 #include <qmath.h>
 
 #include "mathelp.h"
 #include "scenenode.h"
+#include "camera.h"
 
 using namespace Engine::Graph;
 
 Light::Light(LightType type)
-    : SceneLeaf(), type_(type)
+    : SceneLeaf(), type_(type), lightMask_(0)
 {
     color_ = QVector3D(1.0f, 1.0f, 1.0f);
 
@@ -28,6 +30,16 @@ Light::Light(LightType type)
 
 Light::~Light()
 {
+}
+
+unsigned int Light::lightMask() const
+{
+    return lightMask_;
+}
+
+void Light::setLightMask(unsigned int mask)
+{
+    lightMask_ = mask;
 }
 
 Light::LightType Light::type() const
@@ -204,6 +216,32 @@ float Light::cutoffDistance() const
     return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.quadratic);
 }
 
+QMatrix4x4 Light::frustum() const
+{
+    if(type_ == LIGHT_SPOT)
+    {
+        QMatrix4x4 view;
+        view.perspective(angleOuterCone() * 2, 1.0f, 1.0f, cutoffDistance());
+        view.lookAt(position(), position() + direction(), UNIT_Y);
+
+        return view;
+    }
+
+    else if(type_ == LIGHT_DIRECTIONAL)
+    {
+        // TODO: Directional light shadow
+        Graph::Camera view(QRectF(-95, -65, 190, 130), direction());
+        view.setNearPlane(-80.0f);
+        view.setFarPlane(1000.0f);
+        view.update();
+
+        return view.worldView();
+    }
+
+    // TODO: Point lights
+    return QMatrix4x4();
+}
+
 const QVector3D& Light::position() const
 {
     // Update derived position is parent exists
@@ -219,4 +257,9 @@ const QVector3D& Light::position() const
 void Light::setPosition(const QVector3D& position)
 {
     basePosition_ = position;
+}
+
+std::shared_ptr<SceneLeaf> Light::clone() const
+{
+    return std::make_shared<Light>(*this);
 }

@@ -181,21 +181,19 @@
     <ClCompile Include="src\graph\geometry.cpp" />
     <ClCompile Include="src\graph\sceneleaf.cpp" />
     <ClCompile Include="src\graph\light.cpp" />
-    <ClCompile Include="src\graph\node.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
-    <ClCompile Include="src\lightingstage.cpp" />
     <ClCompile Include="src\postprocess.cpp" />
     <ClCompile Include="src\quadlighting.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
     <ClCompile Include="src\renderable\quad.cpp" />
     <ClCompile Include="src\renderable\renderable.cpp" />
-    <ClCompile Include="src\renderable\submesh.cpp" />
+    <ClCompile Include="src\renderable\mesh.cpp" />
     <ClCompile Include="src\renderqueue.cpp" />
     <ClCompile Include="src\renderstage.cpp" />
+    <ClCompile Include="src\scene\basicscenemanager.cpp" />
     <ClCompile Include="src\scene\importednode.cpp" />
     <ClCompile Include="src\scene\importednodedata.cpp" />
     <ClCompile Include="src\scene\nodeimport.cpp" />
-    <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\blurfilter.cpp" />
@@ -231,7 +229,7 @@
     <None Include="shaders\testquad.vert" />
     <None Include="shaders\wireframe.frag" />
     <None Include="shaders\wireframe.vert" />
-    <None Include="src\graph\scenenode.inl" />
+    <None Include="src\scene\importednode.inl" />
     <None Include="src\technique\technique.inl" />
   </ItemGroup>
   <ItemGroup>
@@ -251,9 +249,7 @@
     <ClInclude Include="src\graph\geometry.h" />
     <ClInclude Include="src\graph\sceneleaf.h" />
     <ClInclude Include="src\graph\light.h" />
-    <ClInclude Include="src\graph\node.h" />
     <ClInclude Include="src\graph\scenenode.h" />
-    <ClInclude Include="src\lightingstage.h" />
     <ClInclude Include="src\postprocess.h" />
     <ClInclude Include="src\quadlighting.h" />
     <ClInclude Include="src\renderable\cube.h" />
@@ -261,18 +257,16 @@
     <ClInclude Include="src\renderable\primitive.inl" />
     <ClInclude Include="src\renderable\quad.h" />
     <ClInclude Include="src\renderable\renderable.h" />
-    <ClInclude Include="src\renderable\submesh.h" />
+    <ClInclude Include="src\renderable\mesh.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\renderqueue.h" />
     <ClInclude Include="src\renderstage.h" />
+    <ClInclude Include="src\scene\basicscenemanager.h" />
     <ClInclude Include="src\scene\importednode.h" />
     <ClInclude Include="src\scene\importednodedata.h" />
     <ClInclude Include="src\scene\nodeimport.h" />
-    <ClInclude Include="src\scene\scene.h" />
-    <ClInclude Include="src\scene\scenecontroller.h" />
-    <ClInclude Include="src\scene\scenemodel.h" />
+    <ClInclude Include="src\scene\scenemanager.h" />
     <ClInclude Include="src\scene\sceneobserver.h" />
-    <ClInclude Include="src\scene\visiblescene.h" />
     <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\blurfilter.h" />

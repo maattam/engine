@@ -1,116 +1,273 @@
 #include "scenenode.h"
 
-#include "sceneleaf.h"
+#include "mathelp.h"
+#include "light.h"
 
 #include <algorithm>
+#include <qDebug>
 
 using namespace Engine;
 using namespace Engine::Graph;
 
 SceneNode::SceneNode()
-    : Node(), castShadows_(true)
+    : parent_(nullptr), lightMask_(Light::MASK_CAST_SHADOWS)
 {
+    localTrans_.scale = QVector3D(1.0f, 1.0f, 1.0f);
+    updateNeeded_ = true;
 }
 
 SceneNode::~SceneNode()
 {
-    detachAllEntities();
-}
-
-void SceneNode::attachEntity(SceneLeaf* entity)
-{
-    if(entity != nullptr)
+    for(SceneNode* child : children_)
     {
-        entities_.push_back(entity);
-        entity->attach(this);
+        delete child;
     }
 }
 
-SceneLeaf* SceneNode::detachEntity(SceneLeaf* entity)
+SceneNode* SceneNode::getParent() const
 {
-    if(entity == nullptr)
+    return parent_;
+}
+
+void SceneNode::propagate()
+{
+    // Update children
+    updateTransformation(updateNeeded_);
+}
+
+const QMatrix4x4& SceneNode::transformation() const
+{
+    return cachedTransformation_;
+}
+
+void SceneNode::updateTransformation(bool dirtyParent)
+{
+    bool dirty = updateNeeded_ | dirtyParent;
+
+    // Update local transformation if the node needs updating
+    if(updateNeeded_)
+    {
+        cachedLocalTrans_.setToIdentity();
+        cachedLocalTrans_.translate(localTrans_.position);
+        cachedLocalTrans_.rotate(localTrans_.orientation);
+        cachedLocalTrans_.scale(localTrans_.scale);
+
+        updateNeeded_ = false;
+    }
+
+    // If parent or local transformation has changed; we can't rely on old cachedTransformation
+    if(dirty)
+    {
+        SceneNode* parent = getParent();
+        if(parent != nullptr)
+        {
+            cachedTransformation_ = parent->transformation() * cachedLocalTrans_;
+            
+            const Transformation& trans = parent->cachedWorldTrans_;
+            cachedWorldTrans_.position = trans.orientation.rotatedVector(localTrans_.position) + trans.position;
+            cachedWorldTrans_.orientation = trans.orientation * localTrans_.orientation;
+        }
+
+        else
+        {
+            cachedTransformation_ = cachedLocalTrans_;
+            cachedWorldTrans_ = localTrans_;
+        }
+    }
+
+    // Walk through child nodes
+    for(SceneNode* child : children_)
+    {
+        child->updateTransformation(dirty);
+    }
+}
+
+void SceneNode::applyTransformation(const QMatrix4x4& matrix)
+{
+    const QVector3D right = matrix.column(0).toVector3D();
+    const QVector3D up = matrix.column(1).toVector3D();
+    const QVector3D forward = matrix.column(2).toVector3D();
+    
+    // Translation is the 4th column
+    move(matrix.column(3).toVector3D());
+
+    // Scale is the vector norm
+    localTrans_.scale *= QVector3D(right.length(), up.length(), forward.length());
+
+    // Calculate orientation from axes
+    rotate(orientationFromAxes(right.normalized(), up.normalized(), forward.normalized()));
+}
+
+SceneNode::ChildSceneNodes::size_type SceneNode::numChildren() const
+{
+    return children_.size();
+}
+
+SceneNode* SceneNode::getChild(ChildSceneNodes::size_type index) const
+{
+    if(index >= children_.size())
         return nullptr;
 
-    auto iter = std::find(entities_.begin(), entities_.end(), entity);
+    return children_[index];
+}
 
-    if(iter == entities_.end())
-        return nullptr;
+void SceneNode::addChild(SceneNode* child)
+{
+    if(child != nullptr)
+    {
+        child->setParent(this);
+        children_.push_back(child);
+    }
+}
 
-    SceneLeaf* child = *iter;
-    child->detach();
+SceneNode* SceneNode::removeChild(ChildSceneNodes::size_type index)
+{
+    SceneNode* child = getChild(index);
 
-    entities_.erase(iter);
+    if(child != nullptr)
+    {
+        children_.erase(children_.begin() + index);
+    }
 
     return child;
 }
 
-SceneLeaf* SceneNode::detachEntity(Entities::size_type index)
+SceneNode* SceneNode::removeChild(SceneNode* child)
 {
-    SceneLeaf* child = getEntity(index);
-    return detachEntity(child);
-}
+    auto iter = std::find(children_.begin(), children_.end(), child);
 
-void SceneNode::detachAllEntities()
-{
-    for(SceneLeaf* ent : entities_)
-    {
-        ent->detach();
-    }
-
-    entities_.clear();
-}
-
-SceneNode::Entities::size_type SceneNode::numEntities() const
-{
-    return entities_.size();
-}
-
-SceneLeaf* SceneNode::getEntity(Entities::size_type index)
-{
-    if(index >= entities_.size())
+    if(iter == children_.end())
         return nullptr;
 
-    return entities_[index];
+    SceneNode* found = *iter;
+    children_.erase(iter);
+
+    return found;
 }
 
-Node* SceneNode::createChildImpl()
+void SceneNode::removeAllChildren()
 {
-    return new SceneNode;
+    children_.clear();
 }
 
-bool SceneNode::isShadowCaster() const
+SceneNode* SceneNode::createChild()
 {
-    return castShadows_;
+    SceneNode* child = new SceneNode();
+    children_.push_back(child);
+
+    child->setParent(this);
+
+    return child;
 }
 
-void SceneNode::setShadowCaster(bool shadows)
+void SceneNode::setParent(SceneNode* parent)
 {
-    castShadows_ = shadows;
+    parent_ = parent;
 }
 
-SceneNode* SceneNode::createSceneNodeChild()
+void SceneNode::setPosition(const QVector3D& position)
 {
-    return static_cast<SceneNode*>(createChild());
+    localTrans_.position = position;
+    updateNeeded_ = true;
 }
 
-QList<SceneLeaf*> SceneNode::findEntities(const QString& name) const
+const QVector3D& SceneNode::position() const
 {
-    QList<SceneLeaf*> matches;
+    return localTrans_.position;
+}
 
-    // Find matches from this node
-    for(SceneLeaf* entity : entities_)
+void SceneNode::move(const QVector3D& offset)
+{
+    localTrans_.position += offset;
+    updateNeeded_ = true;
+}
+
+void SceneNode::rotate(const QQuaternion& quaternion)
+{
+    setOrientation(quaternion.normalized() * localTrans_.orientation);
+}
+
+void SceneNode::rotate(float angle, const QVector3D& axis)
+{
+    rotate(QQuaternion::fromAxisAndAngle(axis, angle));
+}
+
+void SceneNode::setOrientation(const QQuaternion& quaternion)
+{
+    localTrans_.orientation = quaternion.normalized();
+    updateNeeded_ = true;
+}
+
+const QQuaternion& SceneNode::orientation() const
+{
+    return localTrans_.orientation;
+}
+
+void SceneNode::setDirection(const QVector3D& direction)
+{
+    // Default look in OpenGL is towards -Z
+    const QVector3D start = -UNIT_Z;
+    const QVector3D dest = direction.normalized();
+
+    QQuaternion ori;
+
+    // 180 degree turn; infite possibilites, choose one that works.
+    if(QVector3D::dotProduct(start, dest) < -1.0f + 0.001f)
     {
-        if(entity->name() == name)
-        {
-            matches << entity;
-        }
+        ori = QQuaternion(0.0f, 0.0f, 1.0f, 0.0f);
     }
 
-    // Follow child nodes
-    for(ChildNodes::size_type i = 0; i < numChildren(); ++i)
+    else
     {
-        matches += static_cast<SceneNode*>(getChild(i))->findEntities(name);
+        ori = rotationBetweenVectors(start, dest);
     }
 
-    return matches;
+    setOrientation(ori.normalized());
+}
+
+QVector3D SceneNode::direction() const
+{
+    // Default direction points towards -Z
+    return localTrans_.orientation.rotatedVector(-UNIT_Z);
+}
+
+void SceneNode::lookAt(const QVector3D& target)
+{
+    setDirection(target - cachedWorldTrans_.position);
+}
+
+void SceneNode::setScale(const QVector3D& scale)
+{
+    localTrans_.scale = scale;
+    updateNeeded_ = true;
+}
+
+void SceneNode::setScale(float scale)
+{
+    setScale(QVector3D(scale, scale, scale));
+}
+
+const QVector3D& SceneNode::scale() const
+{
+    return localTrans_.scale;
+}
+
+const QVector3D& SceneNode::worldPosition() const
+{
+    return cachedWorldTrans_.position;
+}
+
+const QQuaternion& SceneNode::worldOrientation() const
+{
+    return cachedWorldTrans_.orientation;
+}
+
+unsigned int SceneNode::lightMask() const
+{
+    return lightMask_;
+}
+
+void SceneNode::setLightMask(unsigned int mask)
+{
+    lightMask_ = mask;
 }

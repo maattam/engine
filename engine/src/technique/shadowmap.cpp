@@ -108,7 +108,7 @@ size_t ShadowMap::numSpotLights() const
 // Render methods
 //
 
-void ShadowMap::renderSpotLight(size_t index, const Graph::Light* light, VisibleScene* visibles)
+void ShadowMap::renderSpotLight(size_t index, const Graph::Light* light, RenderQueue* visibles)
 {
     const auto& texture = spotLights_.at(index).texture;
 
@@ -126,7 +126,7 @@ void ShadowMap::renderSpotLight(size_t index, const Graph::Light* light, Visible
     renderLight(spotLights_.at(index), visibles);
 }
 
-void ShadowMap::renderDirectinalLight(Graph::Light* light, VisibleScene* visibles)
+void ShadowMap::renderDirectinalLight(Graph::Light* light, RenderQueue* visibles)
 {
     if(light == nullptr)
         return;
@@ -145,7 +145,7 @@ void ShadowMap::renderDirectinalLight(Graph::Light* light, VisibleScene* visible
     renderLight(directionalLight_, visibles);
 }
 
-void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
+void ShadowMap::renderLight(const LightData& light, RenderQueue* visibles)
 {
     gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
     gl->glClear(GL_DEPTH_BUFFER_BIT);
@@ -155,11 +155,7 @@ void ShadowMap::renderLight(const LightData& light, VisibleScene* visibles)
 
     setUniformValue("gMaskSampler", 0);
 
-    // Cull & render visibles
-    RenderQueue shadowCasters;
-    visibles->queryVisibles(light.worldView, shadowCasters, true);
-
-    for(auto it = shadowCasters.begin(); it != shadowCasters.end(); ++it)
+    for(auto it = visibles->begin(); it != visibles->end(); ++it)
     {
         setUniformValue("gMVP", light.worldView * *it->modelView);
 

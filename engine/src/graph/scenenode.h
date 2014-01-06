@@ -1,68 +1,118 @@
-// Node which holds Entities; forms the scene graph
+// Scene graph node which represents hierarchial rotation, scale and translation relative to child nodes.
 
-#ifndef SCENENODE_H
-#define SCENENODE_H
+#ifndef NODE_H
+#define NODE_H
 
-#include "node.h"
+#include <QMatrix4x4>
+#include <QQuaternion>
+#include <vector>
 
-#include <QString>
-#include <QList>
+namespace Engine { namespace Graph {
 
-namespace Engine {
-    
-namespace Graph {
-
-class SceneLeaf;
-
-class SceneNode : public Node
+class SceneNode
 {
 public:
-    typedef std::vector<SceneLeaf*> Entities;
+    typedef std::vector<SceneNode*> ChildSceneNodes;
 
     SceneNode();
     virtual ~SceneNode();
 
-    // Attached entity to the node
-    // precondition: entity != nullptr
-    virtual void attachEntity(SceneLeaf* entity);
+    // Returns nullptr the node is root of the hierarchy
+    SceneNode* getParent() const;
 
-    // postcondition: entity detached if found, entity is not deleted
-    virtual SceneLeaf* detachEntity(SceneLeaf* entity);
-    virtual SceneLeaf* detachEntity(Entities::size_type index);
-    virtual void detachAllEntities();
+    // Caches the node's world transformation if the orientation, scale or
+    // translation has changed.
+    // If the node has children, the children's transformations are cached recursively.
+    void propagate();
 
-    Entities::size_type numEntities() const;
+    // Returns the cached world transformation of this node.
+    const QMatrix4x4& transformation() const;
 
-    // precondition: index < numEntities
-    SceneLeaf* getEntity(Entities::size_type index);
+    // Applies given transformation matrix to this node.
+    void applyTransformation(const QMatrix4x4& matrix);
+
+    // Set node position in world space
+    void setPosition(const QVector3D& position);
+    const QVector3D& position() const;
+    const QVector3D& worldPosition() const;
+
+    // Adds offset to the node's position
+    void move(const QVector3D& offset);
+
+    // Rotates the node's orientation by quaternion
+    void rotate(const QQuaternion& quaternion);
+
+    // Rotates the node's orientation by angle degrees along given axis
+    void rotate(float angle, const QVector3D& axis);
+
+    void setOrientation(const QQuaternion& quaternion);
+    const QQuaternion& orientation() const;
+    const QQuaternion& worldOrientation() const;
+
+    // Makes the node face the given direction.
+    void setDirection(const QVector3D& direction);
+
+    // Returns the direction the node is facing
+    QVector3D direction() const;
+
+    // Helper function that sets the node to face at given target.
+    void lookAt(const QVector3D& target);
+
+    void setScale(const QVector3D& scale);
+    void setScale(float scale);
+    const QVector3D& scale() const;
+
+    ChildSceneNodes::size_type numChildren() const;
+
+    // precondition: index < numChildren
+    // postcondition: valid child returned
+    SceneNode* getChild(ChildSceneNodes::size_type index) const;
+
+    // Detached child from the current node
+    // postcondition: the child is not deleted
+    virtual SceneNode* removeChild(ChildSceneNodes::size_type index);
+    virtual SceneNode* removeChild(SceneNode* child);
+    virtual void removeAllChildren();
+
+    // Creates a new child and attaches it to the node
+    // postcondition: valid child returned and attached to the node
+    virtual SceneNode* createChild();
+
+    // Attached a child node to the node
+    // precondition: child != nullptr
+    virtual void addChild(SceneNode* child);
 
     // Tells if the node's entities should cast shadows
-    bool isShadowCaster() const;
-    void setShadowCaster(bool shadows);
-
-    // Returns a list of entities matching the given name.
-    // Multiple entities of different type can share the same name when they belong to the same node.
-    // The search is done recursively downwards the tree, so this function should
-    // be called from the root node.
-    QList<SceneLeaf*> findEntities(const QString& name) const;
-
-    // Convenienve funtions that filters findEntities to match the template parameter.
-    template<typename EntityType>
-    EntityType* findEntity(const QString& name) const;
-
-    // Utility method for creating SceneNode children
-    SceneNode* createSceneNodeChild();
+    // Default light mask is 1 (LIGHT_CAST_SHADOWS)
+    // SceneNodes are marked as occluders if the light's and node AND'ed is 1
+    unsigned int lightMask() const;
+    void setLightMask(unsigned int mask);
 
 protected:
-    virtual Node* createChildImpl();
+    void setParent(SceneNode* parent);
 
 private:
-    Entities entities_;
-    bool castShadows_;
-};
+    SceneNode* parent_;
+    ChildSceneNodes children_;
+    unsigned int lightMask_;
 
-#include "scenenode.inl"
+    bool updateNeeded_;
+    QMatrix4x4 cachedTransformation_;
+    QMatrix4x4 cachedLocalTrans_;
+
+    struct Transformation
+    {
+        QVector3D position;
+        QVector3D scale;
+        QQuaternion orientation;
+    };
+
+    Transformation localTrans_;
+    Transformation cachedWorldTrans_;
+
+    void updateTransformation(bool dirtyParent);
+};
 
 }}
 
-#endif //SCENENODE_H
+#endif //NODE_H

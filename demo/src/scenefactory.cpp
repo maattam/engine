@@ -19,17 +19,17 @@ FreeLookScene* SceneFactory::create(const QString& name)
 
     if(name == "Sponza")
     {
-        return new SponzaScene(&despatcher_);
+        return new SponzaScene(despatcher_);
     }
 
     else if(name == "Shittyboxes")
     {
-        return new BasicScene(&despatcher_);
+        return new BasicScene(despatcher_);
     }
 
     else if(name == "Lights")
     {
-        return new LightScene(&despatcher_);
+        return new LightScene(despatcher_);
     }
 
     return nullptr;

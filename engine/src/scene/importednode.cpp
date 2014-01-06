@@ -2,24 +2,31 @@
 
 #include "graph/scenenode.h"
 #include "graph/geometry.h"
-#include "renderable/submesh.h"
+#include "renderable/mesh.h"
+#include "scene/scenemanager.h"
 
 #include <QVector>
 
 using namespace Engine;
 
-ImportedNode::ImportedNode()
-    : Resource(), rootNode_(nullptr), parentNode_(nullptr)
+ImportedNode::ImportedNode(SceneManager& scene)
+    : Resource(), rootNode_(nullptr), parentNode_(nullptr), scene_(scene), pFlags_(0)
 {
 }
 
-ImportedNode::ImportedNode(const QString& name, unsigned int postprocessFlags)
-    : Resource(name, ResourceBase::QUEUED), rootNode_(nullptr), parentNode_(nullptr), pFlags_(postprocessFlags)
+ImportedNode::ImportedNode(const QString& name, SceneManager& scene, unsigned int postprocessFlags)
+    : Resource(name, ResourceBase::QUEUED), rootNode_(nullptr), parentNode_(nullptr), pFlags_(postprocessFlags), scene_(scene)
 {
 }
 
 ImportedNode::~ImportedNode()
 {
+    // Remove entities from scene
+    for(ImportedNodeData::EntityPtr& leaf : entities_)
+    {
+        scene_.removeSceneLeaf(leaf);
+    }
+
     ImportedNode::releaseResource();
 }
 
@@ -33,11 +40,11 @@ void ImportedNode::attach(Graph::SceneNode* parent)
         // Detach from old parent
         if(parentNode_ != nullptr)
         {
-            parentNode_->removeChild(rootNode_);
+            parentNode_->removeChild(rootNode_.get());
         }
 
         parentNode_ = parent;
-        parentNode_->addChild(rootNode_);
+        parentNode_->addChild(rootNode_.get());
     }
 
     // Queue attachment
@@ -52,19 +59,20 @@ bool ImportedNode::initialiseData(const DataType& data)
     if(data.rootNode() == nullptr)
         return false;
 
-    rootNode_ = data.rootNode();
+    rootNode_.reset(data.rootNode());
 
     // Copy entities
     entities_ = data.entities();
 
-    // Make IndexMeshes into SubMeshes
+    // Make IndexMeshes into Meshes
     QVector<Graph::Geometry::Ptr> subMeshes;
     subMeshes.resize(data.indexMeshes().count());
 
     for(int i = 0; i < data.indexMeshes().count(); ++i)
     {
         const NodeImport::IndexMesh& mesh = data.indexMeshes().at(i);
-        Renderable::SubMesh::Ptr subMesh = std::make_shared<Renderable::SubMesh>();
+        Renderable::Mesh::Ptr subMesh = std::make_shared<Renderable::Mesh>();
+        subMesh->setAABB(mesh.aabb);
 
         if(!subMesh->initMesh(mesh.vertices, mesh.normals,
                 mesh.tangents, mesh.uvs, mesh.indices))
@@ -72,8 +80,7 @@ bool ImportedNode::initialiseData(const DataType& data)
             return false;
         }
 
-        subMeshes[i] = std::make_shared<Graph::Geometry>(subMesh,
-            data.materials().at(mesh.materialIndex), mesh.aabb);
+        subMeshes[i] = std::make_shared<Graph::Geometry>(subMesh, data.materials().at(mesh.materialIndex));
     }
 
     // Group submesh data to meshes
@@ -92,7 +99,7 @@ bool ImportedNode::initialiseData(const DataType& data)
             Graph::Geometry::Ptr& entity = subMeshes[*it];
             entity->setName(meshIndices.name);
 
-            meshIndices.node->attachEntity(entity.get());
+            entity->attach(meshIndices.node);
             entities_.push_back(entity);
         }
     }
@@ -100,7 +107,13 @@ bool ImportedNode::initialiseData(const DataType& data)
     // Attach to parent if set
     if(parentNode_ != nullptr)
     {
-        parentNode_->addChild(rootNode_);
+        parentNode_->addChild(rootNode_.get());
+    }
+
+    // Add entities to scene
+    for(ImportedNodeData::EntityPtr& leaf : entities_)
+    {
+        scene_.addSceneLeaf(leaf);
     }
 
     return true;
@@ -110,12 +123,10 @@ void ImportedNode::releaseResource()
 {
     if(parentNode_ != nullptr)
     {
-        parentNode_->removeChild(rootNode_);
+        parentNode_->removeChild(rootNode_.get());
     }
 
-    delete rootNode_;
-    rootNode_ = nullptr;
-
+    rootNode_.reset();
     entities_.clear();
 }
 
@@ -125,4 +136,21 @@ ImportedNode::ResourceDataPtr ImportedNode::createData()
     data->setPostprocessFlags(pFlags_);
 
     return data;
+}
+
+ImportedNode::Ptr ImportedNode::clone() const
+{
+    ImportedNode::Ptr node(new ImportedNode(scene_));
+    node->parentNode_ = parentNode_;
+
+    // Copy root node
+    node->rootNode_ = rootNode_;
+
+    // Clone entities
+    for(const ImportedNodeData::EntityPtr& leaf : entities_)
+    {
+        node->entities_.push_back(leaf->clone());
+    }
+
+    return node;
 }

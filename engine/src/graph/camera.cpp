@@ -240,3 +240,8 @@ void Camera::yaw(float angle)
 
     rotate(angle, axis);
 }
+
+std::shared_ptr<SceneLeaf> Camera::clone() const
+{
+    return std::make_shared<Camera>(*this);
+}

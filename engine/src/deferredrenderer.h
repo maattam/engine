@@ -27,9 +27,14 @@ public:
     // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
-    // Sets the scene to be used for future render calls
-    // precondition: scene != nullptr
-    virtual void setScene(VisibleScene* scene);
+    // Sets the render queue which contains the visible geometry of the scene.
+    virtual void setGeometryBatch(RenderQueue* batch);
+
+    // Sets lights for the current render batch.
+    virtual void setLights(const QVector<LightData>& lights);
+
+    // Sets skybox texture for the current render batch.
+    virtual void setSkyboxTexture(CubemapTexture* skybox);
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
@@ -43,10 +48,9 @@ private:
     GBufferPtr gbuffer_;
     QRect viewport_;
 
-    VisibleScene* scene_;
     Graph::Camera* camera_;
 
-    RenderQueue renderQueue_;
+    RenderQueue* renderQueue_;
     Technique::DSGeometryShader geometryShader_;
 
     // Error material

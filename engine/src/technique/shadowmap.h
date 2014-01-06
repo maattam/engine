@@ -4,14 +4,17 @@
 #include "technique.h"
 #include "graph/light.h"
 #include "texture2d.h"
-#include "scene/visiblescene.h"
 
 #include <QMatrix4x4>
 
 #include <vector>
 #include <memory>
 
-namespace Engine { namespace Technique {
+namespace Engine {
+    
+class RenderQueue;
+
+namespace Technique {
 
 class ShadowMap : public Technique
 {
@@ -26,8 +29,8 @@ public:
 
     // Resolves light frustrum and renders objects inside the frustrum to depth texture
     // Preconditions: Technique is enabled
-    void renderDirectinalLight(Graph::Light* light, VisibleScene* visibles);
-    void renderSpotLight(size_t index, const Graph::Light* light, VisibleScene* visibles);
+    void renderDirectinalLight(Graph::Light* light, RenderQueue* visibles);
+    void renderSpotLight(size_t index, const Graph::Light* light, RenderQueue* visibles);
 
     // Binds light depth texture to given texture unit
     bool bindDirectionalLight(GLenum textureUnit);
@@ -53,7 +56,7 @@ private:
     std::vector<LightData> spotLights_;
     LightData directionalLight_;
 
-    void renderLight(const LightData& light, VisibleScene* visibles);
+    void renderLight(const LightData& light, RenderQueue* visibles);
 
     // Helper functions to help allocating and deallocating opengl objects.
     void destroySpotLights();

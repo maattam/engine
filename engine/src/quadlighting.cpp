@@ -4,13 +4,13 @@
 #include "graph/camera.h"
 #include "graph/light.h"
 #include "gbuffer.h"
-#include "scene/visiblescene.h"
 #include "renderable/primitive.h"
 
 using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher)
-    : LightingStage(renderer), gbuffer_(gbuffer), fbo_(0), quad_(Renderable::Primitive<Renderable::Quad>::instance())
+    : RenderStage(renderer), gbuffer_(gbuffer), fbo_(0), directionalLight_(nullptr),
+    quad_(Renderable::Primitive<Renderable::Quad>::instance())
 {
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
@@ -26,18 +26,18 @@ bool QuadLighting::setViewport(const QRect& viewport, unsigned int samples)
 {
     lightningTech_.setSampleCount(samples);
 
-    return LightingStage::setViewport(viewport, samples);
+    return RenderStage::setViewport(viewport, samples);
 }
 
 void QuadLighting::setRenderTarget(GLuint fbo)
 {
-    LightingStage::setRenderTarget(fbo);
+    RenderStage::setRenderTarget(fbo);
     fbo_ = fbo;
 }
 
 void QuadLighting::render(Graph::Camera* camera)
 {
-    LightingStage::render(camera);
+    RenderStage::render(camera);
 
     gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_);
     gl->glClear(GL_COLOR_BUFFER_BIT);
@@ -52,9 +52,9 @@ void QuadLighting::render(Graph::Camera* camera)
     gbuffer_.bindTextures();
 
     // Render directional light
-    if(scene_->directionalLight() != nullptr)
+    if(directionalLight_ != nullptr)
     {
-        lightningTech_.enableDirectionalLight(*scene_->directionalLight());
+        lightningTech_.enableDirectionalLight(*directionalLight_);
         quad_->render();
     }
 
@@ -79,17 +79,26 @@ void QuadLighting::render(Graph::Camera* camera)
 
     spotLights_.clear();
     pointLights_.clear();
+    directionalLight_ = nullptr;
 }
 
-void QuadLighting::visit(Graph::Light& light)
+void QuadLighting::setLights(const QVector<LightData>& lights)
 {
-    if(light.type() == Graph::Light::LIGHT_POINT)
+    for(const LightData& lightData : lights)
     {
-        pointLights_.push_back(&light);
-    }
+        if(lightData.light->type() == Graph::Light::LIGHT_DIRECTIONAL)
+        {
+            directionalLight_ = lightData.light;
+        }
 
-    else if(light.type() == Graph::Light::LIGHT_SPOT)
-    {
-        spotLights_.push_back(&light);
+        else if(lightData.light->type() == Graph::Light::LIGHT_POINT)
+        {
+            pointLights_.push_back(lightData.light);
+        }
+
+        else if(lightData.light->type() == Graph::Light::LIGHT_SPOT)
+        {
+            spotLights_.push_back(lightData.light);
+        }
     }
 }

@@ -14,7 +14,7 @@
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), scene_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr),
+    : observable_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr),
     quad_(Renderable::Primitive<Renderable::Quad>::instance()),
     boundingMesh_(Renderable::Primitive<Renderable::Cube>::instance())
 {
@@ -48,9 +48,16 @@ void DebugRenderer::setRenderTarget(GLuint fbo)
     fbo_ = fbo;
 }
 
-void DebugRenderer::setScene(VisibleScene* scene)
+void DebugRenderer::setGeometryBatch(RenderQueue* batch)
 {
-    scene_ = scene;
+}
+
+void DebugRenderer::setLights(const QVector<LightData>& lights)
+{
+}
+
+void DebugRenderer::setSkyboxTexture(CubemapTexture* skybox)
+{
 }
 
 void DebugRenderer::setGBuffer(GBuffer const* gbuffer)
@@ -77,10 +84,10 @@ void DebugRenderer::render(Graph::Camera* camera)
         observable_->addObserver(this);
 
         // Cull visibles
-        RenderQueue renderQueue;
+        /*RenderQueue renderQueue;
         scene_->queryVisibles(camera->worldView(), renderQueue);
 
-        renderWireframe(renderQueue);
+        renderWireframe(renderQueue);*/
         renderAABBs();
 
         observable_->removeObserver(this);

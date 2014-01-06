@@ -16,16 +16,13 @@ namespace Renderable {
 }
 
 class GBuffer;
+class CubemapTexture;
 
 class SkyboxStage : public RenderStage
 {
 public:
     explicit SkyboxStage(Renderer* renderer);
     virtual ~SkyboxStage();
-
-    // Sets the scene to be used for future render calls
-    // precondition: scene != nullptr
-    virtual void setScene(VisibleScene* scene);
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
@@ -47,6 +44,9 @@ public:
     // postcondition: Ownership is copied
     void setSkyboxMesh(const MeshPtr& mesh);
 
+    // Sets skybox texture for the current render batch.
+    virtual void setSkyboxTexture(CubemapTexture* skybox);
+
     // If the renderer uses a gbuffer for storing geometry, the depth texture is used.
     // precondition: gbuffer != nullptr
     void setGBuffer(GBuffer const* gbuffer);
@@ -54,9 +54,9 @@ public:
 private:
     GBuffer const* gbuffer_;
     GLuint fbo_;
-    VisibleScene* scene_;
     int cubemapUnit_;
 
+    CubemapTexture* cubemap_;
     SkyboxPtr skybox_;
     MeshPtr mesh_;
 

@@ -3,6 +3,7 @@
 #include "graph/scenenode.h"
 #include "resourcedespatcher.h"
 #include "inputstate.h"
+#include "scene/scenemanager.h"
 
 #include <assimp/postprocess.h>
 
@@ -12,8 +13,8 @@
 
 using namespace Engine;
 
-SponzaScene::SponzaScene(ResourceDespatcher* despatcher) : FreeLookScene(despatcher),
-    spotLight_(Graph::Light::LIGHT_SPOT), flashLight_(Graph::Light::LIGHT_SPOT),
+SponzaScene::SponzaScene(ResourceDespatcher& despatcher)
+    : FreeLookScene(despatcher),
     velocity_(10.0f), spotVelocity_(7.0f), elapsed_(0), flashLightToggle_(false)
 {
     const int NUM_NODES = 4;
@@ -77,7 +78,7 @@ void SponzaScene::update(unsigned int elapsed)
         spotDirection_.normalize();
 
         spotNode_ = spotNode_->next;
-        spotLight_.setDirection(spotNode_->direction);
+        spotLight_->setDirection(spotNode_->direction);
     }
 
     pos += spotDirection_ * t * spotVelocity_;
@@ -90,12 +91,12 @@ void SponzaScene::update(unsigned int elapsed)
 
         if(flashLightToggle_)
         {
-            cameraNode_->attachEntity(&flashLight_);
+            flashLight_->attach(cameraNode_);
         }
 
         else
         {
-            cameraNode_->detachEntity(&flashLight_);
+            flashLight_->detach();
         }
     }
 
@@ -104,7 +105,7 @@ void SponzaScene::update(unsigned int elapsed)
         const QVector3D flashPos = camera()->position() - QVector3D(0, 2, 0);
 
         cameraNode_->setPosition(flashPos);
-        flashLight_.setDirection(camera()->direction());
+        flashLight_->setDirection(camera()->direction());
     }
 }
 
@@ -114,55 +115,58 @@ void SponzaScene::initialise()
     setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
     // Load meshes
-    sceneMesh_ = despatcher()->get<ImportedNode>("assets/sponza_scene.dae", aiProcessPreset_TargetRealtime_MaxQuality);
-    sphere_ = despatcher()->get<ImportedNode>("assets/sphere.obj");
+    sceneMesh_ = despatcher().get<ImportedNode>("assets/sponza_scene.dae", scene());
+    sphere_ = despatcher().get<ImportedNode>("assets/sphere.obj", scene());
 
     // Set up lights
     //setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 5.0f);
 
-    spotLight_.setColor(QVector3D(255, 214, 170) / 255.0f);
-    spotLight_.setDirection(spotNode_->direction);
-    spotLight_.setDiffuseIntensity(40.0f);
-    spotLight_.setAttenuationQuadratic(0.05f);
-    spotLight_.setAttenuationConstant(1.0f);
-    spotLight_.setAttenuationLinear(0.1f);
-    spotLight_.setAngleOuterCone(30.0f);
+    spotLight_ = createLight(Graph::Light::LIGHT_SPOT);
+    spotLight_->setColor(QVector3D(255, 214, 170) / 255.0f);
+    spotLight_->setDirection(spotNode_->direction);
+    spotLight_->setDiffuseIntensity(40.0f);
+    spotLight_->setAttenuationQuadratic(0.05f);
+    spotLight_->setAttenuationConstant(1.0f);
+    spotLight_->setAttenuationLinear(0.1f);
+    spotLight_->setAngleOuterCone(30.0f);
+    spotLight_->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
 
-    flashLight_.setColor(QVector3D(1, 1, 1));
-    flashLight_.setDiffuseIntensity(25.0f);
-    flashLight_.setAttenuationQuadratic(0.2f);
-    flashLight_.setAngleOuterCone(30.0f);
+    flashLight_ = createLight(Graph::Light::LIGHT_SPOT);
+    flashLight_->setColor(QVector3D(1, 1, 1));
+    flashLight_->setDiffuseIntensity(25.0f);
+    flashLight_->setAttenuationQuadratic(0.2f);
+    flashLight_->setAngleOuterCone(30.0f);
+    flashLight_->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
 
     // Position entities
-    Graph::SceneNode* node = rootNode()->createSceneNodeChild();
+    Graph::SceneNode* node = rootNode().createChild();
     node->setScale(0.05f);
     sceneMesh_->attach(node);
 
-    sphereNode_ = rootNode()->createSceneNodeChild();
+    sphereNode_ = rootNode().createChild();
     sphere_->attach(sphereNode_);
 
-    sphereNode_->setShadowCaster(false);
+    sphereNode_->setLightMask(0);
     sphereNode_->setScale(0.5f);
-    sphereNode_->attachEntity(&spotLight_);
     sphereNode_->setPosition(spotPath_.back().endpoint);
+    spotLight_->attach(sphereNode_);
 
-    cameraNode_ = rootNode()->createSceneNodeChild();
-    attachCamera(cameraNode_);
+    cameraNode_ = rootNode().createChild();
+    camera()->attach(cameraNode_);
 
     // Add bunch of lights
     for(int j = 0; j < 3; ++j)
     {
         for(int i = 0; i < 10; ++i)
         {
-            Graph::SceneNode* lightNode = rootNode()->createSceneNodeChild();
-            lightNode->setPosition(QVector3D(-50 + i * 10, 3, -20 + j * 20));
-
-            Graph::Light::Ptr light(new Graph::Light(Graph::Light::LIGHT_POINT));
+            Graph::Light::Ptr light = createLight(Graph::Light::LIGHT_POINT);
             light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
             light->setDiffuseIntensity(25.0f);
 
-            lights_.push_back(light);
-            lightNode->attachEntity(lights_.back().get());
+            Graph::SceneNode* lightNode = rootNode().createChild();
+            lightNode->setPosition(QVector3D(-50 + i * 10, 3, -20 + j * 20));
+
+            light->attach(lightNode);
         }
     }
 

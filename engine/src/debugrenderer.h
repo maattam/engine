@@ -5,7 +5,6 @@
 
 #include "renderer.h"
 #include "scene/sceneobserver.h"
-#include "scene/visiblescene.h"
 #include "observable.h"
 #include "renderable/cube.h"
 #include "renderable/quad.h"
@@ -33,7 +32,14 @@ public:
     // Sets OpenGL viewport parameters.
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
-    virtual void setScene(VisibleScene* scene);
+    // Sets the render queue which contains the visible geometry of the scene.
+    virtual void setGeometryBatch(RenderQueue* batch);
+
+    // Sets lights for the current render batch.
+    virtual void setLights(const QVector<LightData>& lights);
+
+    // Sets skybox texture for the current render batch.
+    virtual void setSkyboxTexture(CubemapTexture* skybox);
 
     // Renders the scene through the camera's viewport.
     virtual void render(Graph::Camera* camera);
@@ -60,7 +66,6 @@ public:
 private:
     QRect viewport_;
     ObservableType* observable_;
-    VisibleScene* scene_;
     GLuint fbo_;
     Graph::Camera* camera_;
     GBuffer const* gbuffer_;

@@ -3,8 +3,6 @@
 #ifndef FREELOOKSCENE_H
 #define FREELOOKSCENE_H
 
-#include "scene/scenecontroller.h"
-
 #include "cubemaptexture.h"
 #include "graph/light.h"
 #include "graph/camera.h"
@@ -12,55 +10,55 @@
 
 #include <QPoint>
 
+namespace Engine {
+    class SceneManager;
+}
+
 class InputState;
 
-class FreeLookScene : public Engine::SceneController
+class FreeLookScene
 {
 public:
-    explicit FreeLookScene(Engine::ResourceDespatcher* despatcher);
+    explicit FreeLookScene(Engine::ResourceDespatcher& despatcher);
     virtual ~FreeLookScene();
 
     void setInput(InputState* input);
 
     // Camera parameters
-    void setAspectRatio(float ratio);
     void setFov(float angle);
 
     const QVector3D& playerPosition() const;
 
-    // Implemented methods from SceneController
-    virtual void setModel(Engine::SceneModel* model);
+    virtual void setManager(Engine::SceneManager* manager);
     virtual void update(unsigned int elapsed);
 
-protected:
     void setFlySpeed(float speed);
     void setSkyboxTexture(const QString& fileName);
-    void setDirectionalLight(const QVector3D& color, const QVector3D& direction,
-        float ambientIntensity, float diffuseIntensity);
 
-    // Attaches the camera to the given node
-    void attachCamera(Engine::Graph::SceneNode* node);
+    // Helper functions which create a new leaf, add it the scene
+    // and attache it to the root node.
+    Engine::Graph::Light::Ptr createLight(Engine::Graph::Light::LightType type);
 
-    Engine::Graph::SceneNode* rootNode();
-    Engine::ResourceDespatcher* despatcher();
+protected:
+    Engine::Graph::SceneNode& rootNode();
+    Engine::ResourceDespatcher& despatcher();
 
     InputState* input();
+    Engine::SceneManager& scene();
+
     Engine::Graph::Camera* camera();
-    Engine::Graph::Light* directionalLight();
 
     // Called after scene model has been set and scenegraph can be populated.
     virtual void initialise() = 0;
 
 private:
-    Engine::ResourceDespatcher* despatcher_;
-    Engine::SceneModel* scene_;
+    Engine::ResourceDespatcher& despatcher_;
+    Engine::SceneManager* scene_;
     InputState* input_;
     float speed_;
     QPoint lastMouse_;
 
-    Engine::Graph::Light dirLight_;
-    std::shared_ptr<Engine::CubemapTexture> skybox_;
-    Engine::Graph::Camera camera_;
+    Engine::Graph::Camera::Ptr camera_;
 };
 
 #endif // FREELOOKSCENE_H

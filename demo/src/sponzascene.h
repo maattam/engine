@@ -5,8 +5,6 @@
 
 #include "scene/importednode.h"
 
-#include <memory>
-
 namespace Engine {
     class ResourceDespatcher;
 }
@@ -14,7 +12,7 @@ namespace Engine {
 class SponzaScene : public FreeLookScene
 {
 public:
-    explicit SponzaScene(Engine::ResourceDespatcher* despatcher);
+    explicit SponzaScene(Engine::ResourceDespatcher& despatcher);
     ~SponzaScene();
 
     // Reimplemented methods from FreeLookScene
@@ -43,12 +41,10 @@ private:
     std::vector<PathNode> spotPath_;
     QVector3D spotDirection_;
     PathNode* spotNode_;
-    Engine::Graph::Light spotLight_;
-    Engine::Graph::Light flashLight_;
+    Engine::Graph::Light::Ptr spotLight_;
+    Engine::Graph::Light::Ptr flashLight_;
     float spotVelocity_;
     bool flashLightToggle_;
-
-    QVector<Engine::Graph::Light::Ptr> lights_;
 
     double elapsed_;
 };

@@ -14,7 +14,7 @@ namespace Engine {
 class LightScene : public FreeLookScene
 {
 public:
-    explicit LightScene(Engine::ResourceDespatcher* despatcher);
+    explicit LightScene(Engine::ResourceDespatcher& despatcher);
     ~LightScene();
 
     // Reimplemented methods from FreeLookScene

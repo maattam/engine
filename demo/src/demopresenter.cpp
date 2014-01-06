@@ -1,7 +1,7 @@
 #include "demopresenter.h"
 
 #include "weakresourcedespatcher.h"
-#include "scene/scene.h"
+#include "scene/basicscenemanager.h"
 #include "rendererfactory.h"
 #include "scenefactory.h"
 #include "renderercontext.h"
@@ -55,7 +55,7 @@ void DemoPresenter::renderScene()
         }
 
         renderer_->setRenderTarget(context_->renderTarget());
-        renderer_->setScene(sceneModel_.get());
+        sceneManager_->setRenderer(renderer_.get());
 
         debugRenderer_->setGBuffer(rendererFactory_->gbuffer());
     }
@@ -68,9 +68,8 @@ void DemoPresenter::renderScene()
             return;
         }
 
-        sceneController_->setModel(sceneModel_.get());
+        sceneController_->setManager(sceneManager_.get());
         sceneController_->setFov(75.0f);
-        sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
         sceneController_->setInput(input_.get());
     }
 
@@ -98,21 +97,20 @@ void DemoPresenter::initialize()
     despatcher_.reset(new Engine::WeakResourceDespatcher(2));
     rendererFactory_.reset(new RendererFactory(*despatcher_));
     sceneFactory_.reset(new SceneFactory(*despatcher_));
-    sceneModel_.reset(new Engine::Scene());
+    sceneManager_.reset(new Engine::BasicSceneManager());
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
-    debugRenderer_->setScene(sceneModel_.get());
-    debugRenderer_->setObservable(sceneModel_.get());
+    debugRenderer_->setObservable(sceneManager_.get());
 }
 
 void DemoPresenter::render()
 {
     if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
     {
-        renderer_->render(sceneModel_->camera());
+        sceneManager_->renderFrame();
     }
 
-    debugRenderer_->render(sceneModel_->camera());
+    //debugRenderer_->render(sceneModel_->camera());
 }
 
 void DemoPresenter::updateView()
@@ -122,26 +120,24 @@ void DemoPresenter::updateView()
         oldSize_ = viewSize_;
         context_->createRenderTarget(viewSize_);
 
+        QRect viewport(QPoint(0, 0), viewSize_);
+        sceneManager_->setViewport(viewport);
+
         if(renderer_ != nullptr)
         {
-            renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples());
+            renderer_->setViewport(viewport, context_->format().samples());
             renderer_->setRenderTarget(context_->renderTarget());
         }
         
-        debugRenderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples());
+        debugRenderer_->setViewport(viewport, context_->format().samples());
         debugRenderer_->setRenderTarget(context_->renderTarget());
-
-        if(sceneController_ != nullptr)
-        {
-            sceneController_->setAspectRatio(static_cast<float>(viewSize_.width()) / viewSize_.height());
-        }
     }
 }
 
 void DemoPresenter::update()
 {
     sceneController_->update(frameTimer_.restart());
-    sceneModel_->update();
+    sceneManager_->prepareNextFrame();
 }
 
 void DemoPresenter::tonemapAttributeChanged(QString name, QVariant value)

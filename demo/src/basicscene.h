@@ -8,9 +8,7 @@
 #include "scene/importednode.h"
 
 #include <QObject>
-
-#include <vector>
-#include <memory>
+#include <QVector>
 
 namespace Engine {
     class ResourceDespatcher;
@@ -21,7 +19,7 @@ class BasicScene : public QObject, public FreeLookScene
     Q_OBJECT
 
 public:
-    explicit BasicScene(Engine::ResourceDespatcher* despatcher);
+    explicit BasicScene(Engine::ResourceDespatcher& despatcher);
     ~BasicScene();
 
     // Reimplemented methods from FreeLookScene
@@ -41,7 +39,7 @@ private:
     Engine::ImportedNode::Ptr platform_;
     Engine::ImportedNode::Ptr hellknight_;
 
-    std::shared_ptr<Engine::Graph::Geometry> cube_[2];
+    Engine::Graph::Geometry::Ptr cube_[2];
 
     Engine::Graph::SceneNode* cubeNode_;
     Engine::Graph::SceneNode* platformNode_;
@@ -50,8 +48,8 @@ private:
     Engine::Graph::SceneNode* sphereNode_;
     Engine::Graph::SceneNode* blueLightNode_;
 
-    std::vector<Engine::Graph::SceneNode*> cubes_;
-    std::vector<Engine::Graph::Light::Ptr> lights_;
+    QVector<Engine::Graph::SceneNode*> cubes_;
+    QVector<Engine::Graph::Light::Ptr> lights_;
 
     unsigned int time_;
 };

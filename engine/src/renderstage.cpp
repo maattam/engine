@@ -17,9 +17,19 @@ bool RenderStage::setViewport(const QRect& viewport, unsigned int samples)
     return renderer_->setViewport(viewport, samples);
 }
 
-void RenderStage::setScene(VisibleScene* scene)
+void RenderStage::setGeometryBatch(RenderQueue* batch)
 {
-    renderer_->setScene(scene);
+    renderer_->setGeometryBatch(batch);
+}
+
+void RenderStage::setLights(const QVector<LightData>& lights)
+{
+    renderer_->setLights(lights);
+}
+
+void RenderStage::setSkyboxTexture(CubemapTexture* skybox)
+{
+    renderer_->setSkyboxTexture(skybox);
 }
 
 void RenderStage::render(Graph::Camera* camera)
