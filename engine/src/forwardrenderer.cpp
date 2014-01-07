@@ -190,8 +190,14 @@ void ForwardRenderer::renderPass(Graph::Camera* camera)
         lightningTech_.setSpotLightShadowUnit(i, index);
     }
 
-    // Render visibles
-    for(auto it = renderQueue_->begin(); it != renderQueue_->end(); ++it)
+    // Render oppaque and emissive objects
+    renderRange(camera, renderQueue_->getItems(Material::RENDER_OPAQUE));
+    renderRange(camera, renderQueue_->getItems(Material::RENDER_EMISSIVE));
+}
+
+void ForwardRenderer::renderRange(Graph::Camera* camera, RenderQueue::RenderRange range)
+{
+    for(auto it = range.first; it != range.second; ++it)
     {
         lightningTech_.setWorldView(*it->modelView);
         lightningTech_.setMVP(camera->worldView() * *it->modelView);

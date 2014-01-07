@@ -3,14 +3,17 @@
 
 #include <QMatrix4x4>
 #include <QMap>
+#include <QList>
+
+#include "material.h"
 
 namespace Engine {
-
-class Material;
 
 namespace Renderable {
     class Renderable;
 }
+
+
 
 class RenderQueue
 {
@@ -24,8 +27,6 @@ public:
         Renderable::Renderable* renderable;
     };
 
-    enum RenderOrder { RENDER_OPAQUE = 0, RENDER_EMISSIVE = 500, RENDER_TRANSPARENT = 1000 };
-
     // Sets transformation matrix for future addNode calls
     // precondition: modelView != nullptr
     void setModelView(const QMatrix4x4* modelView);
@@ -37,17 +38,25 @@ public:
     // Clears the RenderList.
     void clear();
 
-    typedef QMap<int, RenderItem> RenderList;
+    // Sorts the RenderItems in each render category.
+    // Comparator has to be a less-than functor that compares two RenderItem references.
+    template<typename Comparator>
+    void sort(const Comparator& lessThan);
 
-    const RenderList& queue() const;
-    RenderList::const_iterator begin() const;
-    RenderList::const_iterator end() const;
+    typedef QList<RenderItem> RenderList;
+    typedef QPair<RenderList::ConstIterator, RenderList::ConstIterator> RenderRange;
+
+    // Returns iterators to the RenderList based on RenderType.
+    RenderRange getItems(Material::RenderType renderIndex) const;
 
 private:
-    const QMatrix4x4* modelView_;
+    typedef QMap<Material::RenderType, RenderList> RenderMap;
 
-    RenderList queue_;
+    const QMatrix4x4* modelView_;
+    RenderMap queue_;
 };
+
+#include "renderqueue.inl"
 
 }
 

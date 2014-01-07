@@ -98,7 +98,7 @@ void DebugRenderer::render(Graph::Camera* camera)
     renderGBuffer();
 }
 
-void DebugRenderer::renderWireframe(const RenderQueue& queue)
+/*void DebugRenderer::renderWireframe(const RenderQueue& queue)
 {
     if(!(flags_ & DEBUG_WIREFRAME))
     {
@@ -135,7 +135,7 @@ void DebugRenderer::renderWireframe(const RenderQueue& queue)
     // Reset polygon mode
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     gl->glEnable(GL_CULL_FACE);
-}
+}*/
 
 void DebugRenderer::renderAABBs()
 {
@@ -218,6 +218,7 @@ void DebugRenderer::renderGBuffer()
     for(int i = 0; i < numTextures; ++i)
     {
         gl->glViewport(gap, viewY, width, height);
+        gbufferMS_.setViewport(QRect(gap, viewY, width, height));
 
         // Render gbuffer texture
         gbufferMS_.outputTexture(static_cast<Technique::GBufferVisualizer::TextureType>(i));

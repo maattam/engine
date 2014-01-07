@@ -11,9 +11,18 @@ using namespace Engine;
 
 namespace {
     Material::TexturePtr makeDefault(const QString& fileName, TextureConversion conversion);
+
+    // Returns the default 1x1 texture for the type.
+    Material::TexturePtr defaultTexture(Material::TextureType type);
+
+    // Static default texture watchers.
+    std::weak_ptr<Texture2D> nullMaskTexture;
+    std::weak_ptr<Texture2D> nullDiffuseTexture;
+    std::weak_ptr<Texture2D> nullSpecularTexture;
 }
 
 Material::Material()
+    : renderType_(RENDER_OPAQUE)
 {
 }
 
@@ -75,6 +84,11 @@ void Material::setShininess(float shininess)
 void Material::setAmbientColor(const QVector3D& color)
 {
     attributes_.ambientColor = color;
+
+    if(color != QVector3D(0, 0, 0))
+    {
+        renderType_ = RENDER_EMISSIVE;
+    }
 }
 
 void Material::setSpecularIntensity(float intensity)
@@ -95,6 +109,11 @@ const Material::Attributes& Material::attributes() const
 void Material::setAttributes(const Attributes& attrib)
 {
     attributes_ = attrib;
+
+    if(attrib.ambientColor != QVector3D(0, 0, 0))
+    {
+        renderType_ = RENDER_EMISSIVE;
+    }
 }
 
 void Material::setTextureOptions(const TexturePtr& texture) const
@@ -107,60 +126,66 @@ void Material::setTextureOptions(const TexturePtr& texture) const
     texture->texParameteri(GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 }
 
-Material::TexturePtr Material::defaultTexture(TextureType type)
+void Material::setRenderType(RenderType type)
 {
-    TexturePtr target;
-
-    if(type == TEXTURE_DIFFUSE)
-    {
-        if(nullDiffuseTexture.expired())
-        {
-            target = makeDefault(RESOURCE_PATH("images/white.png"), TC_RGBA);
-            nullDiffuseTexture = target;
-        }
-
-        else
-        {
-            target = nullDiffuseTexture.lock();
-        }
-    }
-
-    else if(type == TEXTURE_MASK)
-    {
-        if(nullMaskTexture.expired())
-        {
-            target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
-            nullMaskTexture = target;
-        }
-
-        else
-        {
-            target = nullMaskTexture.lock();
-        }
-    }
-
-    else if(type == TEXTURE_SPECULAR)
-    {
-        if(nullSpecularTexture.expired())
-        {
-            target = makeDefault(RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
-            nullSpecularTexture = target;
-        }
-
-        else
-        {
-            target = nullSpecularTexture.lock();
-        }
-    }
-
-    return target;
+    renderType_ = type;
 }
 
-std::weak_ptr<Texture2D> Material::nullMaskTexture;
-std::weak_ptr<Texture2D> Material::nullDiffuseTexture;
-std::weak_ptr<Texture2D> Material::nullSpecularTexture;
+Material::RenderType Material::renderType() const
+{
+    return renderType_;
+}
 
 namespace {
+    Material::TexturePtr defaultTexture(Material::TextureType type)
+    {
+        Material::TexturePtr target;
+
+        if(type == Material::TEXTURE_DIFFUSE)
+        {
+            if(nullDiffuseTexture.expired())
+            {
+                target = makeDefault(RESOURCE_PATH("images/white.png"), TC_RGBA);
+                nullDiffuseTexture = target;
+            }
+
+            else
+            {
+                target = nullDiffuseTexture.lock();
+            }
+        }
+
+        else if(type == Material::TEXTURE_MASK)
+        {
+            if(nullMaskTexture.expired())
+            {
+                target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+                nullMaskTexture = target;
+            }
+
+            else
+            {
+                target = nullMaskTexture.lock();
+            }
+        }
+
+        else if(type == Material::TEXTURE_SPECULAR)
+        {
+            if(nullSpecularTexture.expired())
+            {
+                target = makeDefault(RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
+                nullSpecularTexture = target;
+            }
+
+            else
+            {
+                target = nullSpecularTexture.lock();
+            }
+        }
+
+        return target;
+    }
+
     Material::TexturePtr makeDefault(const QString& fileName, TextureConversion conversion)
     {
         std::shared_ptr<Texture2DResource> resource(new Texture2DResource(fileName, conversion));

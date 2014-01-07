@@ -63,6 +63,8 @@ private:
 
     void shadowMapPass();
     void renderPass(Graph::Camera* camera);
+
+    void renderRange(Graph::Camera* camera, RenderQueue::RenderRange range);
     void renderNode(const RenderQueue::RenderItem& node);
 
     bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);

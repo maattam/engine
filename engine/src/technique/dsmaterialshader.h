@@ -34,6 +34,8 @@ public:
     // precondition: technique is enabled
     void setProjMatrix(const QMatrix4x4& proj);
 
+    void setViewport(const QRect& viewport);
+
 protected:
     virtual bool init();
 

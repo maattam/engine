@@ -35,6 +35,16 @@ void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
     setUniformValue("invPersProj", proj.inverted());
 }
 
+void DSMaterialShader::setViewport(const QRect& viewport)
+{
+    viewport_ = QVector4D(viewport.x(), viewport.y(), viewport.width(), viewport.height());
+
+    if(program()->isLinked())
+    {
+        setUniformValue("viewport", viewport_);
+    }
+}
+
 bool DSMaterialShader::init()
 {
     if(gbuffer_ == nullptr)
@@ -54,6 +64,11 @@ bool DSMaterialShader::init()
 
     // The other uniforms are not critical as they can be replaced by subclasses
     if(!setUniformValue("samples", samples_))
+    {
+        return false;
+    }
+
+    if(!setUniformValue("viewport", viewport_))
     {
         return false;
     }

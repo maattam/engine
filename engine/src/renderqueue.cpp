@@ -18,19 +18,8 @@ void RenderQueue::setModelView(const QMatrix4x4* modelView)
 void RenderQueue::addNode(Material* material, Renderable::Renderable* renderable)
 {
     RenderItem item = { modelView_, material, renderable };
-    int order = RENDER_OPAQUE;
 
-    if(material->attributes().ambientColor != QVector3D(0, 0, 0))
-    {
-        order = RENDER_EMISSIVE;
-    }
-
-    if(material->hasTexture(Material::TEXTURE_NORMALS) && renderable->hasTangents())
-    {
-        order++;
-    }
-
-    queue_.insertMulti(order, item);
+    queue_[material->renderType()].push_back(item);
 }
 
 void RenderQueue::clear()
@@ -39,17 +28,7 @@ void RenderQueue::clear()
     modelView_ = nullptr;
 }
 
-const RenderQueue::RenderList& RenderQueue::queue() const
+RenderQueue::RenderRange RenderQueue::getItems(Material::RenderType renderIndex) const
 {
-    return queue_;
-}
-
-RenderQueue::RenderList::const_iterator RenderQueue::begin() const
-{
-    return queue_.begin();
-}
-
-RenderQueue::RenderList::const_iterator RenderQueue::end() const
-{
-    return queue_.end();
+    return qMakePair(queue_[renderIndex].begin(), queue_[renderIndex].end());
 }

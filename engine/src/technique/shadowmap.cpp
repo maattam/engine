@@ -151,14 +151,12 @@ void ShadowMap::renderLight(const LightData& light, RenderQueue* visibles)
     gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
     gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-    if(visibles->queue().empty())
-    {
-        return;
-    }
+    // Only opaque objects cast shadows for now..
+    RenderQueue::RenderRange range = visibles->getItems(Material::RENDER_OPAQUE);
 
     setUniformValue("gMaskSampler", 0);
 
-    for(auto it = visibles->begin(); it != visibles->end(); ++it)
+    for(auto it = range.first; it != range.second; ++it)
     {
         setUniformValue("gMVP", light.worldView * *it->modelView);
 

@@ -6,6 +6,7 @@
 #include "frustum.h"
 #include "renderer.h"
 #include "cubemaptexture.h"
+#include "renderitemsorter.h"
 
 #include <QDebug>
 
@@ -68,6 +69,9 @@ void BasicSceneManager::prepareNextFrame()
 
     // Cull visible geometry and lights
     findVisibleLeaves(camera.worldView(), culledGeometry_);
+
+    // Sort visible geometry
+    culledGeometry_.sort(RenderItemSorter(camera.worldView()));
 
     // Cull visibles inside each light's frustum
     for(Renderer::LightData& lightData : culledLights_)

@@ -81,7 +81,7 @@ private:
     typedef std::pair<QMatrix4x4, QVector3D> AABBDraw;
     std::deque<AABBDraw> aabbs_;
 
-    void renderWireframe(const RenderQueue& queue);
+    //void renderWireframe(const RenderQueue& queue);
     void renderAABBs();
     void renderGBuffer();
 

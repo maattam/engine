@@ -20,6 +20,12 @@ public:
     // Sets the camera's view matrix used for mapping light input vectors to view space coordinates.
     void setViewMatrix(const QMatrix4x4& mat);
 
+    void setCameraAxes(const QVector3D& up, const QVector3D& right);
+
+    void setQuadExtents(float scale, const QVector3D& center);
+
+    void setViewProjMatrix(const QMatrix4x4& mat);
+
     // Prepares the technique for rendering spot lights.
     // Precondition: Technique is enabled, view matrix is set.
     void enableSpotLight(const Graph::Light& light);

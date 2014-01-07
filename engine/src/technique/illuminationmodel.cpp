@@ -23,6 +23,23 @@ void IlluminationModel::setViewMatrix(const QMatrix4x4& mat)
     view_ = mat;
 }
 
+void IlluminationModel::setCameraAxes(const QVector3D& up, const QVector3D& right)
+{
+    setUniformValue("cameraUp", up);
+    setUniformValue("cameraRight", right);
+}
+
+void IlluminationModel::setQuadExtents(float scale, const QVector3D& center)
+{
+    setUniformValue("quadScale", scale);
+    setUniformValue("quadCenter", center);
+}
+
+void IlluminationModel::setViewProjMatrix(const QMatrix4x4& mat)
+{
+    setUniformValue("viewProj", mat);
+}
+
 void IlluminationModel::enableSpotLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
@@ -44,6 +61,7 @@ void IlluminationModel::enablePointLight(const Graph::Light& light)
 void IlluminationModel::enableDirectionalLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "directionalLightPass", GL_FRAGMENT_SHADER);
+    useSubroutine( "transformQuad", "fullscreenQuad", GL_VERTEX_SHADER);
 
     float ambientFactor = 0.0f;
     if(light.diffuseIntensity() > 0.0f)
@@ -72,11 +90,19 @@ bool IlluminationModel::init()
     if(resolveSubroutineLocation("directionalLightPass", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
         return false;
 
+    if(resolveSubroutineLocation("screenOrientedQuad", GL_VERTEX_SHADER) == GL_INVALID_INDEX)
+        return false;
+
+    if(resolveSubroutineLocation("fullscreenQuad", GL_VERTEX_SHADER) == GL_INVALID_INDEX)
+        return false;
+
     return true;
 }
 
 void IlluminationModel::setPointUniforms(const Graph::Light& spot)
 {
+    useSubroutine( "transformQuad", "screenOrientedQuad", GL_VERTEX_SHADER);
+
     setUniformValue("light.color", linearColor(spot.color()) * spot.diffuseIntensity());
     setUniformValue("light.position", view_ * spot.position());
 

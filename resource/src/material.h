@@ -22,6 +22,9 @@ public:
 
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_COUNT };
 
+    // Render type determines the material's rendering stage.
+    enum RenderType { RENDER_OPAQUE, RENDER_EMISSIVE, RENDER_TRANSPARENT };
+
     // Retrieves the texture associated with the type.
     // If the texture doesn't exists, a default texture is returned with the exception of
     // TEXTURE_NORMALS which doesn't have a default texture.
@@ -65,18 +68,15 @@ public:
     const Attributes& attributes() const;
     void setAttributes(const Attributes& attrib);
 
+    void setRenderType(RenderType type);
+    RenderType renderType() const;
+
 private:
     std::map<TextureType, TexturePtr> textures_;
     Attributes attributes_;
+    RenderType renderType_;
 
     void setTextureOptions(const TexturePtr& texture) const;
-
-    // Returns the default 1x1 texture for the type.
-    static TexturePtr defaultTexture(TextureType type);
-
-    static std::weak_ptr<Texture2D> nullMaskTexture;
-    static std::weak_ptr<Texture2D> nullDiffuseTexture;
-    static std::weak_ptr<Texture2D> nullSpecularTexture;
 
     Material(const Material&);
     Material& operator=(const Material&);

@@ -188,6 +188,7 @@
     <ClCompile Include="src\renderable\quad.cpp" />
     <ClCompile Include="src\renderable\renderable.cpp" />
     <ClCompile Include="src\renderable\mesh.cpp" />
+    <ClCompile Include="src\renderitemsorter.cpp" />
     <ClCompile Include="src\renderqueue.cpp" />
     <ClCompile Include="src\renderstage.cpp" />
     <ClCompile Include="src\scene\basicscenemanager.cpp" />
@@ -212,6 +213,7 @@
     <None Include="shaders\basiclightning.frag" />
     <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\dsillumination.frag" />
+    <None Include="shaders\dsillumination.vert" />
     <None Include="shaders\gauss5x5.frag" />
     <None Include="shaders\dsmaterial.frag" />
     <None Include="shaders\dsmaterial.vert" />
@@ -229,6 +231,7 @@
     <None Include="shaders\testquad.vert" />
     <None Include="shaders\wireframe.frag" />
     <None Include="shaders\wireframe.vert" />
+    <None Include="src\renderqueue.inl" />
     <None Include="src\scene\importednode.inl" />
     <None Include="src\technique\technique.inl" />
   </ItemGroup>
@@ -259,6 +262,7 @@
     <ClInclude Include="src\renderable\renderable.h" />
     <ClInclude Include="src\renderable\mesh.h" />
     <ClInclude Include="src\renderer.h" />
+    <ClInclude Include="src\renderitemsorter.h" />
     <ClInclude Include="src\renderqueue.h" />
     <ClInclude Include="src\renderstage.h" />
     <ClInclude Include="src\scene\basicscenemanager.h" />

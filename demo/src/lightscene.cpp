@@ -50,10 +50,13 @@ void LightScene::initialise()
     dragon_ = despatcher().get<ImportedNode>("assets/dragon.dae", scene(), aiProcessPreset_TargetRealtime_Fast);
     dragon_->attach(&rootNode());
 
-    for(int i = 0; i < 50; ++i)
+    for(int i = 0; i < 200; ++i)
     {
         insertLight(&rootNode());
     }
+
+    // Position the camera
+    camera()->setPosition(QVector3D(-50, 15, 0));
 }
 
 void LightScene::insertLight(Engine::Graph::SceneNode* node)
@@ -63,10 +66,10 @@ void LightScene::insertLight(Engine::Graph::SceneNode* node)
 
     light.light = createLight(Graph::Light::LIGHT_POINT);
     light.light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-    light.light->setDiffuseIntensity(25.0f);
+    //light.light->setDiffuseIntensity(25.0f);
 
-    light.radius = qrand() % 30 + 15;
-    light.height = qrand() % 40 + 5;
+    light.radius = qrand() % 40 + 15;
+    light.height = qrand() % 20 + 1;
     light.freq = qrand() % 5 + 1;
     light.phi = qDegreesToRadians(static_cast<float>(qrand() % 360));
     light.hphi = qDegreesToRadians(static_cast<float>(qrand() % 360));

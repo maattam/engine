@@ -17,11 +17,8 @@ uniform int samples;
 // Inverse of perspective projection matrix used to accumulate gbuffer
 uniform mat4 invPersProj;
 
-// Input quad uv
-in vec2 texCoord;
-
-// View direction in eye space
-in vec3 eyeDirection;
+// Viewport: x, y, width, height
+uniform vec4 viewport;
 
 // Output fragment color
 layout (location = 0) out vec4 fragColor;
@@ -47,20 +44,31 @@ subroutine uniform CalculateOutputType calculateOutput;
 // Returns the nth sample from a multisampled texture
 vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
 {
-    ivec2 st = ivec2(textureSize(sampler) * uv);
-    return texelFetch(sampler, st, n);
+    return texelFetch(sampler, ivec2(uv * textureSize(sampler)), n);
+}
+
+vec2 calcTexCoord()
+{
+    return (gl_FragCoord.xy - viewport.xy) / viewport.zw;
 }
 
 void unpackPosition(inout VertexInfo vertex, int n)
 {
-    float z = sampleTexture(depthData, texCoord, n).r;
-    z = 2.0 * z - 1.0;
+    float z = sampleTexture(depthData, calcTexCoord(), n).r;
 
-    // Construct ndc position from interpolated quad vertices
-    vec4 clipPos = vec4(eyeDirection.xy, z, 1.0);
+    if(gl_FragCoord.z > z)
+    {
+        discard;
+    }
+
+    // Construct ndc position from screen-space coordinates
+    vec4 ndcPos;
+    ndcPos.xy = (2.0 * gl_FragCoord.xy - 2.0 * viewport.xy) / viewport.zw - 1;
+    ndcPos.z = 2.0 * z - 1.0;;
+    ndcPos.w = 1.0;
 
     // Unproject perspective projection
-    vec4 viewPos = invPersProj * clipPos;
+    vec4 viewPos = invPersProj * ndcPos;
 
     // Get view-space position
     vertex.position = vec4(viewPos.xyz / viewPos.w, 1.0);
@@ -69,7 +77,7 @@ void unpackPosition(inout VertexInfo vertex, int n)
 // Returns false if texel is part of skybox
 void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int n)
 {
-    vec4 data = sampleTexture(normalSpecData, texCoord, n);
+    vec4 data = sampleTexture(normalSpecData, calcTexCoord(), n);
 
     // Inverse spheremap transformation
     vec2 fenc = data.rg * 4 - 2;
@@ -83,7 +91,7 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int 
 
 void unpackDiffuseSpec(inout MaterialInfo material, int n)
 {
-    vec4 data = sampleTexture(diffuseSpecData, texCoord, n);
+    vec4 data = sampleTexture(diffuseSpecData, calcTexCoord(), n);
 
     material.diffuseColor = data.rgb;
     material.specularIntensity = data.a * 255;
@@ -98,8 +106,8 @@ void main()
 
     for(int i = 0; i < samples; ++i)
     {
-        unpackNormalSpec(material, vertex, i);
         unpackPosition(vertex, i);
+        unpackNormalSpec(material, vertex, i);
         unpackDiffuseSpec(material, i);
 
         color += calculateOutput(vertex, material);

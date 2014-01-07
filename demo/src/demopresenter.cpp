@@ -55,8 +55,6 @@ void DemoPresenter::renderScene()
         }
 
         renderer_->setRenderTarget(context_->renderTarget());
-        sceneManager_->setRenderer(renderer_.get());
-
         debugRenderer_->setGBuffer(rendererFactory_->gbuffer());
     }
 
@@ -107,10 +105,12 @@ void DemoPresenter::render()
 {
     if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
     {
+        sceneManager_->setRenderer(renderer_.get());
         sceneManager_->renderFrame();
     }
 
-    //debugRenderer_->render(nullptr);
+    sceneManager_->setRenderer(debugRenderer_.get());
+    sceneManager_->renderFrame();
 }
 
 void DemoPresenter::updateView()

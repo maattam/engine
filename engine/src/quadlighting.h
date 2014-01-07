@@ -1,4 +1,5 @@
-// Light accumulation stage using quad blending.
+// QuadLightning renders screen-aligned quads representing light enclosures and additively blends
+// resulting light into accumulation buffer.
 
 #ifndef QUADLIGHTING_H
 #define QUADLIGHTING_H
@@ -40,13 +41,18 @@ public:
 private:
     GLuint fbo_;
     GBuffer& gbuffer_;
+    QRect viewport_;
 
     QVector<Graph::Light*> spotLights_;
     QVector<Graph::Light*> pointLights_;
     Graph::Light* directionalLight_;
 
+    ShaderProgram testQuad_;
+
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;
+
+    void setPointLightExtents(Graph::Camera* camera, Graph::Light* light);
 };
 
 }

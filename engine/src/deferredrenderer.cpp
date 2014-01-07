@@ -91,14 +91,10 @@ void DeferredRenderer::geometryPass()
 
     const QMatrix4x4 view = camera_->view();
 
-    for(auto it = renderQueue_->begin(); it != renderQueue_->end(); ++it)
+    // Render only opaque items to gbuffer
+    RenderQueue::RenderRange range = renderQueue_->getItems(Material::RENDER_OPAQUE);
+    for(auto it = range.first; it != range.second; ++it)
     {
-        // Render only opaque materials to gbuffer
-        if(it.key() >= RenderQueue::RENDER_EMISSIVE)
-        {
-            break;
-        }
-
         Material* material = it->material;
         Renderable::Renderable* renderable = it->renderable;
 
