@@ -270,4 +270,5 @@ unsigned int SceneNode::lightMask() const
 void SceneNode::setLightMask(unsigned int mask)
 {
     lightMask_ = mask;
+    updateNeeded_ = true;
 }

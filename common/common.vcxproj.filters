@@ -22,6 +22,9 @@
     <ClCompile Include="src\mathelp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\binder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\common.h">
@@ -39,12 +42,21 @@
     <ClInclude Include="src\visitable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\bindable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\binder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\observable.inl">
       <Filter>Source Files</Filter>
     </None>
     <None Include="src\visitable.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\binder.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

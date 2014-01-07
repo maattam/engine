@@ -5,8 +5,6 @@
 #include "inputstate.h"
 #include "scene/scenemanager.h"
 
-#include <assimp/postprocess.h>
-
 #include <QDebug>
 #include <QTime>
 #include <qmath.h>
@@ -137,6 +135,7 @@ void SponzaScene::initialise()
     flashLight_->setAttenuationQuadratic(0.2f);
     flashLight_->setAngleOuterCone(30.0f);
     flashLight_->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
+    flashLight_->detach();
 
     // Position entities
     Graph::SceneNode* node = rootNode().createChild();
@@ -146,7 +145,6 @@ void SponzaScene::initialise()
     sphereNode_ = rootNode().createChild();
     sphere_->attach(sphereNode_);
 
-    sphereNode_->setLightMask(0);
     sphereNode_->setScale(0.5f);
     sphereNode_->setPosition(spotPath_.back().endpoint);
     spotLight_->attach(sphereNode_);

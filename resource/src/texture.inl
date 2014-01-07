@@ -57,16 +57,22 @@ bool Texture<Type>::bind()
 }
 
 template<GLenum Type>
-bool Texture<Type>::bindActive(GLenum target)
+bool Texture<Type>::bind(GLenum target)
 {
     gl->glActiveTexture(target);
     return bind();
 }
 
 template<GLenum Type>
-GLuint Texture<Type>::textureId() const
+GLuint Texture<Type>::handle() const
 {
     return textureId_;
+}
+
+template<GLenum Type>
+GLenum Texture<Type>::type() const
+{
+    return Type;
 }
 
 template<GLenum Type>

@@ -104,9 +104,10 @@ void BasicScene::initialise()
     // Set up directional light
     Graph::Light::Ptr dirLight = createLight(Graph::Light::LIGHT_DIRECTIONAL);
     dirLight->setColor(QVector3D(1, 1, 1));
-    dirLight->setDirection(QVector3D(1.0f, -1.0f, -1.0f));
-    dirLight->setAmbientIntensity(0.0f);
+    dirLight->setDirection(QVector3D(0.0f, -1.0f, -0.09f));
+    dirLight->setAmbientIntensity(0.05f);
     dirLight->setDiffuseIntensity(0.1f);
+    dirLight->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
 
     // Set up point lights
     Graph::Light::Ptr pointLight = createLight(Graph::Light::LIGHT_POINT);
@@ -130,6 +131,7 @@ void BasicScene::initialise()
     spotLight->setDiffuseIntensity(20.0f);
     spotLight->setAttenuationQuadratic(0.05f);
     spotLight->setAngleOuterCone(20.0f);
+    spotLight->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
     lights_.push_back(spotLight);
 
     // Load models

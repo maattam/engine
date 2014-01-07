@@ -4,11 +4,12 @@
 #define TEXTURE_H
 
 #include "common.h"
+#include "bindable.h"
 
 namespace Engine {
 
 template<GLenum Type>
-class Texture
+class Texture : public Bindable
 {
 public:
     enum { Target = Type };
@@ -41,10 +42,13 @@ public:
     virtual bool bind();
 
     // Attemps to bind the texture to the given texture slot
-    bool bindActive(GLenum target);
+    virtual bool bind(GLenum target);
 
     // Returns the texture handle. 0 if texture is no texture is generated.
-    GLuint textureId() const;
+    virtual GLuint handle() const;
+
+    // Returns the texture type, eg. GL_TEXTURE_2D
+    virtual GLenum type() const;
 
     // Returns texture dimensions
     GLsizei width() const;

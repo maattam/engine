@@ -6,7 +6,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QDebug>
 
-#include "common.h"
+#include "binder.h"
 
 using namespace Engine::Ui;
 
@@ -119,6 +119,9 @@ void RendererContext::endFrame()
     //gl->glFinish();
 
     emit renderTargetUpdated(sync);
+
+    // Clear OpenGL binding state after rendering.
+    Binder::reset();
 }
 
 QOpenGLContext* RendererContext::context() const

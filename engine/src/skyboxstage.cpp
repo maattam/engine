@@ -5,6 +5,7 @@
 #include "cubemaptexture.h"
 #include "graph/camera.h"
 #include "gbuffer.h"
+#include "binder.h"
 
 using namespace Engine;
 
@@ -44,7 +45,7 @@ void SkyboxStage::render(Graph::Camera* camera)
     trans.translate(camera->position());
     skybox_->setMVP(camera->worldView() * trans);
 
-    if(cubemap_->bindActive(GL_TEXTURE0 + cubemapUnit_))
+    if(Binder::bind(cubemap_, GL_TEXTURE0 + cubemapUnit_))
     {
         // We want to see the skybox texture from the inside
         gl->glCullFace(GL_FRONT);

@@ -144,7 +144,7 @@ void ForwardRenderer::shadowMapPass()
     gl->glCullFace(GL_BACK);
 
     // Render depth for directional light
-    if(directionalLight_.occluders == nullptr)
+    if(directionalLight_.light == nullptr || directionalLight_.occluders == nullptr)
     {
         return;
     }

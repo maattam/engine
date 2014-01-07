@@ -20,7 +20,7 @@ namespace {
 }
 
 ImportedNodeData::ImportedNodeData()
-    : ResourceData(), pFlags_(aiProcessPreset_TargetRealtime_Fast)
+    : ResourceData(), pFlags_(aiProcessPreset_TargetRealtime_Quality)
 {
 }
 

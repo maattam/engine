@@ -4,6 +4,8 @@
 #include "graph/scenenode.h"
 #include "scene/scenemanager.h"
 
+#include <assimp/postprocess.h>
+
 #include <QTime>
 #include <qmath.h>
 
@@ -45,7 +47,7 @@ void LightScene::initialise()
     setSkyboxTexture("assets/skybox/miramar/miramar*.dds");
 
     // Load meshes
-    dragon_ = despatcher().get<ImportedNode>("assets/dragon.dae", scene());
+    dragon_ = despatcher().get<ImportedNode>("assets/dragon.dae", scene(), aiProcessPreset_TargetRealtime_Fast);
     dragon_->attach(&rootNode());
 
     for(int i = 0; i < 50; ++i)

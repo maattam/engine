@@ -19,10 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\binder.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\mathelp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\bindable.h" />
+    <ClInclude Include="src\binder.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\mathelp.h" />
     <ClInclude Include="src\observable.h" />
@@ -30,6 +33,7 @@
     <ClInclude Include="src\visitor.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\binder.inl" />
     <None Include="src\observable.inl" />
     <None Include="src\visitable.inl" />
   </ItemGroup>

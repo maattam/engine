@@ -11,6 +11,8 @@
 #include "texture2d.h"
 #include "renderable/primitive.h"
 
+#include "binder.h"
+
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
@@ -121,7 +123,7 @@ void DebugRenderer::renderWireframe(const RenderQueue& queue)
     {
         wireframeTech_->setUniformValue("gMVP", camera_->worldView() * *it->modelView);
 
-        it->material->getTexture(Material::TEXTURE_DIFFUSE)->bindActive(GL_TEXTURE0);
+        Binder::bind(it->material->getTexture(Material::TEXTURE_DIFFUSE), GL_TEXTURE0);
             
         QVector3D highlight = it->material->attributes().ambientColor + QVector3D(0.2f, 0.2f, 0.2f);
         wireframeTech_->setUniformValue("ambientColor", highlight);

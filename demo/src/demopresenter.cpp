@@ -110,7 +110,7 @@ void DemoPresenter::render()
         sceneManager_->renderFrame();
     }
 
-    //debugRenderer_->render(sceneModel_->camera());
+    //debugRenderer_->render(nullptr);
 }
 
 void DemoPresenter::updateView()

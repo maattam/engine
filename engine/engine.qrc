@@ -23,5 +23,6 @@
         <file>shaders/dsmaterial.vert</file>
         <file>shaders/dsmaterial_debug.frag</file>
         <file>shaders/dsillumination.frag</file>
+        <file>images/spec.png</file>
     </qresource>
 </RCC>

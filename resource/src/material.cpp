@@ -3,6 +3,7 @@
 #include "common.h"
 #include "textureloader.h"
 #include "texture2dresource.h"
+#include "binder.h"
 
 #include <QDebug>
 
@@ -27,7 +28,7 @@ bool Material::bind()
     {
         const TexturePtr& tex = getTexture(static_cast<TextureType>(i));
 
-        if(tex != nullptr && !tex->bindActive(GL_TEXTURE0 + i))
+        if(tex != nullptr && !Binder::bind(tex, GL_TEXTURE0 + i))
         {
             return false;
         }
@@ -142,7 +143,7 @@ Material::TexturePtr Material::defaultTexture(TextureType type)
     {
         if(nullSpecularTexture.expired())
         {
-            target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
+            target = makeDefault(RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
             nullSpecularTexture = target;
         }
 

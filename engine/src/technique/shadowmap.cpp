@@ -7,6 +7,7 @@
 #include "renderable/renderable.h"
 #include "material.h"
 #include "renderqueue.h"
+#include "binder.h"
 
 using namespace Engine;
 using namespace Engine::Technique;
@@ -84,7 +85,7 @@ bool ShadowMap::initLight(LightData& light, GLsizei width, GLsizei height)
     // Initialize framebuffer
     gl->glGenFramebuffers(1, &light.fbo);
     gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
-    gl->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, light.texture->textureId(), 0);
+    gl->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, light.texture->handle(), 0);
     gl->glDrawBuffer(GL_NONE);
 
     if(gl->glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -150,8 +151,10 @@ void ShadowMap::renderLight(const LightData& light, RenderQueue* visibles)
     gl->glBindFramebuffer(GL_FRAMEBUFFER, light.fbo);
     gl->glClear(GL_DEPTH_BUFFER_BIT);
 
-    if(visibles == nullptr)
+    if(visibles->queue().empty())
+    {
         return;
+    }
 
     setUniformValue("gMaskSampler", 0);
 
@@ -160,7 +163,7 @@ void ShadowMap::renderLight(const LightData& light, RenderQueue* visibles)
         setUniformValue("gMVP", light.worldView * *it->modelView);
 
         // Bind mask texture to discard fully opaque fragments
-        it->material->getTexture(Material::TEXTURE_MASK)->bindActive(GL_TEXTURE0);
+        Binder::bind(it->material->getTexture(Material::TEXTURE_MASK), GL_TEXTURE0);
         it->renderable->render();
     }
 }
@@ -171,12 +174,12 @@ void ShadowMap::renderLight(const LightData& light, RenderQueue* visibles)
 
 bool ShadowMap::bindSpotLight(size_t index, GLenum textureUnit)
 {
-    return spotLights_.at(index).texture->bindActive(textureUnit);
+    return spotLights_.at(index).texture->bind(textureUnit);
 }
 
 bool ShadowMap::bindDirectionalLight(GLenum textureUnit)
 {
-    return directionalLight_.texture->bindActive(textureUnit);
+    return directionalLight_.texture->bind(textureUnit);
 }
 
 const QMatrix4x4& ShadowMap::spotLightVP(size_t index) const

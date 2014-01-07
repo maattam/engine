@@ -14,8 +14,9 @@ int main(int argc, char *argv[])
     // Create OpenGL context
     QSurfaceFormat format;
     format.setVersion(4, 2);
-    format.setSamples(1);
+    format.setSamples(2);
     format.setProfile(QSurfaceFormat::CoreProfile);
+    format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
 
 #ifdef _DEBUG
     format.setOption(QSurfaceFormat::DebugContext);
