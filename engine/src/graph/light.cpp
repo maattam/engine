@@ -204,16 +204,30 @@ void Light::calculateAABB()
 
 float Light::cutoffDistance() const
 {
-    const float maxrgb = 256.0f;
+    // Calculate light's luminance using Rec 709 formula
+    float luminance = QVector3D::dotProduct(color_, QVector3D(0.299f, 0.587f, 0.114f));
+    luminance *= diffuseIntensity_;
 
-    // Find max rgb
-    float maxC = qMax(color_.x(), color_.y());
-    maxC = qMax(maxC, color_.z());
+    // Luminance where below is considered black
+    const float cutoff = 0.005f;
 
-    float root = attenuation_.linear * attenuation_.linear
-        - 4 * attenuation_.quadratic * (attenuation_.constant - maxrgb * maxC * diffuseIntensity_);
+    if(attenuation_.quadratic > 0)
+    {
+        float root = attenuation_.linear * attenuation_.linear
+            - 4 * attenuation_.quadratic * (attenuation_.constant - luminance / cutoff);
 
-    return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.quadratic);
+        return (-attenuation_.linear + qSqrt(root)) / (2 * attenuation_.quadratic);
+    }
+
+    else if(attenuation_.linear > 0)
+    {
+        return (luminance / cutoff - attenuation_.constant) / attenuation_.linear;
+    }
+
+    else
+    {
+        return luminance / cutoff - attenuation_.constant;
+    }
 }
 
 QMatrix4x4 Light::frustum() const

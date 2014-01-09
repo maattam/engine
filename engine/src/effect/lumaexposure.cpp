@@ -102,8 +102,8 @@ float LumaExposure::calculateExposure(const QVector3D& linearSample)
 
     // RGB to YUV; Y luminance
     float Y = 0.299 * std::powf(linearSample.x(), invGamma)
-        + 0.114 * std::powf(linearSample.y(), invGamma)
-        + 0.587 * std::powf(linearSample.z(), invGamma);
+        + 0.587 * std::powf(linearSample.y(), invGamma)
+        + 0.114 * std::powf(linearSample.z(), invGamma);
 
     if(exposures_.size() >= window_)
     {

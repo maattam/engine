@@ -18,7 +18,6 @@ void ProxyDespatcher::clear()
     resources_.clear();
 }
 
-
 int ProxyDespatcher::numManaged() const
 {
     int count = 0;

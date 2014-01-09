@@ -54,6 +54,7 @@ protected:
 private:
     QHash<QString, WeakResourcePtr> resources_;
     QThreadPool threadPool_;
+    QString rootDirectory_;
 
     QFileSystemWatcher* watcher_;
 

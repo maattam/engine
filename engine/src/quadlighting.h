@@ -47,11 +47,10 @@ private:
     QVector<Graph::Light*> pointLights_;
     Graph::Light* directionalLight_;
 
-    ShaderProgram testQuad_;
-
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;
 
+    // Returns false if the light is not visible.
     void setPointLightExtents(Graph::Camera* camera, Graph::Light* light);
 };
 

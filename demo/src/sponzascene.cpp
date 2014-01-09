@@ -159,11 +159,18 @@ void SponzaScene::initialise()
     {
         for(int j = 0; j < 3; ++j)
         {
+            // Skip middle on second floor
+            if(k == 1 && j == 1)
+                continue;
+
             for(int i = 0; i < LIGHTS_PER_ROW; ++i)
             {
                 Graph::Light::Ptr light = createLight(Graph::Light::LIGHT_POINT);
                 light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-                light->setDiffuseIntensity(3.0f);
+                //light->setDiffuseIntensity(5.0f);
+
+                light->setAttenuationQuadratic(static_cast<float>(qrand() % 10) / 10 + 0.5f);
+                light->setAttenuationLinear(static_cast<float>(qrand() % 10) / 20);
 
                 Graph::SceneNode* lightNode = rootNode().createChild();
                 lightNode->setPosition(QVector3D(-60 + i * 120.0 / LIGHTS_PER_ROW, 3 + k * 22, -20 + j * 20));

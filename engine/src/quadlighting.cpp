@@ -15,9 +15,6 @@ QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatc
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.vert"), Shader::Type::Vertex));
     lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
 
-    //testQuad_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/testquad.vert"), Shader::Type::Vertex));
-    //testQuad_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/testquad.frag"), Shader::Type::Fragment));
-
     lightningTech_.setGBuffer(&gbuffer);
 }
 
@@ -81,21 +78,10 @@ void QuadLighting::render(Graph::Camera* camera)
     // Blend point lights
     for(Graph::Light* light : pointLights_)
     {
-        lightningTech_.enablePointLight(*light);
         setPointLightExtents(camera, light);
-
+        lightningTech_.enablePointLight(*light);
         quad_->render();
     }
-
-    /*if(testQuad_.bind())
-    {
-        // Tinker n stuff
-        for(Graph::Light* light : pointLights_)
-        {
-            setPointLightExtents(camera, light);
-            quad_->render();
-        }
-    }*/
 
     gl->glDisable(GL_BLEND);
 
@@ -127,24 +113,31 @@ void QuadLighting::setLights(const QVector<LightData>& lights)
 
 void QuadLighting::setPointLightExtents(Graph::Camera* camera, Graph::Light* light)
 {
-    float cutoff = light->cutoffDistance();
+    const float clipMargin = camera->nearPlane() + 0.0001f;
+
+    QVector3D eyePos = camera->position() + camera->direction() * clipMargin;
+    QVector3D extent = eyePos - light->position();
+
+    QVector3D quadPos;
 
     // Clamp quad Z to near clip plane Z if we are inside the light's extents
-    QVector3D extent = camera->position() - light->position();
-    float viewZ = extent.length();
-
-    if(QVector3D::dotProduct(extent, camera->direction()) < 0)
+    if(extent.length() <= light->cutoffDistance())
     {
-        viewZ -= camera->nearPlane() + 0.1f;
-    }
+        QMatrix4x4 view = camera->view();
 
-    else
-    {
-        viewZ += camera->nearPlane() + 0.1f;
+        QVector3D lightPosView = view * light->position();
+
+        // Move the quad slightly in front of the clip plane because objects on the clip plane are culled.
+        lightPosView.setZ(-clipMargin);
+
+        quadPos = view.inverted() * lightPosView;
     }
 
     // Set quad Z to min Z of light
-    QVector3D quadPos = light->position() + qMin(cutoff, viewZ) * extent.normalized();
+    else
+    {
+        quadPos = light->position() + extent.normalized() * light->cutoffDistance();
+    }
 
-    lightningTech_.setQuadExtents(cutoff, quadPos);
+    lightningTech_.setQuadExtents(light->cutoffDistance(), quadPos);
 }

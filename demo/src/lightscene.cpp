@@ -50,7 +50,7 @@ void LightScene::initialise()
     dragon_ = despatcher().get<ImportedNode>("assets/dragon.dae", scene(), aiProcessPreset_TargetRealtime_Fast);
     dragon_->attach(&rootNode());
 
-    for(int i = 0; i < 200; ++i)
+    for(int i = 0; i < 500; ++i)
     {
         insertLight(&rootNode());
     }
@@ -66,7 +66,8 @@ void LightScene::insertLight(Engine::Graph::SceneNode* node)
 
     light.light = createLight(Graph::Light::LIGHT_POINT);
     light.light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-    //light.light->setDiffuseIntensity(25.0f);
+    light.light->setAttenuationQuadratic(1);
+    light.light->setAttenuationLinear(0);
 
     light.radius = qrand() % 40 + 15;
     light.height = qrand() % 20 + 1;
