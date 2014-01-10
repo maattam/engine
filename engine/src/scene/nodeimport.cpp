@@ -138,7 +138,8 @@ void importMaterial(aiMaterial* aiMat, Material& material, const QString& rootDi
         std::make_pair(aiTextureType_DIFFUSE, TC_SRGBA),
         std::make_pair(aiTextureType_NORMALS, TC_RGBA),
         std::make_pair(aiTextureType_SPECULAR, TC_GRAYSCALE),
-        std::make_pair(aiTextureType_OPACITY, TC_GRAYSCALE)
+        std::make_pair(aiTextureType_OPACITY, TC_GRAYSCALE),
+        std::make_pair(aiTextureType_SHININESS, TC_GRAYSCALE)
     };
 
     aiString path;

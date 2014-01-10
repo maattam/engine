@@ -26,9 +26,9 @@ void DSGeometryShader::setMVP(const QMatrix4x4& mvp)
 
 void DSGeometryShader::setMaterialAttributes(const Material::Attributes& attrib)
 {
-    setUniformValue("material.diffuseColor", linearColor(attrib.diffuseColor));
+    setUniformValue("material.diffuse", linearColor(attrib.diffuseColor));
     setUniformValue("material.shininess", attrib.shininess);
-    setUniformValue("material.specularIntensity", attrib.specularIntensity);
+    setUniformValue("material.specular", attrib.specularIntensity);
 }
 
 void DSGeometryShader::setHasTangentsAndNormals(bool value)
@@ -50,7 +50,7 @@ bool DSGeometryShader::init()
 {
     const char* SAMPLERS[Material::TEXTURE_COUNT] = {
         "material.diffuseSampler", "material.normalSampler",
-        "material.specularSampler", "material.maskSampler"
+        "material.specularSampler", "material.maskSampler", "material.shininessSampler"
     };
 
     // Set texture units
@@ -66,9 +66,9 @@ bool DSGeometryShader::init()
     resolveUniformLocation("normalMatrix");
     resolveUniformLocation("MVP");
 
-    resolveUniformLocation("material.diffuseColor");
+    resolveUniformLocation("material.diffuse");
     resolveUniformLocation("material.shininess");
-    resolveUniformLocation("material.specularIntensity");
+    resolveUniformLocation("material.specular");
 
     // Subroutine indices
     resolveSubroutineLocation("skipTangent", GL_VERTEX_SHADER);

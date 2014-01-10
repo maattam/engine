@@ -32,9 +32,9 @@ struct VertexInfo
 
 struct MaterialInfo
 {
-    vec3 diffuseColor;
+    vec3 diffuse;
     float shininess;
-    float specularIntensity;
+    float specular;
 };
 
 // Subroutine used to implement different shading functions
@@ -86,15 +86,16 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int 
     vertex.normal.xy = fenc * g;
     vertex.normal.z = 1 - f/2;
 
-    material.shininess = data.b * 1023;
+    // Clamp shininess since calculating pow with very small exponent seems to cause problems.
+    material.shininess = max(data.b * 1023.0, 0.0001);
 }
 
 void unpackDiffuseSpec(inout MaterialInfo material, int n)
 {
     vec4 data = sampleTexture(diffuseSpecData, calcTexCoord(), n);
 
-    material.diffuseColor = data.rgb;
-    material.specularIntensity = data.a * 255;
+    material.diffuse = data.rgb;
+    material.specular = data.a * 255.0;
 }
 
 void main()

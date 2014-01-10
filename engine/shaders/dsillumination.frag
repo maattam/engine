@@ -24,21 +24,39 @@ struct Light
 
 uniform Light light;
 
-vec3 lightningModel(in vec3 lightDirection, in VertexInfo vertex, in MaterialInfo material)
+vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialInfo material)
 {
-    // Lambertian + blinn-phong
-    float sDotN = max(dot(lightDirection, vertex.normal), 0.0);
-    vec3 diffuse = light.color * sDotN;
+    vec3 n = vertex.normal;
+    vec3 l = normalize(lightToFragment);
 
+    // Lambertian reflectance
+    float lambert = max(dot(l, n), 0.0);
+
+    vec3 diffuse = lambert * light.color;
     vec3 specular = vec3(0.0);
-    if(sDotN > 0)
+
+    if(lambert > 0.0)
     {
-        vec3 r = normalize(reflect(lightDirection, vertex.normal));
-        float power = pow(max(dot(-r, normalize(-vertex.position.xyz)), 0.0), material.shininess);
-        specular = light.color * material.specularIntensity * power;
+        // Compute halway vector for Blinn-Phong model
+        vec3 v = normalize(-vertex.position.xyz);
+        vec3 h = normalize(v + l);
+
+        // Cosine power normalisation factor
+        float d = (material.shininess + 2) / 8;
+        float power = pow(max(dot(h, n), 0.0), material.shininess);
+        
+        // Calculate Schlick fresnel approximation to weigth interpolation between texel specular intensity
+        // and full specular hilight.
+        float lh = dot(l, h);
+        float fschlick = min(pow(1 - max(lh, 0.0), 5), 1.0);
+
+        // Approximation of the Cook-Torrance geometry factor. For science.
+        float G = 1.0 / (lh * lh);
+
+        specular = G * d * power * mix(material.specular, 1.0, fschlick) * light.color;
     }
-	
-	return diffuse + specular;
+
+    return diffuse + specular;
 }
 
 subroutine(CalculateOutputType)
@@ -48,14 +66,14 @@ vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
     vec3 lightToFragment = light.position - vertex.position.xyz;
     float dist = length(lightToFragment);
 
-    vec3 color = lightningModel(normalize(lightToFragment), vertex, material);
+    vec3 color = lightningModel(lightToFragment, vertex, material);
 
     // Spot light attenuation
     float attenuation = light.attenuation.x +
                         light.attenuation.y * dist +
                         light.attenuation.z * dist * dist;
 
-    return vec4(material.diffuseColor * color / attenuation, 1.0);
+    return vec4(material.diffuse * color / attenuation, 1.0);
 }
 
 subroutine(CalculateOutputType)
@@ -72,7 +90,7 @@ vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
         color = color * (1.0 - (1.0 - spotFactor) / (1.0 - light.outerAngle));
     }
 
-    return vec4(material.diffuseColor, 1.0) * color;
+    return vec4(material.diffuse, 1.0) * color;
 }
 
 subroutine(CalculateOutputType)
@@ -81,5 +99,5 @@ vec4 directionalLightPass(in VertexInfo vertex, in MaterialInfo material)
     vec3 ambient = light.color * light.ambientIntensity;
     vec3 color = lightningModel(-light.direction, vertex, material) + ambient;
 
-    return vec4(material.diffuseColor * color, 1.0);
+    return vec4(material.diffuse * color, 1.0);
 }

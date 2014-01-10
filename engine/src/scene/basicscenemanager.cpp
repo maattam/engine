@@ -71,7 +71,7 @@ void BasicSceneManager::prepareNextFrame()
     findVisibleLeaves(camera.worldView(), culledGeometry_);
 
     // Sort visible geometry
-    culledGeometry_.sort(RenderItemSorter(camera.worldView()));
+    culledGeometry_.sort(RenderItemSorter());
 
     // Cull visibles inside each light's frustum
     for(Renderer::LightData& lightData : culledLights_)

@@ -5,7 +5,12 @@
 subroutine(CalculateOutputType)
 vec4 outputPositions(in VertexInfo vertex, in MaterialInfo material)
 {
-    return vec4(vertex.position.xyz, 0);
+    if(vertex.position.z < -1000.0)
+    {
+        return vec4(0);
+    }
+
+    return vec4(vertex.position.xy, -vertex.position.z, 0);
 }
 
 subroutine(CalculateOutputType)

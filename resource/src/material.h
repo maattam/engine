@@ -20,7 +20,7 @@ public:
     Material();
     ~Material();
 
-    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_COUNT };
+    enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_SHININESS, TEXTURE_COUNT };
 
     // Render type determines the material's rendering stage.
     enum RenderType { RENDER_OPAQUE, RENDER_EMISSIVE, RENDER_TRANSPARENT };
@@ -56,13 +56,7 @@ public:
         float shininess;
         float specularIntensity;
 
-        Attributes()
-        {
-            ambientColor = QVector3D(0, 0, 0);
-            diffuseColor = QVector3D(1, 1, 1);
-            shininess = 50.0f;
-            specularIntensity = 3.0f;
-        }
+        Attributes();
     };
 
     const Attributes& attributes() const;

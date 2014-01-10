@@ -15,15 +15,16 @@ layout (location = 1) out vec4 diffuseSpecData;
 struct Material
 {
     // Material attributes
-	vec3 diffuseColor;
+	vec3 diffuse;
 	float shininess;
-	float specularIntensity;
+	float specular;
 
     // Material samplers
     sampler2D diffuseSampler;
     sampler2D normalSampler;
     sampler2D specularSampler;
     sampler2D maskSampler;
+    sampler2D shininessSampler;
 };
 
 uniform Material material;
@@ -58,13 +59,13 @@ void packNormalSpecData()
     float p = sqrt(normal.z * 8 + 8);
     normalSpecData.rg = normal.xy / p + 0.5;
 
-    normalSpecData.b = material.shininess / 1023;
+    normalSpecData.b = texture(material.shininessSampler, texCoord0).r * material.shininess / 1023.0;
 }
 
 void packDiffuseSpecData()
 {
-    diffuseSpecData.rgb = texture(material.diffuseSampler, texCoord0).rgb * material.diffuseColor;
-    diffuseSpecData.a = material.specularIntensity * texture(material.specularSampler, texCoord0).r / 255;
+    diffuseSpecData.rgb = texture(material.diffuseSampler, texCoord0).rgb * material.diffuse;
+    diffuseSpecData.a = texture(material.specularSampler, texCoord0).r * material.specular / 255.0;
 }
 
 void main()

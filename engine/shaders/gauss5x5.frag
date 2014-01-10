@@ -36,7 +36,7 @@ void main()
         color += weights[i] * sample5x5(dx, dy, i % 5, i / 5);
     }
 
-    color /= 273;
+    color /= 273.0;
 	
 	gl_FragColor = color;
 }

@@ -118,7 +118,7 @@ void BasicLightning::setPointAndSpotLights(const QList<Graph::Light*>& lights)
         {
             if(numPointLights >= MAX_POINT_LIGHTS)
             {
-                qWarning() << __FUNCTION__ << "MAX_POINT_LIGHTS exceeded";
+                //qWarning() << __FUNCTION__ << "MAX_POINT_LIGHTS exceeded";
             }
 
             else
@@ -131,7 +131,7 @@ void BasicLightning::setPointAndSpotLights(const QList<Graph::Light*>& lights)
         {
             if(numSpotLights >= MAX_SPOT_LIGHTS)
             {
-                qWarning() << __FUNCTION__ << "MAX_SPOT_LIGHTS exceeded";
+                //qWarning() << __FUNCTION__ << "MAX_SPOT_LIGHTS exceeded";
             }
 
             else

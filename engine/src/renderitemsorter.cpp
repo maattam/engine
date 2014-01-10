@@ -4,11 +4,6 @@
 
 using namespace Engine;
 
-RenderItemSorter::RenderItemSorter(const QMatrix4x4& viewProj)
-    : viewProj_(viewProj)
-{
-}
-
 bool RenderItemSorter::operator()(const RenderQueue::RenderItem& first, const RenderQueue::RenderItem& second) const
 {
     Material& mat1 = *first.material;

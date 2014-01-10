@@ -117,8 +117,6 @@ void SponzaScene::initialise()
     sphere_ = despatcher().get<ImportedNode>("assets/sphere.obj", scene());
 
     // Set up lights
-    //setDirectionalLight(QVector3D(1, 1, 251 / 255.0f), QVector3D(0.0f, -1.0f, -0.09f), 0.05f, 5.0f);
-
     spotLight_ = createLight(Graph::Light::LIGHT_SPOT);
     spotLight_->setColor(QVector3D(255, 214, 170) / 255.0f);
     spotLight_->setDirection(spotNode_->direction);
@@ -152,7 +150,7 @@ void SponzaScene::initialise()
     cameraNode_ = rootNode().createChild();
     camera()->attach(cameraNode_);
 
-    const int LIGHTS_PER_ROW = 20;
+    const int LIGHTS_PER_ROW = 10;
 
     // Add bunch of lights
     for(int k = 0; k < 2; ++k)
@@ -167,12 +165,13 @@ void SponzaScene::initialise()
             {
                 Graph::Light::Ptr light = createLight(Graph::Light::LIGHT_POINT);
                 light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-                //light->setDiffuseIntensity(5.0f);
+                light->setDiffuseIntensity(5.0f);
 
                 light->setAttenuationQuadratic(static_cast<float>(qrand() % 10) / 10 + 0.5f);
                 light->setAttenuationLinear(static_cast<float>(qrand() % 10) / 20);
 
                 Graph::SceneNode* lightNode = rootNode().createChild();
+
                 lightNode->setPosition(QVector3D(-60 + i * 120.0 / LIGHTS_PER_ROW, 3 + k * 22, -20 + j * 20));
 
                 light->attach(lightNode);

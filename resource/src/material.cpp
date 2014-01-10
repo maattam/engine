@@ -12,13 +12,13 @@ using namespace Engine;
 namespace {
     Material::TexturePtr makeDefault(const QString& fileName, TextureConversion conversion);
 
+    Material::TexturePtr fetchDefault(Material::TextureType type, const QString& fileName, TextureConversion conversion);
+
     // Returns the default 1x1 texture for the type.
     Material::TexturePtr defaultTexture(Material::TextureType type);
 
     // Static default texture watchers.
-    std::weak_ptr<Texture2D> nullMaskTexture;
-    std::weak_ptr<Texture2D> nullDiffuseTexture;
-    std::weak_ptr<Texture2D> nullSpecularTexture;
+    QMap<Material::TextureType, std::weak_ptr<Texture2D>> nullTextures;
 }
 
 Material::Material()
@@ -28,6 +28,15 @@ Material::Material()
 
 Material::~Material()
 {
+}
+
+Material::Attributes::Attributes()
+{
+    // Some sane default values
+    ambientColor = QVector3D(0, 0, 0);
+    diffuseColor = QVector3D(1, 1, 1);
+    shininess = 25.0f;
+    specularIntensity = 0.3f;
 }
 
 bool Material::bind()
@@ -143,44 +152,22 @@ namespace {
 
         if(type == Material::TEXTURE_DIFFUSE)
         {
-            if(nullDiffuseTexture.expired())
-            {
-                target = makeDefault(RESOURCE_PATH("images/white.png"), TC_RGBA);
-                nullDiffuseTexture = target;
-            }
-
-            else
-            {
-                target = nullDiffuseTexture.lock();
-            }
+            target = fetchDefault(type, RESOURCE_PATH("images/white.png"), TC_RGBA);
         }
 
         else if(type == Material::TEXTURE_MASK)
         {
-            if(nullMaskTexture.expired())
-            {
-                target = makeDefault(RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
-                nullMaskTexture = target;
-            }
-
-            else
-            {
-                target = nullMaskTexture.lock();
-            }
+            target = fetchDefault(type, RESOURCE_PATH("images/mask.png"), TC_GRAYSCALE);
         }
 
         else if(type == Material::TEXTURE_SPECULAR)
         {
-            if(nullSpecularTexture.expired())
-            {
-                target = makeDefault(RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
-                nullSpecularTexture = target;
-            }
+            target = fetchDefault(type, RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
+        }
 
-            else
-            {
-                target = nullSpecularTexture.lock();
-            }
+        else if(type == Material::TEXTURE_SHININESS)
+        {
+            target = fetchDefault(type, RESOURCE_PATH("images/spec.png"), TC_GRAYSCALE);
         }
 
         return target;
@@ -195,5 +182,24 @@ namespace {
         }
 
         return nullptr;
+    }
+
+    Material::TexturePtr fetchDefault(Material::TextureType type, const QString& fileName, TextureConversion conversion)
+    {
+        Material::TexturePtr target;
+
+        std::weak_ptr<Texture2D>& handle = nullTextures[type];
+        if(handle.expired())
+        {
+            target = makeDefault(fileName, conversion);
+            handle = target;
+        }
+
+        else
+        {
+            target = handle.lock();
+        }
+
+        return target;
     }
 }
