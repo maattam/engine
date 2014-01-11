@@ -28,6 +28,7 @@ struct VertexInfo
 {
     vec4 position;
     vec3 normal;
+    float edge;
 };
 
 struct MaterialInfo
@@ -52,15 +53,8 @@ vec2 calcTexCoord()
     return (gl_FragCoord.xy - viewport.xy) / viewport.zw;
 }
 
-void unpackPosition(inout VertexInfo vertex, int n)
+void unpackPosition(inout VertexInfo vertex, float z)
 {
-    float z = sampleTexture(depthData, calcTexCoord(), n).r;
-
-    if(gl_FragCoord.z > z)
-    {
-        discard;
-    }
-
     // Construct ndc position from screen-space coordinates
     vec4 ndcPos;
     ndcPos.xy = (2.0 * gl_FragCoord.xy - 2.0 * viewport.xy) / viewport.zw - 1;
@@ -75,9 +69,9 @@ void unpackPosition(inout VertexInfo vertex, int n)
 }
 
 // Returns false if texel is part of skybox
-void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int n)
+void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, in vec2 uv, int n)
 {
-    vec4 data = sampleTexture(normalSpecData, calcTexCoord(), n);
+    vec4 data = sampleTexture(normalSpecData, uv, n);
 
     // Inverse spheremap transformation
     vec2 fenc = data.rg * 4 - 2;
@@ -88,14 +82,50 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, int 
 
     // Clamp shininess since calculating pow with very small exponent seems to cause problems.
     material.shininess = max(data.b * 1023.0, 0.0001);
+
+    vertex.edge = data.a;
 }
 
-void unpackDiffuseSpec(inout MaterialInfo material, int n)
+void unpackDiffuseSpec(inout MaterialInfo material, in vec2 uv, int n)
 {
-    vec4 data = sampleTexture(diffuseSpecData, calcTexCoord(), n);
+    vec4 data = sampleTexture(diffuseSpecData, uv, n);
 
     material.diffuse = data.rgb;
     material.specular = data.a * 255.0;
+}
+
+float getSample(inout VertexInfo vertex, inout MaterialInfo material, in vec2 uv, int n)
+{
+    float z = sampleTexture(depthData, uv, n).r;
+
+    unpackPosition(vertex, z);
+    unpackNormalSpec(material, vertex, uv, n);
+    unpackDiffuseSpec(material, uv, n);
+
+    return z;
+}
+
+bool testEdgeVertex(in vec2 uv)
+{
+    for(int i = 1; i < samples; ++i)
+    {
+        if(sampleTexture(normalSpecData, uv, i).r > 0.0)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+vec4 calcAverageOutput(in VertexInfo vertex, in MaterialInfo material, float z)
+{
+    if(gl_FragCoord.z > z)
+    {
+        return vec4(0.0);
+    }
+
+    return calculateOutput(vertex, material);
 }
 
 void main()
@@ -103,16 +133,29 @@ void main()
     VertexInfo vertex;
     MaterialInfo material;
 
-    vec4 color = vec4(0);
+    vec2 uv = calcTexCoord();
+    vec4 color = vec4(0.0);
 
-    for(int i = 0; i < samples; ++i)
+    float z = getSample(vertex, material, uv, 0);
+    color += calcAverageOutput(vertex, material, z);
+
+    // Calculate average output for vertex edge samples to perform MSAA
+    if(vertex.edge > 0.0 || testEdgeVertex(uv))
     {
-        unpackPosition(vertex, i);
-        unpackNormalSpec(material, vertex, i);
-        unpackDiffuseSpec(material, i);
+        // Average sample
+        for(int i = 1; i < samples; ++i)
+        {
+            z = getSample(vertex, material, uv, i);
+            color += calcAverageOutput(vertex, material, z);
+        }
 
-        color += calculateOutput(vertex, material);
+        color /= samples;
     }
 
-    fragColor = color / samples;
+    if(color == vec4(0))
+    {
+        discard;
+    }
+
+    fragColor = color;
 }

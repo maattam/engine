@@ -29,7 +29,6 @@ public:
     void setWorldView(const QMatrix4x4& vp);
     void setEyeWorldPos(const QVector3D& eyePos);
     void setMaterialAttributes(const Material::Attributes& attributes);
-    void setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular, GLuint mask);
     void setHasTangents(bool tangents);
 
     void setSpotLightMVP(size_t index, const QMatrix4x4& mvp);

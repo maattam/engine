@@ -165,7 +165,6 @@ void ForwardRenderer::renderPass(Graph::Camera* camera)
     }
 
     lightningTech_.setEyeWorldPos(camera->position());
-    lightningTech_.setTextureUnits(0, 1, 2, 3);
     lightningTech_.setDirectionalLight(directionalLight_.light);
 
     QList<Graph::Light*> lights;

@@ -50,8 +50,15 @@ private:
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;
 
-    // Returns false if the light is not visible.
+    // Cached values
+    QMatrix4x4 viewMatrix_;
+    QMatrix4x4 viewMatrixInverse_;
+
     void setPointLightExtents(Graph::Camera* camera, Graph::Light* light);
+    void setSpotLightExtents(Graph::Camera* camera, Graph::Light* light);
+
+    // Positions light so it faces the camera at the light's minZ extent.
+    QVector3D calcQuadPosition(Graph::Camera* camera, const QVector3D& lightPos, float lightCutoff);
 };
 
 }

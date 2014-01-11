@@ -22,5 +22,5 @@ vec4 outputNormals(in VertexInfo vertex, in MaterialInfo material)
 subroutine(CalculateOutputType)
 vec4 outputDiffuse(in VertexInfo vertex, in MaterialInfo material)
 {
-    return vec4(material.diffuseColor, 0);
+    return vec4(material.diffuse, 0);
 }

@@ -23,6 +23,20 @@ BasicLightning::~BasicLightning()
 
 bool BasicLightning::init()
 {
+    const char* SAMPLERS[Material::TEXTURE_COUNT] = {
+        "gDiffuseSampler", "gNormalSampler",
+        "gSpecularSampler", "gMaskSampler", "gShininessSampler"
+    };
+
+    // Set texture units
+    for(int i = 0; i < Material::TEXTURE_COUNT; ++i)
+    {
+        if(!setUniformValue(SAMPLERS[i], i))
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -52,14 +66,6 @@ void BasicLightning::setMaterialAttributes(const Material::Attributes& attribute
     setUniformValue("gMaterial.diffuseColor", linearColor(attributes.diffuseColor));
     setUniformValue("gMaterial.specularIntensity", attributes.specularIntensity);
     setUniformValue("gMaterial.shininess", attributes.shininess);
-}
-
-void BasicLightning::setTextureUnits(GLuint diffuse, GLuint normal, GLuint specular, GLuint mask)
-{
-    setUniformValue("gDiffuseSampler", diffuse);
-    setUniformValue("gNormalSampler", normal);
-    setUniformValue("gSpecularSampler", specular);
-    setUniformValue("gMaskSampler", mask);
 }
 
 void BasicLightning::setDirectionalLight(Graph::Light* light)

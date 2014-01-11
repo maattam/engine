@@ -36,7 +36,7 @@ Material::Attributes::Attributes()
     ambientColor = QVector3D(0, 0, 0);
     diffuseColor = QVector3D(1, 1, 1);
     shininess = 25.0f;
-    specularIntensity = 0.3f;
+    specularIntensity = 0.2f;
 }
 
 bool Material::bind()

@@ -71,6 +71,7 @@ uniform sampler2D gDiffuseSampler;
 uniform sampler2D gNormalSampler;
 uniform sampler2D gSpecularSampler;
 uniform sampler2D gMaskSampler;
+uniform sampler2D gShininessSampler;
 
 uniform sampler2DShadow gSpotLightShadowMap[MAX_SPOT_LIGHTS];
 uniform sampler2DShadow gDirectionalLightShadowMap;
@@ -134,11 +135,11 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 		
 		// Specular reflection is almost the same as diffuse, but here we compare against the eye direction
 		float specularFactor = clamp(dot(vertexToEye, lightReflect), 0, 1);
-		specularFactor = pow(specularFactor, gMaterial.shininess);
+		specularFactor = pow(specularFactor, gMaterial.shininess * texture(gShininessSampler, texCoord0).r);
 		
 		if(specularFactor > 0)
 		{
-			specularColor = vec4(light.color, 1.0) * texture(gSpecularSampler, texCoord0).r *
+			specularColor = vec4(light.color, 0) * texture(gSpecularSampler, texCoord0).r *
 				gMaterial.specularIntensity * specularFactor;
 		}
 	}

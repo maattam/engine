@@ -11,6 +11,9 @@ out vec2 texCoord0;
 out vec3 normal0;
 out mat3 TBN;
 
+out vec2 maybeOutside;
+centroid out vec2 certainlyOutside;
+
 uniform mat4 MVP;
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
@@ -38,6 +41,10 @@ void main()
 
     normal0 = normalMatrix * vertexNormal;
     texCoord0 = vertexTexCoord;
+
+    // Use centroid sampling to perform edge detection
+    maybeOutside = gl_Position.xy;
+    certainlyOutside = gl_Position.xy;
 
     tangentPass();
 }

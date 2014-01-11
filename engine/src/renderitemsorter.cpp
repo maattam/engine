@@ -1,6 +1,6 @@
 #include "renderitemsorter.h"
 
-#include "texture2d.h"
+#include "renderable/renderable.h"
 
 using namespace Engine;
 
@@ -8,6 +8,14 @@ bool RenderItemSorter::operator()(const RenderQueue::RenderItem& first, const Re
 {
     Material& mat1 = *first.material;
     Material& mat2 = *second.material;
+
+    bool bumpsFirst = first.renderable->hasTangents() && mat1.hasTexture(Material::TEXTURE_NORMALS);
+    bool bumpsSecond = second.renderable->hasTangents() && mat2.hasTexture(Material::TEXTURE_NORMALS);
+
+    if(bumpsSecond && !bumpsFirst)
+    {
+        return true;
+    }
 
     for(int i = 0; i < Material::TEXTURE_COUNT; ++i)
     {

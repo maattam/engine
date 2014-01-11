@@ -13,10 +13,8 @@ Geometry::Geometry(const Renderable::Renderable::Ptr& subMesh, const Material::P
 
 void Geometry::updateRenderList(RenderQueue& list)
 {
-    if(mesh_ != nullptr && material_ != nullptr)
-    {
-        list.addNode(material_.get(), mesh_.get());
-    }
+    Q_ASSERT(material_ && mesh_);
+    list.addNode(material_.get(), mesh_.get());
 }
 
 const Material::Ptr& Geometry::material() const

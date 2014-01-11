@@ -6,6 +6,9 @@ in vec2 texCoord0;
 in vec3 normal0;
 in mat3 TBN;
 
+in vec2 maybeOutside;
+centroid in vec2 certainlyOutside;
+
 // R10G10B10A2 -> Normal.X, Normal.Y, Shininess, Reserved
 layout (location = 0) out vec4 normalSpecData;
 
@@ -60,6 +63,12 @@ void packNormalSpecData()
     normalSpecData.rg = normal.xy / p + 0.5;
 
     normalSpecData.b = texture(material.shininessSampler, texCoord0).r * material.shininess / 1023.0;
+
+    // Write potential vertex edges to output.
+    if(any(maybeOutside != certainlyOutside))
+    {
+        normalSpecData.a = 1.0;
+    }
 }
 
 void packDiffuseSpecData()
