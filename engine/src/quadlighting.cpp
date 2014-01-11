@@ -69,7 +69,6 @@ void QuadLighting::render(Graph::Camera* camera)
     viewMatrixInverse_ = viewMatrix_.inverted();
 
     gl->glEnable(GL_BLEND);
-    gl->glBlendEquation(GL_FUNC_ADD);
     gl->glBlendFunc(GL_ONE, GL_ONE);
 
     // Blend spotlights

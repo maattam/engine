@@ -9,7 +9,7 @@ using namespace Engine;
 using namespace Engine::Technique;
 
 Skybox::Skybox()
-    : Technique(), textureUnit_(-1), depthUnit_(-1), brightness_(1.0f)
+    : Technique(), textureUnit_(-1), depthUnit_(-1), samples_(1), brightness_(1.0f)
 {
 }
 
@@ -24,6 +24,16 @@ void Skybox::setTextureUnit(int unit)
     if(program()->isLinked())
     {
         setUniformValue("cubemap", textureUnit_);
+    }
+}
+
+void Skybox::setSampleCount(int samples)
+{
+    samples_ = samples;
+
+    if(program()->isLinked())
+    {
+        setUniformValue("samples", samples_);
     }
 }
 
@@ -56,6 +66,11 @@ bool Skybox::init()
     }
 
     if(!setUniformValue("brightness", brightness_))
+    {
+        return false;
+    }
+
+    if(!setUniformValue("samples", samples_))
     {
         return false;
     }

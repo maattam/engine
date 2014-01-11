@@ -18,6 +18,9 @@ public:
     // Sets the texture location of the bound CubemapTexture
     void setTextureUnit(int unit);
 
+    // Set the sample count for averaging depth when using deferred rendering.
+    void setSampleCount(int samples);
+
     // Sets the MVP matrix
     // precondition: Technique is enabled
     void setMVP(const QMatrix4x4& mvp);
@@ -35,6 +38,7 @@ protected:
 private:
     int textureUnit_;
     int depthUnit_;
+    int samples_;
     float brightness_;
 };
 

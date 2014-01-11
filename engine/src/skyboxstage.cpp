@@ -18,6 +18,12 @@ SkyboxStage::~SkyboxStage()
 {
 }
 
+bool SkyboxStage::setViewport(const QRect& viewport, unsigned int samples)
+{
+    skybox_->setSampleCount(samples);
+    return RenderStage::setViewport(viewport, samples);
+}
+
 void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
 {
     gbuffer_ = gbuffer;
@@ -43,6 +49,7 @@ void SkyboxStage::render(Graph::Camera* camera)
     // Translate the skybox mesh to view origin
     QMatrix4x4 trans;
     trans.translate(camera->position());
+
     skybox_->setMVP(camera->worldView() * trans);
 
     if(Binder::bind(cubemap_, GL_TEXTURE0 + cubemapUnit_))
@@ -53,8 +60,14 @@ void SkyboxStage::render(Graph::Camera* camera)
         // When using depth texture, we don't want to use hardware z rejection
         if(gbuffer_ != nullptr)
         {
+            // Enable blending to "resolve" the skybox based on MSAA sample visibility.
+            gl->glEnable(GL_BLEND);
+            gl->glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
             gbuffer_->bindTextures();
             mesh_->render();
+
+            gl->glDisable(GL_BLEND);
         }
 
         else

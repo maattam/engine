@@ -67,5 +67,5 @@ void main()
     vec3 tone = current * whiteScale;
 
     // Apply gamma correction
-    gl_FragColor.rgb = pow(tone, vec3(1/gamma));
+    gl_FragColor.rgb = pow(tone, vec3(1.0 / gamma));
 }
