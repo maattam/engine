@@ -14,14 +14,16 @@
 #include "renderable/cube.h"
 #include "forwardrenderer.h"
 
+#include "rendertimewatcher.h"
+
 using namespace Engine;
 
 RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType type)
-    : despatcher_(despatcher), type_(type)
+    : despatcher_(despatcher), type_(type), watcher_(nullptr)
 {
     // HDR tonemapping
     hdrPostfx_.reset(new Effect::Hdr(&despatcher_, 4));
-    hdrPostfx_->setBrightThreshold(1.0f);
+    hdrPostfx_->setBrightThreshold(2.0f);
     //setAutoExposure(true);
 
     // 5x5 Gaussian blur filter
@@ -36,8 +38,15 @@ Engine::GBuffer* RendererFactory::gbuffer() const
     return gbuffer_.get();
 }
 
+void RendererFactory::setRenderTimeWatcher(RenderTimeWatcher* watcher)
+{
+    watcher_ = watcher;
+}
+
 Renderer* RendererFactory::create(int samples)
 {
+    watcher_->clearStages();
+
     // Tonemap shader
     tonemap_.reset(new Technique::HDRTonemap(samples, 4));
     tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
@@ -78,7 +87,10 @@ Renderer* RendererFactory::create(int samples)
         fboFormat.setSamples(1);
 
         DeferredRenderer* deferred = new DeferredRenderer(gbuffer_, despatcher_);
-        renderer = new QuadLighting(deferred, *gbuffer_.get(), despatcher_, samples);
+        RenderStage* lightningStage = new QuadLighting(deferred, *gbuffer_.get(), despatcher_, samples);
+        watcher_->addRenderStage("Geometry pass", lightningStage);
+
+        renderer = lightningStage;
     }
 
     else
@@ -90,12 +102,18 @@ Renderer* RendererFactory::create(int samples)
     }
 
     SkyboxStage* skybox = new Engine::SkyboxStage(renderer);
+    watcher_->addRenderStage("Lightning pass", skybox);
+
     skybox->setGBuffer(gbuffer_.get());
     skybox->setSkyboxMesh(std::make_shared<Renderable::Cube>());
     skybox->setSkyboxTechnique(sky);
 
     PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
+    watcher_->addRenderStage("Skybox pass", fxRenderer);
     fxRenderer->setEffect(hdrPostfx_);
+
+    watcher_->addNamedStage("Postprocess");
+    watcher_->create();
 
     return fxRenderer;
 }

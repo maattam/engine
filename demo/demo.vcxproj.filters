@@ -52,6 +52,9 @@
     <CustomBuild Include="src\uicontroller.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\rendertimewatcher.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_scene.cpp">
@@ -122,6 +125,15 @@
     </ClCompile>
     <ClCompile Include="src\lightscene.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rendertimewatcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_rendertimewatcher.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_rendertimewatcher.cpp">
+      <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

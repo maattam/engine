@@ -12,6 +12,8 @@
 
 #include "technique/hdrtonemap.h"
 #include "effect/hdr.h"
+#include "rendertimewatcher.h"
+#include "uicontroller.h"
 
 #include <QOpenGLFRamebufferObject>
 #include <QDebug>
@@ -22,7 +24,7 @@ namespace {
 }
 
 DemoPresenter::DemoPresenter(QObject* parent)
-    : ScenePresenter(parent), context_(nullptr), scene_("Sponza")
+    : ScenePresenter(parent), context_(nullptr), scene_("Sponza"), uiController_(nullptr)
 {
     input_.reset(new InputState);
 }
@@ -39,6 +41,11 @@ void DemoPresenter::setContext(Engine::Ui::RendererContext* context)
 Engine::Ui::InputEventListener* DemoPresenter::inputListener() const
 {
     return input_.get();
+}
+
+void DemoPresenter::setUiController(UiController* controller)
+{
+    uiController_ = controller;
 }
 
 void DemoPresenter::renderScene()
@@ -99,6 +106,11 @@ void DemoPresenter::initialize()
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
     debugRenderer_->setObservable(sceneManager_.get());
+
+    renderTimeWatcher_.reset(new RenderTimeWatcher());
+    rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
+
+    connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, uiController_, &UiController::watchValue);
 }
 
 void DemoPresenter::render()
@@ -106,7 +118,12 @@ void DemoPresenter::render()
     if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
     {
         sceneManager_->setRenderer(renderer_.get());
+
+        renderTimeWatcher_->setTimestamp();
         sceneManager_->renderFrame();
+
+        renderTimeWatcher_->setTimestamp();
+        renderTimeWatcher_->endFrame();
     }
 
     sceneManager_->setRenderer(debugRenderer_.get());

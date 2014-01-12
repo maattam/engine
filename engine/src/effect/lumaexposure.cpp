@@ -98,7 +98,7 @@ QVector3D LumaExposure::sampleTexture()
 
 float LumaExposure::calculateExposure(const QVector3D& linearSample)
 {
-    const float invGamma = 1 / 2.2f;
+    const float invGamma = 1.0f / 2.2f;
 
     // RGB to YUV; Y luminance
     float Y = 0.299 * std::powf(linearSample.x(), invGamma)
@@ -119,5 +119,5 @@ float LumaExposure::calculateExposure(const QVector3D& linearSample)
     }
 
     average /= static_cast<float>(window_);
-    return std::exp(-(2.0 * average));
+    return std::exp(-(2.5 * average));
 }

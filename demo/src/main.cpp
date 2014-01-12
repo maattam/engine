@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
     ui.setRootObject(view.rootObject());
     ui.setView(&view);
 
+    demo.setUiController(&ui);
+
 #ifdef _DEBUG
     // Move the window to second monitor for debugging convenience
     view.setGeometry(app.screens().last()->availableGeometry());

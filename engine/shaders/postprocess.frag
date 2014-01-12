@@ -34,13 +34,12 @@ vec3 calcBloomColor()
 	vec3 color = vec3(0, 0, 0);
 
     // Skip first lod level to reduce aliasing
-	for(int i = 1; i <= BLOOMLOD; ++i)
+	for(int i = 0; i <= BLOOMLOD; ++i)
 	{
 		color += textureLod(bloomTexture, uv, i).rgb;
 	}
 
-    // Bloom is converted to srgb to mask some aliasing on blur edges
-	return pow(color, vec3(2.2));
+	return color / BLOOMLOD;
 }
 
 void main()

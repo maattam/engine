@@ -1,6 +1,8 @@
 #ifndef RENDERERFACTORY_H
 #define RENDERERFACTORY_H
 
+#include <memory>
+
 namespace Engine {
     class ResourceDespatcher;
     class Renderer;
@@ -15,7 +17,7 @@ namespace Engine {
     }
 }
 
-#include <memory>
+class RenderTimeWatcher;
 
 class RendererFactory
 {
@@ -34,9 +36,13 @@ public:
 
     void setAutoExposure(bool value);
 
+    void setRenderTimeWatcher(RenderTimeWatcher* watcher);
+
 private:
     Engine::ResourceDespatcher& despatcher_;
     RendererType type_;
+
+    RenderTimeWatcher* watcher_;
 
     std::shared_ptr<Engine::GBuffer> gbuffer_;
     std::shared_ptr<Engine::Technique::HDRTonemap> tonemap_;

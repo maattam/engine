@@ -37,6 +37,8 @@ vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialIn
 
     if(lambert > 0.0)
     {
+        // Source: Crafting Physically Motivated Shading Models for Game Developement, by Naty Hoffmann
+
         // Compute halfway vector for Blinn-Phong model
         vec3 v = normalize(-vertex.position.xyz);
         vec3 h = normalize(v + l);

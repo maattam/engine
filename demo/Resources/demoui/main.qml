@@ -21,7 +21,8 @@ RenderTarget {
                    text: "Toggle UI: Esc" }
         }
 
-        Fpspanel {
+        Stats {
+            id: stats
             objectName: "stats"
             anchors.left: parent.left
             anchors.top: parent.top

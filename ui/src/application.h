@@ -35,6 +35,8 @@ public slots:
     // Called when the view's OpenGL context has been destroyed.
     virtual void viewInvalidated();
 
+    virtual void presenterDestroyed(QObject* object);
+
 protected:
     virtual ScenePresenter* createPresenter() = 0;
 
@@ -45,6 +47,8 @@ private:
     SceneView* view_;
     ScenePresenter* presenter_;
     RendererContext* context_;
+
+    void cleanup();
 };
 
 }}

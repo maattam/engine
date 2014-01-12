@@ -208,6 +208,12 @@
     <ClCompile Include="src\renderitemsorter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_renderstage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_renderstage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -326,9 +332,6 @@
     <ClInclude Include="src\compactgbuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderstage.h">
-      <Filter>Header Files\renderer\renderstage</Filter>
-    </ClInclude>
     <ClInclude Include="src\postprocess.h">
       <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
@@ -431,6 +434,9 @@
   <ItemGroup>
     <CustomBuild Include="src\technique\technique.h">
       <Filter>Header Files\technique</Filter>
+    </CustomBuild>
+    <CustomBuild Include="src\renderstage.h">
+      <Filter>Header Files\renderer\renderstage</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

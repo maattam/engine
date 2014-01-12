@@ -6,12 +6,17 @@
 #include <QQuickItem>
 
 DemoApplication::DemoApplication(const QSurfaceFormat& format)
-    : Application(format)
+    : Application(format), controller_(nullptr)
 {
 }
 
 DemoApplication::~DemoApplication()
 {
+}
+
+void DemoApplication::setUiController(UiController* controller)
+{
+    controller_ = controller;
 }
 
 Engine::Ui::ScenePresenter* DemoApplication::createPresenter()
@@ -32,6 +37,8 @@ Engine::Ui::ScenePresenter* DemoApplication::createPresenter()
         QObject::connect(general, SIGNAL(valueChanged(QString, QVariant)),
             presenter, SLOT(generalAttributeChanged(QString, QVariant)));
     }
+
+    presenter->setUiController(controller_);
 
     return presenter;
 }

@@ -3,7 +3,7 @@
 using namespace Engine;
 
 RenderStage::RenderStage(Renderer* renderer)
-    : renderer_(renderer)
+    : QObject(), renderer_(renderer)
 {
 }
 
@@ -35,6 +35,8 @@ void RenderStage::setSkyboxTexture(CubemapTexture* skybox)
 void RenderStage::render(Graph::Camera* camera)
 {
     renderer_->render(camera);
+
+    emit stageFinished();
 }
 
 void RenderStage::setRenderTarget(GLuint fbo)

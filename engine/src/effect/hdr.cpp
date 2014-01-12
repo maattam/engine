@@ -7,6 +7,7 @@
 #include "renderable/primitive.h"
 
 #include <QOpenGLFramebufferObject>
+#include <qmath.h>
 
 using namespace Engine;
 using namespace Engine::Effect;
@@ -29,7 +30,7 @@ Hdr::~Hdr()
 
 void Hdr::setBrightThreshold(float threshold)
 {
-    threshold_ = threshold;
+    threshold_ = qPow(threshold, 1.0 / 2.2);
 }
 
 void Hdr::setBlurFilter(const DownSampler::FilterPtr& filter)
@@ -50,8 +51,8 @@ bool Hdr::initialize(int width, int height, int samples)
     height_ = height;
 
     // Scale fbo to half resolution
-    width = std::floor(width / 2.0f);
-    height = std::floor(height / 2.0f);
+    width = std::floor(width / 4.0f);
+    height = std::floor(height / 4.0f);
 
     QOpenGLFramebufferObjectFormat format;
     format.setTextureTarget(GL_TEXTURE_2D);

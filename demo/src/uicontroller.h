@@ -21,10 +21,11 @@ public:
     void setView(QQuickView* view);
 
 signals:
-    void updateFrametime(QVariant frametime);
+    void updateValue(QVariant name, QVariant value, QVariant unit);
 
 public slots:
     void frameSwapped();
+    void watchValue(QString name, qreal value, QString unit);
 
 private:
     QElapsedTimer timer_;

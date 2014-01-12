@@ -6,10 +6,14 @@
 
 #include "renderer.h"
 
+#include <QObject>
+
 namespace Engine {
 
-class RenderStage : public Renderer
+class RenderStage : public QObject, public Renderer
 {
+    Q_OBJECT
+
 public:
     // RenderStage takes ownership of the renderer and handles deallocation
     // Invariant: renderer != nullptr, not deleted outside
@@ -36,6 +40,10 @@ public:
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.
     virtual void setRenderTarget(GLuint fbo);
+
+signals:
+    // Emitted when the previous stage has finished rendering.
+    void stageFinished();
 
 private:
     Renderer* renderer_;

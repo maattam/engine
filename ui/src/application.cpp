@@ -17,15 +17,7 @@ Application::Application(const QSurfaceFormat& format)
 
 Application::~Application()
 {
-    if(presenter_ != nullptr)
-    {
-        delete presenter_;
-    }
-
-    if(context_ != nullptr)
-    {
-        delete context_;
-    }
+    cleanup();
 }
 
 void Application::setView(SceneView* view)
@@ -75,11 +67,32 @@ void Application::viewInitialized()
     presenter_->moveToThread(thread_);
     context_->moveToThread(thread_);
 
-    thread_->start();
+    connect(presenter_, &QObject::destroyed, this, &Application::presenterDestroyed);
     QMetaObject::invokeMethod(presenter_, "initialize");
+
+    thread_->start();
 }
 
 void Application::viewInvalidated()
+{
+    if(presenter_ != nullptr)
+    {
+        QMetaObject::invokeMethod(presenter_, "deleteLater");
+    }
+
+    else
+    {
+        cleanup();
+    }
+}
+
+void Application::presenterDestroyed(QObject*)
+{
+    presenter_ = nullptr;
+    cleanup();
+}
+
+void Application::cleanup()
 {
     // Stop rendering thread event loop
     if(thread_ != nullptr)
@@ -89,12 +102,6 @@ void Application::viewInvalidated()
     }
 
     // Clean up resources
-    if(presenter_ != nullptr)
-    {
-        delete presenter_;
-        presenter_ = nullptr;
-    }
-
     if(context_ != nullptr)
     {
         delete context_;

@@ -13,6 +13,8 @@ class FreeLookScene;
 class RendererFactory;
 class SceneFactory;
 class InputState;
+class UiController;
+class RenderTimeWatcher;
 
 namespace Engine {
     class ResourceDespatcher;
@@ -37,6 +39,8 @@ public:
 
     Engine::Ui::InputEventListener* inputListener() const;
 
+    void setUiController(UiController* controller);
+
 public slots:
     // Called after the view has finished rendering the scene graph.
     // Precondition: viewInitialized and viewSizeChanged received.
@@ -54,6 +58,7 @@ public slots:
 
 private:
     Engine::Ui::RendererContext* context_;
+    UiController* uiController_;
 
     std::shared_ptr<RendererFactory> rendererFactory_;
     std::shared_ptr<SceneFactory> sceneFactory_;
@@ -63,6 +68,7 @@ private:
     std::shared_ptr<Engine::BasicSceneManager> sceneManager_;
     std::shared_ptr<FreeLookScene> sceneController_;
     std::shared_ptr<InputState> input_;
+    std::shared_ptr<RenderTimeWatcher> renderTimeWatcher_;
 
     QSize viewSize_;
     QSize oldSize_;
