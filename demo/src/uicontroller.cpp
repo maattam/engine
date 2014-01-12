@@ -21,10 +21,11 @@ void UiController::setView(QQuickView* view)
 
 void UiController::frameSwapped()
 {
-    int elapsed = timer_.restart();
+    double elapsed = timer_.nsecsElapsed() * 10e-7;
+    timer_.restart();
 
-    emit updateValue("FPS", 1000.0 / elapsed, "");
-    emit updateValue("Frame time", elapsed, "ms");
+    watchValue("FPS", 1000.0 / elapsed, "");
+    watchValue("Frame time", elapsed, "ms");
 }
 
 void UiController::watchValue(QString name, qreal value, QString unit)
