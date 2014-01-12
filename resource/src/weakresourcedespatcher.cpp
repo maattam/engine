@@ -54,44 +54,72 @@ void WeakResourceDespatcher::fileChanged(const QString& path)
 {
     qDebug() << __FUNCTION__ << path;
 
-    auto result = resources_.find(path);
-    if(result != resources_.end() && !result->expired())
+    auto result = watchList_.find(path);
+    if(result == watchList_.end())
     {
-        QFile file;
-        file.setFileName(path);
+        qWarning() << "WatchList does not contain entry" << path;
+        return;
+    }
 
-        if(file.exists())
+    bool allExpired = true;
+    for(WeakResourcePtr& handle : *result)
+    {
+        if(!handle.expired())
         {
-            auto handle = result->lock();
-            handle->release();
+            QFile file;
+            file.setFileName(path);
 
-            pushResource(handle->name(), handle);
+            if(file.exists())
+            {
+                auto resource = handle.lock();
+                resource->release();
+
+                pushResource(resource->name(), resource);
+            }
+
+            allExpired = false;
         }
     }
 
-    else
+    if(allExpired)
     {
         watcher_->removePath(path);
+        watchList_.remove(path);
     }
 }
 
-void WeakResourceDespatcher::watchResource(const ResourcePtr& resource)
+void WeakResourceDespatcher::watchResource(const ResourcePtr& resource, const ResourceDataPtr& data)
 {
-    if(watcher_ != nullptr && resource != nullptr)
-    {
-        QStringList files;
-        resource->queryFilesDebug(files);
-        watcher_->addPaths(files);
+#ifdef _DEBUG
+    QStringList files;
+    
+    files << resource->name();
+    files << data->queryFilesDebug();
 
-        for(auto it = files.begin(); it != files.end(); ++it)
+    watcher_->addPaths(files);
+
+    for(const QString& file : files)
+    {
+        QList<WeakResourcePtr>& list = watchList_[file];
+        bool found = false;
+
+        for(WeakResourcePtr& handle : list)
         {
-            if(resources_.count(*it) == 0)
+            ResourcePtr ptr = handle.lock();
+            if(ptr && ptr->name() == resource->name())
             {
-                qDebug() << __FUNCTION__ << "Trigger:" << *it;
-                resources_[*it] = resource;
+                found = true;
+                break;
             }
         }
+
+        if(!found)
+        {
+            //qDebug() << __FUNCTION__ << "Trigger:" << file;
+            list << resource;
+        }
     }
+#endif
 }
 
 void WeakResourceDespatcher::resourceLoaded(QString id, ResourceDataPtr data)
@@ -104,7 +132,10 @@ void WeakResourceDespatcher::resourceLoaded(QString id, ResourceDataPtr data)
     }
 
     // If the resource should be initialised on next frame, signal despatcher
-    handle->initialiseFromData(data);
+    if(handle->initialiseFromData(data))
+    {
+        watchResource(handle, data);
+    }
 }
 
 WeakResourceDespatcher::WeakResourcePtr WeakResourceDespatcher::findResource(const QString& fileName)
@@ -125,8 +156,6 @@ void WeakResourceDespatcher::insertResource(const QString& fileName, const Resou
     resources_.insert(fileName, resource);
 
     resource->setDespatcher(this);
-    watchResource(resource);
-
     pushResource(fileName, resource);
 }
 

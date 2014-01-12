@@ -3,9 +3,9 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-HDRTonemap::HDRTonemap()
-    : Technique(), inputTextureId_(-1), inputSamples_(1),
-    bloomFactor_(1.0f), exposure_(1.0f), gamma_(2.2f), bright_(1.0f), attributeChanged_(true)
+HDRTonemap::HDRTonemap(unsigned int samples, unsigned int bloomLod)
+    : Technique(), inputTextureId_(-1), bloomFactor_(1.0f), exposure_(1.0f),
+    gamma_(2.2f), bright_(1.0f), attributeChanged_(true), samples_(samples), bloomLod_(bloomLod)
 {
 }
 
@@ -33,27 +33,37 @@ bool HDRTonemap::enable()
     return true;
 }
 
-void HDRTonemap::setInputTexture(int textureId, int samples)
+void HDRTonemap::addShader(const Shader::Ptr& shader)
+{
+    Technique::addShader(shader);
+
+    if(shader->type() == Shader::Type::Fragment)
+    {
+        ShaderData::DefineMap defines;
+        defines.insert("SAMPLES", samples_);
+        defines.insert("BLOOMLOD", bloomLod_);
+
+        shader->setNamedDefines(defines);
+    }
+}
+
+void HDRTonemap::setInputTexture(int textureId)
 {
     inputTextureId_ = textureId;
-    inputSamples_ = samples;
 
     if(program()->isLinked())
     {
         setUniformValue("inputTexture", inputTextureId_);
-        setUniformValue("samples", inputSamples_);
     }
 }
 
-void HDRTonemap::setBloomTexture(int textureId, int bloomLevels)
+void HDRTonemap::setBloomTexture(int textureId)
 {
     bloomTextureId_ = textureId;
-    bloomLevels_ = bloomLevels;
 
     if(program()->isLinked())
     {
         setUniformValue("bloomTexture", bloomTextureId_);
-        setUniformValue("bloomLevels", bloomLevels_);
     }
 }
 
@@ -88,17 +98,7 @@ bool HDRTonemap::init()
         return false;
     }
 
-    if(!setUniformValue("samples", inputSamples_))
-    {
-        return false;
-    }
-
     if(!setUniformValue("bloomTexture", bloomTextureId_))
-    {
-        return false;
-    }
-
-    if(!setUniformValue("bloomLevels", bloomLevels_))
     {
         return false;
     }

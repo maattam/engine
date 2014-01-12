@@ -31,7 +31,7 @@ public:
     // Adds a new shader to the program
     // precondition: shader not null
     // postcondition: shader will be linked when enable is called
-    void addShader(const Shader::Ptr& shader);
+    virtual void addShader(const Shader::Ptr& shader);
 
     // A convenience function which uses the cached uniform name if resolved,
     // or resolves and caches to location before setting the value.

@@ -91,8 +91,8 @@ bool Hdr::initialize(int width, int height, int samples)
         return false;
     }
 
-    tonemap_->setInputTexture(0, samples);
-    tonemap_->setBloomTexture(1, bloomLevels_);
+    tonemap_->setInputTexture(0);
+    tonemap_->setBloomTexture(1);
 
     return downSampler_.initialise(width, height, fbo_->texture(), bloomLevels_);
 }

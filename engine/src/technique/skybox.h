@@ -12,18 +12,20 @@ namespace Technique {
 class Skybox : public Technique
 {
 public:
-    Skybox();
+    explicit Skybox(unsigned int samples);
     virtual ~Skybox();
 
     // Sets the texture location of the bound CubemapTexture
     void setTextureUnit(int unit);
 
-    // Set the sample count for averaging depth when using deferred rendering.
-    void setSampleCount(int samples);
-
     // Sets the MVP matrix
     // precondition: Technique is enabled
     void setMVP(const QMatrix4x4& mvp);
+
+    // Adds a new shader to the program
+    // precondition: shader not null
+    // postcondition: shader will be linked when enable is called
+    virtual void addShader(const Shader::Ptr& shader);
 
     // Sets the brightness multiplier. Default is 1.0f.
     // precondition: brightness >= 0
@@ -38,7 +40,8 @@ protected:
 private:
     int textureUnit_;
     int depthUnit_;
-    int samples_;
+
+    unsigned int samples_;
     float brightness_;
 };
 

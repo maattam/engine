@@ -144,8 +144,3 @@ ResourceBase::InitialisePolicy ResourceBase::initialisePolicy() const
 {
     return policy_;
 }
-
-void ResourceBase::queryFilesDebug(QStringList& files) const
-{
-    files.push_back(name_);
-}

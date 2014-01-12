@@ -4,24 +4,11 @@
 #define SHADER_H
 
 #include "resource.h"
-#include "resourcedata.h"
+#include "shaderdata.h"
 
 #include <QOpenGLShader>
 
 namespace Engine {
-
-class ShaderData : public ResourceData
-{
-public:
-    ShaderData();
-
-    virtual bool load(const QString& fileName);
-
-    const QByteArray& data() const;
-
-private:
-    QByteArray data_;
-};
 
 class Shader : public Resource<Shader, ShaderData>
 {
@@ -36,14 +23,20 @@ public:
     // postcondition: If the resource is not loaded, nullptr is returned
     QOpenGLShader* get() const;
 
+    Type type() const;
+
+    void setNamedDefines(const ShaderData::DefineMap& defines);
+
 protected:
+    virtual ResourceDataPtr createData();
     virtual bool initialiseData(const DataType& data);
     virtual void releaseResource();
 
 private:
     QOpenGLShader* shader_;
     Type type_;
-
+    QStringList additionalFiles_;
+    ShaderData::DefineMap defines_;
 };
     
 };

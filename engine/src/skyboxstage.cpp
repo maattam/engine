@@ -18,12 +18,6 @@ SkyboxStage::~SkyboxStage()
 {
 }
 
-bool SkyboxStage::setViewport(const QRect& viewport, unsigned int samples)
-{
-    skybox_->setSampleCount(samples);
-    return RenderStage::setViewport(viewport, samples);
-}
-
 void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
 {
     gbuffer_ = gbuffer;

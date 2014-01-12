@@ -30,7 +30,11 @@ DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
 
     // GBuffer visualizer
     gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
-    gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial_debug.frag"), Shader::Type::Fragment));
+
+    Shader::Ptr shader = std::make_shared<Shader>(RESOURCE_PATH("shaders/dsmaterial_debug.frag"), Shader::Type::Fragment);
+    gbufferMS_.addShader(shader);
+
+    despatcher->loadResource(shader);
 }
 
 DebugRenderer::~DebugRenderer()
@@ -41,7 +45,6 @@ bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
 {
     viewport_ = viewport;
 
-    gbufferMS_.setSampleCount(samples);
     return true;
 }
 

@@ -65,6 +65,9 @@
     <ClInclude Include="src\resourcedata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\shaderdata.h">
+      <Filter>Header Files\shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\cubemaptexture.cpp">
@@ -112,9 +115,6 @@
     <ClCompile Include="src\resourcebase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\resourcedata.cpp">
-      <Filter>Source Files\texture</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_weakresourcedespatcher.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -141,6 +141,12 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_resourceloader.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\resourcedata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shaderdata.cpp">
+      <Filter>Source Files\shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

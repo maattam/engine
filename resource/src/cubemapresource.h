@@ -28,9 +28,13 @@ public:
     // If not set, the default TC_RGBA is used.
     void setConversion(TextureConversion conversion);
 
+    // Reimplement to provide additional triggers for file watching
+    virtual QStringList queryFilesDebug() const;
+
 private:
     gli::texture2D* textures_[Faces];
     TextureConversion conversion_;
+    QStringList files_;
 };
 
 class CubemapResource : public CubemapTexture,
@@ -47,8 +51,6 @@ public:
         GLint border, GLenum format, GLenum type, const GLvoid* data = nullptr);
 
     virtual bool bind();
-
-    virtual void queryFilesDebug(QStringList& files) const;
 
 protected:
     virtual ResourceDataPtr createData();

@@ -1,7 +1,7 @@
 #ifndef RESOURCEDATA_H
 #define RESOURCEDATA_H
 
-#include <QString>
+#include <QStringList>
 
 namespace Engine {
 
@@ -22,6 +22,9 @@ public:
     ResourceDespatcher* despatcher();
 
     void setDespatcher(ResourceDespatcher* despatcher);
+
+    // Reimplement to provide additional triggers for file watching
+    virtual QStringList queryFilesDebug() const;
 
 private:
     ResourceDespatcher* despatcher_;

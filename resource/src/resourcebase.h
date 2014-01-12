@@ -64,9 +64,6 @@ public:
     // Precondition: data is loaded.
     bool initialiseFromData(const ResourceDataPtr& data);
 
-    // Reimplement to provide additional triggers for file watching
-    virtual void queryFilesDebug(QStringList& files) const;
-
 signals:
     // Called before the resource's data is released
     // precondition: data is present

@@ -2,11 +2,11 @@
 
 // A post-process compositor which consists of tonemapping, bloom blending and gamma correction.
 
-uniform sampler2DMS inputTexture;
-uniform int samples;
+#define SAMPLES <>
+#define BLOOMLOD <>
 
+uniform sampler2DMS inputTexture;
 uniform sampler2D bloomTexture;
-uniform int bloomLevels;
 
 uniform float bloomFactor;
 uniform float exposure;
@@ -34,7 +34,7 @@ vec3 calcBloomColor()
 	vec3 color = vec3(0, 0, 0);
 
     // Skip first lod level to reduce aliasing
-	for(int i = 1; i <= bloomLevels; ++i)
+	for(int i = 1; i <= BLOOMLOD; ++i)
 	{
 		color += textureLod(bloomTexture, uv, i).rgb;
 	}
@@ -48,12 +48,12 @@ void main()
 	vec3 color = vec3(0, 0, 0);
 
     ivec2 st = ivec2(textureSize(inputTexture) * uv);
-    for(int i = 0; i < samples; ++i)
+    for(int i = 0; i < SAMPLES; ++i)
     {
         color += texelFetch(inputTexture, st, i).rgb;
     }
 
-    color /= samples;
+    color /= SAMPLES;
 
 	// Add bloom
 	color += calcBloomColor() * bloomFactor;

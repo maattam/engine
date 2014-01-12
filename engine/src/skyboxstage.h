@@ -24,10 +24,6 @@ public:
     explicit SkyboxStage(Renderer* renderer);
     virtual ~SkyboxStage();
 
-    // Sets OpenGL viewport parameters and initialises buffers
-    // postcondition: true on success, viewport set and buffers initialised
-    virtual bool setViewport(const QRect& viewport, unsigned int samples);
-
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
     virtual void render(Graph::Camera* camera);

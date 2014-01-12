@@ -8,14 +8,17 @@
 
 using namespace Engine;
 
-QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher)
+QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher, unsigned int samples)
     : RenderStage(renderer), gbuffer_(gbuffer), fbo_(0), directionalLight_(nullptr),
-    quad_(Renderable::Primitive<Renderable::Quad>::instance())
+    quad_(Renderable::Primitive<Renderable::Quad>::instance()), lightningTech_(samples)
 {
-    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.vert"), Shader::Type::Vertex));
-    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment));
-
     lightningTech_.setGBuffer(&gbuffer);
+
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.vert"), Shader::Type::Vertex));
+    Shader::Ptr shader = std::make_shared<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment);
+
+    lightningTech_.addShader(shader);
+    despatcher.loadResource(shader);
 }
 
 QuadLighting::~QuadLighting()
@@ -24,7 +27,6 @@ QuadLighting::~QuadLighting()
 
 bool QuadLighting::setViewport(const QRect& viewport, unsigned int samples)
 {
-    lightningTech_.setSampleCount(samples);
     viewport_ = viewport;
 
     return RenderStage::setViewport(viewport, samples);

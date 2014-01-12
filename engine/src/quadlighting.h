@@ -20,7 +20,7 @@ class GBuffer;
 class QuadLighting : public RenderStage
 {
 public:
-    QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher);
+    QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher, unsigned int samples);
     virtual ~QuadLighting();
 
     // Sets OpenGL viewport parameters and initialises buffers

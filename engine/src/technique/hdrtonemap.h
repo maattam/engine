@@ -10,13 +10,18 @@ namespace Engine { namespace Technique {
 class HDRTonemap : public Technique
 {
 public:
-    HDRTonemap();
+    HDRTonemap(unsigned int samples, unsigned int bloomLod);
     virtual ~HDRTonemap();
 
     virtual bool enable();
 
-    void setInputTexture(int textureId, int samples);
-    void setBloomTexture(int textureId, int bloomLevels);
+    // Adds a new shader to the program
+    // precondition: shader not null
+    // postcondition: shader will be linked when enable is called
+    virtual void addShader(const Shader::Ptr& shader);
+
+    void setInputTexture(int textureId);
+    void setBloomTexture(int textureId);
 
     // Sets shader attributes
     void setBloomFactor(float factor);
@@ -29,15 +34,15 @@ protected:
 
 private:
     int inputTextureId_;
-    int inputSamples_;
-
     int bloomTextureId_;
-    int bloomLevels_;
 
     float bloomFactor_;
     float exposure_;
     float gamma_;
     float bright_;
+
+    unsigned int samples_;
+    unsigned int bloomLod_;
 
     bool attributeChanged_;
 };

@@ -2,6 +2,8 @@
 
 #version 420
 
+#define SAMPLES <>
+
 // R32F        -> Depth attachment
 uniform sampler2DMS depthData;
 
@@ -10,9 +12,6 @@ uniform sampler2DMS normalSpecData;
 
 // R8G8B8A8    -> Diffuse.R, Diffuse.G, Diffuse.B, Specular intensity
 uniform sampler2DMS diffuseSpecData;
-
-// Sample count used when rendering gbuffer
-uniform int samples;
 
 // Inverse of perspective projection matrix used to accumulate gbuffer
 uniform mat4 invPersProj;
@@ -42,12 +41,6 @@ struct MaterialInfo
 subroutine vec4 CalculateOutputType(in VertexInfo vertex, in MaterialInfo material);
 subroutine uniform CalculateOutputType calculateOutput;
 
-// Returns the nth sample from a multisampled texture
-vec4 sampleTexture(in sampler2DMS sampler, in vec2 uv, int n)
-{
-    return texelFetch(sampler, ivec2(uv * textureSize(sampler)), n);
-}
-
 vec2 calcTexCoord()
 {
     return (gl_FragCoord.xy - viewport.xy) / viewport.zw;
@@ -68,10 +61,9 @@ void unpackPosition(inout VertexInfo vertex, float z)
     vertex.position = vec4(viewPos.xyz / viewPos.w, 1.0);
 }
 
-// Returns false if texel is part of skybox
-void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, in vec2 uv, int n)
+void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, in ivec2 st, int n)
 {
-    vec4 data = sampleTexture(normalSpecData, uv, n);
+    vec4 data = texelFetch(normalSpecData, st, n);
 
     // Inverse spheremap transformation
     vec2 fenc = data.rg * 4 - 2;
@@ -86,30 +78,30 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, in v
     vertex.edge = data.a;
 }
 
-void unpackDiffuseSpec(inout MaterialInfo material, in vec2 uv, int n)
+void unpackDiffuseSpec(inout MaterialInfo material, in ivec2 st, int n)
 {
-    vec4 data = sampleTexture(diffuseSpecData, uv, n);
+    vec4 data = texelFetch(diffuseSpecData, st, n);
 
     material.diffuse = data.rgb;
     material.specular = data.a * 255.0;
 }
 
-float getSample(inout VertexInfo vertex, inout MaterialInfo material, in vec2 uv, int n)
+float getSample(inout VertexInfo vertex, inout MaterialInfo material, in ivec2 st, int n)
 {
-    float z = sampleTexture(depthData, uv, n).r;
+    float z = texelFetch(depthData, st, n).r;
 
     unpackPosition(vertex, z);
-    unpackNormalSpec(material, vertex, uv, n);
-    unpackDiffuseSpec(material, uv, n);
+    unpackNormalSpec(material, vertex, st, n);
+    unpackDiffuseSpec(material, st, n);
 
     return z;
 }
 
-bool testEdgeVertex(in vec2 uv)
+bool testEdgeVertex(in ivec2 st)
 {
-    for(int i = 1; i < samples; ++i)
+    for(int i = 1; i < SAMPLES; ++i)
     {
-        if(sampleTexture(normalSpecData, uv, i).r > 0.0)
+        if(texelFetch(normalSpecData, st, i).a > 0.0)
         {
             return true;
         }
@@ -133,26 +125,26 @@ void main()
     VertexInfo vertex;
     MaterialInfo material;
 
-    vec2 uv = calcTexCoord();
+    ivec2 st = ivec2(calcTexCoord() * textureSize(depthData));
     vec4 color = vec4(0.0);
 
-    float z = getSample(vertex, material, uv, 0);
+    float z = getSample(vertex, material, st, 0);
     color += calcAverageOutput(vertex, material, z);
 
-    // Calculate average output for vertex edge samples to perform MSAA
-    if(vertex.edge > 0.0 || testEdgeVertex(uv))
+    // Calculate average output for vertex edge samples to resolve MSAA
+    if(vertex.edge > 0.0 || testEdgeVertex(st))
     {
         // Average sample
-        for(int i = 1; i < samples; ++i)
+        for(int i = 1; i < SAMPLES; ++i)
         {
-            z = getSample(vertex, material, uv, i);
+            z = getSample(vertex, material, st, i);
             color += calcAverageOutput(vertex, material, z);
         }
 
-        color /= samples;
+        color /= SAMPLES;
     }
 
-    if(color == vec4(0))
+    if(color.rgb == vec3(0))
     {
         discard;
     }

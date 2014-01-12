@@ -14,7 +14,7 @@ namespace Technique {
 class IlluminationModel : public DSMaterialShader
 {
 public:
-    IlluminationModel();
+    explicit IlluminationModel(unsigned int samples);
     virtual ~IlluminationModel();
 
     // Sets the camera's view matrix used for mapping light input vectors to view space coordinates.

@@ -29,16 +29,6 @@ RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType ty
     filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
     filter->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/gauss5x5.frag"), Shader::Type::Fragment));
     hdrPostfx_->setBlurFilter(filter);
-
-    // Tonemap shader
-    tonemap_.reset(new Technique::HDRTonemap);
-    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment));
-    hdrPostfx_->setHDRTonemapShader(tonemap_);
-
-    tonemap_->setBloomFactor(0.25f);
-    tonemap_->setBrightLevel(1.0f);
-    tonemap_->setGamma(2.2f);
 }
 
 Engine::GBuffer* RendererFactory::gbuffer() const
@@ -48,10 +38,28 @@ Engine::GBuffer* RendererFactory::gbuffer() const
 
 Renderer* RendererFactory::create(int samples)
 {
+    // Tonemap shader
+    tonemap_.reset(new Technique::HDRTonemap(samples, 4));
+    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+
+    Shader::Ptr toneFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment);
+    tonemap_->addShader(toneFrag);
+    despatcher_.loadResource(toneFrag);
+
+    hdrPostfx_->setHDRTonemapShader(tonemap_);
+
+    tonemap_->setBloomFactor(0.25f);
+    tonemap_->setBrightLevel(1.0f);
+    tonemap_->setGamma(2.2f);
+
     // Skybox technique
-    SkyboxStage::SkyboxPtr sky(new Technique::Skybox);
+    SkyboxStage::SkyboxPtr sky(new Technique::Skybox(samples));
     sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
-    sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment));
+
+    Shader::Ptr skyFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
+    sky->addShader(skyFrag);
+    despatcher_.loadResource(skyFrag);
+
     sky->setBrightness(2.0f);
 
     gbuffer_.reset();
@@ -70,7 +78,7 @@ Renderer* RendererFactory::create(int samples)
         fboFormat.setSamples(1);
 
         DeferredRenderer* deferred = new DeferredRenderer(gbuffer_, despatcher_);
-        renderer = new QuadLighting(deferred, *gbuffer_.get(), despatcher_);
+        renderer = new QuadLighting(deferred, *gbuffer_.get(), despatcher_, samples);
     }
 
     else

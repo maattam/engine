@@ -6,7 +6,7 @@ using namespace Engine;
 using namespace Engine::Technique;
 
 GBufferVisualizer::GBufferVisualizer()
-    : DSMaterialShader()
+    : DSMaterialShader(1)
 {
 }
 

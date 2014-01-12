@@ -19,7 +19,7 @@ namespace Technique {
 class DSMaterialShader : public Technique
 {
 public:
-    DSMaterialShader();
+    explicit DSMaterialShader(unsigned int samples);
     virtual ~DSMaterialShader();
 
     // Sets the GBuffer used as input
@@ -27,8 +27,10 @@ public:
     // postcondition: Technique can be initialised
     void setGBuffer(GBuffer const* gbuffer);
 
-    // Set sample count according to used MSAA level
-    void setSampleCount(unsigned int count);
+    // Adds a new shader to the program
+    // precondition: shader not null
+    // postcondition: shader will be linked when enable is called
+    virtual void addShader(const Shader::Ptr& shader);
 
     // Sets the projection matrix used to calculate eye-space coordinate from window space.
     // precondition: technique is enabled
@@ -42,8 +44,8 @@ protected:
 private:
     GBuffer const* gbuffer_;
 
-    int samples_;
     QVector4D viewport_;
+    unsigned int samples_;
 };
 
 }}

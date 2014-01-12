@@ -16,3 +16,8 @@ void ResourceData::setDespatcher(ResourceDespatcher* despatcher)
 {
     despatcher_ = despatcher;
 }
+
+QStringList ResourceData::queryFilesDebug() const
+{
+    return QStringList();
+}

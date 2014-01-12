@@ -6,8 +6,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-DSMaterialShader::DSMaterialShader()
-    : Technique(), gbuffer_(nullptr), samples_(1)
+DSMaterialShader::DSMaterialShader(unsigned int samples)
+    : Technique(), gbuffer_(nullptr), samples_(samples)
 {
 }
 
@@ -20,19 +20,22 @@ void DSMaterialShader::setGBuffer(GBuffer const* gbuffer)
     gbuffer_ = gbuffer;
 }
 
-void DSMaterialShader::setSampleCount(unsigned int count)
-{
-    samples_ = count;
-
-    if(program()->isLinked())
-    {
-        setUniformValue("samples", samples_);
-    }
-}
-
 void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
 {
     setUniformValue("invPersProj", proj.inverted());
+}
+
+void DSMaterialShader::addShader(const Shader::Ptr& shader)
+{
+    Technique::addShader(shader);
+
+    if(shader->type() == Shader::Type::Fragment)
+    {
+        ShaderData::DefineMap defines;
+        defines.insert("SAMPLES", samples_);
+
+        shader->setNamedDefines(defines);
+    }
 }
 
 void DSMaterialShader::setViewport(const QRect& viewport)
@@ -60,12 +63,6 @@ bool DSMaterialShader::init()
         {
             return false;
         }
-    }
-
-    // The other uniforms are not critical as they can be replaced by subclasses
-    if(!setUniformValue("samples", samples_))
-    {
-        return false;
     }
 
     if(!setUniformValue("viewport", viewport_))

@@ -8,13 +8,26 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-Skybox::Skybox()
-    : Technique(), textureUnit_(-1), depthUnit_(-1), samples_(1), brightness_(1.0f)
+Skybox::Skybox(unsigned int samples)
+    : Technique(), textureUnit_(-1), depthUnit_(-1), samples_(samples), brightness_(1.0f)
 {
 }
 
 Skybox::~Skybox()
 {
+}
+
+void Skybox::addShader(const Shader::Ptr& shader)
+{
+    Technique::addShader(shader);
+
+    if(shader->type() == Shader::Type::Fragment)
+    {
+        ShaderData::DefineMap defines;
+        defines.insert("SAMPLES", samples_);
+
+        shader->setNamedDefines(defines);
+    }
 }
 
 void Skybox::setTextureUnit(int unit)
@@ -24,16 +37,6 @@ void Skybox::setTextureUnit(int unit)
     if(program()->isLinked())
     {
         setUniformValue("cubemap", textureUnit_);
-    }
-}
-
-void Skybox::setSampleCount(int samples)
-{
-    samples_ = samples;
-
-    if(program()->isLinked())
-    {
-        setUniformValue("samples", samples_);
     }
 }
 
@@ -66,11 +69,6 @@ bool Skybox::init()
     }
 
     if(!setUniformValue("brightness", brightness_))
-    {
-        return false;
-    }
-
-    if(!setUniformValue("samples", samples_))
     {
         return false;
     }

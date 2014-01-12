@@ -8,8 +8,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-IlluminationModel::IlluminationModel()
-    : DSMaterialShader()
+IlluminationModel::IlluminationModel(unsigned int samples)
+    : DSMaterialShader(samples)
 {
 }
 

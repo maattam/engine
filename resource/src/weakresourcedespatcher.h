@@ -57,8 +57,9 @@ private:
     QString rootDirectory_;
 
     QFileSystemWatcher* watcher_;
+    QHash<QString, QList<WeakResourcePtr>> watchList_;
 
-    void watchResource(const ResourcePtr& resource);
+    void watchResource(const ResourcePtr& resource, const ResourceDataPtr& data);
     void pushResource(const QString& fileName, const ResourcePtr& resource);
 
     WeakResourceDespatcher(const WeakResourceDespatcher&);

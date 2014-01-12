@@ -117,15 +117,6 @@ void CubemapResource::releaseResource()
     remove();
 }
 
-void CubemapResource::queryFilesDebug(QStringList& files) const
-{
-    for(int i = 0; i < CubemapData::Faces; ++i)
-    {
-        QString fn = name();
-        files.append(fn.replace(QString("*"), QString::number(i)));
-    }
-}
-
 CubemapResource::ResourceDataPtr CubemapResource::createData()
 {
     std::shared_ptr<CubemapData> data(new CubemapData());
@@ -166,6 +157,8 @@ bool CubemapData::load(const QString& fileName)
         {
             return false;
         }
+
+        files_ << file;
     }
 
     return true;
@@ -179,4 +172,9 @@ gli::texture2D* CubemapData::at(unsigned int index) const
 void CubemapData::setConversion(TextureConversion conversion)
 {
     conversion_ = conversion;
+}
+
+QStringList CubemapData::queryFilesDebug() const
+{
+    return files_;
 }

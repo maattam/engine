@@ -1,5 +1,7 @@
 #version 420
 
+#define SAMPLES <>
+
 in vec3 texCoord;
 
 out vec4 fragColor;
@@ -7,7 +9,6 @@ out vec4 fragColor;
 uniform sampler2DMS depth;
 uniform samplerCube cubemap;
 uniform float brightness;
-uniform int samples;
 
 subroutine void DepthTestType();
 subroutine uniform DepthTestType depthTest;
@@ -19,12 +20,12 @@ void sampleDepthTest()
     ivec2 st = ivec2(gl_FragCoord.xy);
 
     // Blend skybox based on average visibility to reduce aliasing on skybox and mesh edges.
-    for(int i = 0; i < samples; ++i)
+    for(int i = 0; i < SAMPLES; ++i)
     {
         float depth = texelFetch(depth, st, i).x;
         if(gl_FragCoord.z > depth)
         {
-            alpha -= 1.0 / samples;
+            alpha -= 1.0 / SAMPLES;
         }
     }
 
