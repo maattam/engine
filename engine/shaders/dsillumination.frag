@@ -14,9 +14,9 @@ struct Light
     // Directional light only, applied on top of shadow factor
     float ambientIntensity;
 
-    // Spot light only, angle is in radians
-	float outerAngle;
-    float innerAngle;
+    // Spot light only, cosine of cutoff angle
+	float cosOuterAngle;
+    float cosInnerAngle;
 
     // Attenuation vector: (constant, linear, quadratic)
     vec3 attenuation;
@@ -37,7 +37,7 @@ vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialIn
 
     if(lambert > 0.0)
     {
-        // Compute halway vector for Blinn-Phong model
+        // Compute halfway vector for Blinn-Phong model
         vec3 v = normalize(-vertex.position.xyz);
         vec3 h = normalize(v + l);
 
@@ -51,7 +51,7 @@ vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialIn
         float fschlick = min(pow(1 - max(lh, 0.0), 5), 1.0);
 
         // Approximation of the Cook-Torrance geometry factor. For science.
-        float G = 1.0 / (lh * lh);
+        float G = 1.0 / max(lh * lh, 0.01);
 
         specular = G * d * power * mix(material.specular, 1.0, fschlick) * light.color;
     }
@@ -80,17 +80,14 @@ subroutine(CalculateOutputType)
 vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
     vec3 lightToFragment = normalize(light.position - vertex.position.xyz);
-    float spotFactor = dot(-lightToFragment, light.direction);
-    vec4 color = vec4(0, 0, 0, 1.0);
 
-    // TODO: Interpolate between inner and outer cutoff
-    if(spotFactor > light.outerAngle)
-    {
-        color = pointLightPass(vertex, material);
-        color = color * (1.0 - (1.0 - spotFactor) / (1.0 - light.outerAngle));
-    }
+    float cosAngle = dot(-lightToFragment, light.direction);
+    float angleDiff = light.cosInnerAngle - light.cosOuterAngle;
 
-    return vec4(material.diffuse, 1.0) * color;
+    float spotFactor = clamp((cosAngle - light.cosOuterAngle) / angleDiff, 0.0, 1.0);
+
+    vec3 color = pointLightPass(vertex, material).rgb * spotFactor;
+    return vec4(material.diffuse * color, 1.0);
 }
 
 subroutine(CalculateOutputType)

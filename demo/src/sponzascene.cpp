@@ -125,13 +125,15 @@ void SponzaScene::initialise()
     spotLight_->setAttenuationConstant(1.0f);
     spotLight_->setAttenuationLinear(0.1f);
     spotLight_->setAngleOuterCone(30.0f);
+    spotLight_->setAngleInnerCone(20.0f);
     spotLight_->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
 
     flashLight_ = createLight(Graph::Light::LIGHT_SPOT);
     flashLight_->setColor(QVector3D(1, 1, 1));
     flashLight_->setDiffuseIntensity(25.0f);
     flashLight_->setAttenuationQuadratic(0.2f);
-    flashLight_->setAngleOuterCone(30.0f);
+    flashLight_->setAngleOuterCone(20.0f);
+    flashLight_->setAngleInnerCone(15.0f);
     flashLight_->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
     flashLight_->detach();
 

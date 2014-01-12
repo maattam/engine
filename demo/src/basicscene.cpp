@@ -131,6 +131,7 @@ void BasicScene::initialise()
     spotLight->setDiffuseIntensity(20.0f);
     spotLight->setAttenuationQuadratic(0.05f);
     spotLight->setAngleOuterCone(20.0f);
+    spotLight->setAngleInnerCone(15.0f);
     spotLight->setLightMask(Graph::Light::MASK_CAST_SHADOWS);
     lights_.push_back(spotLight);
 
@@ -154,6 +155,8 @@ void BasicScene::initialise()
         {
             Engine::Material::Ptr mat(new Engine::Material);
             mat->setTexture(Engine::Material::TEXTURE_DIFFUSE, tex);
+            mat->setSpecularIntensity(0.8f);
+            mat->setShininess(100.0f);
 
             cube_[i] = std::make_shared<Graph::Geometry>(Renderable::Primitive<Renderable::Cube>::instance(), mat);
         }

@@ -25,6 +25,9 @@ public:
 
     Type type() const;
 
+    // Sets the named define values. Name defines must be in format
+    // #define NAME <>, where <> denotes the named value.
+    // Named defines must be defined before the shader is loaded/parsed.
     void setNamedDefines(const ShaderData::DefineMap& defines);
 
 protected:

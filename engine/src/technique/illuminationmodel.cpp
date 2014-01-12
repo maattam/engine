@@ -48,8 +48,8 @@ void IlluminationModel::enableSpotLight(const Graph::Light& light)
     setUniformValue("light.direction", view_.mapVector(light.direction()));
 
     // Convert cutoff angles to radians and precalculate cosine
-    setUniformValue("light.outerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleOuterCone()))));
-    //setUniformValue("light.innerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
+    setUniformValue("light.cosOuterAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleOuterCone()))));
+    setUniformValue("light.cosInnerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
 }
 
 void IlluminationModel::enablePointLight(const Graph::Light& light)
