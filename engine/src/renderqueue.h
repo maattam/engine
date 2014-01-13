@@ -47,7 +47,7 @@ public:
     typedef QPair<RenderList::ConstIterator, RenderList::ConstIterator> RenderRange;
 
     // Returns iterators to the RenderList based on RenderType.
-    RenderRange getItems(Material::RenderType renderIndex) const;
+    RenderRange getItems(Material::RenderType renderIndex);
 
 private:
     typedef QMap<Material::RenderType, RenderList> RenderMap;

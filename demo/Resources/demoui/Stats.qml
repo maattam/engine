@@ -34,4 +34,11 @@ Item {
             textItem.text += " " + unit;
         }
     }
+
+    function clearValues() {
+        for(var i = 0; i < column.children.length; ++i) {
+            var textObject = column.children[i];
+            textObject.destroy();
+        }
+    }
 }

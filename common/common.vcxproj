@@ -28,6 +28,7 @@
     <ClInclude Include="src\binder.h" />
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\mathelp.h" />
+    <ClInclude Include="src\movingaverage.h" />
     <ClInclude Include="src\observable.h" />
     <ClInclude Include="src\visitable.h" />
     <ClInclude Include="src\visitor.h" />

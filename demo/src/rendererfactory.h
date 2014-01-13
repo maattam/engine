@@ -47,6 +47,8 @@ private:
     std::shared_ptr<Engine::GBuffer> gbuffer_;
     std::shared_ptr<Engine::Technique::HDRTonemap> tonemap_;
     std::shared_ptr<Engine::Effect::Hdr> hdrPostfx_;
+
+    void createTonemapper(int samples);
 };
 
 #endif // RENDERERFACTORY_H

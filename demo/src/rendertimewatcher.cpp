@@ -2,6 +2,8 @@
 
 #include "renderstage.h"
 
+#include <QOpenGLTimeMonitor>
+
 RenderTimeWatcher::RenderTimeWatcher()
     : QObject(), frameCaptured_(true)
 {
@@ -35,6 +37,7 @@ void RenderTimeWatcher::addNamedStage(const QString& name)
 void RenderTimeWatcher::clearStages()
 {
     stages_.clear();
+    averages_.clear();
 
     if(monitor_.isCreated())
     {
@@ -55,6 +58,8 @@ bool RenderTimeWatcher::create()
     }
 
     monitor_.setSampleCount(stages_.count() + 1);
+    averages_.resize(stages_.count());
+
     return monitor_.create();
 }
 
@@ -70,7 +75,10 @@ void RenderTimeWatcher::endFrame()
         QVector<GLuint64> intervals = monitor_.waitForIntervals();
         for(int i = 0; i < intervals.size(); ++i)
         {
-            emit timeUpdated(stages_[i], intervals[i] * 10e-7, "ms");
+            averages_[i] << intervals[i];
+
+            double average = averages_[i] * 10e-7;
+            emit timeUpdated(stages_[i], average, "ms");
         }
 
         monitor_.reset();

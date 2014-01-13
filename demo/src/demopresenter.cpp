@@ -220,6 +220,7 @@ void DemoPresenter::generalAttributeChanged(QString name, QVariant value)
         }
 
         renderer_.reset();
+        QMetaObject::invokeMethod(uiController_, "clearWatchList");
     }
 
     else if(name == "scene")

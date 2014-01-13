@@ -28,7 +28,8 @@ void RenderQueue::clear()
     modelView_ = nullptr;
 }
 
-RenderQueue::RenderRange RenderQueue::getItems(Material::RenderType renderIndex) const
+RenderQueue::RenderRange RenderQueue::getItems(Material::RenderType renderIndex)
 {
-    return qMakePair(queue_[renderIndex].begin(), queue_[renderIndex].end());
+    const RenderList& list = queue_[renderIndex];
+    return qMakePair(list.begin(), list.end());
 }

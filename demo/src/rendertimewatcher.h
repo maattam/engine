@@ -3,8 +3,12 @@
 
 #include <QObject>
 #include <QString>
-#include <QOpenGLTimeMonitor>
 #include <QStringList>
+#include <QVector>
+
+#include "movingaverage.h"
+
+#include <QOpenGLTimeMonitor>
 
 namespace Engine {
     class RenderStage;
@@ -40,6 +44,10 @@ private:
     QOpenGLTimeMonitor monitor_;
 
     QStringList stages_;
+
+    typedef MovingAverage<GLint64, double, 10, 0> AverageType;
+    QVector<AverageType> averages_;
+
     bool frameCaptured_;
 };
 

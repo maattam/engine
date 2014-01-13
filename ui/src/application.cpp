@@ -62,6 +62,7 @@ void Application::viewInitialized()
     }
 
     thread_ = new QThread(this);
+    thread_->setObjectName("Renderer Thread");
 
     // Move presenter and renderer context to the rendering thread.
     presenter_->moveToThread(thread_);

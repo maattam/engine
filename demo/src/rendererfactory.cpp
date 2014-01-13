@@ -16,6 +16,8 @@
 
 #include "rendertimewatcher.h"
 
+#include <QDebug>
+
 using namespace Engine;
 
 RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType type)
@@ -45,21 +47,12 @@ void RendererFactory::setRenderTimeWatcher(RenderTimeWatcher* watcher)
 
 Renderer* RendererFactory::create(int samples)
 {
-    watcher_->clearStages();
+    if(watcher_ != nullptr)
+    {
+        watcher_->clearStages();
+    }
 
-    // Tonemap shader
-    tonemap_.reset(new Technique::HDRTonemap(samples, 4));
-    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-
-    Shader::Ptr toneFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment);
-    tonemap_->addShader(toneFrag);
-    despatcher_.loadResource(toneFrag);
-
-    hdrPostfx_->setHDRTonemapShader(tonemap_);
-
-    tonemap_->setBloomFactor(0.25f);
-    tonemap_->setBrightLevel(1.0f);
-    tonemap_->setGamma(2.2f);
+    createTonemapper(samples);
 
     // Skybox technique
     SkyboxStage::SkyboxPtr sky(new Technique::Skybox(samples));
@@ -88,7 +81,11 @@ Renderer* RendererFactory::create(int samples)
 
         DeferredRenderer* deferred = new DeferredRenderer(gbuffer_, despatcher_);
         RenderStage* lightningStage = new QuadLighting(deferred, *gbuffer_.get(), despatcher_, samples);
-        watcher_->addRenderStage("Geometry pass", lightningStage);
+
+        if(watcher_ != nullptr)
+        {
+            watcher_->addRenderStage("Geometry pass", lightningStage);
+        }
 
         renderer = lightningStage;
     }
@@ -102,20 +99,53 @@ Renderer* RendererFactory::create(int samples)
     }
 
     SkyboxStage* skybox = new Engine::SkyboxStage(renderer);
-    watcher_->addRenderStage("Lightning pass", skybox);
 
     skybox->setGBuffer(gbuffer_.get());
     skybox->setSkyboxMesh(std::make_shared<Renderable::Cube>());
     skybox->setSkyboxTechnique(sky);
 
     PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
-    watcher_->addRenderStage("Skybox pass", fxRenderer);
     fxRenderer->setEffect(hdrPostfx_);
 
-    watcher_->addNamedStage("Postprocess");
-    watcher_->create();
+    if(watcher_ != nullptr)
+    {
+        if(type_ == DEFERRED)
+        {
+            watcher_->addRenderStage("Lightning pass", skybox);
+        }
+
+        else
+        {
+            watcher_->addRenderStage("Forward pass", skybox);
+        }
+
+        watcher_->addRenderStage("Skybox pass", fxRenderer);
+        watcher_->addNamedStage("Postprocess");
+
+        if(!watcher_->create())
+        {
+            qWarning() << "Failed to create query object.";
+        }
+    }
 
     return fxRenderer;
+}
+
+void RendererFactory::createTonemapper(int samples)
+{
+    // Tonemap shader
+    tonemap_.reset(new Technique::HDRTonemap(samples, 4));
+    tonemap_->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+
+    Shader::Ptr toneFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/postprocess.frag"), Shader::Type::Fragment);
+    tonemap_->addShader(toneFrag);
+    despatcher_.loadResource(toneFrag);
+
+    hdrPostfx_->setHDRTonemapShader(tonemap_);
+
+    tonemap_->setBloomFactor(0.25f);
+    tonemap_->setBrightLevel(1.0f);
+    tonemap_->setGamma(2.2f);
 }
 
 Engine::Effect::Hdr* RendererFactory::hdr() const
