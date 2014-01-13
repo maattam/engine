@@ -11,6 +11,11 @@ RenderStage::~RenderStage()
 {
     delete renderer_;
 }
+
+void RenderStage::setObservable(SceneObservable* observable)
+{
+    renderer_->setObservable(observable);
+}
     
 bool RenderStage::setViewport(const QRect& viewport, unsigned int samples)
 {
@@ -22,19 +27,14 @@ void RenderStage::setGeometryBatch(RenderQueue* batch)
     renderer_->setGeometryBatch(batch);
 }
 
-void RenderStage::setLights(const QVector<LightData>& lights)
+void RenderStage::setCamera(Graph::Camera* camera)
 {
-    renderer_->setLights(lights);
+    renderer_->setCamera(camera);
 }
 
-void RenderStage::setSkyboxTexture(CubemapTexture* skybox)
+void RenderStage::render()
 {
-    renderer_->setSkyboxTexture(skybox);
-}
-
-void RenderStage::render(Graph::Camera* camera)
-{
-    renderer_->render(camera);
+    renderer_->render();
 
     emit stageFinished();
 }

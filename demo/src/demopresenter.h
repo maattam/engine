@@ -9,6 +9,9 @@
 #include <QVariant>
 #include <QString>
 
+// Enable profiling renderer timings.
+#define PROFILING
+
 class FreeLookScene;
 class RendererFactory;
 class SceneFactory;

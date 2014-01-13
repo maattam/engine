@@ -23,6 +23,10 @@ public:
     DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher);
     virtual ~DeferredRenderer();
 
+    // Sets the observable for the current scene.
+    // precondition: observable != nullptr.
+    virtual void setObservable(SceneObservable* observable);
+
     // Sets OpenGL viewport parameters and initialises buffers
     // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
@@ -30,15 +34,13 @@ public:
     // Sets the render queue which contains the visible geometry of the scene.
     virtual void setGeometryBatch(RenderQueue* batch);
 
-    // Sets lights for the current render batch.
-    virtual void setLights(const QVector<LightData>& lights);
-
-    // Sets skybox texture for the current render batch.
-    virtual void setSkyboxTexture(CubemapTexture* skybox);
+    // Sets the camera for the current geometry batch.
+    // precondition: camera != nullptr
+    virtual void setCamera(Graph::Camera* camera);
 
     // Renders the scene through the camera's viewport.
     // preconditions: scene has been set, viewport has been set, camera != nullptr
-    virtual void render(Graph::Camera* camera);
+    virtual void render();
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.

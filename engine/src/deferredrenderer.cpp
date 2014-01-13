@@ -46,23 +46,21 @@ void DeferredRenderer::setRenderTarget(GLuint /*fbo*/)
     // Geometry pass doesn't output anything to screen
 }
 
-void DeferredRenderer::setLights(const QVector<LightData>& /*lights*/)
-{
-    // Lightning is accumulated in another RenderStage
-}
-
-void DeferredRenderer::setSkyboxTexture(CubemapTexture* /*skybox*/)
+void DeferredRenderer::setObservable(SceneObservable* /*observable*/)
 {
 }
 
-void DeferredRenderer::render(Graph::Camera* camera)
+void DeferredRenderer::setCamera(Graph::Camera* camera)
+{
+    camera_ = camera;
+}
+
+void DeferredRenderer::render()
 {
     if(!gbuffer_->isInitialised())
     {
         return;
     }
-
-    camera_ = camera;
 
     // Cull visibles
     gl->glViewport(viewport_.x(), viewport_.y(), viewport_.width(), viewport_.height());

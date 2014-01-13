@@ -11,11 +11,10 @@
 namespace Engine {
 
 class RenderQueue;
-class CubemapTexture;
+class SceneObservable;
 
 namespace Graph {
     class Camera;
-    class Light;
 }
 
 class Renderer
@@ -23,28 +22,27 @@ class Renderer
 public:
     virtual ~Renderer() {};
 
+    // Sets the observable for the current scene.
+    // precondition: observable != nullptr.
+    virtual void setObservable(SceneObservable* observable) = 0;
+
     // Sets OpenGL viewport parameters and initialises buffers
     // postcondition: true on success, viewport set and buffers initialised
     virtual bool setViewport(const QRect& viewport, unsigned int samples) = 0;
 
     // Sets the render queue which contains the visible geometry of the scene.
+    // precondition: batch != nullptr
     virtual void setGeometryBatch(RenderQueue* batch) = 0;
 
-    struct LightData
-    {
-        Graph::Light* light;
-        RenderQueue* occluders;
-    };
-
-    // Sets lights for the current render batch.
-    virtual void setLights(const QVector<LightData>& lights) = 0;
-
-    // Sets skybox texture for the current render batch.
-    virtual void setSkyboxTexture(CubemapTexture* skybox) = 0;
+    // Sets the camera for the current geometry batch.
+    // This function is called once per frame before calling render() and before
+    // the visible leaves are resolved.
+    // precondition: camera != nullptr
+    virtual void setCamera(Graph::Camera* camera) = 0;
 
     // Renders the scene through the camera's viewport.
-    // preconditions: batch has been set, viewport has been set, camera != nullptr
-    virtual void render(Graph::Camera* camera) = 0;
+    // preconditions: batch has been set, viewport has been set, camera has been set.
+    virtual void render() = 0;
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.

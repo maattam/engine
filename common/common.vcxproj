@@ -30,12 +30,14 @@
     <ClInclude Include="src\mathelp.h" />
     <ClInclude Include="src\movingaverage.h" />
     <ClInclude Include="src\observable.h" />
+    <ClInclude Include="src\observer.h" />
     <ClInclude Include="src\visitable.h" />
     <ClInclude Include="src\visitor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\binder.inl" />
     <None Include="src\observable.inl" />
+    <None Include="src\observer.inl" />
     <None Include="src\visitable.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

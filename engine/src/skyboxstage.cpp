@@ -7,10 +7,12 @@
 #include "gbuffer.h"
 #include "binder.h"
 
+#include "scene/sceneobservable.h"
+
 using namespace Engine;
 
 SkyboxStage::SkyboxStage(Renderer* renderer)
-    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), cubemap_(nullptr), cubemapUnit_(0)
+    : RenderStage(renderer), gbuffer_(nullptr), fbo_(0), cubemap_(nullptr), cubemapUnit_(0), camera_(nullptr)
 {
 }
 
@@ -24,9 +26,21 @@ void SkyboxStage::setGBuffer(GBuffer const* gbuffer)
     initTechnique();
 }
 
-void SkyboxStage::render(Graph::Camera* camera)
+void SkyboxStage::setObservable(SceneObservable* observable)
 {
-    RenderStage::render(camera);
+    observable->addObserver(this);
+    RenderStage::setObservable(observable);
+}
+
+void SkyboxStage::setCamera(Graph::Camera* camera)
+{
+    camera_ = camera;
+    RenderStage::setCamera(camera);
+}
+
+void SkyboxStage::render()
+{
+    RenderStage::render();
 
     if(cubemap_ == nullptr || mesh_ == nullptr)
     {
@@ -42,9 +56,9 @@ void SkyboxStage::render(Graph::Camera* camera)
 
     // Translate the skybox mesh to view origin
     QMatrix4x4 trans;
-    trans.translate(camera->position());
+    trans.translate(camera_->position());
 
-    skybox_->setMVP(camera->worldView() * trans);
+    skybox_->setMVP(camera_->worldView() * trans);
 
     if(Binder::bind(cubemap_, GL_TEXTURE0 + cubemapUnit_))
     {
@@ -96,7 +110,7 @@ void SkyboxStage::setSkyboxMesh(const MeshPtr& mesh)
     mesh_ = mesh;
 }
 
-void SkyboxStage::setSkyboxTexture(CubemapTexture* skybox)
+void SkyboxStage::skyboxTextureUpdated(CubemapTexture* skybox)
 {
     cubemap_ = skybox;
 }

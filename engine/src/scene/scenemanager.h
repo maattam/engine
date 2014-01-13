@@ -1,27 +1,20 @@
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 
-#include "sceneobserver.h"
-#include "observable.h"
-
 #include <memory>
 #include <QRect>
-
-class BaseVisitor;
 
 namespace Engine {
 
 namespace Graph {
     class SceneNode;
     class SceneLeaf;
-    class Camera;
 }
 
 class CubemapTexture;
-
 class Renderer;
 
-class SceneManager : public Observable<SceneObserver>
+class SceneManager
 {
 public:
     typedef std::shared_ptr<Graph::SceneLeaf> SceneLeafPtr;
@@ -60,14 +53,6 @@ public:
 
     // Removes all scene leaves and clears the skybox texture.
     virtual void eraseScene() = 0;
-
-    // Adds a scene leaf visitor, which will be called for culled leaves.
-    // If the visitor already exists, it won't be duplicated.
-    // precondition: visitor != nullptr
-    virtual void addVisitor(BaseVisitor* visitor) = 0;
-
-    // Removes a visitor from the visitor list.
-    virtual void removeVisitor(BaseVisitor* visitor) = 0;
 };
 
 }

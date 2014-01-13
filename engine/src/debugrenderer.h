@@ -5,7 +5,6 @@
 
 #include "renderer.h"
 #include "scene/sceneobserver.h"
-#include "observable.h"
 #include "renderable/cube.h"
 #include "renderable/quad.h"
 #include "aabb.h"
@@ -29,28 +28,26 @@ public:
     explicit DebugRenderer(ResourceDespatcher* despatcher);
     virtual ~DebugRenderer();
 
+    // Sets the observable for the current scene.
+    // precondition: observable != nullptr.
+    virtual void setObservable(SceneObservable* observable);
+
     // Sets OpenGL viewport parameters.
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
     // Sets the render queue which contains the visible geometry of the scene.
     virtual void setGeometryBatch(RenderQueue* batch);
 
-    // Sets lights for the current render batch.
-    virtual void setLights(const QVector<LightData>& lights);
-
-    // Sets skybox texture for the current render batch.
-    virtual void setSkyboxTexture(CubemapTexture* skybox);
+    // Sets the camera for the current geometry batch.
+    // precondition: camera != nullptr
+    virtual void setCamera(Graph::Camera* camera);
 
     // Renders the scene through the camera's viewport.
-    virtual void render(Graph::Camera* camera);
+    virtual void render();
 
     // Sets debugging flags
     void setFlags(unsigned int flags);
     unsigned int flags() const;
-
-    // Set observable that provides debug data
-    typedef Observable<SceneObserver> ObservableType;
-    void setObservable(ObservableType* obs);
 
     // SceneObserver definitions
     virtual bool beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node);
@@ -65,11 +62,12 @@ public:
 
 private:
     QRect viewport_;
-    ObservableType* observable_;
     GLuint fbo_;
-    Graph::Camera* camera_;
     GBuffer const* gbuffer_;
     unsigned int flags_;
+
+    RenderQueue* batch_;
+    Graph::Camera* camera_;
 
     std::shared_ptr<Renderable::Cube> boundingMesh_;
     std::shared_ptr<Renderable::Quad> quad_;
@@ -81,7 +79,7 @@ private:
     typedef std::pair<QMatrix4x4, QVector3D> AABBDraw;
     std::deque<AABBDraw> aabbs_;
 
-    //void renderWireframe(const RenderQueue& queue);
+    void renderWireframe();
     void renderAABBs();
     void renderGBuffer();
 

@@ -68,10 +68,10 @@ void Application::viewInitialized()
     presenter_->moveToThread(thread_);
     context_->moveToThread(thread_);
 
+    thread_->start();
+
     connect(presenter_, &QObject::destroyed, this, &Application::presenterDestroyed);
     QMetaObject::invokeMethod(presenter_, "initialize");
-
-    thread_->start();
 }
 
 void Application::viewInvalidated()

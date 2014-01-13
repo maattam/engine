@@ -4,11 +4,12 @@
 #include "common.h"
 
 #include "renderer.h"
+#include "visitor.h"
+#include "scene/sceneobserver.h"
 
 #include <QRect>
 
 #include "technique/basiclightning.h"
-#include "technique/shadowmap.h"
 #include "renderqueue.h"
 #include "material.h"
 
@@ -20,11 +21,16 @@ namespace Graph {
 
 class ResourceDespatcher;
 
-class ForwardRenderer : public Renderer
+class ForwardRenderer : public Renderer, public SceneObserver,
+    public BaseVisitor, public Visitor<Graph::Light>
 {
 public:
     explicit ForwardRenderer(ResourceDespatcher& despatcher);
     virtual ~ForwardRenderer();
+
+    // Sets the observable for the current scene.
+    // precondition: observable != nullptr.
+    virtual void setObservable(SceneObservable* observable);
 
     // Sets OpenGL viewport parameters.
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
@@ -32,18 +38,20 @@ public:
     // Sets the render queue which contains the visible geometry of the scene.
     virtual void setGeometryBatch(RenderQueue* batch);
 
-    // Sets lights for the current render batch.
-    virtual void setLights(const QVector<LightData>& lights);
-
-    // Sets skybox texture for the current render batch.
-    virtual void setSkyboxTexture(CubemapTexture* skybox);
+    // Sets the camera for the current geometry batch.
+    // precondition: camera != nullptr
+    virtual void setCamera(Graph::Camera* camera);
 
     // Renders the scene through the camera's viewport.
-    virtual void render(Graph::Camera* camera);
+    virtual void render();
 
     // Renders the scene to a render target instead of the default surface.
     // If fbo is 0, the default framebuffer is used.
     virtual void setRenderTarget(GLuint fbo);
+
+    virtual void visit(Graph::Light& light);
+
+    virtual void sceneInvalidated();
 
 private:
     RenderQueue* renderQueue_;
@@ -54,20 +62,19 @@ private:
     Material errorMaterial_;
 
     Technique::BasicLightning lightningTech_;
-    Technique::ShadowMap shadowTech_;
 
     GLuint fbo_;
 
-    LightData directionalLight_;
-    QList<LightData> lights_;
+    Graph::Light* directionalLight_;
+    QList<Graph::Light*> lights_;
+    Graph::Camera* camera_;
+    SceneObservable* observable_;
 
-    void shadowMapPass();
-    void renderPass(Graph::Camera* camera);
+    //void shadowMapPass();
+    void renderPass();
 
-    void renderRange(Graph::Camera* camera, RenderQueue::RenderRange range);
+    void renderRange(RenderQueue::RenderRange range);
     void renderNode(const RenderQueue::RenderItem& node);
-
-    bool initialiseBuffers(unsigned int width, unsigned int height, unsigned int samples);
 
     ForwardRenderer(const ForwardRenderer&);
     ForwardRenderer& operator=(const ForwardRenderer&);

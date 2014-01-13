@@ -1,7 +1,7 @@
 #ifndef SCENEOBSERVER_H
 #define SCENEOBSERVER_H
 
-#include <QMatrix4x4>
+#include "observer.h"
 
 namespace Engine {
 
@@ -12,7 +12,7 @@ namespace Graph {
 
 class CubemapTexture;
 
-class SceneObserver
+class SceneObserver : public Observer<SceneObserver>
 {
 public:
     SceneObserver() {};
@@ -20,7 +20,13 @@ public:
 
     // Called before the visible entity is pushed down the render queue.
     // If this function returns false, the entity is not pushed to the default render queue.
-    virtual bool beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node) = 0;
+    virtual bool beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node) { return true; };
+
+    // Called when the scene's skybox has been changed. The skybox can be nullptr.
+    virtual void skyboxTextureUpdated(CubemapTexture* skybox) {};
+
+    // Called when the scene has been modified so that the data from last prepareNextFrame should be discarded.
+    virtual void sceneInvalidated() {};
 };
 
 }

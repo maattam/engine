@@ -11,12 +11,14 @@
 #include "texture2d.h"
 #include "renderable/primitive.h"
 
+#include "scene/sceneobservable.h"
+
 #include "binder.h"
 
 using namespace Engine;
 
 DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
-    : observable_(nullptr), fbo_(0), camera_(nullptr), flags_(0), gbuffer_(nullptr),
+    : fbo_(0), batch_(nullptr), camera_(nullptr), flags_(0), gbuffer_(nullptr),
     quad_(Renderable::Primitive<Renderable::Quad>::instance()),
     boundingMesh_(Renderable::Primitive<Renderable::Cube>::instance())
 {
@@ -41,6 +43,16 @@ DebugRenderer::~DebugRenderer()
 {
 }
 
+void DebugRenderer::setObservable(SceneObservable* observable)
+{
+    observable->addObserver(this);
+}
+
+void DebugRenderer::setCamera(Graph::Camera* camera)
+{
+    camera_ = camera;
+}
+
 bool DebugRenderer::setViewport(const QRect& viewport, unsigned int samples)
 {
     viewport_ = viewport;
@@ -55,14 +67,7 @@ void DebugRenderer::setRenderTarget(GLuint fbo)
 
 void DebugRenderer::setGeometryBatch(RenderQueue* batch)
 {
-}
-
-void DebugRenderer::setLights(const QVector<LightData>& lights)
-{
-}
-
-void DebugRenderer::setSkyboxTexture(CubemapTexture* skybox)
-{
+    batch_ = batch;
 }
 
 void DebugRenderer::setGBuffer(GBuffer const* gbuffer)
@@ -71,12 +76,10 @@ void DebugRenderer::setGBuffer(GBuffer const* gbuffer)
     gbufferMS_.setGBuffer(gbuffer_);
 }
 
-void DebugRenderer::render(Graph::Camera* camera)
+void DebugRenderer::render()
 {
-    camera_ = camera;
-
     // If no debug flags are set, bail out
-    if(observable_ == nullptr || flags_ == 0)
+    if(flags_ == 0)
     {
         return;
     }
@@ -86,22 +89,14 @@ void DebugRenderer::render(Graph::Camera* camera)
 
     if(flags_ != DEBUG_GBUFFER)
     {
-        observable_->addObserver(this);
-
-        // Cull visibles
-        /*RenderQueue renderQueue;
-        scene_->queryVisibles(camera->worldView(), renderQueue);
-
-        renderWireframe(renderQueue);*/
+        renderWireframe();
         renderAABBs();
-
-        observable_->removeObserver(this);
     }
 
     renderGBuffer();
 }
 
-/*void DebugRenderer::renderWireframe(const RenderQueue& queue)
+void DebugRenderer::renderWireframe()
 {
     if(!(flags_ & DEBUG_WIREFRAME))
     {
@@ -122,7 +117,8 @@ void DebugRenderer::render(Graph::Camera* camera)
     gl->glDisable(GL_CULL_FACE);
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    for(auto it = queue.begin(); it != queue.end(); ++it)
+    RenderQueue::RenderRange range = batch_->getItems(Material::RENDER_OPAQUE);
+    for(auto it = range.first; it != range.second; ++it)
     {
         wireframeTech_->setUniformValue("gMVP", camera_->worldView() * *it->modelView);
 
@@ -138,7 +134,7 @@ void DebugRenderer::render(Graph::Camera* camera)
     // Reset polygon mode
     gl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     gl->glEnable(GL_CULL_FACE);
-}*/
+}
 
 void DebugRenderer::renderAABBs()
 {
@@ -173,11 +169,6 @@ unsigned int DebugRenderer::flags() const
     return flags_;
 }
 
-void DebugRenderer::setObservable(ObservableType* obs)
-{
-    observable_ = obs;
-}
-
 bool DebugRenderer::beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* node)
 {
     if(flags_ & DEBUG_AABB)
@@ -194,7 +185,7 @@ bool DebugRenderer::beforeRendering(Graph::SceneLeaf* entity, Graph::SceneNode* 
         addAABB(node->transformation(), entity->boundingBox(), color);
     }
 
-    return flags_ & DEBUG_WIREFRAME;
+    return true;
 }
 
 void DebugRenderer::renderGBuffer()

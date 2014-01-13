@@ -8,7 +8,10 @@ Observable<TObserver>::Observable()
 template<class TObserver>
 Observable<TObserver>::~Observable()
 {
-    observers_.clear();
+    for(TObserver* obs : observers_)
+    {
+        obs->_setObservable(nullptr);
+    }
 }
 
 template<class TObserver>
@@ -19,13 +22,20 @@ bool Observable<TObserver>::addObserver(ObserverType* obs)
         return false;
     }
 
+    obs->_setObservable(this);
     return observers_.insert(obs).second;
 }
 
 template<class TObserver>
 bool Observable<TObserver>::removeObserver(ObserverType* obs)
 {
-    return observers_.erase(obs) == 1;
+    if(observers_.erase(obs) == 1)
+    {
+        obs->_setObservable(nullptr);
+        return true;
+    }
+
+    return false;
 }
 
 template<class TObserver>

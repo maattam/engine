@@ -422,6 +422,9 @@
     <ClInclude Include="src\renderitemsorter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\scene\sceneobservable.h">
+      <Filter>Header Files\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="images\white.png">

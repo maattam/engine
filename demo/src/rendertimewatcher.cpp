@@ -38,20 +38,10 @@ void RenderTimeWatcher::clearStages()
 {
     stages_.clear();
     averages_.clear();
-
-    if(monitor_.isCreated())
-    {
-        monitor_.destroy();
-    }
 }
 
 bool RenderTimeWatcher::create()
 {
-    if(monitor_.isCreated())
-    {
-        monitor_.destroy();
-    }
-
     if(stages_.count() < 1)
     {
         return false;

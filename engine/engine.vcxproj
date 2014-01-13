@@ -293,6 +293,7 @@
     <ClInclude Include="src\scene\importednodedata.h" />
     <ClInclude Include="src\scene\nodeimport.h" />
     <ClInclude Include="src\scene\scenemanager.h" />
+    <ClInclude Include="src\scene\sceneobservable.h" />
     <ClInclude Include="src\scene\sceneobserver.h" />
     <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\technique\basiclightning.h" />

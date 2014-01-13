@@ -2,7 +2,6 @@
 
 #include "graph/sceneleaf.h"
 #include "graph/camera.h"
-#include "graph/light.h"
 #include "frustum.h"
 #include "renderer.h"
 #include "cubemaptexture.h"
@@ -26,17 +25,13 @@ BasicSceneManager::~BasicSceneManager()
 // Precondition: Renderer set
 void BasicSceneManager::renderFrame()
 {
-    if(renderer_ == nullptr || culledCameras_.empty())
+    if(culledCameras_.empty())
     {
         return;
     }
 
-    renderer_->setSkyboxTexture(skybox_.get());
     renderer_->setGeometryBatch(&culledGeometry_);
-    renderer_->setLights(culledLights_);
-
-    // TODO: Handle multiple cameras
-    renderer_->render(culledCameras_.first());
+    renderer_->render();
 }
 
 // Culls visible scene leaves for rendering.
@@ -51,9 +46,8 @@ void BasicSceneManager::prepareNextFrame()
         }
     }
 
+    notify(&SceneObserver::sceneInvalidated);
     culledGeometry_.clear();
-    culledOccluders_.clear();
-    culledLights_.clear();
 
     // If scene contains no cameras, there is nothing to cull
     if(culledCameras_.empty())
@@ -67,31 +61,13 @@ void BasicSceneManager::prepareNextFrame()
     camera.setAspectRatio(static_cast<float>(viewport_.width()) / viewport_.height());
     camera.update();
 
+    renderer_->setCamera(&camera);
+
     // Cull visible geometry and lights
     findVisibleLeaves(camera.worldView(), culledGeometry_);
 
     // Sort visible geometry
     culledGeometry_.sort(RenderItemSorter());
-
-    // Cull visibles inside each light's frustum
-    for(Renderer::LightData& lightData : culledLights_)
-    {
-        Graph::Light* light = lightData.light;
-
-        if(light->lightMask() & Graph::Light::MASK_CAST_SHADOWS)
-        {
-            Occluders occluders;
-            occluders.light = lightData.light;
-            occluders.geometry.reset(new RenderQueue());
-
-            culledOccluders_.push_back(occluders);
-
-            // TODO: Move Light::frustrum to separate class.
-            findOccluders(light->lightMask(), light->frustum(), *occluders.geometry);
-
-            lightData.occluders = occluders.geometry.get();
-        }
-    }
 }
 
 void BasicSceneManager::findVisibleLeaves(const QMatrix4x4& viewProj, RenderQueue& queue)
@@ -122,14 +98,14 @@ void BasicSceneManager::findVisibleLeaves(const QMatrix4x4& viewProj, RenderQueu
     }
 }
 
-void BasicSceneManager::findOccluders(unsigned int lightMask, const QMatrix4x4& frustum, RenderQueue& queue)
+void BasicSceneManager::findVisibleLeaves(const QMatrix4x4& frustum, RenderQueue& queue, AcceptVisibleLeaf acceptFunc)
 {
     for(const SceneLeafPtr& leaf : leaves_)
     {
         Graph::SceneNode* node = leaf->parentNode();
 
-        // Skip nodes that are not attached to scenegraph, or don't cast shadows
-        if(node == nullptr || node->lightMask() & lightMask == 0)
+        // Skip nodes that are not attached to scenegraph
+        if(node == nullptr || acceptFunc != nullptr && !acceptFunc(*leaf, *node))
         {
             continue;
         }
@@ -146,7 +122,20 @@ void BasicSceneManager::findOccluders(unsigned int lightMask, const QMatrix4x4& 
 // Precondition: renderer != nullptr
 void BasicSceneManager::setRenderer(Renderer* renderer)
 {
+    if(renderer_ == renderer)
+    {
+        return;
+    }
+
     renderer_ = renderer;
+
+    renderer_->setObservable(this);
+    notify(&SceneObserver::skyboxTextureUpdated, skybox_.get());
+
+    if(!culledCameras_.empty())
+    {
+        renderer_->setCamera(culledCameras_.first());
+    }
 }
 
 // Sets the output viewport. Changing viewport updates the camera's aspect ratio
@@ -160,6 +149,7 @@ void BasicSceneManager::setViewport(const QRect& viewport)
 void BasicSceneManager::setSkyboxCubemap(const SkyboxTexture& sky)
 {
     skybox_ = sky;
+    notify(&SceneObserver::skyboxTextureUpdated, sky.get());
 }
 
 // Returns the root node of the scene. All leaves should be attached to this scene
@@ -211,6 +201,9 @@ void BasicSceneManager::eraseScene()
     culledCameras_.clear();
     leaves_.clear();
     setSkyboxCubemap(nullptr);
+
+    // Reset renderer state
+    notify(&SceneObserver::sceneInvalidated);
 }
 
 // Adds a scene leaf visitor, which will be called for culled leaves.
@@ -225,14 +218,6 @@ void BasicSceneManager::addVisitor(BaseVisitor* visitor)
 void BasicSceneManager::removeVisitor(BaseVisitor* visitor)
 {
     visitors_.remove(visitor);
-}
-
-void BasicSceneManager::visit(Graph::Light& light)
-{
-    Renderer::LightData lightData;
-    lightData.light = &light;
-
-    culledLights_.push_back(lightData);
 }
 
 void BasicSceneManager::visit(Graph::Camera& camera)

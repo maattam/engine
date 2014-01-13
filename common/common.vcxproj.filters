@@ -51,6 +51,9 @@
     <ClInclude Include="src\movingaverage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\observer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\observable.inl">
@@ -60,6 +63,9 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="src\binder.inl">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="src\observer.inl">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

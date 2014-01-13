@@ -5,10 +5,11 @@
 #define BASICSCENEMANAGER_H
 
 #include "scenemanager.h"
+#include "sceneobservable.h"
+
 #include "visitor.h"
 #include "graph/scenenode.h"
 #include "renderqueue.h"
-#include "renderer.h"
 
 #include <QVector>
 #include <QSet>
@@ -20,8 +21,8 @@ namespace Graph {
     class Camera;
 }
 
-class BasicSceneManager : public SceneManager,
-    public BaseVisitor, public Visitor<Graph::Light>, public Visitor<Graph::Camera>
+class BasicSceneManager : public SceneManager, public SceneObservable,
+    public BaseVisitor, public Visitor<Graph::Camera>
 {
 public:
     BasicSceneManager();
@@ -68,12 +69,14 @@ public:
     // Removes a visitor from the visitor list.
     virtual void removeVisitor(BaseVisitor* visitor);
 
-    virtual void visit(Graph::Light& light);
+    // Queries a list of visible scene leaves inside the given frustum. If acceptFunc is not null,
+    // the leaf can be rejected by returning false.
+    virtual void findVisibleLeaves(const QMatrix4x4& frustum, RenderQueue& queue, AcceptVisibleLeaf acceptFunc);
+
     virtual void visit(Graph::Camera& camera);
 
 protected:
-    virtual void findVisibleLeaves(const QMatrix4x4& viewProj, RenderQueue& queue);
-    virtual void findOccluders(unsigned int lightMask, const QMatrix4x4& frustum, RenderQueue& queue);
+    virtual void findVisibleLeaves(const QMatrix4x4& frustum, RenderQueue& queue);
 
 private:
     Renderer* renderer_;
@@ -85,16 +88,7 @@ private:
     QVector<SceneLeafPtr> leaves_;
     QSet<BaseVisitor*> visitors_;
 
-    QVector<Renderer::LightData> culledLights_;
     QVector<Graph::Camera*> culledCameras_;
-
-    struct Occluders
-    {
-        Graph::Light* light;
-        std::shared_ptr<RenderQueue> geometry;
-    };
-
-    QVector<Occluders> culledOccluders_;
     RenderQueue culledGeometry_;
 
     BasicSceneManager(const BasicSceneManager&);

@@ -31,6 +31,11 @@ DemoPresenter::DemoPresenter(QObject* parent)
 
 DemoPresenter::~DemoPresenter()
 {
+    renderer_.reset();
+    debugRenderer_.reset();
+
+    sceneController_.reset();
+    sceneManager_.reset();
 }
 
 void DemoPresenter::setContext(Engine::Ui::RendererContext* context)
@@ -105,12 +110,13 @@ void DemoPresenter::initialize()
     sceneManager_.reset(new Engine::BasicSceneManager());
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
-    debugRenderer_->setObservable(sceneManager_.get());
 
+#ifdef PROFILING
     renderTimeWatcher_.reset(new RenderTimeWatcher());
     rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
 
     connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, uiController_, &UiController::watchValue);
+#endif
 }
 
 void DemoPresenter::render()
@@ -119,15 +125,22 @@ void DemoPresenter::render()
     {
         sceneManager_->setRenderer(renderer_.get());
 
+#ifdef PROFILING
         renderTimeWatcher_->setTimestamp();
         sceneManager_->renderFrame();
 
         renderTimeWatcher_->setTimestamp();
         renderTimeWatcher_->endFrame();
+#else
+        sceneManager_->renderFrame();
+#endif
     }
 
-    sceneManager_->setRenderer(debugRenderer_.get());
-    sceneManager_->renderFrame();
+    if(debugRenderer_->flags() != 0)
+    {
+        sceneManager_->setRenderer(debugRenderer_.get());
+        sceneManager_->renderFrame();
+    }
 }
 
 void DemoPresenter::updateView()

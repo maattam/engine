@@ -26,7 +26,7 @@ public:
 
     virtual bool setViewport(const QRect& viewport, unsigned int samples);
 
-    virtual void render(Graph::Camera* camera);
+    virtual void render();
 
     virtual void setRenderTarget(GLuint fbo);
 
