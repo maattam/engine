@@ -31,6 +31,11 @@ bool Technique::enable()
     return true;
 }
 
+bool Technique::init()
+{
+    return true;
+}
+
 QOpenGLShaderProgram* Technique::program()
 {
     return &program_.get();

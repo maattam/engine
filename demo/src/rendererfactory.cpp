@@ -13,6 +13,7 @@
 #include "resourcedespatcher.h"
 #include "renderable/cube.h"
 #include "forwardrenderer.h"
+#include "shadowstage.h"
 
 #include "rendertimewatcher.h"
 
@@ -98,8 +99,9 @@ Renderer* RendererFactory::create(int samples)
         renderer = new ForwardRenderer(despatcher_);
     }
 
-    SkyboxStage* skybox = new Engine::SkyboxStage(renderer);
+    ShadowStage* shadow = new ShadowStage(renderer); 
 
+    SkyboxStage* skybox = new Engine::SkyboxStage(shadow);
     skybox->setGBuffer(gbuffer_.get());
     skybox->setSkyboxMesh(std::make_shared<Renderable::Cube>());
     skybox->setSkyboxTechnique(sky);
@@ -111,14 +113,15 @@ Renderer* RendererFactory::create(int samples)
     {
         if(type_ == DEFERRED)
         {
-            watcher_->addRenderStage("Lightning pass", skybox);
+            watcher_->addRenderStage("Lightning pass", shadow);
         }
 
         else
         {
-            watcher_->addRenderStage("Forward pass", skybox);
+            watcher_->addRenderStage("Forward pass", shadow);
         }
 
+        watcher_->addRenderStage("Shadow pass", skybox);
         watcher_->addRenderStage("Skybox pass", fxRenderer);
         watcher_->addNamedStage("Postprocess");
 

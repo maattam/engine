@@ -29,8 +29,10 @@ Rectangle {
             height: 20
 
             onCurrentIndexChanged: {
-                var target = template.parent
-                if(target) target.onValueChange(name.toLowerCase(), textAt(currentIndex))
+                var target = template.parent;
+                if(target !== null) {
+                    target.onValueChange(name.toLowerCase(), textAt(currentIndex));
+                }
             }
         }
     }

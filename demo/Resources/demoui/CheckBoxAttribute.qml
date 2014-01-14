@@ -28,8 +28,10 @@ Rectangle {
             id: checkBox
 
             onCheckedChanged: {
-                var target = template.parent
-                if(target) target.onValueChange(name.toLowerCase(), checked)
+                var target = template.parent;
+                if(target !== null) {
+                    target.onValueChange(name.toLowerCase(), checked);
+                }
             }
         }
     }

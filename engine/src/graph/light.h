@@ -15,7 +15,7 @@ class Light : public SceneLeaf
     VISITABLE
 
 public:
-    enum LightType { LIGHT_POINT, LIGHT_SPOT, LIGHT_DIRECTIONAL };
+    enum LightType { LIGHT_POINT, LIGHT_SPOT, LIGHT_DIRECTIONAL, LIGHT_COUNT };
     enum LightMask { MASK_CAST_SHADOWS = 0x1 };
 
     typedef std::shared_ptr<Light> Ptr;

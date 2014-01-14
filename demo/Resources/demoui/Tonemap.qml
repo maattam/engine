@@ -61,18 +61,19 @@ Rectangle {
 
         function onValueChange(name, value) {
             if(name === "automatic exposure") {
-                exposure.visible = !value
+                exposure.visible = !value;
+
                 if(value) {
-                    tonemap.valueChanged("exposure", -1)
+                    tonemap.valueChanged("exposure", -1);
                 }
 
                 else {
-                    tonemap.valueChanged("exposure", exposure.value)
+                    tonemap.valueChanged("exposure", exposure.value);
                 }
             }
 
             else {
-                tonemap.valueChanged(name, value)
+                tonemap.valueChanged(name, value);
             }
         }
     }

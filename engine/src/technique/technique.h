@@ -52,7 +52,7 @@ public:
 protected:
     // Called after the program has been linked successfully for the first time
     // precondition: enable called successfully
-    virtual bool init() = 0;
+    virtual bool init();
 
     // Returns a cached uniform location from the hash.
     // The uniform must have been registered through resolveUniformLocation, or

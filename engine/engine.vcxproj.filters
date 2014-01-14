@@ -103,9 +103,6 @@
     <ClCompile Include="src\technique\basiclightning.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
-    <ClCompile Include="src\technique\shadowmap.cpp">
-      <Filter>Source Files\technique</Filter>
-    </ClCompile>
     <ClCompile Include="src\technique\technique.cpp">
       <Filter>Source Files\technique</Filter>
     </ClCompile>
@@ -214,6 +211,9 @@
     <ClCompile Include="GeneratedFiles\Release\moc_renderstage.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="src\shadowstage.cpp">
+      <Filter>Source Files\renderer\renderstage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -300,9 +300,6 @@
       <Filter>Header Files\effect</Filter>
     </ClInclude>
     <ClInclude Include="src\technique\basiclightning.h">
-      <Filter>Header Files\technique</Filter>
-    </ClInclude>
-    <ClInclude Include="src\technique\shadowmap.h">
       <Filter>Header Files\technique</Filter>
     </ClInclude>
     <ClInclude Include="src\renderable\cube.h">
@@ -424,6 +421,15 @@
     </ClInclude>
     <ClInclude Include="src\scene\sceneobservable.h">
       <Filter>Header Files\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowstage.h">
+      <Filter>Header Files\renderer\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowrendermethod.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowmap.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

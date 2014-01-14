@@ -34,8 +34,10 @@ Rectangle {
             value: valueInitial
 
             onValueChanged: {
-                var target = template.parent
-                if(target) target.onValueChange(name.toLowerCase(), value)
+                var target = template.parent;
+                if(target !== null) {
+                    target.onValueChange(name.toLowerCase(), value);
+                }
             }
         }
     }

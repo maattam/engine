@@ -203,6 +203,7 @@
     <ClCompile Include="src\scene\importednode.cpp" />
     <ClCompile Include="src\scene\importednodedata.cpp" />
     <ClCompile Include="src\scene\nodeimport.cpp" />
+    <ClCompile Include="src\shadowstage.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\blurfilter.cpp" />
@@ -211,7 +212,6 @@
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
     <ClCompile Include="src\technique\hdrtonemap.cpp" />
     <ClCompile Include="src\technique\illuminationmodel.cpp" />
-    <ClCompile Include="src\technique\shadowmap.cpp" />
     <ClCompile Include="src\technique\skybox.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
   </ItemGroup>
@@ -295,6 +295,9 @@
     <ClInclude Include="src\scene\scenemanager.h" />
     <ClInclude Include="src\scene\sceneobservable.h" />
     <ClInclude Include="src\scene\sceneobserver.h" />
+    <ClInclude Include="src\shadowmap.h" />
+    <ClInclude Include="src\shadowrendermethod.h" />
+    <ClInclude Include="src\shadowstage.h" />
     <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\blurfilter.h" />
@@ -303,7 +306,6 @@
     <ClInclude Include="src\technique\gbuffervisualizer.h" />
     <ClInclude Include="src\technique\hdrtonemap.h" />
     <ClInclude Include="src\technique\illuminationmodel.h" />
-    <ClInclude Include="src\technique\shadowmap.h" />
     <ClInclude Include="src\technique\skybox.h" />
     <CustomBuild Include="src\technique\technique.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

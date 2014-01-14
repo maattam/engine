@@ -5,11 +5,11 @@
 #define QUADLIGHTING_H
 
 #include "renderstage.h"
+#include "visitor.h"
+#include "scene/sceneobserver.h"
 
 #include "renderable/quad.h"
 #include "technique/illuminationmodel.h"
-#include "visitor.h"
-#include "scene/sceneobserver.h"
 
 #include <QVector>
 #include <memory>

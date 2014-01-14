@@ -18,8 +18,8 @@ Hdr::Hdr(ResourceDespatcher* despatcher, int bloomLevels)
     quad_(Renderable::Primitive<Renderable::Quad>::instance())
 {
     // Highpass program
-    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
-    highpass_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag"), Shader::Type::Fragment));
+    highpassTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/passthrough.vert"), Shader::Type::Vertex));
+    highpassTech_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/highpass.frag"), Shader::Type::Fragment));
 }
 
 Hdr::~Hdr()
@@ -100,17 +100,19 @@ bool Hdr::initialize(int width, int height, int samples)
 
 void Hdr::render()
 {
-    if(inputTexture() == 0)
+    if(inputTexture() == 0 || tonemap_ == nullptr)
+    {
         return;
-
-    else if(tonemap_ == nullptr || !highpass_.ready())
-        return;
+    }
 
     quad_->bindVaoDirect();
 
     // Pass 1
     // Highpass filter
-    renderHighpass();
+    if(!renderHighpass())
+    {
+        return;
+    }
 
     // Pass 2
     // Downsample and blur input
@@ -123,32 +125,34 @@ void Hdr::render()
     gl->glBindVertexArray(0);
 }
 
-void Hdr::renderHighpass()
+bool Hdr::renderHighpass()
 {
-    fbo_->bind();
-    highpass_->bind();
+    if(!highpassTech_.enable())
+    {
+        return false;
+    }
+
+    highpassTech_.setUniformValue("renderedTexture", 0);
+    highpassTech_.setUniformValue("threshold", threshold_);
+
+    // QOpenGLFramebufferObject seems to insist on calling glCheckFramebufferStatus on each bind() invocation
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, fbo_->handle());
 
     gl->glViewport(0, 0, fbo_->width(), fbo_->height());
 
     gl->glActiveTexture(GL_TEXTURE0);
     gl->glBindTexture(inputType(), inputTexture());
 
-    highpass_->setUniformValue("renderedTexture", 0);
-    highpass_->setUniformValue("threshold", threshold_);
-
     quad_->renderDirect();
-
-    gl->glBindTexture(inputType(), 0);
-
-    fbo_->release();
 
     // Generate mipmaps for exposure sampler
     if(exposureFunc_ != nullptr)
     {
         gl->glBindTexture(GL_TEXTURE_2D, fbo_->texture());
         gl->glGenerateMipmap(GL_TEXTURE_2D);
-        gl->glBindTexture(GL_TEXTURE_2D, 0);
     }
+
+    return true;
 }
 
 void Hdr::renderTonemap()
@@ -175,7 +179,9 @@ void Hdr::renderTonemap()
 
     quad_->renderDirect();
 
+    gl->glBindTexture(GL_TEXTURE_2D, 0);
     gl->glBindTexture(inputType(), 0);
+    gl->glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void Hdr::setExposureFunction(const ExposureFuncPtr& function)

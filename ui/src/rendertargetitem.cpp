@@ -3,6 +3,7 @@
 #include "rendertargettexture.h"
 
 #include <QSGSimpleTextureNode>
+#include <QQuickWindow>
 
 using namespace Engine::Ui;
 
@@ -41,7 +42,12 @@ void RenderTargetItem::updateTexture(void* sync)
     }
 
     texture_->setSyncObject(static_cast<GLsync>(sync));
+
+    // Force both the RenderTragetItem and QQuickWindow to update to force repaint immediately.
+    // The scene graph seems to wait ~5ms on average per frame on its own before the frame is rendered.
+    // If window update is issued, the scene graph rendering is delayed ~2,3ms, which is still not ideal.
     update();
+    window()->update();
 }
 
 QSGNode* RenderTargetItem::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData* updatePaintNodeData)

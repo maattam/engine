@@ -10,11 +10,12 @@ Item {
     }
 
     function watchValue(name, value, unit) {
-        if(!column) {
+        if(column === undefined) {
             return;
         }
 
-        var textItem = null;
+        var textItem;
+
         for(var i = 0; i < column.children.length; ++i) {
             var textObject = column.children[i];
 
@@ -24,7 +25,7 @@ Item {
             }
         }
 
-        if(textItem === null) {
+        if(textItem === undefined) {
             textItem = Qt.createQmlObject('import QtQuick 2.0; Text { font.family: "Consolas"; font.pointSize: 10; color: "white" }',
                                                 column);
         }

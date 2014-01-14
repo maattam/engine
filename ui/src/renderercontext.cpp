@@ -105,18 +105,9 @@ bool RendererContext::beginRendering()
 
 void RendererContext::endFrame()
 {
-    /*if(logger_ != nullptr)
-    {
-        for(auto message : logger_->loggedMessages())
-        {
-            qDebug() << message;
-        }
-    }*/
-
     // Synchronize the render target texture between the two renderers
     GLsync sync = gl->glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
     gl->glFlush();
-    //gl->glFinish();
 
     emit renderTargetUpdated(sync);
 

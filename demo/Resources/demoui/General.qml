@@ -46,10 +46,10 @@ Rectangle {
 
         function onValueChange(name, value) {
             if(name === "deferred rendering") {
-                gbuffer.visible = value
+                gbuffer.visible = value;
             }
 
-            general.valueChanged(name, value)
+            general.valueChanged(name, value);
         }
     }
 }

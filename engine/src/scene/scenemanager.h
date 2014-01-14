@@ -33,8 +33,7 @@ public:
     // Precondition: renderer != nullptr
     virtual void setRenderer(Renderer* renderer) = 0;
 
-    // Sets the output viewport. Changing viewport updates the camera's aspect ratio
-    // and renderers viewport.
+    // Sets the output viewport. Changing viewport updates the camera's aspect ratio.
     virtual void setViewport(const QRect& viewport) = 0;
 
     // Sets the skybox texture.

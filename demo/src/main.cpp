@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
     format.setVersion(4, 2);
     format.setSamples(2);
     format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSwapBehavior(QSurfaceFormat::SingleBuffer);
 
 #ifdef _DEBUG
     format.setOption(QSurfaceFormat::DebugContext);
@@ -27,6 +26,11 @@ int main(int argc, char *argv[])
 
     Engine::Ui::SceneView view;
     view.setSource(QUrl("qrc:/demoui/main.qml"));
+
+    // Disable VSync.
+    /*QSurfaceFormat viewFormat = view.format();
+    viewFormat.setSwapBehavior(QSurfaceFormat::SingleBuffer);
+    view.setFormat(viewFormat);*/
 
     demo.setView(&view);
 

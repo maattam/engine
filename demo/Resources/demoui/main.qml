@@ -48,7 +48,7 @@ RenderTarget {
 
     Keys.onPressed: {
         if(event.key === Qt.Key_Escape) {
-            ui.visible = !ui.visible
+            ui.visible = !ui.visible;
         }
     }
 }

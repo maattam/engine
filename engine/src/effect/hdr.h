@@ -5,8 +5,8 @@
 
 #include "common.h"
 #include "downsampler.h"
-#include "shaderprogram.h"
 #include "renderable/quad.h"
+#include "technique/technique.h"
 
 #include <memory>
 
@@ -69,12 +69,12 @@ private:
     std::shared_ptr<Renderable::Quad> quad_;
     QOpenGLFramebufferObject* fbo_;
 
-    ShaderProgram highpass_;
+    Technique::Technique highpassTech_;
 
     ExposureFuncPtr exposureFunc_;
     HDRTonemapPtr tonemap_;
 
-    void renderHighpass();
+    bool renderHighpass();
     void renderTonemap();
 };
 
