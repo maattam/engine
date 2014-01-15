@@ -31,7 +31,6 @@ protected:
 
 private:
     RenderTargetTexture* texture_;
-    bool textureChanged_;
 };
 
 }}

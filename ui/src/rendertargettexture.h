@@ -12,7 +12,7 @@ namespace Engine { namespace Ui {
 class RenderTargetTexture : public QSGTexture
 {
 public:
-    RenderTargetTexture(int textureId, const QSize& size);
+    RenderTargetTexture();
     virtual ~RenderTargetTexture();
 
     virtual void bind();
@@ -23,6 +23,7 @@ public:
     virtual QSize textureSize() const;
 
     void setSyncObject(GLsync sync);
+    void update(int textureId, const QSize& size);
 
 private:
     int textureId_;

@@ -157,3 +157,8 @@ $RECYCLE.BIN/
 
 # Assets
 assets/
+/engine/ClassDiagram.cd
+/engine/engine.vcxproj.lese.nvuser
+*.nvuser
+/demo/GeneratedFiles/qrc_scene.cpp
+/demo/GeneratedFiles/qrc_engine.cpp

@@ -8,11 +8,13 @@
 using namespace Engine::Ui;
 
 RenderTargetItem::RenderTargetItem(QQuickItem* parent)
-    : QQuickItem(parent), texture_(nullptr), textureChanged_(false)
+    : QQuickItem(parent), texture_(nullptr)
 {
     setFlags(ItemHasContents);
     setSmooth(false);
     setAntialiasing(false);
+
+    texture_ = new RenderTargetTexture();
 }
 
 RenderTargetItem::~RenderTargetItem()
@@ -25,22 +27,11 @@ RenderTargetItem::~RenderTargetItem()
 
 void RenderTargetItem::setTexture(int textureId, QSize size)
 {
-    if(texture_ != nullptr)
-    {
-        delete texture_;
-    }
-
-    texture_ = new RenderTargetTexture(textureId, size);
-    textureChanged_ = true;
+    texture_->update(textureId, size);
 }
 
 void RenderTargetItem::updateTexture(void* sync)
 {
-    if(texture_ == nullptr)
-    {
-        return;
-    }
-
     texture_->setSyncObject(static_cast<GLsync>(sync));
 
     // Force both the RenderTragetItem and QQuickWindow to update to force repaint immediately.
@@ -63,12 +54,7 @@ QSGNode* RenderTargetItem::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData
         node = new QSGSimpleTextureNode();
         node->setFiltering(QSGTexture::Nearest);
         node->setTextureCoordinatesTransform(QSGSimpleTextureNode::MirrorVertically);
-    }
-
-    if(textureChanged_)
-    {
         node->setTexture(texture_);
-        textureChanged_ = false;
     }
 
     node->setRect(boundingRect());
