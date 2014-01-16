@@ -5,6 +5,7 @@
 #include "observable.h"
 
 #include <QMatrix4x4>
+#include <functional>
 
 class BaseVisitor;
 
@@ -23,7 +24,7 @@ public:
     // Removes a visitor from the visitor list.
     virtual void removeVisitor(BaseVisitor* visitor) = 0;
 
-    typedef bool (*AcceptVisibleLeaf)(const Graph::SceneLeaf& leaf, const Graph::SceneNode& node);
+    typedef std::function<bool(const Graph::SceneLeaf&, const Graph::SceneNode&)> AcceptVisibleLeaf;
 
     // Queries a list of visible scene leaves inside the given frustum. If acceptFunc is not null,
     // the leaf can be rejected by returning false when the function is called.

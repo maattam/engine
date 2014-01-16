@@ -214,6 +214,12 @@
     <ClCompile Include="src\shadowstage.cpp">
       <Filter>Source Files\renderer\renderstage</Filter>
     </ClCompile>
+    <ClCompile Include="src\offscreenrenderer.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\spotlightmethod.cpp">
+      <Filter>Source Files\renderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -425,11 +431,17 @@
     <ClInclude Include="src\shadowstage.h">
       <Filter>Header Files\renderer\renderstage</Filter>
     </ClInclude>
-    <ClInclude Include="src\shadowrendermethod.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\shadowmap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowrendermethod.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\offscreenrenderer.h">
+      <Filter>Header Files\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\spotlightmethod.h">
+      <Filter>Header Files\renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

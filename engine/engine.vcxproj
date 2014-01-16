@@ -190,6 +190,7 @@
     <ClCompile Include="src\graph\sceneleaf.cpp" />
     <ClCompile Include="src\graph\light.cpp" />
     <ClCompile Include="src\graph\scenenode.cpp" />
+    <ClCompile Include="src\offscreenrenderer.cpp" />
     <ClCompile Include="src\postprocess.cpp" />
     <ClCompile Include="src\quadlighting.cpp" />
     <ClCompile Include="src\renderable\cube.cpp" />
@@ -205,6 +206,7 @@
     <ClCompile Include="src\scene\nodeimport.cpp" />
     <ClCompile Include="src\shadowstage.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
+    <ClCompile Include="src\spotlightmethod.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
     <ClCompile Include="src\technique\blurfilter.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
@@ -259,6 +261,7 @@
     <ClInclude Include="src\graph\sceneleaf.h" />
     <ClInclude Include="src\graph\light.h" />
     <ClInclude Include="src\graph\scenenode.h" />
+    <ClInclude Include="src\offscreenrenderer.h" />
     <ClInclude Include="src\postprocess.h" />
     <ClInclude Include="src\quadlighting.h" />
     <ClInclude Include="src\renderable\cube.h" />
@@ -299,6 +302,7 @@
     <ClInclude Include="src\shadowrendermethod.h" />
     <ClInclude Include="src\shadowstage.h" />
     <ClInclude Include="src\skyboxstage.h" />
+    <ClInclude Include="src\spotlightmethod.h" />
     <ClInclude Include="src\technique\basiclightning.h" />
     <ClInclude Include="src\technique\blurfilter.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />

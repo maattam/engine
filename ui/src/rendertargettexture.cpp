@@ -3,6 +3,7 @@
 #include <QOpenGLFramebufferObject>
 #include <QDebug>
 #include <QThread>
+#include <QTimer>
 
 using namespace Engine::Ui;
 
@@ -34,7 +35,8 @@ void RenderTargetTexture::bind()
             result = gl->glClientWaitSync(sync_, 0, 0);
             if(result == GL_TIMEOUT_EXPIRED)
             {
-                QThread::msleep(1);
+                //QThread::msleep(1);
+                QThread::yieldCurrentThread();
             }
 
         } while(result == GL_TIMEOUT_EXPIRED);

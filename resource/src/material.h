@@ -23,7 +23,7 @@ public:
     enum TextureType { TEXTURE_DIFFUSE, TEXTURE_NORMALS, TEXTURE_SPECULAR, TEXTURE_MASK, TEXTURE_SHININESS, TEXTURE_COUNT };
 
     // Render type determines the material's rendering stage.
-    enum RenderType { RENDER_OPAQUE, RENDER_EMISSIVE, RENDER_TRANSPARENT };
+    enum RenderType { RENDER_OPAQUE, RENDER_EMISSIVE, RENDER_TRANSPARENT, RENDER_COUNT };
 
     // Retrieves the texture associated with the type.
     // If the texture doesn't exists, a default texture is returned with the exception of

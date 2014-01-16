@@ -182,12 +182,13 @@ bool BasicSceneManager::removeSceneLeaf(const SceneLeafPtr& leaf)
         return false;
     }
 
-    for(auto it = culledCameras_.begin(); it != culledCameras_.end(); ++it)
+    Graph::Camera* camera = dynamic_cast<Graph::Camera*>(leaf.get());
+    if(camera != nullptr)
     {
-        if(*it == leaves_[index].get())
+        int i = culledCameras_.indexOf(camera);
+        if(i != -1)
         {
-            culledCameras_.erase(it);
-            break;
+            culledCameras_.remove(i);
         }
     }
 
