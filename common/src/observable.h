@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Abstract observer pattern.
+//
+
 #ifndef OBSERVABLE_H
 #define OBSERVABLE_H
 

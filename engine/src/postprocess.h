@@ -1,4 +1,7 @@
-// PostProcess applies a fullscreen postprocessing filter to the output fbo
+//
+//  Author   : Matti Määttä
+//  Summary  : PostProcess applies a fullscreen postprocessing filter to the output fbo.
+//
 
 #ifndef POSTPROCESS_H
 #define POSTPROCESS_H

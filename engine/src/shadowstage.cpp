@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "shadowstage.h"
 
 #include "scene/sceneobservable.h"

@@ -1,4 +1,7 @@
-// Bridge class to allow QOpenGLFramebufferObject targets to be rendered as QSGTextures.
+//
+//  Author   : Matti Määttä
+//  Summary  : Bridge class to allow QOpenGLFramebufferObject targets to be rendered as QSGTextures.
+//
 
 #ifndef RENDERTARGETTEXTURE_H
 #define RENDERTARGETTEXTURE_H

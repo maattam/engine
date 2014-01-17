@@ -1,4 +1,8 @@
-// Entity abstraction, which is main component of SceneNode
+//
+//  Author   : Matti Määttä
+//  Summary  : SceneLeaf abstraction, which represents renderable geometry, lights, cameras etc.
+//             in scene graph.
+//
 
 #ifndef ENTITY_H
 #define ENTITY_H

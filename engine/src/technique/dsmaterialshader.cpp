@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "dsmaterialshader.h"
 
 #include "common.h"

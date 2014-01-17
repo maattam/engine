@@ -1,4 +1,7 @@
-// Interface view class for implementing different renderers.
+//
+//  Author   : Matti Määttä
+//  Summary  : Interface class for implementing different renderers.
+//
 
 #ifndef RENDERER_H
 #define RENDERER_H

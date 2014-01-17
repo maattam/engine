@@ -1,4 +1,9 @@
-// GBuffer unpack vertex shader
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : Deferred shading material shader for implementing different lightning models.
+//             Transforms input quad coordinates to form a screen-aligned quad representing light volume projection.
+//
 
 #version 420
 

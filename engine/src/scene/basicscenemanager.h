@@ -1,5 +1,8 @@
-// Basic scene manager which doesn't rely on any spatial structure to organise culling.
-// Inefficient for complex scenes.
+//
+//  Author   : Matti Määttä
+//  Summary  : Basic scene manager which doesn't rely on any spatial structure to organise culling.
+//             Inefficient for complex scenes.
+//
 
 #ifndef BASICSCENEMANAGER_H
 #define BASICSCENEMANAGER_H

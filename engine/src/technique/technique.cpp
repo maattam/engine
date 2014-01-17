@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "technique.h"
 
 #include "common.h"

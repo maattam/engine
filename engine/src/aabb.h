@@ -1,4 +1,7 @@
-// Axis-aligned bounding box
+//
+//  Author   : Matti Määttä
+//  Summary  : Axis-aligned bounding box representation.
+//
 
 #ifndef AABB_H
 #define AABB_H

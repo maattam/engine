@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "basicscenemanager.h"
 
 #include "graph/sceneleaf.h"

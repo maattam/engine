@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Qt OpenGL version definition, includes and function pointer.
+//
+
 #ifndef COMMON_H
 #define COMMON_H
 

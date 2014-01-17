@@ -1,5 +1,10 @@
-#ifndef SHADOWSCENE_H
-#define SHADOWSCENE_H
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
+#ifndef SPONZASCENE_H
+#define SPONZASCENE_H
 
 #include "freelookscene.h"
 
@@ -49,4 +54,4 @@ private:
     double elapsed_;
 };
 
-#endif //SHADOWSCENE_H
+#endif // SPONZASCENE_H

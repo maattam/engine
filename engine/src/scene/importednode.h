@@ -1,4 +1,7 @@
-// Forms a SceneNode hierarchy from collada file (or any supported type.)
+//
+//  Author   : Matti Määttä
+//  Summary  : Forms a SceneNode hierarchy from collada file (or any supported type.)
+//
 
 #ifndef IMPORTEDNODE_H
 #define IMPORTEDNODE_H

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Allows direct debugging of GBuffer's textures.
+//
+
 #ifndef GBUFFERVISUALIZER_H
 #define GBUFFERVISUALIZER_H
 

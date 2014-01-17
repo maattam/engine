@@ -1,4 +1,8 @@
-// DebugRenderer overlays debug information resolved during the scene rendering.
+//
+//  Author   : Matti Määttä
+//  Summary  : DebugRenderer overlays debug information resolved during
+//             the scene rendering.
+//
 
 #ifndef DEBUGRENDERER_H
 #define DEBUGRENDERER_H

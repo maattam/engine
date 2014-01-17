@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "spotlightmethod.h"
 
 #include "shadowmap.h"

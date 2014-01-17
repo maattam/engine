@@ -1,4 +1,7 @@
-// Basic Engine view with Qt Quick 2 overlay.
+//
+//  Author   : Matti Määttä
+//  Summary  : Basic Engine window with Qt Quick 2 overlay.
+//
 
 #ifndef SCENEVIEW_H
 #define SCENEVIEW_H

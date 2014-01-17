@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : SkyboxStage fills the empty parts of the scene with skybox texture.
+//
+
 #ifndef SKYBOXSTAGE_H
 #define SKYBOXSTAGE_H
 

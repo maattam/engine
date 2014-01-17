@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<typename Resource, typename... Args>
 std::shared_ptr<Resource> ResourceDespatcher::get(const QString& fileName, Args&&... args)
 {

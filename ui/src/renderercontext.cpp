@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "renderercontext.h"
 
 #include <QOpenGLContext>

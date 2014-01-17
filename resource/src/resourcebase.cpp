@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "resourcebase.h"
 #include "resourcedata.h"
 

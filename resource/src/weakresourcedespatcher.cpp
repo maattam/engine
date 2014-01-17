@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "weakresourcedespatcher.h"
 
 #include "resource.h"

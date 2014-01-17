@@ -1,4 +1,9 @@
-// GBuffer unpack vertex shader
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : GBuffer unpack material shader.
+//             Fills the screen with a screen-aligned quad.
+//
 
 #version 420
 

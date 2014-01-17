@@ -1,5 +1,8 @@
-// Interface for OpenGL bindable objects.
-// Derived bindable has to implement bool bind(...) function that does the actual binding.
+//
+//  Author   : Matti Määttä
+//  Summary  : Interface for OpenGL bindable objects.
+//             Derived bindable has to implement bool bind(...) function that does the actual binding.
+//
 
 #ifndef BINDABLE_H
 #define BINDABLE_H

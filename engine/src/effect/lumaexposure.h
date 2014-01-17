@@ -1,5 +1,8 @@
-// A Sampler function which calculates the average luma from input texture and uses it as
-// input for exposure calculation.
+//
+//  Author   : Matti Määttä
+//  Summary  : A Sampler function which calculates the average luma from input texture
+//             and uses it as input for exposure calculation.
+//
 
 #ifndef LUMAEXPOSURE_H
 #define LUMAEXPOSURE_H

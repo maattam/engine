@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<GLenum Type>
 Texture<Type>::Texture()
     : textureId_(0), width_(0), height_(0)

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "demopresenter.h"
 
 #include "weakresourcedespatcher.h"

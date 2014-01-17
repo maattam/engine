@@ -1,3 +1,8 @@
+//
+//  Author   : Matti M‰‰tt‰
+//  Summary  : 
+//
+
 #include "aabb.h"
 
 #include <qmath.h>

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "lumaexposure.h"
 
 #include "mathelp.h"

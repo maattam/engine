@@ -1,5 +1,9 @@
-// ShadowStage listens for visible lights in the scene and renders light shadow textures (maps).
-// ShadowStage should be attached to the (first) lightning stage that uses shadows.
+//
+//  Author   : Matti Määttä
+//  Summary  : ShadowStage listens for visible lights in the scene and renders light
+//             shadow textures (maps). ShadowStage should be attached to the (first)
+//             lightning stage that uses shadows.
+//
 
 #ifndef SHADOWSTAGE_H
 #define SHADOWSTAGE_H

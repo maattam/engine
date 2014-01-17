@@ -1,6 +1,11 @@
-// Basic GBuffer material shader.
-// Shaders loaded by this Technique should use the approriate textures for the used GBuffer.
-// The shader's uniforms should contain the associated samplers in the format textureName + Data, f.e. "normalData" for normals.
+//
+//  Author   : Matti Määttä
+//  Summary  : GBuffer material shader.
+//             Shaders loaded by this Technique should use the approriate textures for the used GBuffer.
+//             The shader's uniforms should contain the associated samplers in the format textureName + Data,
+//             eg. "normalData" for normals.
+//
+
 
 #ifndef DSMATERIALSHADER_H
 #define DSMATERIALSHADER_H

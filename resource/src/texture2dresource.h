@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 2D Texture resource.
+//
+
 #ifndef TEXTURE2DRESOURCE_H
 #define TEXTURE2DRESOURCE_H
 

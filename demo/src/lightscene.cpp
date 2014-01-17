@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "lightscene.h"
 
 #include "resourcedespatcher.h"

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "renderable.h"
 
 using namespace Engine::Renderable;

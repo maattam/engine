@@ -1,4 +1,7 @@
-// Static factory method for accessing immutable primitives such as cubes or quads.
+//
+//  Author   : Matti Määttä
+//  Summary  : Static factory method for accessing immutable primitives such as cubes or quads.
+//
 
 #ifndef PRIMITIVE_H
 #define PRIMITIVE_H

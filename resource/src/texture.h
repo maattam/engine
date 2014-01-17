@@ -1,4 +1,7 @@
-// Base class for different OpenGL texture types
+//
+//  Author   : Matti Määttä
+//  Summary  : Base class for different OpenGL texture types.
+//
 
 #ifndef TEXTURE_H
 #define TEXTURE_H

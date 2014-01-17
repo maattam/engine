@@ -1,4 +1,7 @@
-// RenderItemSorter sorts RenderItems based on material and textures.
+//
+//  Author   : Matti Määttä
+//  Summary  : RenderItemSorter sorts RenderItems based on material and textures.
+//
 
 #ifndef RENDERITEMSORTER_H
 #define RENDERITEMSORTER_H

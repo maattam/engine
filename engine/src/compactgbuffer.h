@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Small GBuffer for storing normals, diffuse and depth of each object.
+//
+
 #ifndef COMPACTGBUFFER_H
 #define COMPACTGBUFFER_H
 

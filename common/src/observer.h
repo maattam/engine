@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef OBSERVER_H
 #define OBSERVER_H
 

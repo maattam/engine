@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "scenefactory.h"
 
 #include "resourcedespatcher.h"

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "resourceloader.h"
 
 #include "resourcedata.h"

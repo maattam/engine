@@ -1,4 +1,7 @@
-// Represents a simple scene with a free look camera, directional light and skybox.
+//
+//  Author   : Matti Määttä
+//  Summary  : Represents a simple scene with a free look camera, directional light and skybox.
+// 
 
 #ifndef FREELOOKSCENE_H
 #define FREELOOKSCENE_H

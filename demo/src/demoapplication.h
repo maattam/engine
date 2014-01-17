@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef DEMOAPPLICATION_H
 #define DEMOAPPLICATION_H
 

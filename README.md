@@ -12,7 +12,9 @@ The project started as an introduction to basic [OpenGL] concepts, but has since
 forward and modern deferred rendering, post-processing, shadow mapping and different lightning models.
 
 Most of the project is written in C\+\+, but the user interface has some JavaScript -derivate QML bits.
-The project depends heavily on Qt, [Qt Quick] and [OpenGL] 4.2.
+The project architecture focuses on rapid developement by avoiding dependencies to implementations and
+employs heavy use of [SOLID] object-oriented design as a result. The project depends heavily on Qt,
+[Qt Quick] and [OpenGL] 4.2.
 
 Features
 --------
@@ -29,7 +31,7 @@ Features
 
 * ** Qt Quick integration **
 
-    [Qt Quick] allows for easy creation of dynamic user interfaces using a JavaScript-based QML declarative language.
+    [Qt Quick] allows for easy creation of dynamic user interfaces using JavaScript-based QML declarative language.
     Qt allows easy signaling between QML and C\+\+ parts of the engine. In the future I might look into scripting whole
     scenes in QML instead of C\+\+.
 
@@ -43,7 +45,7 @@ Features
 Screenshots
 -----------
 
-### Sponza with 120 lights and post-processing
+### Scene with 120 lights and post-processing
 
 [![scrn sponza1](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)
 [![scrn sponza2](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)
@@ -52,7 +54,7 @@ Screenshots
 
 [![scrn dragon](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)
 
-### 500 Lights
+### Scene with 500 point lights
 
 [![scrn 500lights](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)
 
@@ -60,7 +62,7 @@ Screenshots
 
 [![scrn forward](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)
 
-## Single-pass edge detection for MSAA
+## Single-pass edge detection for deferred MSAA
 
 [![scrn edge](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)
 
@@ -68,3 +70,4 @@ Screenshots
 [Qt Quick]: http://qt-project.org/doc/qt-5.0/qtquick/qtquick-index.html
 [Assimp]: http://assimp.sourceforge.net/
 [Blender]: http://www.blender.org/
+[SOLID]: http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)

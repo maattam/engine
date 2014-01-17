@@ -1,4 +1,7 @@
-// Interface class for different texture samplers
+//
+//  Author   : Matti Määttä
+//  Summary  : Interface class for different texture samplers.
+//
 
 #ifndef SAMPLERFUNCTION_H
 #define SAMPLERFUNCTION_H

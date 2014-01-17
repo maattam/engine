@@ -1,3 +1,8 @@
+//
+//  Author   : Matti M‰‰tt‰
+//  Summary  : Applies gaussian blur to the input texture.
+//
+
 #ifndef BLURFILTER_H
 #define BLURFILTER_H
 

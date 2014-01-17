@@ -1,4 +1,7 @@
-// Shader wraps QOpenGLShader into Resource
+//
+//  Author   : Matti Määttä
+//  Summary  : Shader wraps QOpenGLShader into Resource
+//
 
 #ifndef SHADER_H
 #define SHADER_H

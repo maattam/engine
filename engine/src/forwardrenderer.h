@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Forward renderer renders scene geometry with lightning and shadows.
+//
+
 #ifndef FORWARDRENDERER_H
 #define FORWARDRENDERER_H
 

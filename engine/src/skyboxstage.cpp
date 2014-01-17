@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "skyboxstage.h"
 
 #include "renderable/renderable.h"

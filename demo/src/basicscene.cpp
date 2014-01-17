@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "basicscene.h"
 
 #include "graph/scenenode.h"

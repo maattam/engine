@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "rendertimewatcher.h"
 
 #include "renderstage.h"

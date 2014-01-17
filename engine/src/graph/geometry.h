@@ -1,4 +1,7 @@
-// Geometry holds reference to a material and renderable -pair.
+//
+//  Author   : Matti Määttä
+//  Summary  : Geometry holds reference to a material and renderable -pair.
+// 
 
 #ifndef SUBENTITY_H
 #define SUBENTITY_H

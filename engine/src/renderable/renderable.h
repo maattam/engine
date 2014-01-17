@@ -1,4 +1,7 @@
-// Renderable holds required OpenGL buffers in a VAO to describe a renderable.
+//
+//  Author   : Matti Määttä
+//  Summary  : Renderable holds required OpenGL buffers in a VAO to describe a renderable.
+//
 
 #ifndef RENDERABLE_H
 #define RENDERABLE_H

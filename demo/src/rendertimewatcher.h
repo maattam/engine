@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Profiles RenderStage rendering times.
+//
+
 #ifndef RENDERTIMEWATCHER_H
 #define RENDERTIMEWATCHER_H
 

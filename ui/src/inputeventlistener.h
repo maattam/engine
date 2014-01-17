@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Allows listening for input events.
+//
+
 #ifndef INPUTEVENTLISTENER_H
 #define INPUTEVENTLISTENER_H
 

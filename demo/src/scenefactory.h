@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef SCENEFACTORY_H
 #define SCENEFACTORY_H
 

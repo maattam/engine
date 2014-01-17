@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<class T>
 void BaseVisitable::acceptVisitor(T& visited, BaseVisitor& visitor)
 {

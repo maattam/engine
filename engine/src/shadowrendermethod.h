@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : ShadowRenderMethod renders lights to ShadowMaps.
+//
+
 #ifndef SHADOWRENDERMETHOD_H
 #define SHADOWRENDERMETHOD_H
 

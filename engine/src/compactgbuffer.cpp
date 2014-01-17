@@ -1,3 +1,8 @@
+//
+//  Author   : Matti M‰‰tt‰
+//  Summary  : 
+//
+
 #include "compactgbuffer.h"
 
 #include <QDebug>

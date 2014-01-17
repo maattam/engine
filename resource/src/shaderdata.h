@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Binary texture data for loading texture resources.
+//
+
 #ifndef SHADERDATA_H
 #define SHADERDATA_H
 

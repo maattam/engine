@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : Forward renderer all-in-one shader
+//
+
 // Basic lightning vertex shader
 
 #version 420
@@ -27,16 +33,16 @@ out vec4 directionalLightSpacePos0;
 
 void main()
 {
-	gl_Position = gMVP * vec4(position, 1.0);
-	
-	texCoord0 = texCoord;
-	normal0 = (gWorld * vec4(normal, 0.0)).xyz;
-	worldPos0 = (gWorld * vec4(position, 1.0)).xyz;
-	
-	if(gHasTangents)
-	{
-		tangent0 = (gWorld * vec4(tangent, 0.0)).xyz;
-	}
+    gl_Position = gMVP * vec4(position, 1.0);
+    
+    texCoord0 = texCoord;
+    normal0 = (gWorld * vec4(normal, 0.0)).xyz;
+    worldPos0 = (gWorld * vec4(position, 1.0)).xyz;
+    
+    if(gHasTangents)
+    {
+        tangent0 = (gWorld * vec4(tangent, 0.0)).xyz;
+    }
 
     for(int i = 0; i < gNumSpotLights; ++i)
     {

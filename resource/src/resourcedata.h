@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Represents binary data on disk, ready to be processed by Resource.
+//
+
 #ifndef RESOURCEDATA_H
 #define RESOURCEDATA_H
 

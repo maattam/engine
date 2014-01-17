@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Deferred shading illumination model for accumulating spot, point and
+//             directional lights.
+//
+
 #ifndef ILLUMINATIONMODEL_H
 #define ILLUMINATIONMODEL_H
 

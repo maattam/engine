@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "demoapplication.h"
 
 #include "demopresenter.h"

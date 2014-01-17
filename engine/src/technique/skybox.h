@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Skybox shader for both deferred and forward pass.
+//
+
 #ifndef SKYBOXTECHNIQUE_H
 #define SKYBOXTECHNIQUE_H
 

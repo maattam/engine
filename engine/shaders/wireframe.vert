@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : Wireframe debugging shader.
+//
+
 #version 420
 
 layout(location = 0) in vec3 position;
@@ -11,7 +17,7 @@ out vec2 texCoord0;
 
 void main()
 {
-	gl_Position = gMVP * vec4(position, 1.0);
+    gl_Position = gMVP * vec4(position, 1.0);
 
     texCoord0 = texCoord;
 }

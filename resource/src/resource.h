@@ -1,4 +1,7 @@
-// Resource provides encapsulation for data that is loaded asynchronously and initialised on demand.
+//
+//  Author   : Matti Määttä
+//  Summary  : Resource provides encapsulation for data that is loaded asynchronously and initialised on demand.
+//
 
 #ifndef RESOURCE_H
 #define RESOURCE_H

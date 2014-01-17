@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "dsgeometryshader.h"
 
 #include "mathelp.h"

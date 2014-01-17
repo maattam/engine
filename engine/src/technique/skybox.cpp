@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "skybox.h"
 
 #include "cubemaptexture.h"

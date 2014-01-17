@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "sponzascene.h"
 
 #include "graph/scenenode.h"

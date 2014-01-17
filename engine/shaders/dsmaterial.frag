@@ -1,4 +1,8 @@
-// GBuffer unpack material fragment shader
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : GBuffer unpack material shader
+//
 
 #version 420
 

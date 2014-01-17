@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "nodeimport.h"
 
 #include "resourcedespatcher.h"

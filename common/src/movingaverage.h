@@ -1,5 +1,8 @@
-// MovingAverage does average filtering on the inserted values:
-// calcAverage := sum(v, 0, samples) / samples
+//
+//  Author   : Matti Määttä
+//  Summary  : MovingAverage does average filtering on the inserted values:
+//             calcAverage := sum(v, 0, samples) / samples
+//
 
 #ifndef MOVINGAVERAGE_H
 #define MOVINGAVERAGE_H

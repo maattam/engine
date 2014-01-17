@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 // A convenience function which uses the cached uniform name if resolved,
 // or resolves and caches to location before setting the value.
 // precondition: Technique is enabled

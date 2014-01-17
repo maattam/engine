@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "rendererfactory.h"
 
 #include "deferredrenderer.h"

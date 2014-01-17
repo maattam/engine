@@ -1,5 +1,8 @@
-// QuadLightning renders screen-aligned quads representing light enclosures and additively blends
-// resulting light into accumulation buffer.
+//
+//  Author   : Matti Määttä
+//  Summary  : QuadLightning renders screen-aligned quads representing light enclosures
+//             and additively blends resulting light into accumulation buffer.
+//
 
 #ifndef QUADLIGHTING_H
 #define QUADLIGHTING_H

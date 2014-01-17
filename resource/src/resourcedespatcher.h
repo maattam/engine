@@ -1,4 +1,8 @@
-// Interface for different resource despatchers.
+//
+//  Author   : Matti Määttä
+//  Summary  : Interface for different resource despatchers.
+//             ResourceDespatcher loads and manages shared resources.
+//
 
 #ifndef RESOURCEDESPATCHER_H
 #define RESOURCEDESPATCHER_H

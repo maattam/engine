@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "rendertargettexture.h"
 
 #include <QOpenGLFramebufferObject>

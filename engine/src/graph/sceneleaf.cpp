@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "sceneleaf.h"
 
 #include "scenenode.h"

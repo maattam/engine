@@ -1,4 +1,7 @@
-// Postprocess effect interface
+//
+//  Author   : Matti Määttä
+//  Summary  : Fullscreen postprocessing effect interface.
+//
 
 #ifndef POSTFX_H
 #define POSTFX_H

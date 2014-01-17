@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "illuminationmodel.h"
 
 #include "graph/light.h"

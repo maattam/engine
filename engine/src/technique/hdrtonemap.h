@@ -1,4 +1,7 @@
-// A post-processing shader which handles tonemapping, gamma correction and bloom.
+//
+//  Author   : Matti Määttä
+//  Summary  : Post-processing shader which handles tonemapping, gamma correction and bloom.
+//
 
 #ifndef HDRTONEMAP_H
 #define HDRTONEMAP_H

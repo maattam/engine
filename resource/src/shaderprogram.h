@@ -1,5 +1,8 @@
-// Helper class that encapsulates a QOpenGLShaderProgram and
-// manages its shaders loading.
+//
+//  Author   : Matti Määttä
+//  Summary  : Helper class that encapsulates a QOpenGLShaderProgram and
+//             manages its shaders loading.
+//
 
 #ifndef SHADERPROGRAM_H
 #define SHADERPROGRAM_H

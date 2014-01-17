@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Renders depth to texture.
+//
+
 #version 420
 
 uniform sampler2D gMaskSampler;

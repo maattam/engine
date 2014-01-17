@@ -1,6 +1,11 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : 5x5 Gaussian kernel
+//
+
 #version 420
 
-// http://homepages.inf.ed.ac.uk/rbf/HIPR2/gsmooth.htm
 // 5x5 Gaussian kernel
 //   1  4  7  4 1
 //   4 16 26 16 4
@@ -26,8 +31,8 @@ void main()
                                     7, 26, 41, 26, 7,
                                     4, 16, 26, 16, 4,
                                     1, 4,  7,  4,  1);
-	float dx = 1.0 / width;
-	float dy = 1.0 / height;
+    float dx = 1.0 / width;
+    float dy = 1.0 / height;
 
     vec4 color = vec4(0);
 
@@ -37,6 +42,6 @@ void main()
     }
 
     color /= 273.0;
-	
-	gl_FragColor = color;
+    
+    gl_FragColor = color;
 }

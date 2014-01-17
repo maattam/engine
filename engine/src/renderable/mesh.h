@@ -1,4 +1,7 @@
-// Mesh is a vertex array object which holds indexed vertices, normals, tanges and uvs.
+//
+//  Author   : Matti Määttä
+//  Summary  : Mesh is a vertex array object which holds indexed vertices, normals, tanges and uvs.
+//
 
 #ifndef SUBMESH_H
 #define SUBMESH_H

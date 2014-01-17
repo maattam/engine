@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Deferred renderer accumulates scene geometry to a GBuffer for later
+//             processing.
+//
+
 #ifndef DEFERREDRENDERER_H
 #define DEFERREDRENDERER_H
 

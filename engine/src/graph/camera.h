@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Camera which either represents perspective or orthographic projection.
+//
+
 #ifndef CAMERA_H
 #define CAMERA_H
 

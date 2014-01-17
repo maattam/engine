@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef LIGHTSCENE_H
 #define LIGHTSCENE_H
 

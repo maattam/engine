@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Loads texture data from disk.
+//
+
 #ifndef TEXTURELOADER_H
 #define TEXTURELOADER_H
 

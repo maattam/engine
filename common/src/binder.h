@@ -1,7 +1,10 @@
-// OpenGL Binder class designed to reduce unnecessary state changes for example when rendering
-// multiple meshes using the same textures.
-// NOTE: Using this class assumes that used OpenGL objects are bound to uniform locations, eg.
-// diffuse textures should always go to glActiveTexture(GL_TEXTURE0).
+//
+//  Author   : Matti Määttä
+//  Summary  : OpenGL Binder class designed to reduce unnecessary state changes for example when rendering
+//             multiple meshes using the same textures.
+//             NOTE: Using this class assumes that used OpenGL objects are bound to uniform locations, eg.
+//             diffuse textures should always go to glActiveTexture(GL_TEXTURE0).
+//
 
 #ifndef BINDER_H
 #define BINDER_H

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "rendertargetitem.h"
 
 #include "rendertargettexture.h"

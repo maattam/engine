@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Misc math operations
+//
+
 #ifndef MATHELP_H
 #define MATHELP_H
 

@@ -1,4 +1,7 @@
-// UiController updates various UI elements such as fps.
+//
+//  Author   : Matti Määttä
+//  Summary  : UiController updates various UI elements such as fps.
+//
 
 #ifndef UICONTROLLER_H
 #define UICONTROLLER_H

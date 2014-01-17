@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<typename RenderableType>
 std::weak_ptr<RenderableType> Primitive<RenderableType>::instance_;
 

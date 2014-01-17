@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "proxydespatcher.h"
 
 #include "resourcebase.h"

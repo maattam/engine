@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "hdr.h"
 
 #include "resourcedespatcher.h"

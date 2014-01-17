@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Shadow rendering method for spot lights.
+//
+
 #ifndef SPOTLIGHTMETHOD_H
 #define SPOTLIGHTMETHOD_H
 

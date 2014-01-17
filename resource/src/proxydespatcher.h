@@ -1,4 +1,7 @@
-// The proxy despatcher is used to pipe resources into a target despatcher from multiple threads.
+//
+//  Author   : Matti Määttä
+//  Summary  : The proxy despatcher is used to pipe resources into a target despatcher from multiple threads.
+//
 
 #ifndef PROXYDESPATCHER_H
 #define PROXYDESPATCHER_H

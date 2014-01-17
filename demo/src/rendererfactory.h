@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef RENDERERFACTORY_H
 #define RENDERERFACTORY_H
 

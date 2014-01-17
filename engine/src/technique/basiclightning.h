@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Forward rendering lightning shader.
+//
+
 #ifndef BASICLIGHTNING_H
 #define BASICLIGHTNING_H
 

@@ -1,5 +1,8 @@
-// Technique encapsulates a ShaderProgram -object so inherited classes can
-// provide a convient interface for managing shader uniforms/procedures etc.
+//
+//  Author   : Matti Määttä
+//  Summary  : Technique encapsulates a ShaderProgram -object so inherited classes can
+//             provide a convient interface for managing shader uniforms/procedures etc.
+//
 
 #ifndef TECHNIQUE_H
 #define TECHNIQUE_H

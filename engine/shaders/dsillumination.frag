@@ -1,11 +1,15 @@
-// Abstract illumination material shader for implementing different lightning models.
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Deferred shading material shader for implementing different lightning models.
+//
 
 #include "dsmaterial.frag"
 
 struct Light
 {
     // Color is expected to be linear
-	vec3 color;
+    vec3 color;
 
     // Direction and position are expected to be in eye -coordinates
     vec3 direction;
@@ -15,7 +19,7 @@ struct Light
     float ambientIntensity;
 
     // Spot light only, cosine of cutoff angle
-	float cosOuterAngle;
+    float cosOuterAngle;
     float cosInnerAngle;
 
     // Attenuation vector: (constant, linear, quadratic)

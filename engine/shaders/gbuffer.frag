@@ -1,4 +1,8 @@
-// Basic GBuffer accumulation fragment shader
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : GBuffer accumulation shader
+//
 
 #version 420
 
@@ -18,9 +22,9 @@ layout (location = 1) out vec4 diffuseSpecData;
 struct Material
 {
     // Material attributes
-	vec3 diffuse;
-	float shininess;
-	float specular;
+    vec3 diffuse;
+    float shininess;
+    float specular;
 
     // Material samplers
     sampler2D diffuseSampler;
@@ -44,13 +48,13 @@ vec3 calculateInterpolatedNormal()
 subroutine(NormalRoutineType)
 vec3 calculateBumpedNormal()
 {
-	// Since color components are stored in the range [0, 1], we have to transform
-	// them back using f(x) = 2*x - 1
+    // Since color components are stored in the range [0, 1], we have to transform
+    // them back using f(x) = 2*x - 1
     vec3 bumpMapNormal = texture(material.normalSampler, texCoord0).xyz;
-	bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
+    bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
 
-	vec3 newNormal = TBN * bumpMapNormal;
-	return normalize(newNormal);
+    vec3 newNormal = TBN * bumpMapNormal;
+    return normalize(newNormal);
 }
 
 void packNormalSpecData()

@@ -1,6 +1,9 @@
-// Acyclic visitor pattern.
-// Base class has to inherit from BaseVisitable, and all visitable subclasses
-// must declare the VISITABLE -macro.
+//
+//  Author   : Matti Määttä
+//  Summary  : Acyclic visitor pattern.
+//             Base class has to inherit from BaseVisitable, and all visitable subclasses
+//             must declare the VISITABLE -macro.
+//
 
 #ifndef VISITABLE_H
 #define VISITABLE_H

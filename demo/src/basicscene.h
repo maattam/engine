@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef BASICSCENE_H
 #define BASICSCENE_H
 

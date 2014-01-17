@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : RenderQueue allows organised access to the culled geometry.
+//
+
 #ifndef RENDERQUEUE_H
 #define RENDERQUEUE_H
 

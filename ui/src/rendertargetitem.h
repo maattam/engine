@@ -1,4 +1,7 @@
-// Engine render target texture object for Qt Scene Graph.
+//
+//  Author   : Matti Määttä
+//  Summary  : Engine render target texture object for Qt Scene Graph.
+//
 
 #ifndef RENDERTARGETITEM_H
 #define RENDERTARGETITEM_H

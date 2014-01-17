@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : ShadowMap allows sharing information between shadow rendering methods
+//             and lightning shaders.
+//
+
 #ifndef SHADOWMAP_H
 #define SHADOWMAP_H
 

@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Base class for all resource types. Resources are loaded and managed by ResourceDespatcher.
+//
+
 #ifndef RESOURCEBASE_H
 #define RESOURCEBASE_H
 

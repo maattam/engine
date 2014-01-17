@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Resource representing CubemapTexture.
+//
+
 #ifndef CUBEMAPRESOURCE_H
 #define CUBEMAPRESOURCE_H
 

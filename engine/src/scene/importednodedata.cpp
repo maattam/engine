@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "importednodedata.h"
 
 #include <assimp/vector3.h>

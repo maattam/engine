@@ -1,4 +1,7 @@
-// Material holds a collection of textures, the material shading technique and manages shader attributes
+//
+//  Author   : Matti Määttä
+//  Summary  : Material holds a collection of textures, the material shading technique and manages shader attributes.
+//
 
 #ifndef MATERIAL_H
 #define MATERIAL_H

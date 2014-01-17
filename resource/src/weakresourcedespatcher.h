@@ -1,8 +1,11 @@
-// ResourceDespatcher provides loose resource management through stl shared_ptr.
-// The despatcher doesn't own the object handle, but shares the record to prevent
-// allocating multiple instances of the same data.
-// The despatcher also watches for filesystem changes to allow dynamic resource reloading
-// during developement.
+//
+//  Author   : Matti Määttä
+//  Summary  : ResourceDespatcher provides loose resource management through stl shared_ptr.
+//             The despatcher doesn't own the object handle, but shares the record to prevent
+//             allocating multiple instances of the same data.
+//             The despatcher also watches for filesystem changes to allow dynamic resource reloading
+//             during developement.
+//
 
 #ifndef WEAKRESOURCEDESPATCHER_H
 #define WEAKRESOURCEDESPATCHER_H

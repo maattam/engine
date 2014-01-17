@@ -1,4 +1,8 @@
-// Material shader for debugging gbuffer values
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Material shader for debugging gbuffer values
+//
 
 #include "dsmaterial.frag"
 

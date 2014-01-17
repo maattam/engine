@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : SceneManagers holds all SceneLeaves in the scene, performs culling of visible
+//             geometry and rendering the scene through associated renderer.
+//
+
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 

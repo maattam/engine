@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Loads assets from disk in a background thread.
+//
+
 #ifndef RESOURCELOADER_H
 #define RESOURCELOADER_H
 

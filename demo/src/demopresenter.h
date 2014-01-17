@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #ifndef DEMOPRESENTER_H
 #define DEMOPRESENTER_H
 

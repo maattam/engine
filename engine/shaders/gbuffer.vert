@@ -1,4 +1,8 @@
-// Basic GBuffer accumulation vertex shader
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : GBuffer accumulationshader
+//
 
 #version 420
 

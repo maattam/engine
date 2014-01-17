@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Holds binary presentation of scene data, ready to be loaded to the scene by ImportedNode.
+//
+
 #ifndef IMPORTEDNODEDATA_H
 #define IMPORTEDNODEDATA_H
 

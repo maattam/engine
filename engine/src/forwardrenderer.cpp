@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "forwardrenderer.h"
 
 #include <QMatrix4x4>

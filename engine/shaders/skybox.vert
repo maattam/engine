@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Vertex shader
+//  Summary  : Skybox shader for both forward and deferred pass.
+//
+
 #version 420
 
 layout (location = 0) in vec3 position;

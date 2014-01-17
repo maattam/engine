@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<class ObserverType>
 Observer<ObserverType>::Observer()
     : observable_(nullptr)

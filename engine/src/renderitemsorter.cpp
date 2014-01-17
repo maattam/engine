@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "renderitemsorter.h"
 
 #include "renderable/renderable.h"

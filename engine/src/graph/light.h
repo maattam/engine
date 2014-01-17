@@ -1,4 +1,7 @@
-// Common Light -class which can be a point, spot or a directional light
+//
+//  Author   : Matti Määttä
+//  Summary  : Common Light -class which can be a point, spot or a directional light
+//
 
 #ifndef LIGHT_H
 #define LIGHT_H

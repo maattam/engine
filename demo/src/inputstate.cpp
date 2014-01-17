@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "inputstate.h"
 
 InputState::InputState(QObject* parent)

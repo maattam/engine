@@ -1,4 +1,8 @@
-// Scene graph node which represents hierarchial rotation, scale and translation relative to child nodes.
+//
+//  Author   : Matti Määttä
+//  Summary  : Scene graph node which represents hierarchial rotation, scale and translation relative
+//             to child nodes.
+//
 
 #ifndef NODE_H
 #define NODE_H

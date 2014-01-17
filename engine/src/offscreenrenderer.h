@@ -1,6 +1,9 @@
-// OffscreenRenderer implements a simple forward pass using an anynomous technique.
-// This renderer is used by shadow and cubemap renderers which need more simplified pipeline
-// than actual renderers that output directly to screen.
+//
+//  Author   : Matti Määttä
+//  Summary  : OffscreenRenderer implements a simple forward pass using an anynomous technique.
+//             This renderer is used by shadow and cubemap renderers which need more simplified pipeline
+//             than actual renderers that output directly to screen.
+//
 
 #ifndef OFFSCREENRENDERER_H
 #define OFFSCREENRENDERER_H

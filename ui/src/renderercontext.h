@@ -1,4 +1,8 @@
-// RendererContext manages the threaded renderer OpenGL context and synchronizes frames with the main thread.
+//
+//  Author   : Matti Määttä
+//  Summary  : RendererContext manages the threaded renderer OpenGL context
+//             and synchronises frames with the main thread.
+//
 
 #ifndef RENDERERCONTEXT_H
 #define RENDERERCONTEXT_H

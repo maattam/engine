@@ -1,4 +1,7 @@
-// A set of factory functions which create Entities from Assimp structures.
+//
+//  Author   : Matti Määttä
+//  Summary  : A set of factory functions which create SceneLeaves from Assimp structures.
+//
 
 #ifndef NODEIMPORT_H
 #define NODEIMPORT_H

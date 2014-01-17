@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Skybox shader for both forward and deferred pass.
+//
+
 #version 420
 
 #define SAMPLES <>

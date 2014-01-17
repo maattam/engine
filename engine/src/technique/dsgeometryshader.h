@@ -1,5 +1,8 @@
-// Basic GBuffer geometry shader.
-// Shaders loaded by this Technique should use the approriate textures for the used GBuffer.
+//
+//  Author   : Matti Määttä
+//  Summary  : GBuffer geometry shader.
+//             Shaders loaded by this Technique should use the approriate textures for the used GBuffer.
+//
 
 #ifndef DSGEOMETRYSHADER_H
 #define DSGEOMETRYSHADER_H

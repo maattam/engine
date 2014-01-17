@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : SceneObservable allows extending SceneManager functionality.
+//
+
 #ifndef SCENEOBSERVABLE_H
 #define SCENEOBSERVABLE_H
 

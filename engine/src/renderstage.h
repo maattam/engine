@@ -1,5 +1,8 @@
-// The renderer can be extended using the decorator pattern.
-// RenderStage is the decorator interface for all renderer decorators.
+//
+//  Author   : Matti Määttä
+//  Summary  : The renderer can be extended using the decorator pattern.
+//             RenderStage is the decorator interface for all renderer decorators.
+//
 
 #ifndef RENDERSTAGE_H
 #define RENDERSTAGE_H

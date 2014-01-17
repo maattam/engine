@@ -1,3 +1,9 @@
+//
+//  Author   : Matti M‰‰tt‰
+//  Summary  : SceneObserver receives events emitted by SceneManager. This allows extending
+//             of SceneManager functionality.
+//
+
 #ifndef SCENEOBSERVER_H
 #define SCENEOBSERVER_H
 

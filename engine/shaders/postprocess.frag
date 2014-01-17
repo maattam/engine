@@ -1,6 +1,10 @@
-#version 420
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : A post-process compositor which consists of tonemapping, bloom blending and gamma correction.
+//
 
-// A post-process compositor which consists of tonemapping, bloom blending and gamma correction.
+#version 420
 
 #define SAMPLES <>
 #define BLOOMLOD <>
@@ -31,20 +35,20 @@ vec3 tonemap(in vec3 x)
 // Blend bloom samples
 vec3 calcBloomColor()
 {
-	vec3 color = vec3(0, 0, 0);
+    vec3 color = vec3(0, 0, 0);
 
     // Skip first lod level to reduce aliasing
-	for(int i = 0; i <= BLOOMLOD; ++i)
-	{
-		color += textureLod(bloomTexture, uv, i).rgb;
-	}
+    for(int i = 0; i <= BLOOMLOD; ++i)
+    {
+        color += textureLod(bloomTexture, uv, i).rgb;
+    }
 
-	return color / BLOOMLOD;
+    return color / BLOOMLOD;
 }
 
 void main()
 {
-	vec3 color = vec3(0, 0, 0);
+    vec3 color = vec3(0, 0, 0);
 
     ivec2 st = ivec2(textureSize(inputTexture) * uv);
     for(int i = 0; i < SAMPLES; ++i)
@@ -54,8 +58,8 @@ void main()
 
     color /= SAMPLES;
 
-	// Add bloom
-	color += calcBloomColor() * bloomFactor;
+    // Add bloom
+    color += calcBloomColor() * bloomFactor;
 
     color *= exposure;
 

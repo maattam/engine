@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<typename BindableDerived, typename... Args>
 bool Binder::bind(BindableDerived& target, Args&&... args)
 {

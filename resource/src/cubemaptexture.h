@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : OpenGL cubemap texture.
+//
+
 #ifndef CUBEMAPTEXTURE_H
 #define CUBEMAPTEXTURE_H
 

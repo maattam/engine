@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 2D OpenGL texture.
+//
+
 #ifndef TEXTURE2D_H
 #define TEXTURE2D_H
 

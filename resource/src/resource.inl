@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<typename Type, typename ResourceDataType>
 Resource<Type, ResourceDataType>::Resource() : ResourceBase()
 {

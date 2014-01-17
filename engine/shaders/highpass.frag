@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Highpass filter for HDR bloom effect.
+//
+
 #version 420
 
 uniform sampler2DMS renderedTexture;

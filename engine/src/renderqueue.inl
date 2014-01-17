@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 template<typename Comparator>
  void RenderQueue::sort(const Comparator& lessThan)
  {

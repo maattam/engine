@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : 
+//
+
 #include "downsampler.h"
 
 #include "resourcedespatcher.h"

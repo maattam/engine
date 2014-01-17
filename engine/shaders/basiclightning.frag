@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Type     : Fragment shader
+//  Summary  : Forward renderer all-in-one shader
+//
+
 // Basic lightning fragment shader
 
 #version 420
@@ -21,43 +27,43 @@ layout(location = 0) out vec4 fragColor;
 
 struct Light
 {
-	vec3 color;
+    vec3 color;
 };
 
 struct DirectionalLight
 {
-	Light base;
-	vec3 direction;
+    Light base;
+    vec3 direction;
     float ambientIntensity;
 };
 
 struct Attenuation
 {
-	float constant;
-	float linear;
-	float exp;
+    float constant;
+    float linear;
+    float exp;
 };
 
 struct PointLight
 {
-	Light base;
-	Attenuation attenuation;
-	vec3 position;
+    Light base;
+    Attenuation attenuation;
+    vec3 position;
 };
 
 struct SpotLight
 {
-	PointLight base;
-	vec3 direction;
-	float cutoff;
+    PointLight base;
+    vec3 direction;
+    float cutoff;
 };
 
 struct Material
 {
-	vec3 ambientColor;
-	vec3 diffuseColor;
-	float shininess;
-	float specularIntensity;
+    vec3 ambientColor;
+    vec3 diffuseColor;
+    float shininess;
+    float specularIntensity;
 };
 
 uniform int gNumPointLights;
@@ -88,9 +94,9 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2DShadow shadowMap, floa
         return 1.0;
     }
 
-	// Project shadow map on current fragment
-	vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
-	projCoords = 0.5 * projCoords + 0.5;
+    // Project shadow map on current fragment
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords = 0.5 * projCoords + 0.5;
 
     float offset = 1.0 / size;
     float factor = 0;
@@ -119,32 +125,32 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
     {
         return vec4(0);
     }
-	
-	// Diffuse factor depends on the (positive) cosine between surface normal and light direction
-	float diffuseFactor = clamp(dot(normal, -lightDirection), 0, 1);
+    
+    // Diffuse factor depends on the (positive) cosine between surface normal and light direction
+    float diffuseFactor = clamp(dot(normal, -lightDirection), 0, 1);
 
-	vec4 diffuseColor = vec4(0, 0, 0, 0);
-	vec4 specularColor = vec4(0, 0, 0, 0);
-	
-	if(diffuseFactor > 0)
-	{
-		diffuseColor = vec4(light.color, 1.0) * diffuseFactor;
-	
-		vec3 vertexToEye = normalize(gEyeWorldPos - worldPos0);
-		vec3 lightReflect = normalize(reflect(lightDirection, normal));
-		
-		// Specular reflection is almost the same as diffuse, but here we compare against the eye direction
-		float specularFactor = clamp(dot(vertexToEye, lightReflect), 0, 1);
-		specularFactor = pow(specularFactor, gMaterial.shininess * texture(gShininessSampler, texCoord0).r);
-		
-		if(specularFactor > 0)
-		{
-			specularColor = vec4(light.color, 0) * texture(gSpecularSampler, texCoord0).r *
-				gMaterial.specularIntensity * specularFactor;
-		}
-	}
-	
-	return diffuseColor + specularColor;
+    vec4 diffuseColor = vec4(0, 0, 0, 0);
+    vec4 specularColor = vec4(0, 0, 0, 0);
+    
+    if(diffuseFactor > 0)
+    {
+        diffuseColor = vec4(light.color, 1.0) * diffuseFactor;
+    
+        vec3 vertexToEye = normalize(gEyeWorldPos - worldPos0);
+        vec3 lightReflect = normalize(reflect(lightDirection, normal));
+        
+        // Specular reflection is almost the same as diffuse, but here we compare against the eye direction
+        float specularFactor = clamp(dot(vertexToEye, lightReflect), 0, 1);
+        specularFactor = pow(specularFactor, gMaterial.shininess * texture(gShininessSampler, texCoord0).r);
+        
+        if(specularFactor > 0)
+        {
+            specularColor = vec4(light.color, 0) * texture(gSpecularSampler, texCoord0).r *
+                gMaterial.specularIntensity * specularFactor;
+        }
+    }
+    
+    return diffuseColor + specularColor;
 }
 
 vec4 calcDirectionalLight(in vec3 normal)
@@ -154,64 +160,64 @@ vec4 calcDirectionalLight(in vec3 normal)
     vec4 ambient = vec4(gDirectionalLight.base.color, 1.0) * gDirectionalLight.ambientIntensity;
     vec4 color = calcLightCommon(gDirectionalLight.base, gDirectionalLight.direction, normal);
 
-	return ambient + shadow * color;
+    return ambient + shadow * color;
 }
 
 vec4 calcPointLight(in PointLight light, in vec3 normal)
 {
-	vec3 lightDirection = worldPos0 - light.position;
-	float dist = length(lightDirection);
-	lightDirection = normalize(lightDirection);
-	
-	vec4 color = calcLightCommon(light.base, lightDirection, normal);
-	float attenuation = light.attenuation.constant +
-						light.attenuation.linear * dist +
-						light.attenuation.exp * dist * dist;
-						
-	return color / attenuation;
+    vec3 lightDirection = worldPos0 - light.position;
+    float dist = length(lightDirection);
+    lightDirection = normalize(lightDirection);
+    
+    vec4 color = calcLightCommon(light.base, lightDirection, normal);
+    float attenuation = light.attenuation.constant +
+                        light.attenuation.linear * dist +
+                        light.attenuation.exp * dist * dist;
+                        
+    return color / attenuation;
 }
 
 vec4 calcSpotLight(in SpotLight light, in vec3 normal)
 {
-	vec3 lightToPixel = normalize(worldPos0 - light.base.position);
-	float spotFactor = dot(lightToPixel, light.direction);
-	
-	if(spotFactor > light.cutoff)
-	{
-		vec4 color = calcPointLight(light.base, normal);
-		return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.cutoff));
-	}
-	
-	else
-	{
-		return vec4(0, 0, 0, 0);
-	}
+    vec3 lightToPixel = normalize(worldPos0 - light.base.position);
+    float spotFactor = dot(lightToPixel, light.direction);
+    
+    if(spotFactor > light.cutoff)
+    {
+        vec4 color = calcPointLight(light.base, normal);
+        return color * (1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - light.cutoff));
+    }
+    
+    else
+    {
+        return vec4(0, 0, 0, 0);
+    }
 }
 
 vec3 calcBumpedNormal()
 {
     vec3 normal = normalize(normal0);
 
-	if(!gHasTangents)
-		return normal;
-		
-	vec3 tangent = normalize(tangent0);
+    if(!gHasTangents)
+        return normal;
+        
+    vec3 tangent = normalize(tangent0);
 
-	// Gramm-Schmidt; We have to form an orthonormal basis since the interpolated
-	// vectors are no longer orthogonal
-	tangent = normalize(tangent - dot(tangent, normal) * normal);
-	
-	vec3 bitangent = cross(tangent, normal);
-	vec3 bumpMapNormal = texture(gNormalSampler, texCoord0).xyz;
+    // Gramm-Schmidt; We have to form an orthonormal basis since the interpolated
+    // vectors are no longer orthogonal
+    tangent = normalize(tangent - dot(tangent, normal) * normal);
+    
+    vec3 bitangent = cross(tangent, normal);
+    vec3 bumpMapNormal = texture(gNormalSampler, texCoord0).xyz;
 
-	// Since color components are stored in the range [0, 1], we have to transform
-	// them back using f(x) = 2*x - 1
-	bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
-	
-	mat3 TBN = mat3(tangent, bitangent, normal);
-	vec3 newNormal = TBN * bumpMapNormal;
-	
-	return normalize(newNormal);
+    // Since color components are stored in the range [0, 1], we have to transform
+    // them back using f(x) = 2*x - 1
+    bumpMapNormal = 2.0 * bumpMapNormal - 1.0;
+    
+    mat3 TBN = mat3(tangent, bitangent, normal);
+    vec3 newNormal = TBN * bumpMapNormal;
+    
+    return normalize(newNormal);
 }
 
 void main()
@@ -221,21 +227,21 @@ void main()
         discard;
 
     // We have to normalize our normal (again) since the fragment shader does interpolation between vertices
-	vec3 normal = calcBumpedNormal();
+    vec3 normal = calcBumpedNormal();
 
-	vec4 light = calcDirectionalLight(normal);
-	
-	for(int i = 0; i < gNumPointLights; ++i)
+    vec4 light = calcDirectionalLight(normal);
+    
+    for(int i = 0; i < gNumPointLights; ++i)
     {
-		light += calcPointLight(gPointLights[i], normal);
+        light += calcPointLight(gPointLights[i], normal);
     }
 
-	for(int i = 0; i < gNumSpotLights; ++i)
-	{
-		float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i], SHADOWMAP_SIZE);
-		light += shadow * calcSpotLight(gSpotLights[i], normal);
-	}
-	
-	fragColor = texture(gDiffuseSampler, texCoord0) * light *
-				vec4(gMaterial.diffuseColor, 1.0) + vec4(gMaterial.ambientColor, 1.0);
+    for(int i = 0; i < gNumSpotLights; ++i)
+    {
+        float shadow = calcShadowFactor(lightSpacePos0[i], gSpotLightShadowMap[i], SHADOWMAP_SIZE);
+        light += shadow * calcSpotLight(gSpotLights[i], normal);
+    }
+    
+    fragColor = texture(gDiffuseSampler, texCoord0) * light *
+                vec4(gMaterial.diffuseColor, 1.0) + vec4(gMaterial.ambientColor, 1.0);
 }

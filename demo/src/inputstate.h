@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Hold pre-frame input state of all keys.
+//
+
 #ifndef INPUTSTATE_H
 #define INPUTSTATE_H
 

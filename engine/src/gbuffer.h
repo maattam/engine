@@ -1,5 +1,8 @@
-// The GBuffer holds all the textures needed for deferred rendering.
-// GBuffer is an interface for different GBuffers.
+//
+//  Author   : Matti Määttä
+//  Summary  : The GBuffer holds all the textures needed for deferred rendering.
+//             GBuffer is an interface for different GBuffers.
+//
 
 #ifndef GBUFFER_H
 #define GBUFFER_H

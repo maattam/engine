@@ -1,3 +1,9 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : DownSamplers samplers and blurs the input texture and stores the result
+//             in lower mipmap levels.
+//
+
 #ifndef DOWNSAMPLER_H
 #define DOWNSAMPLER_H
 

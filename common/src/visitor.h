@@ -1,4 +1,7 @@
-// Acyclic visitor pattern
+//
+//  Author   : Matti Määttä
+//  Summary  : Acyclic visitor pattern
+//
 
 #ifndef VISITOR_H
 #define VISITOR_H

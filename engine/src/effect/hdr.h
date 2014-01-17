@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Post-processing effect which includes bloom, tonemapping and gamma correction.
+//
+
 #ifndef HDR_H
 #define HDR_H
 

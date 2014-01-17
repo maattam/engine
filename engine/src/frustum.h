@@ -1,3 +1,8 @@
+//
+//  Author   : Matti Määttä
+//  Summary  : Methods for scene visibility determination.
+//
+
 #ifndef FRUSTUM_HH
 #define FRUSTUM_HH
 
