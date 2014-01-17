@@ -235,32 +235,6 @@ float Light::cutoffDistance() const
     }
 }
 
-QMatrix4x4 Light::frustum() const
-{
-    if(type_ == LIGHT_SPOT)
-    {
-        QMatrix4x4 view;
-        view.perspective(angleOuterCone() * 2, 1.0f, 1.0f, cutoffDistance());
-        view.lookAt(position(), position() + direction(), UNIT_Y);
-
-        return view;
-    }
-
-    else if(type_ == LIGHT_DIRECTIONAL)
-    {
-        // TODO: Directional light shadow
-        Graph::Camera view(QRectF(-95, -65, 190, 130), direction());
-        view.setNearPlane(-80.0f);
-        view.setFarPlane(1000.0f);
-        view.update();
-
-        return view.worldView();
-    }
-
-    // TODO: Point lights
-    return QMatrix4x4();
-}
-
 const QVector3D& Light::position() const
 {
     // Update derived position is parent exists

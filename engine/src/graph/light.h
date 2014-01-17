@@ -39,10 +39,6 @@ public:
     unsigned int lightMask() const;
     void setLightMask(unsigned int mask);
 
-    // Calculates the light's frustum for culling occluders.
-    // TODO: Move to separate class.
-    QMatrix4x4 frustum() const;
-
     void setColor(const QVector3D& color);
     const QVector3D& color() const;
 
