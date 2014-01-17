@@ -34,7 +34,7 @@ public slots:
 private:
     QElapsedTimer timer_;
 
-    MovingAverage<qint64, double, 10, 0> frameTime_;
+    MovingAverage<qint64, double, 10> frameTime_;
 };
 
 #endif // demoui/main.qml

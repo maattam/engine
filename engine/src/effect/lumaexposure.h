@@ -5,6 +5,7 @@
 #define LUMAEXPOSURE_H
 
 #include "samplerfunction.h"
+#include "movingaverage.h"
 
 #include <QList>
 #include <QVector3D>
@@ -14,7 +15,7 @@ namespace Engine { namespace Effect {
 class LumaExposure : public SamplerFunction<float>
 {
 public:
-    explicit LumaExposure(unsigned int window = 30);
+    explicit LumaExposure();
     virtual ~LumaExposure();
 
     // Sets the input texture.
@@ -25,11 +26,7 @@ public:
     // precondition: texture has been set.
     virtual ResultType result();
 
-    // Sets the sample window.
-    void setWindowLength(unsigned int window);
-
 private:
-    unsigned int window_;
     unsigned int width_;
     unsigned int height_;
 
@@ -38,7 +35,7 @@ private:
     int writeIndex_;
     int readIndex_;
 
-    QList<float> exposures_;
+    MovingAverage<float, float, 30> exposure_;
 
     QVector3D sampleTexture();
     float calculateExposure(const QVector3D& linearSample);

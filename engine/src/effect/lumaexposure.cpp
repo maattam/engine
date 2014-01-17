@@ -1,19 +1,16 @@
 #include "lumaexposure.h"
 
+#include "mathelp.h"
+
 using namespace Engine;
 using namespace Engine::Effect;
 
-LumaExposure::LumaExposure(unsigned int window)
-    : window_(window), width_(0), height_(0), sampleLevel_(0)
+LumaExposure::LumaExposure()
+    : exposure_(), width_(0), height_(0), sampleLevel_(0)
 {
     samplePbo_[0] = samplePbo_[1] = 0;
     writeIndex_ = 1;
     readIndex_ = 0;
-
-    if(window_ == 0)
-    {
-        window_ = 1;
-    }
 }
 
 LumaExposure::~LumaExposure()
@@ -49,7 +46,6 @@ bool LumaExposure::setInputTexture(GLint textureId, unsigned int width, unsigned
     gl->glBindBuffer(GL_PIXEL_PACK_BUFFER, samplePbo_[1]);
     gl->glBufferData(GL_PIXEL_PACK_BUFFER, pixels * sizeof(float), nullptr, GL_STREAM_READ);
 
-    exposures_.clear();
     return true;
 }
 
@@ -57,17 +53,6 @@ LumaExposure::ResultType LumaExposure::result()
 {
     QVector3D sample = sampleTexture();
     return calculateExposure(sample);
-}
-
-void LumaExposure::setWindowLength(unsigned int window)
-{
-    window_ = window;
-    exposures_.clear();
-
-    if(window_ == 0)
-    {
-        window_ = 1;
-    }
 }
 
 QVector3D LumaExposure::sampleTexture()
@@ -99,25 +84,11 @@ QVector3D LumaExposure::sampleTexture()
 float LumaExposure::calculateExposure(const QVector3D& linearSample)
 {
     const float invGamma = 1.0f / 2.2f;
+    const QVector3D rgbToY(0.299f, 0.587f, 0.114f);
 
     // RGB to YUV; Y luminance
-    float Y = 0.299 * std::powf(linearSample.x(), invGamma)
-        + 0.587 * std::powf(linearSample.y(), invGamma)
-        + 0.114 * std::powf(linearSample.z(), invGamma);
+    float Y = QVector3D::dotProduct(rgbToY, linearColor(linearSample, invGamma));
+    exposure_ << Y;
 
-    if(exposures_.size() >= window_)
-    {
-        exposures_.pop_front();
-    }
-
-    exposures_.push_back(Y);
-
-    float average = 0.0f;
-    for(float exposure : exposures_)
-    {
-        average += exposure;
-    }
-
-    average /= static_cast<float>(window_);
-    return std::exp(-(2.5 * average));
+    return std::exp(-2.5f * exposure_);
 }

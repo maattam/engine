@@ -45,7 +45,7 @@ private:
 
     QStringList stages_;
 
-    typedef MovingAverage<GLint64, double, 10, 0> AverageType;
+    typedef MovingAverage<GLint64, double, 10> AverageType;
     QVector<AverageType> averages_;
 
     bool frameCaptured_;

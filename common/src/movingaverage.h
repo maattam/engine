@@ -9,13 +9,12 @@
 template<
     typename ValueType,
     typename ReturnType,
-    int samples,
-    ValueType initial = ValueType()
+    int samples
 >
 class MovingAverage
 {
 public:
-    MovingAverage()
+    MovingAverage(ValueType initial = 0)
         : samples_(samples, initial)
     {
     }
