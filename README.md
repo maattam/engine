@@ -14,25 +14,25 @@ forward and modern deferred rendering, post-processing, shadow mapping and diffe
 Features
 --------
 
-* ** Deferred rendering
+* ** Deferred rendering **
 
     Deferred rendering is two-stage rendering method where the visible geometry is first accumulated to a
     geometry buffer (GBuffer) containing normals, depth and material properties. Lightning is applied in the
     second rendering pass as a post-processing effect. This allows drawing hundreds of dynamic lights with a small
-    performance impact compared to forward rendering. Multisample anti-aliasing is supported in modern OpenGL
+    performance impact compared to forward rendering. Multisample anti-aliasing is supported in modern [OpenGL]
     pipeline using centroid-sampling edge detection.
 
     ![deferred gbuffer](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/gbuffer.jpg)
 
-* ** Qt Quick integration
+* ** Qt Quick integration **
 
     [Qt Quick] allows for easy creation of dynamic user interfaces using a JavaScript-based QML declarative language.
-    Qt allows easy signaling between QML and C++ parts of the engine. In the future I might look into scripting whole
-    scenes in QML instead of C++.
+    Qt allows easy signaling between QML and C\+\+ parts of the engine. In the future I might look into scripting whole
+    scenes in QML instead of C\+\+.
 
     ![qtquick integration](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/qtquick.jpg)
 
-* ** Asset importing using Assimp
+* ** Asset importing using Assimp **
 
     [Assimp] converts many well-known 3d model or scene formats to internel Engine supported structures. This enables
     easy scene deployment with lights and cames from eg. [Blender] without writing a single line of code.
@@ -60,3 +60,8 @@ Screenshots
 ## Single-pass edge detection for MSAA
 
 [![scrn edge](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)
+
+[OpenGL]: http://www.opengl.org/
+[Qt Quick]: http://qt-project.org/doc/qt-5.0/qtquick/qtquick-index.html
+[Assimp]: http://assimp.sourceforge.net/
+[Blender]: http://www.blender.org/
