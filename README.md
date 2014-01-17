@@ -12,7 +12,7 @@ The project started as an introduction to basic [OpenGL] concepts, but has since
 forward and modern deferred rendering, post-processing, shadow mapping and different lightning models.
 
 Most of the project is written in C\+\+, but the user interface has some JavaScript -derivate QML bits.
-The project architecture focuses on rapid developement by avoiding dependencies to implementations and
+The project architecture focuses on iterative developement by avoiding dependencies to implementations and
 employs heavy use of [SOLID] object-oriented design as a result. The project depends heavily on Qt,
 [Qt Quick] and [OpenGL] 4.2.
 
