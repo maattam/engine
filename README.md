@@ -1,15 +1,18 @@
 Engine
 ======
 
-## A small expeditionary rendering engine using Qt and OpenGL
+## Small expeditionary rendering engine using Qt and OpenGL
 
 Engine is a hobby project motivated by my interest in computer graphics, algorithms
 and low-level hardware implementation. My intention is not to make a full-fledged game
 engine, but instead an engine where I can experiment with different signal processing and
-computer graphics related algorithms.
+computer graphics related algorithms. 
 
 The project started as an introduction to basic [OpenGL] concepts, but has since grown to feature
 forward and modern deferred rendering, post-processing, shadow mapping and different lightning models.
+
+Most of the project is written in C\+\+, but the user interface has some JavaScript -derivate QML bits.
+The project depends heavily on Qt, [Qt Quick] and [OpenGL] 4.2.
 
 Features
 --------
@@ -17,7 +20,7 @@ Features
 * ** Deferred rendering **
 
     Deferred rendering is two-stage rendering method where the visible geometry is first accumulated to a
-    geometry buffer (GBuffer) containing normals, depth and material properties. Lightning is applied in the
+    geometry buffer (**GBuffer**) containing normals, depth and material properties. Lightning is applied in the
     second rendering pass as a post-processing effect. This allows drawing hundreds of dynamic lights with a small
     performance impact compared to forward rendering. Multisample anti-aliasing is supported in modern [OpenGL]
     pipeline using centroid-sampling edge detection.
@@ -34,8 +37,8 @@ Features
 
 * ** Asset importing using Assimp **
 
-    [Assimp] converts many well-known 3d model or scene formats to internel Engine supported structures. This enables
-    easy scene deployment with lights and cames from eg. [Blender] without writing a single line of code.
+    [Assimp] converts many well-known 3D model or scene formats to internal Engine scene graph -supported structures.
+	This enables easy scene deployment with lights and cameras from eg. [Blender] without writing a single line of code.
 
 Screenshots
 -----------
