@@ -17,8 +17,10 @@
 #include "technique/blurfilter.h"
 #include "resourcedespatcher.h"
 #include "renderable/cube.h"
+#include "renderable/primitive.h"
 #include "forwardrenderer.h"
 #include "shadowstage.h"
+#include "spotlightmethod.h"
 
 #include "rendertimewatcher.h"
 
@@ -58,85 +60,25 @@ Renderer* RendererFactory::create(int samples)
         watcher_->clearStages();
     }
 
-    createTonemapper(samples);
-
-    // Skybox technique
-    SkyboxStage::SkyboxPtr sky(new Technique::Skybox(samples));
-    sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
-
-    Shader::Ptr skyFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
-    sky->addShader(skyFrag);
-    despatcher_.loadResource(skyFrag);
-
-    sky->setBrightness(2.0f);
-
     gbuffer_.reset();
-
-    QOpenGLFramebufferObjectFormat fboFormat;
-    fboFormat.setInternalTextureFormat(GL_RGBA16F);
-
-    Engine::Renderer* renderer = nullptr;
+    Renderer* renderer = nullptr;
 
     if(type_ == DEFERRED)
     {
-        // GBuffer
-        gbuffer_.reset(new CompactGBuffer);
-
-        fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
-        fboFormat.setSamples(1);
-
-        DeferredRenderer* deferred = new DeferredRenderer(gbuffer_, despatcher_);
-        RenderStage* lightningStage = new QuadLighting(deferred, *gbuffer_.get(), despatcher_, samples);
-
-        if(watcher_ != nullptr)
-        {
-            watcher_->addRenderStage("Geometry pass", lightningStage);
-        }
-
-        renderer = lightningStage;
+        renderer = createDeferredRenderer(samples);
     }
 
-    else
+    else if(type_ == FORWARD)
     {
-        fboFormat.setAttachment(QOpenGLFramebufferObject::Depth);
-        fboFormat.setSamples(samples);
-
-        renderer = new ForwardRenderer(despatcher_);
+        renderer = createForwardRenderer(samples);
     }
 
-    ShadowStage* shadow = new ShadowStage(renderer); 
-
-    SkyboxStage* skybox = new Engine::SkyboxStage(shadow);
-    skybox->setGBuffer(gbuffer_.get());
-    skybox->setSkyboxMesh(std::make_shared<Renderable::Cube>());
-    skybox->setSkyboxTechnique(sky);
-
-    PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
-    fxRenderer->setEffect(hdrPostfx_);
-
-    if(watcher_ != nullptr)
+    if(watcher_ != nullptr && !watcher_->create())
     {
-        if(type_ == DEFERRED)
-        {
-            watcher_->addRenderStage("Lightning pass", shadow);
-        }
-
-        else
-        {
-            watcher_->addRenderStage("Forward pass", shadow);
-        }
-
-        watcher_->addRenderStage("Shadow pass", skybox);
-        watcher_->addRenderStage("Skybox pass", fxRenderer);
-        watcher_->addNamedStage("Postprocess");
-
-        if(!watcher_->create())
-        {
-            qWarning() << "Failed to create query object.";
-        }
+        qWarning() << "Failed to create query object.";
     }
 
-    return fxRenderer;
+    return renderer;
 }
 
 void RendererFactory::createTonemapper(int samples)
@@ -154,6 +96,103 @@ void RendererFactory::createTonemapper(int samples)
     tonemap_->setBloomFactor(0.25f);
     tonemap_->setBrightLevel(1.0f);
     tonemap_->setGamma(2.2f);
+}
+
+Renderer* RendererFactory::createForwardRenderer(int samples)
+{
+    createTonemapper(samples);
+
+    // Skybox technique
+    SkyboxStage::SkyboxPtr sky(new Technique::Skybox(samples));
+    sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
+
+    Shader::Ptr skyFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
+    sky->addShader(skyFrag);
+    despatcher_.loadResource(skyFrag);
+
+    sky->setBrightness(2.0f);
+
+    // Create multisamples fbo since we renderer directly to "screen"
+    QOpenGLFramebufferObjectFormat fboFormat;
+    fboFormat.setInternalTextureFormat(GL_RGBA16F);
+    fboFormat.setAttachment(QOpenGLFramebufferObject::Depth);
+    fboFormat.setSamples(samples);
+
+    Engine::Renderer* renderer = new ForwardRenderer(despatcher_);
+
+    // Add skybox stage
+    SkyboxStage* skybox = new Engine::SkyboxStage(renderer);
+    skybox->setGBuffer(nullptr);
+    skybox->setSkyboxMesh(Renderable::Primitive<Renderable::Cube>::instance());
+    skybox->setSkyboxTechnique(sky);
+
+    // Add post-process stage
+    PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
+    fxRenderer->setEffect(hdrPostfx_);
+
+    if(watcher_ != nullptr)
+    {
+        watcher_->addRenderStage("Forward pass", skybox);
+        watcher_->addRenderStage("Skybox pass", fxRenderer);
+        watcher_->addNamedStage("Postprocess");
+    }
+
+    return fxRenderer;
+}
+
+Renderer* RendererFactory::createDeferredRenderer(int samples)
+{
+    createTonemapper(samples);
+
+    // Skybox technique
+    SkyboxStage::SkyboxPtr sky(new Technique::Skybox(samples));
+    sky->addShader(despatcher_.get<Shader>(RESOURCE_PATH("shaders/skybox.vert"), Shader::Type::Vertex));
+
+    Shader::Ptr skyFrag = std::make_shared<Shader>(RESOURCE_PATH("shaders/skybox.frag"), Shader::Type::Fragment);
+    sky->addShader(skyFrag);
+    despatcher_.loadResource(skyFrag);
+
+    sky->setBrightness(2.0f);
+
+    QOpenGLFramebufferObjectFormat fboFormat;
+    fboFormat.setInternalTextureFormat(GL_RGBA16F);
+    fboFormat.setAttachment(QOpenGLFramebufferObject::NoAttachment);
+    fboFormat.setSamples(1);
+
+    // Create gbuffer
+    gbuffer_.reset(new CompactGBuffer);
+
+    DeferredRenderer* renderer = new DeferredRenderer(gbuffer_, despatcher_);
+    QuadLighting* lightningStage = new QuadLighting(renderer, *gbuffer_, despatcher_, samples);
+
+    ShadowStage* shadow = new ShadowStage(lightningStage);
+    lightningStage->setShadowStage(shadow);
+
+    // Enable spot light shadows
+    ShadowStage::ShadowMethodPtr spotMethod(new SpotLightMethod(despatcher_));
+    shadow->setMethod(Graph::Light::LIGHT_SPOT, spotMethod);
+    shadow->createShadowMap(Graph::Light::LIGHT_SPOT, QSize(1024, 1024), 5);
+
+    // Add skybox stage
+    SkyboxStage* skybox = new Engine::SkyboxStage(shadow);
+    skybox->setGBuffer(gbuffer_.get());
+    skybox->setSkyboxMesh(Renderable::Primitive<Renderable::Cube>::instance());
+    skybox->setSkyboxTechnique(sky);
+
+    // Add post-process stage
+    PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
+    fxRenderer->setEffect(hdrPostfx_);
+
+    if(watcher_ != nullptr)
+    {
+        watcher_->addRenderStage("Geometry pass", lightningStage);
+        watcher_->addRenderStage("Lightning pass", shadow);
+        watcher_->addRenderStage("Shadow pass", skybox);
+        watcher_->addRenderStage("Skybox pass", fxRenderer);
+        watcher_->addNamedStage("Postprocess");
+    }
+
+    return fxRenderer;
 }
 
 Engine::Effect::Hdr* RendererFactory::hdr() const

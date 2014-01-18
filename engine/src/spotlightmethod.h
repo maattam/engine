@@ -8,13 +8,17 @@
 
 #include "shadowrendermethod.h"
 #include "offscreenrenderer.h"
+#include "technique/technique.h"
 
 namespace Engine {
 
-class SpotLightMethod
+class SingleShadowMap;
+class ResourceDespatcher;
+
+class SpotLightMethod : public ShadowRenderMethod
 {
 public:
-    SpotLightMethod();
+    SpotLightMethod(ResourceDespatcher& despatcher);
     virtual ~SpotLightMethod();
 
     virtual ShadowMap* createShadowMap();
@@ -37,9 +41,13 @@ public:
 
 private:
     SceneObservable* scene_;
-    ShadowMap* shadow_;
+    SingleShadowMap* shadow_;
+    const QMatrix4x4* cachedVP_;
 
     OffscreenRenderer renderer_;
+    Technique::Technique tech_;
+
+    bool initTech_;
 };
 
 }

@@ -21,7 +21,9 @@ Quad::Quad()
     : Renderable(), vertexBuffer_(0)
 {
     if(!bindVertexArray())
+    {
         return;
+    }
 
     // Buffer quad
     gl->glGenBuffers(1, &vertexBuffer_);
@@ -39,13 +41,17 @@ Quad::Quad()
 Quad::~Quad()
 {
     if(vertexBuffer_ != 0)
+    {
         gl->glDeleteBuffers(1,  &vertexBuffer_);
+    }
 }
 
 void Quad::render() const
 {
     if(!bindVertexArray())
+    {
         return;
+    }
 
     renderDirect();
 

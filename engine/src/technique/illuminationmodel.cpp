@@ -6,7 +6,10 @@
 #include "illuminationmodel.h"
 
 #include "graph/light.h"
+#include "graph/camera.h"
+#include "shadowmap.h"
 #include "mathelp.h"
+#include "material.h"
 
 #include <qmath.h>
 
@@ -22,30 +25,23 @@ IlluminationModel::~IlluminationModel()
 {
 }
 
-
-void IlluminationModel::setViewMatrix(const QMatrix4x4& mat)
-{
-    view_ = mat;
-}
-
-void IlluminationModel::setCameraAxes(const QVector3D& up, const QVector3D& right)
-{
-    setUniformValue("cameraUp", up);
-    setUniformValue("cameraRight", right);
-}
-
 void IlluminationModel::setQuadExtents(float scale, const QVector3D& center)
 {
     setUniformValue("quadScale", scale);
     setUniformValue("quadCenter", center);
 }
 
-void IlluminationModel::setViewProjMatrix(const QMatrix4x4& mat)
+void IlluminationModel::setCamera(const Graph::Camera& camera)
 {
-    setUniformValue("viewProj", mat);
+    setUniformValue("viewProj", camera.worldView());
+    setUniformValue("cameraUp", camera.up());
+    setUniformValue("cameraRight", camera.right());
+
+    view_ = camera.view();
+    setUniformValue("viewInverse", view_.inverted());
 }
 
-void IlluminationModel::enableSpotLight(const Graph::Light& light)
+void IlluminationModel::enableSpotLight(const Graph::Light& light, ShadowMap* shadow)
 {
     useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
 
@@ -55,6 +51,20 @@ void IlluminationModel::enableSpotLight(const Graph::Light& light)
     // Convert cutoff angles to radians and precalculate cosine
     setUniformValue("light.cosOuterAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleOuterCone()))));
     setUniformValue("light.cosInnerAngle", static_cast<float>(qCos(qDegreesToRadians(light.angleInnerCone()))));
+
+    if(shadow != nullptr)
+    {
+        setUniformValue("shadowEnabled", true);
+        setUniformValue("lightVP", shadow->lightVP());
+        setUniformValue("shadowOffset", QVector2D(1.0 / shadow->size().width(), 1.0 / shadow->size().height()));
+
+        shadow->bindTextures(GL_TEXTURE0 + Material::TEXTURE_COUNT);
+    }
+
+    else
+    {
+        setUniformValue("shadowEnabled", false);
+    }
 }
 
 void IlluminationModel::enablePointLight(const Graph::Light& light)
@@ -66,7 +76,7 @@ void IlluminationModel::enablePointLight(const Graph::Light& light)
 void IlluminationModel::enableDirectionalLight(const Graph::Light& light)
 {
     useSubroutine("calculateOutput", "directionalLightPass", GL_FRAGMENT_SHADER);
-    useSubroutine( "transformQuad", "fullscreenQuad", GL_VERTEX_SHADER);
+    useSubroutine("transformQuad", "fullscreenQuad", GL_VERTEX_SHADER);
 
     float ambientFactor = 0.0f;
     if(light.diffuseIntensity() > 0.0f)
@@ -100,6 +110,9 @@ bool IlluminationModel::init()
 
     if(resolveSubroutineLocation("fullscreenQuad", GL_VERTEX_SHADER) == GL_INVALID_INDEX)
         return false;
+
+    setUniformValue("shadowSampler", Material::TEXTURE_COUNT);
+    setUniformValue("shadowEnabled", false);
 
     return true;
 }

@@ -205,6 +205,7 @@
     <ClCompile Include="src\scene\importednodedata.cpp" />
     <ClCompile Include="src\scene\nodeimport.cpp" />
     <ClCompile Include="src\shadowstage.cpp" />
+    <ClCompile Include="src\singleshadowmap.cpp" />
     <ClCompile Include="src\skyboxstage.cpp" />
     <ClCompile Include="src\spotlightmethod.cpp" />
     <ClCompile Include="src\technique\basiclightning.cpp" />
@@ -301,6 +302,7 @@
     <ClInclude Include="src\shadowmap.h" />
     <ClInclude Include="src\shadowrendermethod.h" />
     <ClInclude Include="src\shadowstage.h" />
+    <ClInclude Include="src\singleshadowmap.h" />
     <ClInclude Include="src\skyboxstage.h" />
     <ClInclude Include="src\spotlightmethod.h" />
     <ClInclude Include="src\technique\basiclightning.h" />

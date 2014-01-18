@@ -75,9 +75,6 @@ void DeferredRenderer::render()
 
     // Render scene geometry to GBuffer
     geometryPass();
-
-    gl->glDisable(GL_CULL_FACE);
-    gl->glDisable(GL_DEPTH_TEST);
 }
 
 void DeferredRenderer::geometryPass()

@@ -21,6 +21,7 @@ namespace Engine {
 
 class ResourceDespatcher;
 class GBuffer;
+class ShadowStage;
 
 class QuadLighting : public RenderStage, public SceneObserver,
     public BaseVisitor, public Visitor<Graph::Light>
@@ -53,6 +54,8 @@ public:
 
     virtual void sceneInvalidated();
 
+    void setShadowStage(ShadowStage* shadowStage);
+
 private:
     GLuint fbo_;
     GBuffer& gbuffer_;
@@ -63,6 +66,7 @@ private:
     Graph::Light* directionalLight_;
     Graph::Camera* camera_;
     SceneObservable* observable_;
+    ShadowStage* shadowStage_;
 
     Technique::IlluminationModel lightningTech_;
     std::shared_ptr<Renderable::Quad> quad_;

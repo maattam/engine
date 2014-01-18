@@ -54,6 +54,9 @@ private:
     std::shared_ptr<Engine::Effect::Hdr> hdrPostfx_;
 
     void createTonemapper(int samples);
+
+    Engine::Renderer* createForwardRenderer(int samples);
+    Engine::Renderer* createDeferredRenderer(int samples);
 };
 
 #endif // RENDERERFACTORY_H

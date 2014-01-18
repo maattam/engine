@@ -59,7 +59,7 @@ void OffscreenRenderer::setRenderCallback(OnRenderCallback callback)
 
 void OffscreenRenderer::render()
 {
-    if(batch_ == nullptr || camera_ == nullptr || tech_ == nullptr)
+    if(batch_ == nullptr || tech_ == nullptr)
     {
         return;
     }
@@ -87,7 +87,12 @@ void OffscreenRenderer::render()
 
 void OffscreenRenderer::renderBatch(const RenderQueue::RenderRange& range)
 {
-    const QMatrix4x4& worldView = camera_->worldView();
+    QMatrix4x4 worldView;
+
+    if(camera_ != nullptr)
+    {
+        worldView = camera_->worldView();
+    }
 
     for(auto it = range.first; it != range.second; ++it)
     {

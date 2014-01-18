@@ -28,6 +28,14 @@ struct Light
 
 uniform Light light;
 
+uniform bool shadowEnabled;
+uniform mat4 lightVP;
+uniform mat4 viewInverse;
+uniform vec2 shadowOffset;
+uniform sampler2DShadow shadowSampler;
+
+#define SHADOW_BIAS 0.0002
+
 vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialInfo material)
 {
     vec3 n = vertex.normal;
@@ -65,6 +73,29 @@ vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialIn
     return diffuse + specular;
 }
 
+float softShadowModel(in vec4 lightSpacePos, in sampler2DShadow shadowMap, in vec2 offset)
+{
+    // Project shadow map on current fragment
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords = 0.5 * projCoords + 0.5;
+
+    float factor = 0.0;
+
+    // PCF kernel
+    for(int y = -1; y <= 1; ++y)
+    {
+        for(int x = -1; x <= 1; ++x)
+        {
+            vec2 offsets = vec2(x, y) * offset;
+            vec3 uvc = projCoords + vec3(offsets, 0);
+
+            factor += texture(shadowMap, uvc, SHADOW_BIAS);
+        }
+    }
+
+    return factor / 9.0;
+}
+
 subroutine(CalculateOutputType)
 vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
 {
@@ -74,7 +105,7 @@ vec4 pointLightPass(in VertexInfo vertex, in MaterialInfo material)
 
     vec3 color = lightningModel(lightToFragment, vertex, material);
 
-    // Spot light attenuation
+    // Point light attenuation
     float attenuation = light.attenuation.x +
                         light.attenuation.y * dist +
                         light.attenuation.z * dist * dist;
@@ -92,7 +123,18 @@ vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 
     float spotFactor = clamp((cosAngle - light.cosOuterAngle) / angleDiff, 0.0, 1.0);
 
-    vec3 color = pointLightPass(vertex, material).rgb * spotFactor;
+    // TODO: Implement conditional shadows using different shaders since NVIDIA doesn't allow
+    // nested subroutines.
+
+    float shadow = 1.0;
+    if(shadowEnabled)
+    {
+        // Transform fragment position to light space
+        vec4 lightSpacePos = lightVP * (viewInverse * vertex.position);
+        shadow = softShadowModel(lightSpacePos, shadowSampler, shadowOffset);
+    }
+
+    vec3 color = pointLightPass(vertex, material).rgb * spotFactor * shadow;
     return vec4(material.diffuse * color, 1.0);
 }
 

@@ -6,12 +6,14 @@
 
 #version 420
 
-uniform sampler2D gMaskSampler;
+uniform sampler2D maskSampler;
 
 in vec2 texCoord0;
 
 void main()
 {
-    if(texture(gMaskSampler, texCoord0).r <= 0.2)
+    if(texture(maskSampler, texCoord0).r <= 0.2)
+    {
         discard;
+    }
 }

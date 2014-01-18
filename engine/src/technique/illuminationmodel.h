@@ -13,7 +13,10 @@ namespace Engine {
 
 namespace Graph {
     class Light;
+    class Camera;
 }
+
+class ShadowMap;
 
 namespace Technique {
 
@@ -23,18 +26,13 @@ public:
     explicit IlluminationModel(unsigned int samples);
     virtual ~IlluminationModel();
 
-    // Sets the camera's view matrix used for mapping light input vectors to view space coordinates.
-    void setViewMatrix(const QMatrix4x4& mat);
-
-    void setCameraAxes(const QVector3D& up, const QVector3D& right);
+    void setCamera(const Graph::Camera& camera);
 
     void setQuadExtents(float scale, const QVector3D& center);
 
-    void setViewProjMatrix(const QMatrix4x4& mat);
-
     // Prepares the technique for rendering spot lights.
     // Precondition: Technique is enabled, view matrix is set.
-    void enableSpotLight(const Graph::Light& light);
+    void enableSpotLight(const Graph::Light& light, ShadowMap* shadow = nullptr);
 
     // Prepares the technique for rendering point lights.
     // Precondition: Technique is enabled, view matrix is set.

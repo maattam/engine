@@ -14,6 +14,11 @@ using namespace Engine;
 ShadowStage::ShadowStage(Renderer* renderer)
     : RenderStage(renderer), SceneObserver(), BaseVisitor(), observable_(nullptr)
 {
+    // Reset free list to beginning.
+    for(int i = 0; i < Graph::Light::LIGHT_COUNT; ++i)
+    {
+        freeMaps_[i] = shadowMaps_[i].begin();
+    }
 }
 
 ShadowStage::~ShadowStage()
@@ -59,6 +64,9 @@ bool ShadowStage::createShadowMap(Graph::Light::LightType type, const QSize& siz
         }
     }
 
+    // Reset free list to beginning.
+    freeMaps_[type] = maps.begin();
+
     return true;
 }
 
@@ -79,7 +87,16 @@ ShadowMap* ShadowStage::shadowMap(Graph::Light* light) const
 void ShadowStage::setObservable(SceneObservable* observable)
 {
     RenderStage::setObservable(observable);
+
+    if(observable_ != nullptr)
+    {
+        observable_->removeVisitor(this);
+        observable_->removeObserver(this);
+    }
+
     observable_ = observable;
+    observable_->addVisitor(this);
+    observable_->addObserver(this);
 
     for(int i = 0; i < Graph::Light::LIGHT_COUNT; ++i)
     {
@@ -113,12 +130,14 @@ void ShadowStage::render()
         method->render();
     }
 
+    // TODO: Fix render time profiling since we render before the lightning stage.
     RenderStage::render();
 }
 
 void ShadowStage::visit(Graph::Light& light)
 {
-    if(light.lightMask() & Graph::Light::MASK_CAST_SHADOWS)
+    unsigned int mask = light.lightMask();
+    if((mask & Graph::Light::MASK_CAST_SHADOWS) == mask)
     {
         const ShadowMethodPtr& method = methods_[light.type()];
         ShadowMap* map = availableShadowMap(light.type());
@@ -146,14 +165,16 @@ void ShadowStage::sceneInvalidated()
     }
 }
 
-ShadowMap* ShadowStage::availableShadowMap(Graph::Light::LightType type) const
+ShadowMap* ShadowStage::availableShadowMap(Graph::Light::LightType type)
 {
     ShadowMap* map = nullptr;
 
-    ShadowMapVec::iterator iter = freeMaps_[type];
+    ShadowMapVec::iterator& iter = freeMaps_[type];
     if(iter != shadowMaps_[type].end())
     {
         map = iter->get();
+
+        // Mark shadow texture used.
         ++iter;
     }
 

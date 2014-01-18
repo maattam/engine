@@ -73,7 +73,7 @@ private:
 
     QMap<Graph::Light*, ShadowMap*> lightIndices_;
 
-    ShadowMap* availableShadowMap(Graph::Light::LightType type) const;
+    ShadowMap* availableShadowMap(Graph::Light::LightType type);
 };
 
 }

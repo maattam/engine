@@ -23,9 +23,11 @@ public:
     virtual bool bindTextures(GLenum location) = 0;
 
     virtual void setSize(const QSize& size) = 0;
+    virtual const QSize& size() = 0;
+
     virtual bool create() = 0;
 
-    virtual const QMatrix4x4& lightMVP() const = 0;
+    virtual const QMatrix4x4& lightVP() const = 0;
 };
 
 }

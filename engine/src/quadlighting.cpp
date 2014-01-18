@@ -5,6 +5,7 @@
 #include "graph/light.h"
 #include "gbuffer.h"
 #include "renderable/primitive.h"
+#include "shadowstage.h"
 
 #include "scene/sceneobservable.h"
 
@@ -12,7 +13,7 @@ using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher, unsigned int samples)
     : RenderStage(renderer), gbuffer_(gbuffer), fbo_(0), directionalLight_(nullptr), camera_(nullptr), observable_(nullptr),
-    quad_(Renderable::Primitive<Renderable::Quad>::instance()), lightningTech_(samples)
+    shadowStage_(nullptr), quad_(Renderable::Primitive<Renderable::Quad>::instance()), lightningTech_(samples)
 {
     lightningTech_.setGBuffer(&gbuffer);
 
@@ -61,6 +62,11 @@ void QuadLighting::setRenderTarget(GLuint fbo)
     fbo_ = fbo;
 }
 
+void QuadLighting::setShadowStage(ShadowStage* shadowStage)
+{
+    shadowStage_ = shadowStage;
+}
+
 void QuadLighting::render()
 {
     RenderStage::render();
@@ -74,20 +80,18 @@ void QuadLighting::render()
     }
 
     lightningTech_.setProjMatrix(camera_->projection());
-    lightningTech_.setViewMatrix(camera_->view());
+    lightningTech_.setCamera(*camera_);
     lightningTech_.setViewport(viewport_);
 
     gbuffer_.bindTextures();
+    quad_->bindVaoDirect();
 
     // Render directional light
     if(directionalLight_ != nullptr)
     {
         lightningTech_.enableDirectionalLight(*directionalLight_);
-        quad_->render();
+        quad_->renderDirect();
     }
-
-    lightningTech_.setCameraAxes(camera_->up(), camera_->right());
-    lightningTech_.setViewProjMatrix(camera_->worldView());
 
     // Cache view matrix for positioning quads
     viewMatrix_ = camera_->view();
@@ -100,9 +104,18 @@ void QuadLighting::render()
     for(Graph::Light* light : spotLights_)
     {
         setSpotLightExtents(light);
-        lightningTech_.enableSpotLight(*light);
+        
+        if(shadowStage_ != nullptr)
+        {
+            lightningTech_.enableSpotLight(*light, shadowStage_->shadowMap(light));
+        }
 
-        quad_->render();
+        else
+        {
+            lightningTech_.enableSpotLight(*light);
+        }
+
+        quad_->renderDirect();
     }
 
     // Blend point lights
@@ -111,9 +124,10 @@ void QuadLighting::render()
         setPointLightExtents(light);
         lightningTech_.enablePointLight(*light);
 
-        quad_->render();
+        quad_->renderDirect();
     }
 
+    gl->glBindVertexArray(0);
     gl->glDisable(GL_BLEND);
 }
 
