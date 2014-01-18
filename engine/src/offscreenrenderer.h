@@ -56,7 +56,7 @@ public:
     // Technique used for rendering batch.
     void setTechnique(Technique::Technique* tech);
 
-    typedef std::function<void(Material&, QMatrix4x4&)> OnRenderCallback;
+    typedef std::function<void(Material&, const QMatrix4x4&)> OnRenderCallback;
 
     // OnRenderCallback is called before each renderable is rendered.
     // This allows the caller to set technique's attributes for the current material.

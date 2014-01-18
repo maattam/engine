@@ -24,7 +24,7 @@ SpotLightMethod::SpotLightMethod(ResourceDespatcher& despatcher)
     tech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/shadowmap.frag"), Shader::Type::Fragment));
 
     // Set technique and OnRenderCallback for renderer.
-    renderer_.setRenderCallback([this] (Material& mat, const QMatrix4x4 mvp)
+    renderer_.setRenderCallback([this] (Material& mat, const QMatrix4x4& mvp)
         {
             if(!initTech_)
             {
