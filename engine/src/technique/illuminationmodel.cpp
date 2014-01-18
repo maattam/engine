@@ -9,7 +9,7 @@
 #include "graph/camera.h"
 #include "shadowmap.h"
 #include "mathelp.h"
-#include "material.h"
+#include "gbuffer.h"
 
 #include <qmath.h>
 
@@ -17,7 +17,7 @@ using namespace Engine;
 using namespace Engine::Technique;
 
 IlluminationModel::IlluminationModel(unsigned int samples)
-    : DSMaterialShader(samples)
+    : DSMaterialShader(samples), shadowUnit_(0)
 {
 }
 
@@ -58,7 +58,7 @@ void IlluminationModel::enableSpotLight(const Graph::Light& light, ShadowMap* sh
         setUniformValue("lightVP", shadow->lightVP());
         setUniformValue("shadowOffset", QVector2D(1.0 / shadow->size().width(), 1.0 / shadow->size().height()));
 
-        shadow->bindTextures(GL_TEXTURE0 + Material::TEXTURE_COUNT);
+        shadow->bindTextures(GL_TEXTURE0 + shadowUnit_);
     }
 
     else
@@ -111,7 +111,10 @@ bool IlluminationModel::init()
     if(resolveSubroutineLocation("fullscreenQuad", GL_VERTEX_SHADER) == GL_INVALID_INDEX)
         return false;
 
-    setUniformValue("shadowSampler", Material::TEXTURE_COUNT);
+    // Bind samplers after last gbuffer unit
+    shadowUnit_ = gbuffer()->textures().count();
+
+    setUniformValue("shadowSampler", shadowUnit_);
     setUniformValue("shadowEnabled", false);
 
     return true;

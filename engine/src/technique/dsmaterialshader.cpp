@@ -77,3 +77,8 @@ bool DSMaterialShader::init()
 
     return resolveUniformLocation("invPersProj") != -1;
 }
+
+GBuffer const* DSMaterialShader::gbuffer()
+{
+    return gbuffer_;
+}

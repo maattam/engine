@@ -46,6 +46,8 @@ public:
 protected:
     virtual bool init();
 
+    GBuffer const* gbuffer();
+
 private:
     GBuffer const* gbuffer_;
 

@@ -48,6 +48,7 @@ protected:
 private:
     QMatrix4x4 view_;
     QString lightningModel_;
+    int shadowUnit_;
 
     void setPointUniforms(const Graph::Light& spot);
 };

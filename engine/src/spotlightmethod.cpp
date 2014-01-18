@@ -8,11 +8,12 @@
 #include "singleshadowmap.h"
 #include "scene/sceneobservable.h"
 #include "graph/light.h"
-#include "graph/camera.h"
 #include "graph/scenenode.h"
 #include "graph/sceneleaf.h"
-#include "mathelp.h"
 #include "resourcedespatcher.h"
+
+#include "mathelp.h"
+#include "binder.h"
 
 using namespace Engine;
 
@@ -33,7 +34,7 @@ SpotLightMethod::SpotLightMethod(ResourceDespatcher& despatcher)
             }
 
             // Bind mask texture
-            mat.getTexture(Material::TEXTURE_MASK)->bind(GL_TEXTURE0 + Material::TEXTURE_MASK);
+            Binder::bind(mat.getTexture(Material::TEXTURE_MASK), GL_TEXTURE0 + Material::TEXTURE_MASK);
             tech_.setUniformValue("MVP", *cachedVP_ * mvp);
         }
     );
