@@ -48,9 +48,9 @@ Features
 
 Dependencies
 ------------
-**Qt 5.2 with OpenGL** [Qt]
-**Assimp** [Assimp]
-**OpenGL Image (GLI)** [GLI]
+- **Qt 5.2 with OpenGL** [Qt]
+- **Assimp** [Assimp]
+- **OpenGL Image (GLI)** [GLI]
 
 Screenshots
 -----------
