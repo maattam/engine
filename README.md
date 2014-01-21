@@ -42,6 +42,10 @@ Features
     [Assimp] converts many well-known 3D model or scene formats to internal Engine scene graph -supported structures.
 	This enables easy scene deployment with lights and cameras from eg. [Blender] without writing a single line of code.
 
+Author
+------
+Matti Määttä (maatta.matti@gmail.com)
+
 Screenshots
 -----------
 
