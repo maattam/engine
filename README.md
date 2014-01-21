@@ -11,7 +11,7 @@ computer graphics related algorithms.
 The project started as an introduction to basic [OpenGL] concepts, but has since grown to feature
 forward and modern deferred rendering, post-processing, shadow mapping and different lightning models.
 
-Most of the project is written in C\+\+, but the user interface has some JavaScript -derivate QML bits.
+Most of the project is written in C\+\+, but the user interface contains some JavaScript -derivate QML bits.
 The project architecture focuses on iterative developement by avoiding dependencies to implementations and
 employs heavy use of [SOLID] object-oriented design as a result. The project depends heavily on Qt,
 [Qt Quick] and [OpenGL] 4.2.
@@ -27,7 +27,7 @@ Features
     performance impact compared to forward rendering. Multisample anti-aliasing is supported in modern [OpenGL]
     pipeline using centroid-sampling edge detection.
 
-    ![deferred gbuffer](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/gbuffer.jpg)
+    ![deferred gbuffer](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/gbuffer.jpg)
 
 * ** Qt Quick integration **
 
@@ -35,7 +35,7 @@ Features
     Qt allows easy signaling between QML and C\+\+ parts of the engine. In the future I might look into scripting whole
     scenes in QML instead of C\+\+.
 
-    ![qtquick integration](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/qtquick.jpg)
+    ![qtquick integration](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/qtquick.jpg)
 
 * ** Asset importing using Assimp **
 
@@ -47,24 +47,24 @@ Screenshots
 
 ### Scene with 120 lights and post-processing
 
-[![scrn sponza1](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)
-[![scrn sponza2](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)
+[![scrn sponza1](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza1.jpg)
+[![scrn sponza2](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/sponza2.jpg)
 
 ### Dragon
 
-[![scrn dragon](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)
+[![scrn dragon](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/dragon.jpg)
 
 ### Scene with 500 point lights
 
-[![scrn 500lights](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)
+[![scrn 500lights](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/500lights.jpg)
 
 ## Forward rendering with shadows
 
-[![scrn forward](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)
+[![scrn forward](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/forward.jpg)
 
 ## Single-pass edge detection for deferred MSAA
 
-[![scrn edge](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)](https://bitbucket.org/naamakala/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)
+[![scrn edge](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)
 
 [OpenGL]: http://www.opengl.org/
 [Qt Quick]: http://qt-project.org/doc/qt-5.0/qtquick/qtquick-index.html
