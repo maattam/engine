@@ -46,6 +46,12 @@ Features
     [Assimp] converts many well-known 3D model or scene formats to internal Engine scene graph -supported structures.
 	This enables easy scene deployment with lights and cameras from eg. [Blender] without writing a single line of code.
 
+Dependencies
+------------
+**Qt 5.2 with OpenGL** [Qt]
+**Assimp** [Assimp]
+**OpenGL Image (GLI)** [GLI]
+
 Screenshots
 -----------
 
@@ -71,8 +77,10 @@ Screenshots
 [![scrn edge](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)](https://bitbucket.org/maattam/engine/raw/ac963b07500b0b510c733c2b0dab75d3bd2b9288/images/edgedetect.jpg)
 
 [OpenGL]: http://www.opengl.org/
+[Qt]: http://qt-project.org/
 [Qt Quick]: http://qt-project.org/doc/qt-5.0/qtquick/qtquick-index.html
 [Assimp]: http://assimp.sourceforge.net/
 [Blender]: http://www.blender.org/
 [SOLID]: http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+[GLI]: http://www.g-truc.net/project-0024.html
 [maatta.matti@gmail.com]: mailto:maatta.matti@gmail.com
