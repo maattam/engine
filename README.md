@@ -16,6 +16,10 @@ The project architecture focuses on iterative developement by avoiding dependenc
 employs heavy use of [SOLID] object-oriented design as a result. The project depends heavily on Qt,
 [Qt Quick] and [OpenGL] 4.2.
 
+Author
+------
+Matti Määttä ([maatta.matti@gmail.com])
+
 Features
 --------
 
@@ -41,10 +45,6 @@ Features
 
     [Assimp] converts many well-known 3D model or scene formats to internal Engine scene graph -supported structures.
 	This enables easy scene deployment with lights and cameras from eg. [Blender] without writing a single line of code.
-
-Author
-------
-Matti Määttä (maatta.matti@gmail.com)
 
 Screenshots
 -----------
@@ -75,3 +75,4 @@ Screenshots
 [Assimp]: http://assimp.sourceforge.net/
 [Blender]: http://www.blender.org/
 [SOLID]: http://en.wikipedia.org/wiki/SOLID_(object-oriented_design)
+[maatta.matti@gmail.com]: mailto:maatta.matti@gmail.com
