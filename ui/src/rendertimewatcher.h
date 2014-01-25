@@ -16,8 +16,10 @@
 #include <QOpenGLTimeMonitor>
 
 namespace Engine {
-    class RenderStage;
-}
+
+class RenderStage;
+
+namespace Ui {
 
 class RenderTimeWatcher : public QObject
 {
@@ -55,5 +57,7 @@ private:
 
     bool frameCaptured_;
 };
+
+}}
 
 #endif // RENDERTIMEWATCHER_H

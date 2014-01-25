@@ -11,9 +11,14 @@
 #include <QObject>
 #include <QElapsedTimer>
 #include <QVariant>
+#include <QStringList>
 
 class QQuickView;
 class QQuickItem;
+
+namespace Engine { namespace Ui {
+
+class QmlPresenter;
 
 class UiController : public QObject
 {
@@ -24,9 +29,13 @@ public:
 
     void setRootObject(QQuickItem* root);
     void setView(QQuickView* view);
+    void setQmlPresenter(QmlPresenter* presenter);
+
+    void setSceneList(const QStringList& scenes, const QString& current);
 
 signals:
     void updateValue(QVariant name, QVariant value, QVariant unit);
+    void updateScenes(QVariant list, QVariant current);
     void clearValues();
 
 public slots:
@@ -39,5 +48,7 @@ private:
 
     MovingAverage<qint64, double, 10> frameTime_;
 };
+
+}}
 
 #endif // demoui/main.qml

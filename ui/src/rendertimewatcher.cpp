@@ -9,6 +9,8 @@
 
 #include <QOpenGLTimeMonitor>
 
+using namespace Engine::Ui;
+
 RenderTimeWatcher::RenderTimeWatcher()
     : QObject(), frameCaptured_(true)
 {

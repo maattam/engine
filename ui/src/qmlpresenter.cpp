@@ -3,7 +3,7 @@
 //  Summary  : 
 //
 
-#include "demopresenter.h"
+#include "qmlpresenter.h"
 
 #include "weakresourcedespatcher.h"
 #include "scene/basicscenemanager.h"
@@ -18,23 +18,25 @@
 #include "technique/hdrtonemap.h"
 #include "effect/hdr.h"
 #include "rendertimewatcher.h"
-#include "uicontroller.h"
 
 #include <QOpenGLFRamebufferObject>
 #include <QDebug>
 #include <QThread>
 
+using namespace Engine;
+using namespace Engine::Ui;
+
 namespace {
     unsigned int toggleRenderFlag(unsigned int current, unsigned int bits);
 }
 
-DemoPresenter::DemoPresenter(QObject* parent)
-    : ScenePresenter(parent), context_(nullptr), scene_("Sponza"), uiController_(nullptr)
+QmlPresenter::QmlPresenter(QObject* parent)
+    : ScenePresenter(parent), context_(nullptr), sceneFactory_(nullptr), fov_(75.0f)
 {
     input_.reset(new InputState);
 }
 
-DemoPresenter::~DemoPresenter()
+QmlPresenter::~QmlPresenter()
 {
     renderer_.reset();
     debugRenderer_.reset();
@@ -43,22 +45,22 @@ DemoPresenter::~DemoPresenter()
     sceneManager_.reset();
 }
 
-void DemoPresenter::setContext(Engine::Ui::RendererContext* context)
+void QmlPresenter::setContext(Engine::Ui::RendererContext* context)
 {
     context_ = context;
 }
 
-Engine::Ui::InputEventListener* DemoPresenter::inputListener() const
+void QmlPresenter::setSceneFactory(SceneFactory* factory)
+{
+    sceneFactory_ = factory;
+}
+
+Engine::Ui::InputEventListener* QmlPresenter::inputListener() const
 {
     return input_.get();
 }
 
-void DemoPresenter::setUiController(UiController* controller)
-{
-    uiController_ = controller;
-}
-
-void DemoPresenter::renderScene()
+void QmlPresenter::renderScene()
 {
     updateView();
 
@@ -84,7 +86,7 @@ void DemoPresenter::renderScene()
         }
 
         sceneController_->setManager(sceneManager_.get());
-        sceneController_->setFov(75.0f);
+        sceneController_->setFov(fov_);
         sceneController_->setInput(input_.get());
     }
 
@@ -94,12 +96,12 @@ void DemoPresenter::renderScene()
     update();
 }
 
-void DemoPresenter::viewSizeChanged(QSize size)
+void QmlPresenter::viewSizeChanged(QSize size)
 {
     viewSize_ = size;
 }
 
-void DemoPresenter::initialize()
+void QmlPresenter::initialize()
 {
     qDebug() << "Render thread:" << QThread::currentThreadId();
 
@@ -110,8 +112,12 @@ void DemoPresenter::initialize()
     }
 
     despatcher_.reset(new Engine::WeakResourceDespatcher(2));
+    if(sceneFactory_ != nullptr)
+    {
+        sceneFactory_->setDespatcher(despatcher_.get());
+    }
+
     rendererFactory_.reset(new RendererFactory(*despatcher_));
-    sceneFactory_.reset(new SceneFactory(*despatcher_));
     sceneManager_.reset(new Engine::BasicSceneManager());
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
@@ -120,11 +126,11 @@ void DemoPresenter::initialize()
     renderTimeWatcher_.reset(new RenderTimeWatcher());
     rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
 
-    connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, uiController_, &UiController::watchValue);
+    connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, this, &QmlPresenter::watchValue);
 #endif
 }
 
-void DemoPresenter::render()
+void QmlPresenter::render()
 {
     if(!(debugRenderer_->flags() & Engine::DebugRenderer::DEBUG_WIREFRAME))
     {
@@ -148,7 +154,7 @@ void DemoPresenter::render()
     }
 }
 
-void DemoPresenter::updateView()
+void QmlPresenter::updateView()
 {
     if(oldSize_ != viewSize_)
     {
@@ -169,13 +175,19 @@ void DemoPresenter::updateView()
     }
 }
 
-void DemoPresenter::update()
+void QmlPresenter::update()
 {
     sceneController_->update(frameTimer_.restart());
     sceneManager_->prepareNextFrame();
 }
 
-void DemoPresenter::tonemapAttributeChanged(QString name, QVariant value)
+void QmlPresenter::setScene(QString scene)
+{
+    sceneController_.reset();
+    scene_ = scene;
+}
+
+void QmlPresenter::tonemapAttributeChanged(QString name, QVariant value)
 {
     if(rendererFactory_ == nullptr)
     {
@@ -218,7 +230,7 @@ void DemoPresenter::tonemapAttributeChanged(QString name, QVariant value)
     }
 }
 
-void DemoPresenter::generalAttributeChanged(QString name, QVariant value)
+void QmlPresenter::generalAttributeChanged(QString name, QVariant value)
 {
     if(!rendererFactory_ || !sceneController_)
     {
@@ -238,13 +250,21 @@ void DemoPresenter::generalAttributeChanged(QString name, QVariant value)
         }
 
         renderer_.reset();
-        QMetaObject::invokeMethod(uiController_, "clearWatchList");
+        emit clearWatchList();
     }
 
     else if(name == "scene")
     {
-        sceneController_.reset();
-        scene_ = value.toString();
+        setScene(value.toString());
+    }
+
+    else if(name == "fov")
+    {
+        fov_ = value.toFloat();
+        if(sceneController_ != nullptr)
+        {
+            sceneController_->setFov(fov_);
+        }
     }
 
     else if(name == "show gbuffer")

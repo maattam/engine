@@ -40,8 +40,8 @@ Rectangle {
         }
 
         ComboBoxAttribute {
+            id: scene
             name: "Scene"
-            model: [ "Sponza", "Shittyboxes", "Lights" ]
         }
 
         function onValueChange(name, value) {
@@ -50,6 +50,14 @@ Rectangle {
             }
 
             general.valueChanged(name, value);
+        }
+    }
+
+    function setScenes(scenes, current) {
+        scene.model = scenes;
+
+        if(current !== undefined) {
+            scene.setSelected(current);
         }
     }
 }

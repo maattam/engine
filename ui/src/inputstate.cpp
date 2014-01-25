@@ -5,6 +5,8 @@
 
 #include "inputstate.h"
 
+using namespace Engine::Ui;
+
 InputState::InputState(QObject* parent)
     : InputEventListener(parent), wheelDelta_(0)
 {

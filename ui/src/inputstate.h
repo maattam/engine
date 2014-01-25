@@ -11,7 +11,9 @@
 #include <QPoint>
 #include <QMap>
 
-class InputState : public Engine::Ui::InputEventListener
+namespace Engine { namespace Ui {
+
+class InputState : public InputEventListener
 {
     Q_OBJECT
 
@@ -48,5 +50,7 @@ private:
 
     QMap<int, bool> keyMap_;
 };
+
+}}
 
 #endif // INPUTSTATE_H

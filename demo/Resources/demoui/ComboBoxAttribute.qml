@@ -36,4 +36,8 @@ Rectangle {
             }
         }
     }
+
+    function setSelected(text) {
+        comboBox.currentIndex = comboBox.find(text);
+    }
 }

@@ -13,9 +13,11 @@
 #include <QCursor>
 
 using namespace Engine;
+using namespace Engine::Ui;
 
-FreeLookScene::FreeLookScene(Engine::ResourceDespatcher& despatcher)
-    : despatcher_(despatcher), scene_(nullptr), speed_(15.0f), input_(nullptr),
+FreeLookScene::FreeLookScene(ResourceDespatcher& despatcher)
+    : SceneController(despatcher),
+    despatcher_(despatcher), scene_(nullptr), speed_(15.0f), input_(nullptr),
     camera_(new Graph::Camera(Graph::Camera::PERSPECTIVE))
 {
     camera_->setDirection(QVector3D(1, 0, 0));
@@ -38,7 +40,7 @@ void FreeLookScene::setFov(float angle)
     camera_->update();
 }
 
-void FreeLookScene::setManager(Engine::SceneManager* model)
+void FreeLookScene::setManager(SceneManager* model)
 {
     scene_ = model;
 

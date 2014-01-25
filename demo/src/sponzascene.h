@@ -14,7 +14,7 @@ namespace Engine {
     class ResourceDespatcher;
 }
 
-class SponzaScene : public FreeLookScene
+class SponzaScene : public Engine::Ui::FreeLookScene
 {
 public:
     explicit SponzaScene(Engine::ResourceDespatcher& despatcher);

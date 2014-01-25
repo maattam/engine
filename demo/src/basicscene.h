@@ -19,7 +19,7 @@ namespace Engine {
     class ResourceDespatcher;
 }
 
-class BasicScene : public QObject, public FreeLookScene
+class BasicScene : public QObject, public Engine::Ui::FreeLookScene
 {
     Q_OBJECT
 

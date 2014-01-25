@@ -9,18 +9,20 @@
 #include <memory>
 
 namespace Engine {
-    class ResourceDespatcher;
-    class Renderer;
-    class GBuffer;
-    
-    namespace Technique {
-        class HDRTonemap;
-    }
 
-    namespace Effect {
-        class Hdr;
-    }
+class ResourceDespatcher;
+class Renderer;
+class GBuffer;
+    
+namespace Technique {
+    class HDRTonemap;
 }
+
+namespace Effect {
+    class Hdr;
+}
+
+namespace Ui {
 
 class RenderTimeWatcher;
 
@@ -29,15 +31,15 @@ class RendererFactory
 public:
     enum RendererType { DEFERRED, FORWARD };
 
-    RendererFactory(Engine::ResourceDespatcher& despatcher, RendererType type = DEFERRED);
+    RendererFactory(ResourceDespatcher& despatcher, RendererType type = DEFERRED);
 
     void setRendererType(RendererType type);
 
-    Engine::Renderer* create(int samples);
+    Renderer* create(int samples);
 
-    Engine::GBuffer* gbuffer() const;
-    Engine::Effect::Hdr* hdr() const;
-    Engine::Technique::HDRTonemap* tonemap() const;
+    GBuffer* gbuffer() const;
+    Effect::Hdr* hdr() const;
+    Technique::HDRTonemap* tonemap() const;
 
     void setAutoExposure(bool value);
 
@@ -49,14 +51,16 @@ private:
 
     RenderTimeWatcher* watcher_;
 
-    std::shared_ptr<Engine::GBuffer> gbuffer_;
-    std::shared_ptr<Engine::Technique::HDRTonemap> tonemap_;
-    std::shared_ptr<Engine::Effect::Hdr> hdrPostfx_;
+    std::shared_ptr<GBuffer> gbuffer_;
+    std::shared_ptr<Technique::HDRTonemap> tonemap_;
+    std::shared_ptr<Effect::Hdr> hdrPostfx_;
 
     void createTonemapper(int samples);
 
     Engine::Renderer* createForwardRenderer(int samples);
     Engine::Renderer* createDeferredRenderer(int samples);
 };
+
+}}
 
 #endif // RENDERERFACTORY_H

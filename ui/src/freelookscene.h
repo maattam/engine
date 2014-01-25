@@ -6,6 +6,8 @@
 #ifndef FREELOOKSCENE_H
 #define FREELOOKSCENE_H
 
+#include "scenecontroller.h"
+
 #include "cubemaptexture.h"
 #include "graph/light.h"
 #include "graph/camera.h"
@@ -13,16 +15,12 @@
 
 #include <QPoint>
 
-namespace Engine {
-    class SceneManager;
-}
+namespace Engine { namespace Ui {
 
-class InputState;
-
-class FreeLookScene
+class FreeLookScene : public SceneController
 {
 public:
-    explicit FreeLookScene(Engine::ResourceDespatcher& despatcher);
+    explicit FreeLookScene(ResourceDespatcher& despatcher);
     virtual ~FreeLookScene();
 
     void setInput(InputState* input);
@@ -38,8 +36,8 @@ public:
     void setFlySpeed(float speed);
     void setSkyboxTexture(const QString& fileName);
 
-    // Helper functions which create a new leaf, add it the scene
-    // and attache it to the root node.
+    // Helper functions which creates a new leaf, adds it the scene
+    // and attaches it to the root node.
     Engine::Graph::Light::Ptr createLight(Engine::Graph::Light::LightType type);
 
 protected:
@@ -63,5 +61,7 @@ private:
 
     Engine::Graph::Camera::Ptr camera_;
 };
+
+}}
 
 #endif // FREELOOKSCENE_H

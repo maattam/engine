@@ -9,8 +9,14 @@
 #include <QScreen>
 
 #include "sceneview.h"
-#include "demoapplication.h"
+#include "qmlapplication.h"
 #include "uicontroller.h"
+#include "scenefactory.h"
+
+// Demo scenes
+#include "basicscene.h"
+#include "sponzascene.h"
+#include "lightscene.h"
 
 int main(int argc, char *argv[])
 {
@@ -27,23 +33,29 @@ int main(int argc, char *argv[])
 #endif
 
     // Create application
-    DemoApplication demo(format);
+    Engine::Ui::QmlApplication demo(format);
 
+    // Create controller for communicating between QmlPresenter and Qt Quick
+    Engine::Ui::UiController ui;
+    demo.setUiController(&ui);
+
+    // Create window
     Engine::Ui::SceneView view;
+    demo.setView(&view);
     view.setSource(QUrl("qrc:/demoui/main.qml"));
+
+    // Register scene types
+    Engine::Ui::SceneFactory factory;
+    demo.setSceneFactory(&factory, "Sponza");
+
+    factory.registerScene<BasicScene>("Shittyboxes");
+    factory.registerScene<SponzaScene>("Sponza");
+    factory.registerScene<LightScene>("Lights");
 
     // Disable VSync.
     /*QSurfaceFormat viewFormat = view.format();
     viewFormat.setSwapBehavior(QSurfaceFormat::SingleBuffer);
     view.setFormat(viewFormat);*/
-
-    demo.setView(&view);
-
-    UiController ui;
-    ui.setRootObject(view.rootObject());
-    ui.setView(&view);
-
-    demo.setUiController(&ui);
 
 #ifdef _DEBUG
     // Move the window to second monitor for debugging convenience

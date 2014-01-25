@@ -27,6 +27,7 @@
 #include <QDebug>
 
 using namespace Engine;
+using namespace Engine::Ui;
 
 RendererFactory::RendererFactory(ResourceDespatcher& despatcher, RendererType type)
     : despatcher_(despatcher), type_(type), watcher_(nullptr)
