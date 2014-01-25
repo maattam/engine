@@ -5,7 +5,6 @@
 
 #include <QGuiApplication>
 #include <QSurfaceFormat>
-#include <QQuickItem>
 #include <QScreen>
 
 #include "sceneview.h"

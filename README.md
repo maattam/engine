@@ -52,6 +52,13 @@ Dependencies
 - **Assimp** [Assimp]
 - **OpenGL Image (GLI)** [GLI]
 
+Usage
+-----
+Scenes can be created by deriving new classes from Ui::SceneController and registering them to
+Ui::SceneFactory. See example demo/src/main.cpp. Unfortunately the included demo can't be run since I can't
+publish the used assets.
+Compiling is only possible at the moment on Visual Studio 2012 and above. See the list of dependencies above.
+
 Screenshots
 -----------
 
