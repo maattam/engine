@@ -16,6 +16,7 @@
 
 #include <QTime>
 #include <QDebug>
+#include <qmath.h>
 
 using namespace Engine;
 
@@ -66,21 +67,32 @@ void GameOfLife::initialise()
     Graph::Light::Ptr dirLight = createLight(Graph::Light::LIGHT_DIRECTIONAL);
     dirLight->setColor(QVector3D(255, 214, 170) / 255.0f);
     dirLight->setDirection(QVector3D(0.0f, -1.0f, -1.0f));
-    dirLight->setAmbientIntensity(0.05f);
+    dirLight->setAmbientIntensity(0.5f);
     dirLight->setDiffuseIntensity(1.0f);
 
     Renderable::Cube::Ptr cube = Renderable::Primitive<Renderable::Cube>::instance();
 
+    const float gap = 0.15f;
+    const float circ = (WIDTH - 1) * (1 + gap);
+    const double radius = circ / (2 * M_PI);
+
     // Initialise space
     for(int x = 0; x < WIDTH; ++x)
     {
+        qreal coeff = (x * (1 + gap)) / circ * 2 * M_PI;
+        float xcoord = qSin(coeff) * radius;
+        float zcoord = qCos(coeff) * radius;
+
+        QVector3D direction = -QVector3D(xcoord, 0, zcoord).normalized();
+
         for(int y = 0; y < HEIGHT; ++y)
         {
             // Set fixed transformation
             Population& pop = space_[y][x];
             pop.node = rootNode().createChild();
             pop.node->setScale(0.5f);
-            pop.node->setPosition(QVector3D(x, y, 0.5f - (qrand() % 10) / 10.0f));
+            pop.node->setPosition(QVector3D(xcoord, y * (1 + gap), zcoord) + direction * (0.5f - (qrand() % 10) / 10.0f));
+            pop.node->setDirection(direction);
 
             // Apply random color
             Material::Ptr material = std::make_shared<Material>();
@@ -134,6 +146,7 @@ void GameOfLife::randomSeed()
         {
             // Make random population
             setGeneration(currentGen_, x, y, qrand() % modulus == 0);
+            //setGeneration(currentGen_, x, y, true);
         }
     }
 }

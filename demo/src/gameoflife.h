@@ -19,7 +19,7 @@
 class GameOfLife : public Engine::Ui::FreeLookScene
 {
 public:
-    enum { WIDTH = 256, HEIGHT = 128 };
+    enum { WIDTH = 512, HEIGHT = 128 };
 
     explicit GameOfLife(Engine::ResourceDespatcher& despatcher);
     ~GameOfLife();
