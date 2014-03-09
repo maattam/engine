@@ -37,7 +37,7 @@ void GameOfLife::update(unsigned int elapsed)
     {
         input()->setKey(Qt::Key::Key_F, false);
 
-        qDebug() << "Generation: " << ++generationNum_;
+        qDebug() << "Generation:" << ++generationNum_;
         nextGeneration();
     }
 
@@ -60,7 +60,7 @@ void GameOfLife::initialise()
     Graph::Light::Ptr dirLight = createLight(Graph::Light::LIGHT_DIRECTIONAL);
     dirLight->setColor(QVector3D(255, 214, 170) / 255.0f);
     dirLight->setDirection(QVector3D(0.0f, -1.0f, -1.0f));
-    dirLight->setAmbientIntensity(0.005f);
+    dirLight->setAmbientIntensity(0.05f);
     dirLight->setDiffuseIntensity(1.0f);
 
     Renderable::Cube::Ptr cube = Renderable::Primitive<Renderable::Cube>::instance();
@@ -74,7 +74,7 @@ void GameOfLife::initialise()
             Population& pop = space_[y][x];
             pop.node = rootNode().createChild();
             pop.node->setScale(0.5f);
-            pop.node->setPosition(QVector3D(x, y, 0));
+            pop.node->setPosition(QVector3D(x, y, 0.5f - (qrand() % 10) / 10.0f));
 
             // Apply random color
             Material::Ptr material = std::make_shared<Material>();
