@@ -33,6 +33,7 @@ protected:
 
 private:
     unsigned int generationNum_;
+    bool autoAdvance_;
 
     struct Population
     {
@@ -54,6 +55,9 @@ private:
     unsigned int countNeighbours(const GenerationType& gen, const QPoint& loc);
 
     QPoint wrap(QPoint loc);
+
+    // Sets and displays tile
+    void setGeneration(GenerationType& gen, int x, int y, bool alive);
 
     void nextGeneration();
     void randomSeed();

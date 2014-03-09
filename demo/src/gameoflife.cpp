@@ -20,7 +20,7 @@
 using namespace Engine;
 
 GameOfLife::GameOfLife(Engine::ResourceDespatcher& despatcher)
-    : FreeLookScene(despatcher), generationNum_(0)
+    : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false)
 {
     qsrand(QTime::currentTime().msec());
 }
@@ -33,7 +33,13 @@ void GameOfLife::update(unsigned int elapsed)
 {
     FreeLookScene::update(elapsed);
 
-    if(input()->keyDown(Qt::Key::Key_F))
+    if(input()->keyDown(Qt::Key::Key_R))
+    {
+        input()->setKey(Qt::Key::Key_R, false);
+        autoAdvance_ = !autoAdvance_;
+    }
+
+    if(input()->keyDown(Qt::Key::Key_F) || autoAdvance_)
     {
         input()->setKey(Qt::Key::Key_F, false);
 
@@ -106,23 +112,12 @@ void GameOfLife::nextGeneration()
                 nextPopulation = true;
             }
 
-            else if(currentPopulation && neighbours < 4 && neighbours > 1)
+            else if(currentPopulation && (neighbours == 2 || neighbours == 3))
             {
                 nextPopulation = true;
             }
 
-            nextGen_[y][x] = nextPopulation;
-            Population& pop = space_[y][x];
-
-            if(nextPopulation)
-            {
-                pop.leaf->attach(pop.node);
-            }
-
-            else
-            {
-                pop.leaf->detach();
-            }
+            setGeneration(nextGen_, x, y, nextPopulation);
         }
     }
 
@@ -138,19 +133,24 @@ void GameOfLife::randomSeed()
         for(int y = 0; y < HEIGHT; ++y)
         {
             // Make random population
-            currentGen_[y][x] = qrand() % modulus == 0;
-            Population& pop = space_[y][x];
-
-            if(currentGen_[y][x])
-            {
-               pop.leaf->attach(pop.node);
-            }
-
-            else
-            {
-                pop.leaf->detach();
-            }
+            setGeneration(currentGen_, x, y, qrand() % modulus == 0);
         }
+    }
+}
+
+void GameOfLife::setGeneration(GenerationType& gen, int x, int y, bool alive)
+{
+    Population& pop = space_[y][x];
+    gen[y][x] = alive;
+
+    if(alive)
+    {
+        pop.leaf->attach(pop.node);
+    }
+
+    else
+    {
+        pop.leaf->detach();
     }
 }
 
@@ -158,9 +158,9 @@ unsigned int GameOfLife::countNeighbours(const GenerationType& gen, const QPoint
 {
     unsigned int count = 0;
 
-    for(int x = -1; x < 1; ++x)
+    for(int x = -1; x <= 1; ++x)
     {
-        for(int y = -1; y < 1; ++y)
+        for(int y = -1; y <= 1; ++y)
         {
             if(x == 0 && y == 0)
             {
