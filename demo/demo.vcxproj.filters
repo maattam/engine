@@ -66,12 +66,18 @@
     <ClCompile Include="src\lightscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gameoflife.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\sponzascene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\lightscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gameoflife.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

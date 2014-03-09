@@ -16,6 +16,7 @@
 #include "basicscene.h"
 #include "sponzascene.h"
 #include "lightscene.h"
+#include "gameoflife.h"
 
 int main(int argc, char *argv[])
 {
@@ -50,6 +51,7 @@ int main(int argc, char *argv[])
     factory.registerScene<BasicScene>("Shittyboxes");
     factory.registerScene<SponzaScene>("Sponza");
     factory.registerScene<LightScene>("Lights");
+    factory.registerScene<GameOfLife>("Game of life");
 
     // Disable VSync.
     /*QSurfaceFormat viewFormat = view.format();
