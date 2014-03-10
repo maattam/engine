@@ -21,7 +21,7 @@
 using namespace Engine;
 
 GameOfLife::GameOfLife(Engine::ResourceDespatcher& despatcher)
-    : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false)
+    : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false), totalElapsed_(0)
 {
     qsrand(QTime::currentTime().msec());
 }
@@ -33,6 +33,7 @@ GameOfLife::~GameOfLife()
 void GameOfLife::update(unsigned int elapsed)
 {
     FreeLookScene::update(elapsed);
+    totalElapsed_ += elapsed;
 
     if(input()->keyDown(Qt::Key::Key_R))
     {
@@ -44,8 +45,12 @@ void GameOfLife::update(unsigned int elapsed)
     {
         input()->setKey(Qt::Key::Key_F, false);
 
-        qDebug() << "Generation:" << ++generationNum_;
-        nextGeneration();
+        if(totalElapsed_ >= 100 || !autoAdvance_)
+        {
+            totalElapsed_ = 0;
+            qDebug() << "Generation:" << ++generationNum_;
+            nextGeneration();
+        }
     }
 
     if(input()->keyDown(Qt::Key::Key_G))
@@ -56,6 +61,8 @@ void GameOfLife::update(unsigned int elapsed)
         qDebug() << "Generation: 0";
         randomSeed();
     }
+
+    rootNode().rotate(M_PI_4 * static_cast<float>(elapsed) / 1000, UNIT_Y);
 }
 
 void GameOfLife::initialise()
@@ -74,7 +81,7 @@ void GameOfLife::initialise()
 
     const float gap = 0.15f;
     const float circ = (WIDTH - 1) * (1 + gap);
-    const double radius = circ / (2 * M_PI);
+    const qreal radius = circ / (2 * M_PI);
 
     // Initialise space
     for(int x = 0; x < WIDTH; ++x)

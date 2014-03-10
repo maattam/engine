@@ -33,6 +33,7 @@ protected:
 
 private:
     unsigned int generationNum_;
+    unsigned int totalElapsed_;
     bool autoAdvance_;
 
     struct Population
