@@ -31,6 +31,12 @@ SceneNode* SceneNode::getParent() const
     return parent_;
 }
 
+void SceneNode::setParent(SceneNode* parent)
+{
+    parent_ = parent;
+    markDirty();
+}
+
 void SceneNode::propagate()
 {
     // Update children
@@ -53,7 +59,7 @@ void SceneNode::updateTransformation(bool updateWorld)
         SceneNode* parent = getParent();
         if(parent != nullptr)
         {
-            world_ = parent->transformation() * local_;
+            world_ = parent->world_ * local_;
         }
 
         else
@@ -99,7 +105,6 @@ void SceneNode::addChild(SceneNode* child)
     {
         child->setParent(this);
         children_.push_back(child);
-        childDirty_ = true;
     }
 }
 
@@ -142,11 +147,6 @@ SceneNode* SceneNode::createChild()
     childDirty_ = true;
 
     return child;
-}
-
-void SceneNode::setParent(SceneNode* parent)
-{
-    parent_ = parent;
 }
 
 void SceneNode::setPosition(const QVector3D& position)

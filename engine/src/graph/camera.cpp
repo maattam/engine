@@ -57,9 +57,13 @@ void Camera::setPosition(const QVector3D& position)
     position_ = position;
 }
 
-const QVector3D& Camera::position() const
+QVector3D Camera::position() const
 {
-    // TODO: Add world position from parent node
+    if(parentNode() != nullptr)
+    {
+        return parentNode()->worldPosition() + position_;
+    }
+
     return position_;
 }
 
@@ -84,8 +88,13 @@ void Camera::rotate(float angle, const QVector3D& axis)
     rotate(QQuaternion::fromAxisAndAngle(axis, angle));
 }
 
-const QQuaternion& Camera::orientation() const
+QQuaternion Camera::orientation() const
 {
+    if(parentNode() != nullptr)
+    {
+        return orientation_ * parentNode()->worldOrientation();
+    }
+
     return orientation_;
 }
 
@@ -110,8 +119,6 @@ void Camera::setDirection(const QVector3D& direction)
     {
         orientation_ = rotationBetweenVectors(start, dest);
     }
-
-    // TODO: Transform to parent space when the orientation is derived from parent node
 
     orientation_.normalize();
 }
@@ -198,19 +205,19 @@ float Camera::farPlane() const
 QVector3D Camera::up() const
 {
     // Default up is +Y, so we rotate +Y to find the current up.
-    return orientation_.rotatedVector(UNIT_Y);
+    return orientation().rotatedVector(UNIT_Y);
 }
 
 QVector3D Camera::right() const
 {
     // Default right is +X
-    return orientation_.rotatedVector(UNIT_X);
+    return orientation().rotatedVector(UNIT_X);
 }
 
 QVector3D Camera::direction() const
 {
     // Default direction points towards -Z
-    return orientation_.rotatedVector(-UNIT_Z);
+    return orientation().rotatedVector(-UNIT_Z);
 }
 
 void Camera::setFixedYaw(bool value, const QVector3D& yaw)
@@ -221,12 +228,12 @@ void Camera::setFixedYaw(bool value, const QVector3D& yaw)
 
 void Camera::pitch(float angle)
 {
-    rotate(angle, orientation_.rotatedVector(UNIT_X));
+    rotate(angle, orientation().rotatedVector(UNIT_X));
 }
 
 void Camera::roll(float angle)
 {
-    rotate(angle, orientation_.rotatedVector(UNIT_Z));
+    rotate(angle, orientation().rotatedVector(UNIT_Z));
 }
 
 void Camera::yaw(float angle)
@@ -241,7 +248,7 @@ void Camera::yaw(float angle)
     else
     {
         // If axis is not fixed, we rotate by the local Y
-        axis = orientation_.rotatedVector(UNIT_Y);
+        axis = orientation().rotatedVector(UNIT_Y);
     }
 
     rotate(angle, axis);

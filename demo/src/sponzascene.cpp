@@ -155,7 +155,6 @@ void SponzaScene::initialise()
     spotLight_->attach(sphereNode_);
 
     cameraNode_ = rootNode().createChild();
-    camera()->attach(cameraNode_);
 
     const int LIGHTS_PER_ROW = 10;
 

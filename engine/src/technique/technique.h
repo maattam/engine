@@ -10,8 +10,8 @@
 #include "shaderprogram.h"
 
 #include <QString>
-#include <QHash>
 #include <QMap>
+#include <QHash>
 #include <QVector>
 
 namespace Engine { 

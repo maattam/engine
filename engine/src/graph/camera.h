@@ -40,7 +40,7 @@ public:
     CameraType type() const;
 
     void setPosition(const QVector3D& position);
-    const QVector3D& position() const;
+    QVector3D position() const;
 
     // Adds offset to the camera's position
     void move(const QVector3D& offset);
@@ -62,7 +62,7 @@ public:
     void yaw(float angle);
 
     void setOrientation(const QQuaternion& quaternion);
-    const QQuaternion& orientation() const;
+    QQuaternion orientation() const;
 
     // Sets the camera's direction to point towards the given direction
     // The underlying rotation is reset and is not cumulative.
