@@ -51,7 +51,7 @@ const QMatrix4x4& SceneNode::transformation() const
 void SceneNode::updateTransformation(bool updateWorld)
 {
     // Update world transformation if node is dirty
-    updateWorld = updateWorld | localDirty_;
+    updateWorld = updateWorld || localDirty_;
 
     // If parent or local transformation has changed; we can't rely on old world transformation
     if(updateWorld)
@@ -82,7 +82,7 @@ void SceneNode::updateTransformation(bool updateWorld)
 
 void SceneNode::applyTransformation(const QMatrix4x4& matrix)
 {
-    local_ = matrix * local_;
+	local_ = matrix;
     markDirty();
 }
 

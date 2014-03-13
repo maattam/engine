@@ -1,7 +1,7 @@
 //
 //  Author   : Matti Määttä
 //  Type     : Vertex shader
-//  Summary  : GBuffer accumulationshader
+//  Summary  : GBuffer accumulation shader
 //
 
 #version 420

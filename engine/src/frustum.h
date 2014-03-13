@@ -16,7 +16,7 @@ namespace Engine {
 bool isInsideFrustum(const AABB& aabb, const QMatrix4x4& mvp);
 
 // http://fgiesen.wordpress.com/2010/10/17/view-frustum-culling/
-inline bool extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane);
+extern bool extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane);
 
 }
 

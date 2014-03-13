@@ -62,14 +62,14 @@ void BasicSceneManager::prepareNextFrame()
 
     rootNode_.propagate();
 
-    Graph::Camera& camera = *culledCameras_.first();
-    camera.setAspectRatio(static_cast<float>(viewport_.width()) / viewport_.height());
-    camera.update();
+    Graph::Camera* camera = culledCameras_.first();
+    camera->setAspectRatio(static_cast<float>(viewport_.width()) / viewport_.height());
+    camera->update();
 
-    renderer_->setCamera(&camera);
+    renderer_->setCamera(camera);
 
     // Cull visible geometry and lights
-    findVisibleLeaves(camera.worldView(), culledGeometry_);
+    findVisibleLeaves(camera->worldView(), culledGeometry_);
 
     // Sort visible geometry
     culledGeometry_.sort(RenderItemSorter());
@@ -201,6 +201,10 @@ void BasicSceneManager::eraseScene()
     culledCameras_.clear();
     leaves_.clear();
     setSkyboxCubemap(nullptr);
+
+	// Clear SceneGraph and reset tranformation
+	rootNode().removeAllChildren();
+	rootNode().applyTransformation(QMatrix4x4());
 
     // Reset renderer state
     notify(&SceneObserver::sceneInvalidated);

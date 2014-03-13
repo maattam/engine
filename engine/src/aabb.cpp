@@ -67,44 +67,24 @@ bool AABB::resize(const QVector3D& point)
         return true;
     }
 
-    // X
-    if(min_.x() > point.x())
-    {
-        min_.setX(point.x());
-        updated = true;
-    }
+	for(int i = 0; i < 3; ++i)
+	{
+		float& min = min_[i];
+		float& max = max_[i];
+		float compare = point[i];
 
-    else if(max_.x() < point.x())
-    {
-        max_.setX(point.x());
-        updated = true;
-    }
+		if(min > compare)
+		{
+			min = compare;
+			updated = true;
+		}
 
-    // Y
-    if(min_.y() > point.y())
-    {
-        min_.setY(point.y());
-        updated = true;
-    }
-
-    else if(max_.y() < point.y())
-    {
-        max_.setY(point.y());
-        updated = true;
-    }
-
-    // Z
-    if(min_.z() > point.z())
-    {
-        min_.setZ(point.z());
-        updated = true;
-    }
-
-    else if(max_.z() < point.z())
-    {
-        max_.setZ(point.z());
-        updated = true;
-    }
+		else if(max < compare)
+		{
+			max = compare;
+			updated = true;
+		}
+	}
 
     return updated;
 }

@@ -6,16 +6,14 @@
 #include "compactgbuffer.h"
 
 #include <QDebug>
+#include <algorithm>
 
 using namespace Engine;
 
 CompactGBuffer::CompactGBuffer()
-    : fbo_(0)
+	: fbo_(0)
 {
-    for(int i = 0; i < TEXTURE_COUNT; ++i)
-    {
-        textures_[i] = 0;
-    }
+	std::fill(textures_, textures_ + TEXTURE_COUNT, 0);
 }
 
 CompactGBuffer::~CompactGBuffer()
@@ -25,8 +23,7 @@ CompactGBuffer::~CompactGBuffer()
 
 QList<QString> CompactGBuffer::textures() const
 {
-    QList<QString> textures;
-    textures << "normalSpec" << "diffuseSpec" << "depth";
+	QList<QString> textures{ "normalSpec", "diffuseSpec", "depth" };
     return textures;
 }
 
@@ -101,8 +98,5 @@ void CompactGBuffer::deleteBuffers()
     gl->glDeleteTextures(TEXTURE_COUNT, textures_);
 
     fbo_ = 0;
-    for(int i = 0; i < TEXTURE_COUNT; ++i)
-    {
-        textures_[i] = 0;
-    }
+	std::fill(textures_, textures_ + TEXTURE_COUNT, 0);
 }

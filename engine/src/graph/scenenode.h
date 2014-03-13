@@ -32,7 +32,7 @@ public:
     // Returns the cached world transformation of this node.
     const QMatrix4x4& transformation() const;
 
-    // Applies given transformation matrix to this node.
+    // Sets the node's transformation
     void applyTransformation(const QMatrix4x4& matrix);
 
     // Set node position in world space
