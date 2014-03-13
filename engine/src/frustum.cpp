@@ -41,7 +41,7 @@ bool Engine::isInsideFrustum(const AABB& aabb, const QMatrix4x4& mvp)
     return true;    // TODO: Check if frustrum is outside the AABB
 }
 
-bool Engine::extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane)
+inline bool Engine::extentSignTest(const QVector3D& center, const QVector3D& extent, const QVector4D& plane)
 {
     QVector3D normal = plane.toVector3D();
     QVector3D absNormal(qAbs(plane.x()), qAbs(plane.y()), qAbs(plane.z()));

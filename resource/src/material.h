@@ -6,7 +6,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include <map>
+#include <array>
 #include <memory>
 #include <QVector3D>
 
@@ -69,7 +69,7 @@ public:
     RenderType renderType() const;
 
 private:
-    std::map<TextureType, TexturePtr> textures_;
+    std::array<TexturePtr, TEXTURE_COUNT> textures_;
     Attributes attributes_;
     RenderType renderType_;
 

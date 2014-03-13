@@ -100,7 +100,9 @@ private:
     ChildSceneNodes children_;
     unsigned int lightMask_;
 
-    bool updateNeeded_;
+    bool localDirty_;
+    bool childDirty_;
+
     QMatrix4x4 cachedTransformation_;
     QMatrix4x4 cachedLocalTrans_;
 
@@ -114,7 +116,10 @@ private:
     Transformation localTrans_;
     Transformation cachedWorldTrans_;
 
-    void updateTransformation(bool dirtyParent);
+    void updateTransformation(bool updateWorld);
+
+    // Sets the node's local bit dirty, and sets all parent's child bit dirty
+    void markDirty();
 };
 
 }}

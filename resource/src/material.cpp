@@ -62,24 +62,19 @@ bool Material::bind()
 
 const Material::TexturePtr& Material::getTexture(TextureType type)
 {
-    auto iter = textures_.find(type);
-    if(iter == textures_.end())
+    TexturePtr& tex = textures_[type];
+    if(!tex && type != TEXTURE_NORMALS)
     {
-        //qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
-
-        TexturePtr& tex = textures_[type];
+        // qWarning() << __FUNCTION__ << "Material has no texture of type" << type;
         tex = defaultTexture(type);
-
-        return tex;
     }
 
-    return iter->second;
+    return tex;
 }
 
 bool Material::hasTexture(TextureType type) const
 {
-    auto iter = textures_.find(type);
-    return iter != textures_.end() && iter->second != nullptr;
+    return textures_[type];
 }
 
 void Material::setTexture(TextureType type, const TexturePtr& texture)
