@@ -74,7 +74,7 @@ const Material::TexturePtr& Material::getTexture(TextureType type)
 
 bool Material::hasTexture(TextureType type) const
 {
-    return textures_[type];
+    return textures_[type] != nullptr;
 }
 
 void Material::setTexture(TextureType type, const TexturePtr& texture)

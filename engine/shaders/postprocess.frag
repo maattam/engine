@@ -19,6 +19,8 @@ uniform float gamma;
 
 in vec2 uv;
 
+out vec4 fragColor;
+
 // Filmic tonemapper curve parameters
 float A = 0.30; // Shoulder strength
 float B = 0.50; // Linear strength
@@ -70,5 +72,5 @@ void main()
     vec3 tone = current * whiteScale;
 
     // Apply gamma correction
-    gl_FragColor.rgb = pow(tone, vec3(1.0 / gamma));
+    fragColor.rgb = pow(tone, vec3(1.0 / gamma));
 }

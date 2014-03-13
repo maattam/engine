@@ -19,6 +19,8 @@ uniform float lodLevel;
 
 in vec2 uv;
 
+out vec4 fragColor;
+
 vec4 sample5x5(in float dx, in float dy, int x, int y)
 {
     return textureLod(inputTexture, uv + vec2((x - 2) * dx, (y - 2) * dy), lodLevel);
@@ -43,5 +45,5 @@ void main()
 
     color /= 273.0;
     
-    gl_FragColor = color;
+    fragColor = color;
 }

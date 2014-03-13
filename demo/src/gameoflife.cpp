@@ -112,6 +112,8 @@ void GameOfLife::initialise()
         }
     }
 
+	camera()->setPosition(QVector3D(0, 50, 0));
+
     randomSeed();
     setFlySpeed(100.0f);
 }

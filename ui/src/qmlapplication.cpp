@@ -15,12 +15,17 @@
 using namespace Engine::Ui;
 
 QmlApplication::QmlApplication(const QSurfaceFormat& format)
-    : Application(format), controller_(nullptr), factory_(nullptr)
+	: Application(format), controller_(nullptr), factory_(nullptr), profile_(false)
 {
 }
 
 QmlApplication::~QmlApplication()
 {
+}
+
+void QmlApplication::profile(bool value)
+{
+	profile_ = value;
 }
 
 void QmlApplication::setUiController(UiController* controller)
@@ -36,7 +41,7 @@ void QmlApplication::setSceneFactory(SceneFactory* factory, const QString& start
 
 Engine::Ui::ScenePresenter* QmlApplication::createPresenter()
 {
-    QmlPresenter* presenter = new QmlPresenter;
+    QmlPresenter* presenter = new QmlPresenter(profile_);
     view()->setEventListener(presenter->inputListener());
 
     QObject* tonemap = view()->rootObject()->findChild<QObject*>("tonemap");

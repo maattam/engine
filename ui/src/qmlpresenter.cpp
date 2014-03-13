@@ -30,8 +30,8 @@ namespace {
     unsigned int toggleRenderFlag(unsigned int current, unsigned int bits);
 }
 
-QmlPresenter::QmlPresenter(QObject* parent)
-    : ScenePresenter(parent), context_(nullptr), sceneFactory_(nullptr), fov_(75.0f)
+QmlPresenter::QmlPresenter(bool profile, QObject* parent)
+	: ScenePresenter(parent), context_(nullptr), sceneFactory_(nullptr), fov_(75.0f), profiling_(profile)
 {
     input_.reset(new InputState);
 }
@@ -122,12 +122,13 @@ void QmlPresenter::initialize()
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
 
-#ifdef PROFILING
-    renderTimeWatcher_.reset(new RenderTimeWatcher());
-    rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
+	if(profiling_)
+	{
+		renderTimeWatcher_.reset(new RenderTimeWatcher());
+		rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
+	}
 
     connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, this, &QmlPresenter::watchValue);
-#endif
 }
 
 void QmlPresenter::render()
@@ -136,15 +137,19 @@ void QmlPresenter::render()
     {
         sceneManager_->setRenderer(renderer_.get());
 
-#ifdef PROFILING
-        renderTimeWatcher_->setTimestamp();
-        sceneManager_->renderFrame();
+		if(profiling_)
+		{
+			renderTimeWatcher_->setTimestamp();
+			sceneManager_->renderFrame();
 
-        renderTimeWatcher_->setTimestamp();
-        renderTimeWatcher_->endFrame();
-#else
-        sceneManager_->renderFrame();
-#endif
+			renderTimeWatcher_->setTimestamp();
+			renderTimeWatcher_->endFrame();
+		}
+
+		else
+		{
+			sceneManager_->renderFrame();
+		}
     }
 
     if(debugRenderer_->flags() != 0)

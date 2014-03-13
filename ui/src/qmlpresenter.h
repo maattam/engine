@@ -16,11 +16,6 @@
 #include <QVariant>
 #include <QString>
 
-// Enable profiling of renderer timings.
-#ifndef _DEBUG
-#define PROFILING
-#endif
-
 namespace Engine {
 
 class ResourceDespatcher;
@@ -42,7 +37,7 @@ class QmlPresenter : public ScenePresenter
     Q_OBJECT
 
 public:
-    explicit QmlPresenter(QObject* parent = nullptr);
+	explicit QmlPresenter(bool profile, QObject* parent = nullptr);
     virtual ~QmlPresenter();
 
     virtual void setContext(RendererContext* context);
@@ -76,6 +71,7 @@ public slots:
 private:
     RendererContext* context_;
     SceneFactory* sceneFactory_;
+	bool profiling_;
 
     std::shared_ptr<RendererFactory> rendererFactory_;
     std::shared_ptr<ResourceDespatcher> despatcher_;

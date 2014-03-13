@@ -47,8 +47,6 @@ void FreeLookScene::setManager(SceneManager* model)
     if(scene_ != nullptr)
     {
         scene_->addSceneLeaf(camera_);
-        camera_->attach(&scene_->rootNode());
-
         initialise();
     }
 }
