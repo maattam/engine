@@ -93,7 +93,29 @@ QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot)
     return quat;
 }
 
-QVector3D linearColor(const QVector3D& color, float gamma)
+inline QVector3D linearColor(const QVector3D& color, float gamma)
 {
     return QVector3D(qPow(color.x(), gamma), qPow(color.y(), gamma), qPow(color.z(), gamma));
+}
+
+inline QVector3D extractScale(const QMatrix4x4& mat)
+{
+    // Scale is the vector norm of axes
+    return QVector3D(mat.column(0).toVector3D().length(),
+        mat.column(1).toVector3D().length(),
+        mat.column(2).toVector3D().length());
+}
+
+inline QQuaternion extractOrientation(const QMatrix4x4& mat)
+{
+    // Calculate orientation from axes
+    return orientationFromAxes(mat.column(0).toVector3D().normalized(),
+        mat.column(1).toVector3D().normalized(),
+        mat.column(2).toVector3D().normalized());
+}
+
+inline QVector3D extractTranslation(const QMatrix4x4& mat)
+{
+    // Translation is the 4th column
+    return mat.column(3).toVector3D();
 }

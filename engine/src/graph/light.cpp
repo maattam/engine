@@ -235,7 +235,7 @@ float Light::cutoffDistance() const
     }
 }
 
-const QVector3D& Light::position() const
+QVector3D Light::position() const
 {
     // Update derived position is parent exists
     if(parentNode() != nullptr)

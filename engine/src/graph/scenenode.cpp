@@ -9,7 +9,6 @@
 #include "light.h"
 
 #include <algorithm>
-#include <qDebug>
 
 using namespace Engine;
 using namespace Engine::Graph;
@@ -17,7 +16,6 @@ using namespace Engine::Graph;
 SceneNode::SceneNode()
     : parent_(nullptr), lightMask_(Light::MASK_CAST_SHADOWS), localDirty_(true), childDirty_(false)
 {
-    localTrans_.scale = QVector3D(1.0f, 1.0f, 1.0f);
 }
 
 SceneNode::~SceneNode()
@@ -41,40 +39,26 @@ void SceneNode::propagate()
 
 const QMatrix4x4& SceneNode::transformation() const
 {
-    return cachedTransformation_;
+    return world_;
 }
 
 void SceneNode::updateTransformation(bool updateWorld)
 {
-    // Update local transformation if the node needs updating
-    if(localDirty_)
-    {
-        cachedLocalTrans_.setToIdentity();
-        cachedLocalTrans_.translate(localTrans_.position);
-        cachedLocalTrans_.rotate(localTrans_.orientation);
-        cachedLocalTrans_.scale(localTrans_.scale);
+    // Update world transformation if node is dirty
+    updateWorld = updateWorld | localDirty_;
 
-        localDirty_ = false;
-        updateWorld = true;
-    }
-
-    // If parent or local transformation has changed; we can't rely on old cachedTransformation
+    // If parent or local transformation has changed; we can't rely on old world transformation
     if(updateWorld)
     {
         SceneNode* parent = getParent();
         if(parent != nullptr)
         {
-            cachedTransformation_ = parent->transformation() * cachedLocalTrans_;
-            
-            const Transformation& trans = parent->cachedWorldTrans_;
-            cachedWorldTrans_.position = trans.orientation.rotatedVector(localTrans_.position) + trans.position;
-            cachedWorldTrans_.orientation = trans.orientation * localTrans_.orientation;
+            world_ = parent->transformation() * local_;
         }
 
         else
         {
-            cachedTransformation_ = cachedLocalTrans_;
-            cachedWorldTrans_ = localTrans_;
+            world_ = local_;
         }
     }
 
@@ -92,19 +76,7 @@ void SceneNode::updateTransformation(bool updateWorld)
 
 void SceneNode::applyTransformation(const QMatrix4x4& matrix)
 {
-    const QVector3D right = matrix.column(0).toVector3D();
-    const QVector3D up = matrix.column(1).toVector3D();
-    const QVector3D forward = matrix.column(2).toVector3D();
-    
-    // Translation is the 4th column
-    move(matrix.column(3).toVector3D());
-
-    // Scale is the vector norm
-    localTrans_.scale *= QVector3D(right.length(), up.length(), forward.length());
-
-    // Calculate orientation from axes
-    rotate(orientationFromAxes(right.normalized(), up.normalized(), forward.normalized()));
-
+    local_ = matrix * local_;
     markDirty();
 }
 
@@ -179,40 +151,56 @@ void SceneNode::setParent(SceneNode* parent)
 
 void SceneNode::setPosition(const QVector3D& position)
 {
-    localTrans_.position = position;
+    local_.setColumn(3, QVector4D(position, 1.0f));
     markDirty();
 }
 
-const QVector3D& SceneNode::position() const
+QVector3D SceneNode::position() const
 {
-    return localTrans_.position;
+    return extractTranslation(local_);
 }
 
 void SceneNode::move(const QVector3D& offset)
 {
-    localTrans_.position += offset;
+    local_.translate(offset);
     markDirty();
 }
 
 void SceneNode::rotate(const QQuaternion& quaternion)
 {
-    setOrientation(quaternion.normalized() * localTrans_.orientation);
+    local_.rotate(quaternion);
+    markDirty();
 }
 
 void SceneNode::rotate(float angle, const QVector3D& axis)
 {
-    rotate(QQuaternion::fromAxisAndAngle(axis, angle));
+    local_.rotate(angle, axis);
+    markDirty();
 }
 
 void SceneNode::setOrientation(const QQuaternion& quaternion)
 {
-    localTrans_.orientation = quaternion.normalized();
+    // Save scale
+    QVector3D scale = extractScale(local_);
+
+    // Reset the top-left 3x3 matrix
+    float* mat = local_.data();
+    mat[0] = 1.0f; mat[1] = 0.0f; mat[2]  = 0.0f;
+    mat[4] = 0.0f; mat[5] = 1.0f; mat[6]  = 0.0f;
+    mat[8] = 0.0f; mat[9] = 0.0f; mat[10] = 1.0f;
+
+    local_.optimize();
+
+    // Re-do transformations
+    local_.scale(scale);
+    local_.rotate(quaternion);
+
     markDirty();
 }
 
-const QQuaternion& SceneNode::orientation() const
+QQuaternion SceneNode::orientation() const
 {
-    return localTrans_.orientation;
+    return extractOrientation(local_);
 }
 
 void SceneNode::setDirection(const QVector3D& direction)
@@ -240,38 +228,34 @@ void SceneNode::setDirection(const QVector3D& direction)
 QVector3D SceneNode::direction() const
 {
     // Default direction points towards -Z
-    return localTrans_.orientation.rotatedVector(-UNIT_Z);
+    return local_.mapVector(-UNIT_Z).normalized();
 }
 
 void SceneNode::lookAt(const QVector3D& target)
 {
-    setDirection(target - cachedWorldTrans_.position);
+    setDirection(target - worldPosition());
 }
 
-void SceneNode::setScale(const QVector3D& scale)
+void SceneNode::scale(const QVector3D& scale)
 {
-    localTrans_.scale = scale;
+    local_.scale(scale);
     markDirty();
 }
 
-void SceneNode::setScale(float scale)
+void SceneNode::scale(float scale)
 {
-    setScale(QVector3D(scale, scale, scale));
+    local_.scale(scale);
+    markDirty();
 }
 
-const QVector3D& SceneNode::scale() const
+QVector3D SceneNode::worldPosition() const
 {
-    return localTrans_.scale;
+    return extractTranslation(world_);
 }
 
-const QVector3D& SceneNode::worldPosition() const
+QQuaternion SceneNode::worldOrientation() const
 {
-    return cachedWorldTrans_.position;
-}
-
-const QQuaternion& SceneNode::worldOrientation() const
-{
-    return cachedWorldTrans_.orientation;
+    return extractOrientation(world_);
 }
 
 unsigned int SceneNode::lightMask() const

@@ -165,17 +165,11 @@ Graph::SceneNode& BasicSceneManager::rootNode()
     return rootNode_;
 }
 
-// Adds a new scene leaf to the scene. If the leaf already exists, false is returned.
+// Adds a new scene leaf to the scene.
 // Postcondition: Ownership is maintained.
-bool BasicSceneManager::addSceneLeaf(const SceneLeafPtr& leaf)
+void BasicSceneManager::addSceneLeaf(const SceneLeafPtr& leaf)
 {
-    if(leaves_.count(leaf) > 0)
-    {
-        return false;
-    }
-
     leaves_.push_back(leaf);
-    return true;
 }
 
 // Removes the leaf from scene. Returns false if leaf is not found.

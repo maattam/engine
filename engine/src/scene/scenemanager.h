@@ -49,9 +49,9 @@ public:
     // so the manager can update the hierarchy when prepareNextFrame is called.
     virtual Graph::SceneNode& rootNode() = 0;
 
-    // Adds a new scene leaf to the scene. If the leaf already exists, false is returned.
+    // Adds a new scene leaf to the scene.
     // Postcondition: Ownership is maintained.
-    virtual bool addSceneLeaf(const SceneLeafPtr& leaf) = 0;
+    virtual void addSceneLeaf(const SceneLeafPtr& leaf) = 0;
 
     // Removes the leaf from scene. Returns false if leaf is not found.
     virtual bool removeSceneLeaf(const SceneLeafPtr& leaf) = 0;

@@ -66,7 +66,7 @@ public:
     const Attenuation& Light::attenuation() const;
 
     // Returns the light's world position derived from parentNode, or local position
-    const QVector3D& position() const;
+    QVector3D position() const;
     void setPosition(const QVector3D& position);
 
     virtual void updateRenderList(RenderQueue& list) {}

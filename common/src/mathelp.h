@@ -7,6 +7,7 @@
 #define MATHELP_H
 
 #include <QMatrix3x3>
+#include <QMatrix4x4>
 #include <QVector3D>
 #include <QQuaternion>
 
@@ -27,6 +28,14 @@ QQuaternion orientationFromAxes(const QVector3D& x, const QVector3D& y, const QV
 // Precondition: matrix is orthogonal
 QQuaternion orientationFromRotationMatrix(const QMatrix3x3& rot);
 
-QVector3D linearColor(const QVector3D& color, float gamma = 2.2f);
+extern QVector3D linearColor(const QVector3D& color, float gamma = 2.2f);
+
+// Matrix4x4 helpers
+
+extern QVector3D extractScale(const QMatrix4x4& mat);
+
+extern QQuaternion extractOrientation(const QMatrix4x4& mat);
+
+extern QVector3D extractTranslation(const QMatrix4x4& mat);
 
 #endif // MATHELP_H

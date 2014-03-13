@@ -59,6 +59,7 @@ void Camera::setPosition(const QVector3D& position)
 
 const QVector3D& Camera::position() const
 {
+    // TODO: Add world position from parent node
     return position_;
 }
 

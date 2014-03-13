@@ -144,13 +144,13 @@ void SponzaScene::initialise()
 
     // Position entities
     Graph::SceneNode* node = rootNode().createChild();
-    node->setScale(0.05f);
+    node->scale(0.05f);
     sceneMesh_->attach(node);
 
     sphereNode_ = rootNode().createChild();
     sphere_->attach(sphereNode_);
 
-    sphereNode_->setScale(0.5f);
+    sphereNode_->scale(0.5f);
     sphereNode_->setPosition(spotPath_.back().endpoint);
     spotLight_->attach(sphereNode_);
 

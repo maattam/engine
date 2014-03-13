@@ -89,7 +89,7 @@ void BasicScene::resourceInitialized(const QString& name)
             // Platform spot light
             Graph::SceneNode* node = rootNode().createChild();
             node->setPosition(2*QVector3D(-6.0f, 7/2, 6.0f));
-            node->setScale(0.1f);
+            node->scale(0.1f);
             node->setLightMask(0);
 
             std::shared_ptr<Graph::SceneLeaf> cloneSphere = result->clone();
@@ -186,20 +186,20 @@ void BasicScene::initialise()
         hkNode_ = platf->createChild();
 
         hkNode_->setPosition(QVector3D(-1, 0, -2));
-        hkNode_->setScale(0.025f);
+        hkNode_->scale(0.025f);
         hellknight_->attach(hkNode_);
     }
 
     // Torus
     {
-        torusNode_->setScale(180.0f);
+        torusNode_->scale(180.0f);
         torus_->attach(torusNode_);
         torusNode_->setLightMask(0);
     }
 
     // Sphere
     {
-        sphereNode_->setScale(0.2f);
+        sphereNode_->scale(0.2f);
         sphere_->attach(sphereNode_);
         sphereNode_->setLightMask(0);
         lights_[0]->attach(sphereNode_);

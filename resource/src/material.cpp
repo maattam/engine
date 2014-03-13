@@ -23,7 +23,7 @@ namespace {
     Material::TexturePtr defaultTexture(Material::TextureType type);
 
     // Static default texture watchers.
-    QMap<Material::TextureType, std::weak_ptr<Texture2D>> nullTextures;
+    std::array<std::weak_ptr<Texture2D>, Material::TEXTURE_COUNT> nullTextures;
 }
 
 Material::Material()

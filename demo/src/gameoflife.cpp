@@ -97,7 +97,7 @@ void GameOfLife::initialise()
             // Set fixed transformation
             Population& pop = space_[y][x];
             pop.node = rootNode().createChild();
-            pop.node->setScale(0.5f);
+            pop.node->scale(0.5f);
             pop.node->setPosition(QVector3D(xcoord, y * (1 + gap), zcoord) + direction * (0.5f - (qrand() % 10) / 10.0f));
             pop.node->setDirection(direction);
 
