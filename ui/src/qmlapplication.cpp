@@ -15,7 +15,7 @@
 using namespace Engine::Ui;
 
 QmlApplication::QmlApplication(const QSurfaceFormat& format)
-	: Application(format), controller_(nullptr), factory_(nullptr), profile_(false)
+    : Application(format), controller_(nullptr), factory_(nullptr), profile_(false)
 {
 }
 
@@ -25,7 +25,7 @@ QmlApplication::~QmlApplication()
 
 void QmlApplication::profile(bool value)
 {
-	profile_ = value;
+    profile_ = value;
 }
 
 void QmlApplication::setUiController(UiController* controller)

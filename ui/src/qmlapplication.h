@@ -27,7 +27,7 @@ public:
     void setUiController(UiController* controller);
     void setSceneFactory(SceneFactory* factory, const QString& startScene);
 
-	void profile(bool value);
+    void profile(bool value);
 
 protected:
     virtual ScenePresenter* createPresenter();
@@ -36,7 +36,7 @@ private:
     UiController* controller_;
     SceneFactory* factory_;
     QString scene_;
-	bool profile_;
+    bool profile_;
 };
 
 }}

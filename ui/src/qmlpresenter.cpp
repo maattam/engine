@@ -31,7 +31,7 @@ namespace {
 }
 
 QmlPresenter::QmlPresenter(bool profile, QObject* parent)
-	: ScenePresenter(parent), context_(nullptr), sceneFactory_(nullptr), fov_(75.0f), profiling_(profile)
+    : ScenePresenter(parent), context_(nullptr), sceneFactory_(nullptr), fov_(75.0f), profiling_(profile)
 {
     input_.reset(new InputState);
 }
@@ -122,11 +122,11 @@ void QmlPresenter::initialize()
 
     debugRenderer_.reset(new Engine::DebugRenderer(despatcher_.get()));
 
-	if(profiling_)
-	{
-		renderTimeWatcher_.reset(new RenderTimeWatcher());
-		rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
-	}
+    if(profiling_)
+    {
+        renderTimeWatcher_.reset(new RenderTimeWatcher());
+        rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
+    }
 
     connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, this, &QmlPresenter::watchValue);
 }
@@ -137,19 +137,19 @@ void QmlPresenter::render()
     {
         sceneManager_->setRenderer(renderer_.get());
 
-		if(profiling_)
-		{
-			renderTimeWatcher_->setTimestamp();
-			sceneManager_->renderFrame();
+        if(profiling_)
+        {
+            renderTimeWatcher_->setTimestamp();
+            sceneManager_->renderFrame();
 
-			renderTimeWatcher_->setTimestamp();
-			renderTimeWatcher_->endFrame();
-		}
+            renderTimeWatcher_->setTimestamp();
+            renderTimeWatcher_->endFrame();
+        }
 
-		else
-		{
-			sceneManager_->renderFrame();
-		}
+        else
+        {
+            sceneManager_->renderFrame();
+        }
     }
 
     if(debugRenderer_->flags() != 0)

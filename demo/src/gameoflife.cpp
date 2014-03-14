@@ -22,7 +22,7 @@ using namespace Engine;
 
 GameOfLife::GameOfLife(Engine::ResourceDespatcher& despatcher)
     : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false),
-	totalElapsed_(0), base_(nullptr)
+    totalElapsed_(0), base_(nullptr)
 {
     qsrand(QTime::currentTime().msec());
 }
@@ -80,7 +80,7 @@ void GameOfLife::initialise()
 
     Renderable::Cube::Ptr cube = Renderable::Primitive<Renderable::Cube>::instance();
 
-	base_ = rootNode().createChild();
+    base_ = rootNode().createChild();
 
     const float gap = 0.15f;
     const float circ = (WIDTH - 1) * (1 + gap);
@@ -115,7 +115,7 @@ void GameOfLife::initialise()
         }
     }
 
-	camera()->setPosition(QVector3D(0, 75, 0));
+    camera()->setPosition(QVector3D(0, 75, 0));
 
     randomSeed();
     setFlySpeed(100.0f);

@@ -5,8 +5,6 @@
 
 #include "aabb.h"
 
-#include <qmath.h>
-
 using namespace Engine;
 
 AABB::AABB()

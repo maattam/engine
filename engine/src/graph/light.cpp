@@ -155,7 +155,7 @@ void Light::calculateAABB()
     if(type_ == LIGHT_DIRECTIONAL)
     {
         // Directional light has infinite bounding volume
-        const float inf = std::numeric_limits<float>::max();
+		const float inf = std::numeric_limits<float>::max() / 2.0f;
 
         aabb.reset(QVector3D(-inf, -inf, -inf), QVector3D(inf, inf, inf));
     }

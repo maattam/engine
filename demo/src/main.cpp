@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     // Create application
     Engine::Ui::QmlApplication demo(format);
-	demo.profile(true);
+    demo.profile(true);
 
     // Create controller for communicating between QmlPresenter and Qt Quick
     Engine::Ui::UiController ui;
