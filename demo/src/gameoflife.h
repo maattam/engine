@@ -36,6 +36,8 @@ private:
     unsigned int totalElapsed_;
     bool autoAdvance_;
 
+	Engine::Graph::SceneNode* base_;
+
     struct Population
     {
         Engine::Graph::SceneNode* node;

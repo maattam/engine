@@ -21,7 +21,8 @@
 using namespace Engine;
 
 GameOfLife::GameOfLife(Engine::ResourceDespatcher& despatcher)
-    : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false), totalElapsed_(0)
+    : FreeLookScene(despatcher), generationNum_(0), autoAdvance_(false),
+	totalElapsed_(0), base_(nullptr)
 {
     qsrand(QTime::currentTime().msec());
 }
@@ -62,7 +63,7 @@ void GameOfLife::update(unsigned int elapsed)
         randomSeed();
     }
 
-    rootNode().rotate(M_PI_4 * static_cast<float>(elapsed) / 1000, UNIT_Y);
+    base_->rotate(M_PI_4 * static_cast<float>(elapsed) / 1000, UNIT_Y);
 }
 
 void GameOfLife::initialise()
@@ -78,6 +79,8 @@ void GameOfLife::initialise()
     dirLight->setDiffuseIntensity(1.0f);
 
     Renderable::Cube::Ptr cube = Renderable::Primitive<Renderable::Cube>::instance();
+
+	base_ = rootNode().createChild();
 
     const float gap = 0.15f;
     const float circ = (WIDTH - 1) * (1 + gap);
@@ -96,7 +99,7 @@ void GameOfLife::initialise()
         {
             // Set fixed transformation
             Population& pop = space_[y][x];
-            pop.node = rootNode().createChild();
+            pop.node = base_->createChild();
             pop.node->scale(0.5f);
             pop.node->setPosition(QVector3D(xcoord, y * (1 + gap), zcoord) + direction * (0.5f - (qrand() % 10) / 10.0f));
             pop.node->setDirection(direction);

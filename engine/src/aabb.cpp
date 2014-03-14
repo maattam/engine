@@ -9,12 +9,12 @@
 
 using namespace Engine;
 
-AABB::AABB() : first_(false)
+AABB::AABB()
 {
 }
 
 AABB::AABB(const QVector3D& min, const QVector3D& max)
-    : min_(min), max_(max), first_(true)
+    : min_(min), max_(max)
 {
 }
 
@@ -59,13 +59,6 @@ float AABB::depth() const
 bool AABB::resize(const QVector3D& point)
 {
     bool updated = false;
-
-    if(first_)
-    {
-        min_ = max_ = point;
-        first_ = false;
-        return true;
-    }
 
 	for(int i = 0; i < 3; ++i)
 	{

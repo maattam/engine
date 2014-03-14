@@ -26,6 +26,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "ui\ui.vcxproj", "{587
 		{C073D863-B938-464D-8584-8C9776A93268} = {C073D863-B938-464D-8584-8C9776A93268}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcxproj", "{F61B32F2-B54E-4229-9229-6B490B30DDD0}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B12702AD-ABFB-343A-A199-8E24837244A3} = {B12702AD-ABFB-343A-A199-8E24837244A3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -96,6 +101,17 @@ Global
 		{587BB729-936D-4783-AC51-CA08D524B346}.Release|Win32.Build.0 = Release|Win32
 		{587BB729-936D-4783-AC51-CA08D524B346}.Release|x64.ActiveCfg = Release|x64
 		{587BB729-936D-4783-AC51-CA08D524B346}.Release|x64.Build.0 = Release|x64
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Debug|Win32.Build.0 = Debug|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Debug|x64.ActiveCfg = Debug|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|Win32.ActiveCfg = Release|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|Win32.Build.0 = Release|Win32
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|x64.ActiveCfg = Release|x64
+		{F61B32F2-B54E-4229-9229-6B490B30DDD0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

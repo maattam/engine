@@ -31,8 +31,6 @@ public:
 private:
     QVector3D min_;
     QVector3D max_;
-
-    bool first_;
 };
 
 }

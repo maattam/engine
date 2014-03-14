@@ -15,7 +15,7 @@ bool Engine::isInsideFrustum(const AABB& aabb, const QMatrix4x4& mvp)
     const QVector4D rowW = mvp.row(3);
 
     const QVector3D center = aabb.center();
-    const QVector3D extent = aabb.extent();
+	const QVector3D extent = aabb.extent();
 
     // Left and right panes
     if(!extentSignTest(center, extent, rowW + rowX))
