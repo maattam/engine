@@ -154,7 +154,7 @@ ImportedNode::Ptr ImportedNode::clone() const
     // Clone entities
     for(const ImportedNodeData::EntityPtr& leaf : entities_)
     {
-        node->entities_.push_back(leaf->clone());
+        node->entities_.push_back(Graph::SceneLeaf::clone(leaf));
     }
 
     return node;

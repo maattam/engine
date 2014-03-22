@@ -204,7 +204,7 @@ Graph::Light::Ptr SponzaScene::insertLight(Engine::Graph::SceneNode* node)
 void SponzaScene::addProjectile(Projectile&& projectile, const QVector3D& initialPosition)
 {
     projectile.light->parentNode()->setPosition(initialPosition);
-    projectile.object = std::dynamic_pointer_cast<Graph::Geometry>(sphere_->findLeaf<Graph::Geometry>("Sphere")->clone());
+    projectile.object = Graph::Geometry::clone(sphere_->findLeaf<Graph::Geometry>("Sphere"));
 
     Graph::SceneNode* leaf = projectile.light->parentNode()->createChild();
     leaf->scale(0.1f);

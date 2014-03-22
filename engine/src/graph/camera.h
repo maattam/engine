@@ -105,7 +105,7 @@ public:
 
     virtual void updateRenderList(RenderQueue& list) {}
 
-    virtual std::shared_ptr<SceneLeaf> clone() const;
+    virtual std::shared_ptr<SceneLeaf> cloneImpl() const;
 
 private:
     CameraType type_;

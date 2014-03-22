@@ -32,7 +32,7 @@ void Geometry::setMaterial(const Material::Ptr& material)
     material_ = material;
 }
 
-std::shared_ptr<SceneLeaf> Geometry::clone() const
+std::shared_ptr<SceneLeaf> Geometry::cloneImpl() const
 {
     return std::make_shared<Geometry>(*this);
 }

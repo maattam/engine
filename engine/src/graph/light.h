@@ -73,7 +73,7 @@ public:
 
     float cutoffDistance() const;
 
-    virtual std::shared_ptr<SceneLeaf> clone() const;
+    virtual std::shared_ptr<SceneLeaf> cloneImpl() const;
 
 private:
     void calculateAABB();

@@ -252,7 +252,7 @@ void Light::setPosition(const QVector3D& position)
     basePosition_ = position;
 }
 
-std::shared_ptr<SceneLeaf> Light::clone() const
+std::shared_ptr<SceneLeaf> Light::cloneImpl() const
 {
     return std::make_shared<Light>(*this);
 }

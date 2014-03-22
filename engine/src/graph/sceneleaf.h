@@ -47,7 +47,14 @@ public:
     void setName(const QString& name);
     const QString& name() const;
 
-    virtual std::shared_ptr<SceneLeaf> clone() const = 0;
+    // Creates new copy of the SceneLeaf
+    template<typename Child>
+    static std::shared_ptr<Child> clone(const std::shared_ptr<Child>& child)
+    {
+        return std::dynamic_pointer_cast<Child>(child->cloneImpl());
+    }
+
+    virtual std::shared_ptr<SceneLeaf> cloneImpl() const = 0;
 
 protected:
     void updateAABB(const AABB& aabb);
@@ -58,6 +65,7 @@ private:
 
     Graph::SceneNode* node_;
 };
+
 
 }}
 

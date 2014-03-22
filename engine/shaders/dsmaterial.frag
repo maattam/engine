@@ -77,7 +77,7 @@ void unpackNormalSpec(inout MaterialInfo material, inout VertexInfo vertex, in i
     vertex.normal.z = 1 - f/2;
 
     // Clamp shininess since calculating pow with very small exponent seems to cause problems.
-    material.shininess = max(data.b * 1023.0, 0.0001);
+    material.shininess = max(data.b * 1000.0, 0.0001);
 
     vertex.edge = data.a;
 }
@@ -87,7 +87,7 @@ void unpackDiffuseSpec(inout MaterialInfo material, in ivec2 st, int n)
     vec4 data = texelFetch(diffuseSpecData, st, n);
 
     material.diffuse = data.rgb;
-    material.specular = data.a * 255.0;
+    material.specular = data.a * 10.0;
 }
 
 float getSample(inout VertexInfo vertex, inout MaterialInfo material, in ivec2 st, int n)
@@ -135,6 +135,7 @@ void main()
     float z = getSample(vertex, material, st, 0);
     color += calcAverageOutput(vertex, material, z);
 
+#if SAMPLES > 1
     // Calculate average output for vertex edge samples to resolve MSAA
     if(vertex.edge > 0.0 || testEdgeVertex(st))
     {
@@ -147,6 +148,7 @@ void main()
 
         color /= SAMPLES;
     }
+#endif
 
     if(color.rgb == vec3(0))
     {

@@ -29,7 +29,7 @@ public:
     // postcondition: material ownership is copied
     void setMaterial(const Material::Ptr& material);
 
-    virtual std::shared_ptr<SceneLeaf> clone() const;
+    virtual std::shared_ptr<SceneLeaf> cloneImpl() const;
 
 private:
     Renderable::Renderable::Ptr mesh_;

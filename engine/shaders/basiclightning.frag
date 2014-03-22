@@ -119,38 +119,42 @@ float calcShadowFactor(in vec4 lightSpacePos, in sampler2DShadow shadowMap, floa
 // Encapsules common stuff between the different light types
 vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
 {
-    // Check that the surface normal cosine is positive
-    float normalFactor = clamp(dot(normalize(normal0), lightDirection), 0, 1);
-    if(normalFactor > 0)
-    {
-        return vec4(0);
-    }
-    
-    // Diffuse factor depends on the (positive) cosine between surface normal and light direction
-    float diffuseFactor = clamp(dot(normal, -lightDirection), 0, 1);
+    vec3 n = normal;
+    vec3 l = -lightDirection;
 
-    vec4 diffuseColor = vec4(0, 0, 0, 0);
-    vec4 specularColor = vec4(0, 0, 0, 0);
-    
-    if(diffuseFactor > 0)
+    // Lambertian reflectance
+    float lambert = max(dot(l, n), 0.0);
+
+    vec3 diffuse = lambert * light.color;
+    vec3 specular = vec3(0.0);
+
+    if(lambert > 0.0)
     {
-        diffuseColor = vec4(light.color, 1.0) * diffuseFactor;
-    
-        vec3 vertexToEye = normalize(gEyeWorldPos - worldPos0);
-        vec3 lightReflect = normalize(reflect(lightDirection, normal));
+        // Source: Crafting Physically Motivated Shading Models for Game Developement, by Naty Hoffmann
+
+        // Compute halfway vector for Blinn-Phong model
+        vec3 v = normalize(gEyeWorldPos - worldPos0);
+        vec3 h = normalize(v + l);
+
+		float shininess = max(gMaterial.shininess * texture(gShininessSampler, texCoord0).r, 0.0001);
+		float factor = texture(gSpecularSampler, texCoord0).r * gMaterial.specularIntensity;
+
+        // Cosine power normalisation factor
+        float d = (shininess + 2) / 8;
+        float power = pow(max(dot(h, n), 0.0), shininess);
         
-        // Specular reflection is almost the same as diffuse, but here we compare against the eye direction
-        float specularFactor = clamp(dot(vertexToEye, lightReflect), 0, 1);
-        specularFactor = pow(specularFactor, gMaterial.shininess * texture(gShininessSampler, texCoord0).r);
-        
-        if(specularFactor > 0)
-        {
-            specularColor = vec4(light.color, 0) * texture(gSpecularSampler, texCoord0).r *
-                gMaterial.specularIntensity * specularFactor;
-        }
+        // Calculate Schlick fresnel approximation to weigth interpolation between texel specular intensity
+        // and full specular hilight.
+        float lh = dot(l, h);
+        float fschlick = min(pow(1 - max(lh, 0.0), 5), 1.0);
+
+        // Approximation of the Cook-Torrance geometry factor. For science.
+        float G = 1.0 / max(lh * lh, 0.01);
+
+        specular = G * d * power * mix(factor, 1.0, fschlick) * light.color;
     }
-    
-    return diffuseColor + specularColor;
+
+    return vec4(diffuse + specular, 0.0);
 }
 
 vec4 calcDirectionalLight(in vec3 normal)

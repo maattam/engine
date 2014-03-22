@@ -66,7 +66,7 @@ void packNormalSpecData()
     float p = sqrt(normal.z * 8 + 8);
     normalSpecData.rg = normal.xy / p + 0.5;
 
-    normalSpecData.b = texture(material.shininessSampler, texCoord0).r * material.shininess / 1023.0;
+    normalSpecData.b = texture(material.shininessSampler, texCoord0).r * material.shininess / 1000.0;
 
     // Write potential vertex edges to output.
     if(any(maybeOutside != certainlyOutside))
@@ -78,7 +78,7 @@ void packNormalSpecData()
 void packDiffuseSpecData()
 {
     diffuseSpecData.rgb = texture(material.diffuseSampler, texCoord0).rgb * material.diffuse;
-    diffuseSpecData.a = texture(material.specularSampler, texCoord0).r * material.specular / 255.0;
+    diffuseSpecData.a = texture(material.specularSampler, texCoord0).r * material.specular / 10.0;
 }
 
 void main()

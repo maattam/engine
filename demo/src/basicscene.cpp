@@ -68,22 +68,21 @@ void BasicScene::resourceInitialized(const QString& name)
 {
     if(name == "assets/oildrum.dae")
     {
-        Graph::Geometry::Ptr result = oildrum_->findLeaf<Graph::Geometry>("Oildrum-ref");
+        Graph::Geometry::Ptr result = Graph::Geometry::clone(oildrum_->findLeaf<Graph::Geometry>("Oildrum-ref"));
         if(result != nullptr)
         {
             Graph::SceneNode* node = result->parentNode()->createChild();
             node->setPosition(QVector3D(6, -2, 0));
 
-            std::shared_ptr<Graph::SceneLeaf> cloneDrum = result->clone();
-            scene().addSceneLeaf(cloneDrum);
-            cloneDrum->attach(node);
+            scene().addSceneLeaf(result);
+            result->attach(node);
 
         }
     }
 
     else if(name == "assets/sphere.obj")
     {
-        Graph::Geometry::Ptr result = sphere_->findLeaf<Graph::Geometry>("Sphere");
+        Graph::Geometry::Ptr result = Graph::Geometry::clone(sphere_->findLeaf<Graph::Geometry>("Sphere"));
         if(result != nullptr)
         {
             // Platform spot light
@@ -92,10 +91,9 @@ void BasicScene::resourceInitialized(const QString& name)
             node->scale(0.1f);
             node->setLightMask(0);
 
-            std::shared_ptr<Graph::SceneLeaf> cloneSphere = result->clone();
-            scene().addSceneLeaf(cloneSphere);
+            scene().addSceneLeaf(result);
 
-            cloneSphere->attach(node);
+            result->attach(node);
             lights_[2]->attach(node);
         }
     }
@@ -229,7 +227,7 @@ void BasicScene::initialise()
                 node->setPosition(QVector3D(R * sin(angle), i * stepping, R * cos(angle)));
                 node->setLightMask(0);
 
-                std::shared_ptr<Graph::SceneLeaf> cube = cube_[abs(i + j) % 2]->clone();
+                auto cube = Graph::Geometry::clone(cube_[abs(i + j) % 2]);
                 cube->attach(node);
                 scene().addSceneLeaf(cube);
 
