@@ -22,19 +22,21 @@ void RenderQueue::setModelView(const QMatrix4x4* modelView)
 
 void RenderQueue::addNode(Material* material, Renderable::Renderable* renderable)
 {
-    RenderItem item = { modelView_, material, renderable };
-
-    queue_[material->renderType()].push_back(item);
+    stacks_[material->renderType()].push_back({ modelView_, material, renderable });
 }
 
 void RenderQueue::clear()
 {
-    queue_.clear();
+    for(auto& list : stacks_)
+    {
+        list.clear();
+    }
+
     modelView_ = nullptr;
 }
 
 RenderQueue::RenderRange RenderQueue::getItems(Material::RenderType renderIndex)
 {
-    const RenderList& list = queue_[renderIndex];
+    const RenderList& list = stacks_[renderIndex];
     return qMakePair(list.begin(), list.end());
 }

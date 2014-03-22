@@ -126,9 +126,9 @@ void QmlPresenter::initialize()
     {
         renderTimeWatcher_.reset(new RenderTimeWatcher());
         rendererFactory_->setRenderTimeWatcher(renderTimeWatcher_.get());
-    }
 
-    connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, this, &QmlPresenter::watchValue);
+        connect(renderTimeWatcher_.get(), &RenderTimeWatcher::timeUpdated, this, &QmlPresenter::watchValue);
+    }
 }
 
 void QmlPresenter::render()

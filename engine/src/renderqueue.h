@@ -7,8 +7,9 @@
 #define RENDERQUEUE_H
 
 #include <QMatrix4x4>
-#include <QMap>
 #include <QList>
+
+#include <array>
 
 #include "material.h"
 
@@ -17,8 +18,6 @@ namespace Engine {
 namespace Renderable {
     class Renderable;
 }
-
-
 
 class RenderQueue
 {
@@ -55,10 +54,8 @@ public:
     RenderRange getItems(Material::RenderType renderIndex);
 
 private:
-    typedef QMap<Material::RenderType, RenderList> RenderMap;
-
     const QMatrix4x4* modelView_;
-    RenderMap queue_;
+    std::array<RenderList, Material::RENDER_COUNT> stacks_;
 };
 
 #include "renderqueue.inl"

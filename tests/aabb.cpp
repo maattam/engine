@@ -26,5 +26,19 @@ namespace tests
             Assert::AreEqual(10.5f, aabb.height());
         }
 
+        TEST_METHOD(IrregularBox)
+        {
+            const QVector3D MIN = QVector3D(-2.0f, 0.0f, -3.0f);
+            const QVector3D MAX = QVector3D(1.0f, 5.0f, 5.0f);
+
+            AABB aabb(MIN, MAX);
+
+            Assert::AreEqual(3.0f, aabb.width());
+            Assert::AreEqual(5.0f, aabb.height());
+            Assert::AreEqual(8.0f, aabb.depth());
+
+            Assert::AreEqual((MAX + MIN) / 2.0f, aabb.center());
+        }
+
     };
 }
