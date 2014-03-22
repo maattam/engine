@@ -18,7 +18,7 @@ class InputState : public InputEventListener
     Q_OBJECT
 
 public:
-    enum { KEY_MOUSE_RIGHT = -100 };
+    enum { KEY_MOUSE_RIGHT = -100, KEY_MOUSE_LEFT = -101 };
 
     explicit InputState(QObject* parent = nullptr);
     virtual ~InputState();

@@ -66,6 +66,11 @@ void InputState::mousePressEvent(QMouseEvent ev)
     {
         keyMap_[KEY_MOUSE_RIGHT] = true;
     }
+
+    else if(ev.button() == Qt::LeftButton)
+    {
+        keyMap_[KEY_MOUSE_LEFT] = true;
+    }
 }
 
 void InputState::mouseReleaseEvent(QMouseEvent ev)
@@ -73,6 +78,11 @@ void InputState::mouseReleaseEvent(QMouseEvent ev)
     if(ev.button() == Qt::RightButton)
     {
         keyMap_[KEY_MOUSE_RIGHT] = false;
+    }
+
+    else if(ev.button() == Qt::LeftButton)
+    {
+        keyMap_[KEY_MOUSE_LEFT] = false;
     }
 }
 

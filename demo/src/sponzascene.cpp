@@ -110,6 +110,16 @@ void SponzaScene::update(unsigned int elapsed)
         cameraNode_->setPosition(flashPos);
         flashLight_->setDirection(camera()->direction());
     }
+
+    // Light projectiles
+    if(input()->keyDown(Ui::InputState::KEY_MOUSE_LEFT))
+    {
+        input()->setKey(Ui::InputState::KEY_MOUSE_LEFT, false);
+
+        addProjectile({ 15.0f, camera()->direction(), insertLight(rootNode().createChild()) }, camera()->position());
+    }
+    
+    updateProjectiles(t);
 }
 
 void SponzaScene::initialise()
@@ -169,21 +179,65 @@ void SponzaScene::initialise()
 
             for(int i = 0; i < LIGHTS_PER_ROW; ++i)
             {
-                Graph::Light::Ptr light = createLight(Graph::Light::LIGHT_POINT);
-                light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
-                light->setDiffuseIntensity(5.0f);
-
-                light->setAttenuationQuadratic(static_cast<float>(qrand() % 10) / 10 + 0.5f);
-                light->setAttenuationLinear(static_cast<float>(qrand() % 10) / 20);
-
                 Graph::SceneNode* lightNode = rootNode().createChild();
-
                 lightNode->setPosition(QVector3D(-60 + i * 120.0 / LIGHTS_PER_ROW, 3 + k * 22, -20 + j * 20));
-
-                light->attach(lightNode);
+                insertLight(lightNode);
             }
         }
     }
 
     //setFlySpeed(200.0f);
+}
+
+Graph::Light::Ptr SponzaScene::insertLight(Engine::Graph::SceneNode* node)
+{
+    Graph::Light::Ptr light = createLight(Graph::Light::LIGHT_POINT);
+    light->setColor(QVector3D(qrand() % 225 + 25, qrand() % 225 + 25, qrand() % 225 + 25) / 255.0f);
+    light->setDiffuseIntensity(5.0f);
+    light->setAttenuationQuadratic(static_cast<float>(qrand() % 10) / 10 + 0.5f);
+    light->setAttenuationLinear(static_cast<float>(qrand() % 10) / 20);
+
+    light->attach(node);
+    return light;
+}
+
+void SponzaScene::addProjectile(Projectile&& projectile, const QVector3D& initialPosition)
+{
+    projectile.light->parentNode()->setPosition(initialPosition);
+    projectile.object = std::dynamic_pointer_cast<Graph::Geometry>(sphere_->findLeaf<Graph::Geometry>("Sphere")->clone());
+
+    Graph::SceneNode* leaf = projectile.light->parentNode()->createChild();
+    leaf->scale(0.1f);
+
+    scene().addSceneLeaf(projectile.object);
+    projectile.object->attach(leaf);
+
+    projectiles_.push_back(projectile);
+}
+
+void SponzaScene::updateProjectiles(float elapsed)
+{
+    const float DEATH_DISTANCE = 200.0f;
+
+    for(auto it = projectiles_.begin(); it != projectiles_.end();)
+    {
+        Graph::SceneNode* node = it->light->parentNode();
+
+        if(node->worldPosition().length() >= DEATH_DISTANCE)
+        {
+            scene().removeSceneLeaf(it->light);
+            scene().removeSceneLeaf(it->object);
+
+            node->getParent()->removeChild(node);
+            delete node;
+
+            it = projectiles_.erase(it);
+        }
+
+        else
+        {
+            node->move(it->direction * elapsed * it->velocity);
+            ++it;
+        }
+    }
 }
