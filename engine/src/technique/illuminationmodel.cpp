@@ -43,8 +43,6 @@ void IlluminationModel::setCamera(const Graph::Camera& camera)
 
 void IlluminationModel::enableSpotLight(const Graph::Light& light, ShadowMap* shadow)
 {
-    useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
-
     setPointUniforms(light);
     setUniformValue("light.direction", view_.mapVector(light.direction()));
 
@@ -54,7 +52,8 @@ void IlluminationModel::enableSpotLight(const Graph::Light& light, ShadowMap* sh
 
     if(shadow != nullptr)
     {
-        setUniformValue("shadowEnabled", true);
+        useSubroutine("calculateOutput", "spotLightPassShadow", GL_FRAGMENT_SHADER);
+
         setUniformValue("lightVP", shadow->lightVP());
         setUniformValue("shadowOffset", QVector2D(1.0 / shadow->size().width(), 1.0 / shadow->size().height()));
 
@@ -63,7 +62,7 @@ void IlluminationModel::enableSpotLight(const Graph::Light& light, ShadowMap* sh
 
     else
     {
-        setUniformValue("shadowEnabled", false);
+        useSubroutine("calculateOutput", "spotLightPass", GL_FRAGMENT_SHADER);
     }
 }
 
@@ -102,6 +101,9 @@ bool IlluminationModel::init()
     if(resolveSubroutineLocation("spotLightPass", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
         return false;
 
+    if(resolveSubroutineLocation("spotLightPassShadow", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
+        return false;
+
     if(resolveSubroutineLocation("directionalLightPass", GL_FRAGMENT_SHADER) == GL_INVALID_INDEX)
         return false;
 
@@ -115,8 +117,6 @@ bool IlluminationModel::init()
     shadowUnit_ = gbuffer()->textures().count();
 
     setUniformValue("shadowSampler", shadowUnit_);
-    setUniformValue("shadowEnabled", false);
-
     return true;
 }
 

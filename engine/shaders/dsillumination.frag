@@ -28,7 +28,6 @@ struct Light
 
 uniform Light light;
 
-uniform bool shadowEnabled;
 uniform mat4 lightVP;
 uniform mat4 viewInverse;
 uniform vec2 shadowOffset;
@@ -123,19 +122,18 @@ vec4 spotLightPass(in VertexInfo vertex, in MaterialInfo material)
 
     float spotFactor = clamp((cosAngle - light.cosOuterAngle) / angleDiff, 0.0, 1.0);
 
-    // TODO: Implement conditional shadows using different shaders since NVIDIA doesn't allow
-    // nested subroutines.
-
-    float shadow = 1.0;
-    if(shadowEnabled)
-    {
-        // Transform fragment position to light space
-        vec4 lightSpacePos = lightVP * (viewInverse * vertex.position);
-        shadow = softShadowModel(lightSpacePos, shadowSampler, shadowOffset);
-    }
-
-    vec3 color = pointLightPass(vertex, material).rgb * spotFactor * shadow;
+    vec3 color = pointLightPass(vertex, material).rgb * spotFactor;
     return vec4(material.diffuse * color, 1.0);
+}
+
+subroutine(CalculateOutputType)
+vec4 spotLightPassShadow(in VertexInfo vertex, in MaterialInfo material)
+{
+	// Transform fragment position to light space
+    vec4 lightSpacePos = lightVP * (viewInverse * vertex.position);
+    float shadow = softShadowModel(lightSpacePos, shadowSampler, shadowOffset);
+
+	return vec4(spotLightPass(vertex, material).rgb * shadow, 1.0);
 }
 
 subroutine(CalculateOutputType)
