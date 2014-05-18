@@ -42,6 +42,7 @@ Material::Attributes::Attributes()
     diffuseColor = QVector3D(1, 1, 1);
     shininess = 25.0f;
     specularIntensity = 0.3f;
+    alpha = 1.0f;
 }
 
 bool Material::bind()
@@ -108,6 +109,11 @@ void Material::setSpecularIntensity(float intensity)
 void Material::setDiffuseColor(const QVector3D& color)
 {
     attributes_.diffuseColor = color;
+}
+
+void Material::setAlpha(float alpha)
+{
+    attributes_.alpha = alpha;
 }
 
 const Material::Attributes& Material::attributes() const

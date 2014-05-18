@@ -223,6 +223,12 @@
     <ClCompile Include="src\singleshadowmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\forwardstage.cpp">
+      <Filter>Source Files\renderer\renderstage</Filter>
+    </ClCompile>
+    <ClCompile Include="src\technique\forwardshader.cpp">
+      <Filter>Source Files\technique</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\basiclightning.frag">
@@ -295,6 +301,12 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="shaders\dsillumination.vert">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\forward.frag">
+      <Filter>Shaders\technique</Filter>
+    </None>
+    <None Include="shaders\forward.vert">
       <Filter>Shaders\technique</Filter>
     </None>
   </ItemGroup>
@@ -448,6 +460,12 @@
     </ClInclude>
     <ClInclude Include="src\singleshadowmap.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forwardstage.h">
+      <Filter>Header Files\renderer\renderstage</Filter>
+    </ClInclude>
+    <ClInclude Include="src\technique\forwardshader.h">
+      <Filter>Header Files\technique</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

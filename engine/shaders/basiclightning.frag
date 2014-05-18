@@ -149,9 +149,9 @@ vec4 calcLightCommon(in Light light, in vec3 lightDirection, in vec3 normal)
         float fschlick = min(pow(1 - max(lh, 0.0), 5), 1.0);
 
         // Approximation of the Cook-Torrance geometry factor. For science.
-        float G = 1.0 / max(lh * lh, 0.01);
+        //float G = 1.0 / max(lh * lh, 0.01);
 
-        specular = G * d * power * mix(factor, 1.0, fschlick) * light.color;
+        specular = d * power * mix(factor, 1.0, fschlick) * light.color;
     }
 
     return vec4(diffuse + specular, 0.0);

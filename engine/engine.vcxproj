@@ -213,11 +213,13 @@
     <ClCompile Include="src\technique\blurfilter.cpp" />
     <ClCompile Include="src\technique\dsgeometryshader.cpp" />
     <ClCompile Include="src\technique\dsmaterialshader.cpp" />
+    <ClCompile Include="src\technique\forwardshader.cpp" />
     <ClCompile Include="src\technique\gbuffervisualizer.cpp" />
     <ClCompile Include="src\technique\hdrtonemap.cpp" />
     <ClCompile Include="src\technique\illuminationmodel.cpp" />
     <ClCompile Include="src\technique\skybox.cpp" />
     <ClCompile Include="src\technique\technique.cpp" />
+    <ClCompile Include="src\forwardstage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\aabb.frag" />
@@ -226,6 +228,8 @@
     <None Include="shaders\basiclightning.vert" />
     <None Include="shaders\dsillumination.frag" />
     <None Include="shaders\dsillumination.vert" />
+    <None Include="shaders\forward.frag" />
+    <None Include="shaders\forward.vert" />
     <None Include="shaders\gauss5x5.frag" />
     <None Include="shaders\dsmaterial.frag" />
     <None Include="shaders\dsmaterial.vert" />
@@ -275,6 +279,7 @@
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\renderitemsorter.h" />
     <ClInclude Include="src\renderqueue.h" />
+    <ClInclude Include="src\forwardstage.h" />
     <CustomBuild Include="src\renderstage.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing renderstage.h...</Message>
@@ -310,6 +315,7 @@
     <ClInclude Include="src\technique\blurfilter.h" />
     <ClInclude Include="src\technique\dsgeometryshader.h" />
     <ClInclude Include="src\technique\dsmaterialshader.h" />
+    <ClInclude Include="src\technique\forwardshader.h" />
     <ClInclude Include="src\technique\gbuffervisualizer.h" />
     <ClInclude Include="src\technique\hdrtonemap.h" />
     <ClInclude Include="src\technique\illuminationmodel.h" />

@@ -8,6 +8,7 @@
 #include "deferredrenderer.h"
 #include "postprocess.h"
 #include "quadlighting.h"
+#include "forwardstage.h"
 #include "compactgbuffer.h"
 #include "effect/hdr.h"
 #include "technique/skybox.h"
@@ -180,8 +181,12 @@ Renderer* RendererFactory::createDeferredRenderer(int samples)
     skybox->setSkyboxMesh(Renderable::Primitive<Renderable::Cube>::instance());
     skybox->setSkyboxTechnique(sky);
 
+    // Add forward stage
+    ForwardStage* forward = new Engine::ForwardStage(skybox, despatcher_);
+    forward->setGBuffer(gbuffer_.get());
+
     // Add post-process stage
-    PostProcess* fxRenderer = new Engine::PostProcess(skybox, fboFormat);
+    PostProcess* fxRenderer = new Engine::PostProcess(forward, fboFormat);
     fxRenderer->setEffect(hdrPostfx_);
 
     if(watcher_ != nullptr)
@@ -189,7 +194,8 @@ Renderer* RendererFactory::createDeferredRenderer(int samples)
         watcher_->addRenderStage("Geometry pass", lightningStage);
         watcher_->addRenderStage("Lightning pass", shadow);
         watcher_->addRenderStage("Shadow pass", skybox);
-        watcher_->addRenderStage("Skybox pass", fxRenderer);
+        watcher_->addRenderStage("Skybox pass", forward);
+        watcher_->addRenderStage("Forward pass", fxRenderer);
         watcher_->addNamedStage("Postprocess");
     }
 

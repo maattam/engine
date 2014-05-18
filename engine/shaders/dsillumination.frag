@@ -64,9 +64,9 @@ vec3 lightningModel(in vec3 lightToFragment, in VertexInfo vertex, in MaterialIn
         float fschlick = min(pow(1 - max(lh, 0.0), 5), 1.0);
 
         // Approximation of the Cook-Torrance geometry factor. For science.
-        float G = 1.0 / max(lh * lh, 0.01);
+        //float G = 1.0 / max(lh * lh, 0.01);
 
-        specular = G * d * power * mix(material.specular, 1.0, fschlick) * light.color;
+        specular = d * power * mix(material.specular, 1.0, fschlick) * light.color;
     }
 
     return diffuse + specular;

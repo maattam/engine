@@ -25,5 +25,7 @@
         <file>shaders/dsillumination.frag</file>
         <file>images/spec.png</file>
         <file>shaders/dsillumination.vert</file>
+        <file>shaders/forward.frag</file>
+        <file>shaders/forward.vert</file>
     </qresource>
 </RCC>

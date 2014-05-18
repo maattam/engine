@@ -51,6 +51,7 @@ public:
     void setSpecularIntensity(float intensity);
     void setDiffuseColor(const QVector3D& color);
     void setShininess(float shininess);
+    void setAlpha(float alpha);
 
     struct Attributes
     {
@@ -58,6 +59,7 @@ public:
         QVector3D diffuseColor;
         float shininess;
         float specularIntensity;
+        float alpha;
 
         Attributes();
     };

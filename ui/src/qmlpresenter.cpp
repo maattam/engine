@@ -90,10 +90,14 @@ void QmlPresenter::renderScene()
         sceneController_->setInput(input_.get());
     }
 
+    // Render last frame
     render();
-    context_->endFrame();
 
+    // Calculate next frame
     update();
+
+    // Sync OpenGL state
+    context_->endFrame();
 }
 
 void QmlPresenter::viewSizeChanged(QSize size)
