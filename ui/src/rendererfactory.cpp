@@ -164,7 +164,7 @@ Renderer* RendererFactory::createDeferredRenderer(int samples)
     // Create gbuffer
     gbuffer_.reset(new CompactGBuffer);
 
-    DeferredRenderer* renderer = new DeferredRenderer(gbuffer_, despatcher_);
+    DeferredRenderer* renderer = new DeferredRenderer(gbuffer_, despatcher_, samples);
     QuadLighting* lightningStage = new QuadLighting(renderer, *gbuffer_, despatcher_, samples);
 
     ShadowStage* shadow = new ShadowStage(lightningStage);

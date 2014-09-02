@@ -6,6 +6,8 @@
 
 #version 420
 
+#define SAMPLES <>
+
 in vec2 texCoord0;
 in vec3 normal0;
 in mat3 TBN;
@@ -68,11 +70,13 @@ void packNormalSpecData()
 
     normalSpecData.b = texture(material.shininessSampler, texCoord0).r * material.shininess / 1000.0;
 
+#if SAMPLES > 1
     // Write potential vertex edges to output.
     if(any(maybeOutside != certainlyOutside))
     {
         normalSpecData.a = 1.0;
     }
+#endif
 }
 
 void packDiffuseSpecData()

@@ -15,11 +15,14 @@
 
 using namespace Engine;
 
-DeferredRenderer::DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher)
+DeferredRenderer::DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher, unsigned int samples)
     : gbuffer_(gbuffer), renderQueue_(nullptr), camera_(nullptr)
 {
-    geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), Shader::Type::Vertex));
-    geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), Shader::Type::Fragment));
+    ShaderData::DefineMap shaderDefines;
+    shaderDefines.insert("SAMPLES", samples);
+
+    geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.vert"), shaderDefines, Shader::Type::Vertex));
+    geometryShader_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/gbuffer.frag"), shaderDefines, Shader::Type::Fragment));
 
     // Cache error material
     errorMaterial_.setTexture(Material::TEXTURE_DIFFUSE,

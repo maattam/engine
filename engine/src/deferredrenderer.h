@@ -26,7 +26,7 @@ public:
     typedef std::shared_ptr<GBuffer> GBufferPtr;
 
     // GBuffer ownership is maintained
-    DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher);
+    DeferredRenderer(const GBufferPtr& gbuffer, ResourceDespatcher& despatcher, unsigned int samples);
     virtual ~DeferredRenderer();
 
     // Sets the observable for the current scene.

@@ -6,6 +6,8 @@
 
 #version 420
 
+#define SAMPLES <>
+
 layout(location = 0) in vec3 vertexPosition;
 layout(location = 1) in vec2 vertexTexCoord;
 layout(location = 2) in vec3 vertexNormal;
@@ -46,9 +48,11 @@ void main()
     normal0 = normalMatrix * vertexNormal;
     texCoord0 = vertexTexCoord;
 
+#if SAMPLES > 1
     // Use centroid sampling to perform edge detection
     maybeOutside = gl_Position.xy;
     certainlyOutside = gl_Position.xy;
+#endif
 
     tangentPass();
 }
