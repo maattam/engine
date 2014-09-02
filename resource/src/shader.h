@@ -20,6 +20,7 @@ public:
 
     Shader(Type type);
     Shader(const QString& name, Type type);
+    Shader(const QString& name, const ShaderData::DefineMap& defines, Type type);
     virtual ~Shader();
 
     // Returns the managed QOpenGLShader object

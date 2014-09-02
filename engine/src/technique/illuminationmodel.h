@@ -23,7 +23,7 @@ namespace Technique {
 class IlluminationModel : public DSMaterialShader
 {
 public:
-    explicit IlluminationModel(unsigned int samples);
+    explicit IlluminationModel();
     virtual ~IlluminationModel();
 
     void setCamera(const Graph::Camera& camera);

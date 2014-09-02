@@ -160,21 +160,15 @@ bool ShaderParser::parse(const QString& fileName)
     {
         line = file.readLine();
 
-        bool matchFound = false;
         for(const ParserRulePtr& rule : rules_)
         {
             if(rule->match().exactMatch(line) && rule->parse(line, *this))
             {
-                result_.append(line);
-                matchFound = true;
                 break;
             }
         }
 
-        if(!matchFound)
-        {
-            result_.append(line);
-        }
+        result_.append(line);
     }
 
     return true;

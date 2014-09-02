@@ -13,15 +13,15 @@ using namespace Engine;
 
 QuadLighting::QuadLighting(Renderer* renderer, GBuffer& gbuffer, ResourceDespatcher& despatcher, unsigned int samples)
     : RenderStage(renderer), gbuffer_(gbuffer), fbo_(0), directionalLight_(nullptr), camera_(nullptr), observable_(nullptr),
-    shadowStage_(nullptr), quad_(Renderable::Primitive<Renderable::Quad>::instance()), lightningTech_(samples)
+    shadowStage_(nullptr), quad_(Renderable::Primitive<Renderable::Quad>::instance()), lightningTech_()
 {
     lightningTech_.setGBuffer(&gbuffer);
 
-    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.vert"), Shader::Type::Vertex));
-    Shader::Ptr shader = std::make_shared<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), Shader::Type::Fragment);
+    ShaderData::DefineMap shaderDefines;
+    shaderDefines.insert("SAMPLES", samples);
 
-    lightningTech_.addShader(shader);
-    despatcher.loadResource(shader);
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.vert"), Shader::Type::Vertex));
+    lightningTech_.addShader(despatcher.get<Shader>(RESOURCE_PATH("shaders/dsillumination.frag"), shaderDefines, Shader::Type::Fragment));
 }
 
 QuadLighting::~QuadLighting()

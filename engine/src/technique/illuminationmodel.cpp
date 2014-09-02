@@ -16,8 +16,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-IlluminationModel::IlluminationModel(unsigned int samples)
-    : DSMaterialShader(samples), shadowUnit_(0)
+IlluminationModel::IlluminationModel()
+    : DSMaterialShader(), shadowUnit_(0)
 {
 }
 

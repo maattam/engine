@@ -9,13 +9,18 @@
 
 using namespace Engine;
 
-Shader::Shader(QOpenGLShader::ShaderTypeBit type)
+Shader::Shader(Type type)
     : Resource(), shader_(nullptr), type_(type)
 {
 }
 
-Shader::Shader(const QString& name, QOpenGLShader::ShaderTypeBit type)
+Shader::Shader(const QString& name, Type type)
     : Resource(name), shader_(nullptr), type_(type)
+{
+}
+
+Shader::Shader(const QString& name, const ShaderData::DefineMap& defines, Type type)
+    : Resource(name), shader_(nullptr), defines_(defines), type_(type)
 {
 }
 

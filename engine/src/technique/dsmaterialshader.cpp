@@ -11,8 +11,8 @@
 using namespace Engine;
 using namespace Engine::Technique;
 
-DSMaterialShader::DSMaterialShader(unsigned int samples)
-    : Technique(), gbuffer_(nullptr), samples_(samples)
+DSMaterialShader::DSMaterialShader()
+    : Technique(), gbuffer_(nullptr)
 {
 }
 
@@ -28,19 +28,6 @@ void DSMaterialShader::setGBuffer(GBuffer const* gbuffer)
 void DSMaterialShader::setProjMatrix(const QMatrix4x4& proj)
 {
     setUniformValue("invPersProj", proj.inverted());
-}
-
-void DSMaterialShader::addShader(const Shader::Ptr& shader)
-{
-    Technique::addShader(shader);
-
-    if(shader->type() == Shader::Type::Fragment)
-    {
-        ShaderData::DefineMap defines;
-        defines.insert("SAMPLES", samples_);
-
-        shader->setNamedDefines(defines);
-    }
 }
 
 void DSMaterialShader::setViewport(const QRect& viewport)

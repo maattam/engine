@@ -33,10 +33,10 @@ DebugRenderer::DebugRenderer(ResourceDespatcher* despatcher)
     // GBuffer visualizer
     gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial.vert"), Shader::Type::Vertex));
 
-    Shader::Ptr shader = std::make_shared<Shader>(RESOURCE_PATH("shaders/dsmaterial_debug.frag"), Shader::Type::Fragment);
-    gbufferMS_.addShader(shader);
+    ShaderData::DefineMap shaderDefines;
+    shaderDefines.insert("SAMPLES", 1);
 
-    despatcher->loadResource(shader);
+    gbufferMS_.addShader(despatcher->get<Shader>(RESOURCE_PATH("shaders/dsmaterial_debug.frag"), shaderDefines, Shader::Type::Fragment));
 }
 
 DebugRenderer::~DebugRenderer()
