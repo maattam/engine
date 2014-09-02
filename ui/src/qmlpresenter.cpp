@@ -66,8 +66,9 @@ void QmlPresenter::renderScene()
 
     if(renderer_ == nullptr)
     {
-        renderer_.reset(rendererFactory_->create(context_->format().samples()));
-        if(!renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), context_->format().samples()))
+        unsigned int samples = context_->format().samples();
+        renderer_.reset(rendererFactory_->create(samples));
+        if(!renderer_->setViewport(QRect(QPoint(0, 0), viewSize_), samples))
         {
             qWarning() << "setViewport failed:" << viewSize_;
             return;
@@ -75,6 +76,8 @@ void QmlPresenter::renderScene()
 
         renderer_->setRenderTarget(context_->renderTarget());
         debugRenderer_->setGBuffer(rendererFactory_->gbuffer());
+
+        emit watchValue("MSAA", samples, "");
     }
 
     if(sceneController_ == nullptr)
