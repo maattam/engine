@@ -40,6 +40,11 @@ void DSMaterialShader::setViewport(const QRect& viewport)
     }
 }
 
+void DSMaterialShader::setDepthRange(float fnear, float ffar)
+{
+    setUniformValue("depthScale", ffar - fnear);
+}
+
 bool DSMaterialShader::init()
 {
     if(gbuffer_ == nullptr)
@@ -62,7 +67,17 @@ bool DSMaterialShader::init()
         return false;
     }
 
-    return resolveUniformLocation("invPersProj") != -1;
+    else if(resolveUniformLocation("depthScale") == -1)
+    {
+        return false;
+    }
+
+    else if(resolveUniformLocation("invPersProj") == -1)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 GBuffer const* DSMaterialShader::gbuffer()

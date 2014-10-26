@@ -23,6 +23,9 @@ uniform mat4 invPersProj;
 // Viewport: x, y, width, height
 uniform vec4 viewport;
 
+// Depth range: far - near
+uniform float depthScale;
+
 // Output fragment color
 layout (location = 0) out vec4 fragColor;
 
@@ -55,7 +58,7 @@ void unpackPosition(inout VertexInfo vertex, float z)
     // Construct ndc position from screen-space coordinates
     vec4 ndcPos;
     ndcPos.xy = (2.0 * gl_FragCoord.xy - 2.0 * viewport.xy) / viewport.zw - 1;
-    ndcPos.z = 2.0 * z - 1.0;;
+    ndcPos.z = (2.0 * z - depthScale) / depthScale;
     ndcPos.w = 1.0;
 
     // Unproject perspective projection
@@ -92,7 +95,7 @@ void unpackDiffuseSpec(inout MaterialInfo material, in ivec2 st, int n)
 
 float getSample(inout VertexInfo vertex, inout MaterialInfo material, in ivec2 st, int n)
 {
-    float z = texelFetch(depthData, st, n).r;
+    float z = texelFetch(depthData, st, n).r * depthScale;
 
     unpackPosition(vertex, z);
     unpackNormalSpec(material, vertex, st, n);

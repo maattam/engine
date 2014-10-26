@@ -82,6 +82,7 @@ void QuadLighting::render()
     lightningTech_.setProjMatrix(camera_->projection());
     lightningTech_.setCamera(*camera_);
     lightningTech_.setViewport(viewport_);
+    lightningTech_.setDepthRange(camera_->nearPlane(), camera_->farPlane());
 
     gbuffer_.bindTextures();
     quad_->bindVaoDirect();

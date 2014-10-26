@@ -38,6 +38,8 @@ public:
 
     void setViewport(const QRect& viewport);
 
+    void setDepthRange(float fnear, float ffar);
+
 protected:
     virtual bool init();
 
